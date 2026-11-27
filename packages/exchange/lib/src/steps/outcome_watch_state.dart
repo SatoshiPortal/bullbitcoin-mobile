@@ -1,9 +1,10 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_failure.dart';
+import 'outcome_watch_effect.dart';
+import 'outcome_watch_event.dart';
 import 'step_next.dart';
-
-import 'package:primitives/primitives.dart';
 
 enum OutcomeVerdict { done, failed, pending }
 
@@ -327,134 +328,6 @@ final class WatchLeft<O> extends OutcomeWatchState<O> {
 
   @override
   int get hashCode => (WatchLeft).hashCode;
-}
-
-@immutable
-sealed class OutcomeWatchEvent<O> {
-  const OutcomeWatchEvent();
-}
-
-/// The poll with [ticket] of [orderId] answered [read].
-final class WatchPolled<O> extends OutcomeWatchEvent<O> {
-  final String orderId;
-  final int ticket;
-  final Result<O, ExchangeReadFailure> read;
-
-  const WatchPolled(this.orderId, this.ticket, this.read);
-}
-
-/// The outcome screen became visible or stopped being visible (app in the
-/// background, another route on top).
-final class WatchVisibilityChanged<O> extends OutcomeWatchEvent<O> {
-  final bool visible;
-
-  const WatchVisibilityChanged({required this.visible});
-}
-
-final class WatchDeadlinePassed<O> extends OutcomeWatchEvent<O> {
-  final String orderId;
-
-  const WatchDeadlinePassed(this.orderId);
-}
-
-final class WatchReceiptOpened<O> extends OutcomeWatchEvent<O> {
-  const WatchReceiptOpened();
-}
-
-final class WatchReceiptClosed<O> extends OutcomeWatchEvent<O> {
-  const WatchReceiptClosed();
-}
-
-final class WatchRetryPressed<O> extends OutcomeWatchEvent<O> {
-  const WatchRetryPressed();
-}
-
-final class WatchLeavePressed<O> extends OutcomeWatchEvent<O> {
-  const WatchLeavePressed();
-}
-
-@immutable
-sealed class OutcomeWatchEffect {
-  const OutcomeWatchEffect();
-}
-
-/// Read [orderId] after the poll interval (now when [immediate]); answer
-/// [WatchPolled] with [ticket].
-final class WatchSchedulePoll extends OutcomeWatchEffect {
-  final String orderId;
-  final int ticket;
-  final bool immediate;
-
-  const WatchSchedulePoll(this.orderId, this.ticket, {this.immediate = false});
-
-  @override
-  bool operator ==(Object other) =>
-      other is WatchSchedulePoll &&
-      other.orderId == orderId &&
-      other.ticket == ticket &&
-      other.immediate == immediate;
-
-  @override
-  int get hashCode =>
-      Object.hash(WatchSchedulePoll, orderId, ticket, immediate);
-
-  @override
-  String toString() =>
-      'WatchSchedulePoll($orderId, #$ticket${immediate ? ', now' : ''})';
-}
-
-/// Cancel the scheduled poll; the deadline keeps running.
-final class WatchCancelPoll extends OutcomeWatchEffect {
-  final String orderId;
-
-  const WatchCancelPoll(this.orderId);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WatchCancelPoll && other.orderId == orderId;
-
-  @override
-  int get hashCode => Object.hash(WatchCancelPoll, orderId);
-
-  @override
-  String toString() => 'WatchCancelPoll($orderId)';
-}
-
-/// Answer [WatchDeadlinePassed] after [after].
-final class WatchStartDeadline extends OutcomeWatchEffect {
-  final String orderId;
-  final Duration after;
-
-  const WatchStartDeadline(this.orderId, this.after);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WatchStartDeadline &&
-      other.orderId == orderId &&
-      other.after == after;
-
-  @override
-  int get hashCode => Object.hash(WatchStartDeadline, orderId, after);
-
-  @override
-  String toString() => 'WatchStartDeadline($orderId, $after)';
-}
-
-/// Cancel the poll and the deadline.
-final class WatchStop extends OutcomeWatchEffect {
-  final String orderId;
-
-  const WatchStop(this.orderId);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WatchStop && other.orderId == orderId;
-
-  @override
-  int get hashCode => Object.hash(WatchStop, orderId);
-
-  @override
-  String toString() => 'WatchStop($orderId)';
 }
 
 typedef OutcomeWatchNext<O> =

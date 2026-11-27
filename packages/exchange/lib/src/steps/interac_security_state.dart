@@ -2,6 +2,8 @@ import 'package:meta/meta.dart';
 
 import '../payout/payout_requirement.dart';
 import '../recipients/domain/entities/interac_security_details.dart';
+import 'interac_security_effect.dart';
+import 'interac_security_event.dart';
 import 'step_next.dart';
 
 /// The met Interac requirement: the answer the order sends, and whether the
@@ -122,44 +124,6 @@ final class InteracAnswered extends InteracSecurityState {
 
   @override
   String toString() => 'InteracAnswered($evidence)';
-}
-
-@immutable
-sealed class InteracSecurityEvent {
-  const InteracSecurityEvent();
-}
-
-final class InteracQuestionTyped extends InteracSecurityEvent {
-  final String text;
-
-  const InteracQuestionTyped(this.text);
-}
-
-final class InteracAnswerTyped extends InteracSecurityEvent {
-  final String text;
-
-  const InteracAnswerTyped(this.text);
-}
-
-final class InteracSaveAsDefaultSet extends InteracSecurityEvent {
-  final bool save;
-
-  const InteracSaveAsDefaultSet({required this.save});
-}
-
-final class InteracContinuePressed extends InteracSecurityEvent {
-  const InteracContinuePressed();
-}
-
-/// Back to the answer from the next step.
-final class InteracEditPressed extends InteracSecurityEvent {
-  const InteracEditPressed();
-}
-
-/// The step starts no effects; the order sends the answer.
-@immutable
-sealed class InteracSecurityEffect {
-  const InteracSecurityEffect();
 }
 
 typedef InteracSecurityNext =

@@ -1,9 +1,10 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_failure.dart';
+import 'consent_gate_effect.dart';
+import 'consent_gate_event.dart';
 import 'step_next.dart';
-
-import 'package:primitives/primitives.dart';
 
 /// The consent gate's output. Only the gate makes one, so a funding rail
 /// that requires consent and takes it can't be fetched without it.
@@ -228,76 +229,6 @@ final class ConsentDeclined extends ConsentGateState {
 /// A call got HTTP 401: the flow ends its session. Terminal.
 final class ConsentSessionEnded extends ConsentGateState {
   const ConsentSessionEnded();
-}
-
-@immutable
-sealed class ConsentGateEvent {
-  const ConsentGateEvent();
-}
-
-final class ConsentStartPressed extends ConsentGateEvent {
-  const ConsentStartPressed();
-}
-
-final class ConsentAcceptPressed extends ConsentGateEvent {
-  const ConsentAcceptPressed();
-}
-
-final class ConsentDeclinePressed extends ConsentGateEvent {
-  const ConsentDeclinePressed();
-}
-
-final class ConsentSubmitted extends ConsentGateEvent {
-  final int attempt;
-  final Result<void, ExchangeWriteFailure> write;
-
-  const ConsentSubmitted(this.attempt, this.write);
-}
-
-/// The re-read of [attempt]: [Ok] holds whether consent is on the
-/// account.
-final class ConsentVerified extends ConsentGateEvent {
-  final int attempt;
-  final Result<bool, ExchangeReadFailure> read;
-
-  const ConsentVerified(this.attempt, this.read);
-}
-
-final class ConsentRetryPressed extends ConsentGateEvent {
-  const ConsentRetryPressed();
-}
-
-@immutable
-sealed class ConsentGateEffect {
-  const ConsentGateEffect();
-}
-
-/// Send the consent; answer [ConsentSubmitted] for [attempt].
-final class ConsentSubmit extends ConsentGateEffect {
-  final int attempt;
-
-  const ConsentSubmit(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is ConsentSubmit && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(ConsentSubmit, attempt);
-}
-
-/// Read whether consent is on the account; answer [ConsentVerified].
-final class ConsentVerify extends ConsentGateEffect {
-  final int attempt;
-
-  const ConsentVerify(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is ConsentVerify && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(ConsentVerify, attempt);
 }
 
 typedef ConsentGateNext = StepNext<ConsentGateState, ConsentGateEffect>;

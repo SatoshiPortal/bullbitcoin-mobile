@@ -2,6 +2,8 @@ import 'package:meta/meta.dart';
 
 import '../domain/catalog/kyc_policy.dart';
 import '../domain/catalog/market.dart';
+import 'kyc_gate_effect.dart';
+import 'kyc_gate_event.dart';
 import 'step_next.dart';
 
 /// Whether the account's KYC level lets it trade in [market] (and [amount]
@@ -125,45 +127,6 @@ final class KycGatePassed extends KycGateState {
 /// The user left the flow at the gate. Terminal.
 final class KycGateLeft extends KycGateState {
   const KycGateLeft();
-}
-
-@immutable
-sealed class KycGateEvent {
-  const KycGateEvent();
-}
-
-final class KycGateOpenPressed extends KycGateEvent {
-  const KycGateOpenPressed();
-}
-
-/// Back from the KYC web view with the account's groups read again.
-final class KycGateReturned extends KycGateEvent {
-  final Set<KycGroup> groups;
-
-  const KycGateReturned(this.groups);
-}
-
-final class KycGateLeavePressed extends KycGateEvent {
-  const KycGateLeavePressed();
-}
-
-@immutable
-sealed class KycGateEffect {
-  const KycGateEffect();
-}
-
-/// Push the KYC web view over the flow; answer [KycGateReturned].
-final class KycGateOpenKyc extends KycGateEffect {
-  final Market market;
-
-  const KycGateOpenKyc(this.market);
-
-  @override
-  bool operator ==(Object other) =>
-      other is KycGateOpenKyc && other.market == market;
-
-  @override
-  int get hashCode => Object.hash(KycGateOpenKyc, market);
 }
 
 typedef KycGateNext = StepNext<KycGateState, KycGateEffect>;

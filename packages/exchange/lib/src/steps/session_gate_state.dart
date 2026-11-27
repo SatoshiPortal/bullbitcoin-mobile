@@ -1,6 +1,8 @@
 import 'package:meta/meta.dart';
 
 import '../domain/exchange_access.dart';
+import 'session_gate_effect.dart';
+import 'session_gate_event.dart';
 import 'step_next.dart';
 
 /// The session gate every flow starts with (composition §4.1). Its output is
@@ -173,65 +175,6 @@ final class SessionEnded extends SessionGateState {
 /// The user left the sign-in without signing in. Terminal.
 final class SessionClosed extends SessionGateState {
   const SessionClosed();
-}
-
-@immutable
-sealed class SessionGateEvent {
-  const SessionGateEvent();
-}
-
-/// The access state, as read or as it changed.
-final class SessionAccessChanged extends SessionGateEvent {
-  final ExchangeAccess access;
-
-  const SessionAccessChanged(this.access);
-}
-
-final class SessionSignInFinished extends SessionGateEvent {
-  final ExchangeSession session;
-
-  const SessionSignInFinished(this.session);
-}
-
-final class SessionSignInCancelled extends SessionGateEvent {
-  const SessionSignInCancelled();
-}
-
-final class SessionRetryPressed extends SessionGateEvent {
-  const SessionRetryPressed();
-}
-
-/// A call of this flow got HTTP 401 for [session]'s key.
-final class SessionServerRejected extends SessionGateEvent {
-  final ExchangeSession session;
-
-  const SessionServerRejected(this.session);
-}
-
-@immutable
-sealed class SessionGateEffect {
-  const SessionGateEffect();
-}
-
-/// Read the current access state and answer [SessionAccessChanged].
-final class SessionReadAccess extends SessionGateEffect {
-  const SessionReadAccess();
-}
-
-/// Open the sign-in over the flow; answer [SessionSignInFinished] or
-/// [SessionSignInCancelled].
-final class SessionOpenSignIn extends SessionGateEffect {
-  const SessionOpenSignIn();
-}
-
-/// Tell the user the session ended and leave the flow.
-final class SessionShowEnded extends SessionGateEffect {
-  const SessionShowEnded();
-}
-
-/// Leave the flow.
-final class SessionCloseFlow extends SessionGateEffect {
-  const SessionCloseFlow();
 }
 
 typedef SessionGateNext = StepNext<SessionGateState, SessionGateEffect>;

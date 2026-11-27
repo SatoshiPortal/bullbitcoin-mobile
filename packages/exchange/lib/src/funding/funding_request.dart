@@ -4,7 +4,7 @@ import '../domain/catalog/exchange_catalog.dart';
 import '../domain/catalog/jurisdiction.dart';
 import '../domain/entities/confidential_sepa_availability.dart';
 import '../domain/entities/funding_institution.dart';
-import '../steps/consent_gate.dart';
+import '../steps/consent_gate_state.dart';
 import 'funding_instructions.dart';
 import 'funding_rail.dart';
 

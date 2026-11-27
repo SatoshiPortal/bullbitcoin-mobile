@@ -1,9 +1,10 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_failure.dart';
+import 'context_load_effect.dart';
+import 'context_load_event.dart';
 import 'step_next.dart';
-
-import 'package:primitives/primitives.dart';
 
 /// Loads the typed context [C] a flow needs (composition §4.2). Its output is
 /// the value of [ContextReady]; gates that read the summary take [C], so they
@@ -113,45 +114,6 @@ final class ContextSessionRejected<C> extends ContextLoadState<C> {
 
   @override
   int get hashCode => (ContextSessionRejected).hashCode;
-}
-
-@immutable
-sealed class ContextLoadEvent<C> {
-  const ContextLoadEvent();
-}
-
-/// The load of [attempt] answered [read].
-final class ContextLoaded<C> extends ContextLoadEvent<C> {
-  final int attempt;
-  final Result<C, ExchangeReadFailure> read;
-
-  const ContextLoaded(this.attempt, this.read);
-}
-
-final class ContextRetryPressed<C> extends ContextLoadEvent<C> {
-  const ContextRetryPressed();
-}
-
-@immutable
-sealed class ContextLoadEffect {
-  const ContextLoadEffect();
-}
-
-/// Load the context and answer [ContextLoaded] with [attempt].
-final class ContextFetch extends ContextLoadEffect {
-  final int attempt;
-
-  const ContextFetch(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is ContextFetch && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(ContextFetch, attempt);
-
-  @override
-  String toString() => 'ContextFetch($attempt)';
 }
 
 StepNext<ContextLoadState<C>, ContextLoadEffect> contextLoadStart<C>() =>

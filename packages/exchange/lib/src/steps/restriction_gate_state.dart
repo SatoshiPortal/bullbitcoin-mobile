@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import 'restriction_gate_effect.dart';
+import 'restriction_gate_event.dart';
 import 'step_next.dart';
 
 /// The restriction gate's output: the loaded context says the account is
@@ -61,28 +63,6 @@ final class RestrictionRestricted extends RestrictionGateState {
 
 final class RestrictionLeft extends RestrictionGateState {
   const RestrictionLeft();
-}
-
-@immutable
-sealed class RestrictionGateEvent {
-  const RestrictionGateEvent();
-}
-
-/// The context was loaded again (pull to refresh, back from support).
-final class RestrictionReloaded extends RestrictionGateEvent {
-  final bool restricted;
-
-  const RestrictionReloaded({required this.restricted});
-}
-
-final class RestrictionLeavePressed extends RestrictionGateEvent {
-  const RestrictionLeavePressed();
-}
-
-/// The gate starts no effects; the type keeps the step shape.
-@immutable
-sealed class RestrictionGateEffect {
-  const RestrictionGateEffect();
 }
 
 typedef RestrictionGateNext =

@@ -6,7 +6,7 @@ import '../domain/entities/sepa_payment_processor.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/entities/recipient_details.dart';
 import '../recipients/domain/entities/recipient_type.dart';
-import '../steps/requirements_step.dart';
+import '../steps/requirements_state.dart';
 import 'order_payout_params.dart';
 import 'payout_requirement.dart';
 

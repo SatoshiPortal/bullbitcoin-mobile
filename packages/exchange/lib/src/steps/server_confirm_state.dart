@@ -1,12 +1,13 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_access.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/exchange_write_gate.dart';
 import '../domain/unknown_write_journal.dart';
+import 'server_confirm_effect.dart';
+import 'server_confirm_event.dart';
 import 'step_next.dart';
-
-import 'package:primitives/primitives.dart';
 
 /// The commit step's output: [ServerConfirmed] from the server confirm,
 /// [PayinSeen] from the payin (sell, pay).
@@ -352,84 +353,6 @@ final class ConfirmCheckFailed<C> extends ConfirmCheck<C> {
 
 final class ConfirmCheckSessionRejected<C> extends ConfirmCheck<C> {
   const ConfirmCheckSessionRejected();
-}
-
-@immutable
-sealed class ServerConfirmEvent<T, C> {
-  const ServerConfirmEvent();
-}
-
-/// What the write gate and the write of [attempt] answered.
-final class ConfirmAnswered<T, C> extends ServerConfirmEvent<T, C> {
-  final int attempt;
-  final GatedWrite<Result<C, ExchangeWriteFailure>> answer;
-
-  const ConfirmAnswered(this.attempt, this.answer);
-}
-
-final class ConfirmVerified<T, C> extends ServerConfirmEvent<T, C> {
-  final int attempt;
-  final ConfirmCheck<C> check;
-
-  const ConfirmVerified(this.attempt, this.check);
-}
-
-final class ConfirmCommitPressed<T, C> extends ServerConfirmEvent<T, C> {
-  const ConfirmCommitPressed();
-}
-
-final class ConfirmRetryPressed<T, C> extends ServerConfirmEvent<T, C> {
-  const ConfirmRetryPressed();
-}
-
-final class ConfirmBackPressed<T, C> extends ServerConfirmEvent<T, C> {
-  const ConfirmBackPressed();
-}
-
-@immutable
-sealed class ServerConfirmEffect<T> {
-  const ServerConfirmEffect();
-}
-
-/// Send the write through the account's gate ([runServerConfirm]); answer
-/// [ConfirmAnswered] for [attempt].
-final class ConfirmSend<T> extends ServerConfirmEffect<T> {
-  final T target;
-  final int attempt;
-
-  const ConfirmSend(this.target, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is ConfirmSend &&
-      other.target == target &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(ConfirmSend, target, attempt);
-
-  @override
-  String toString() => 'ConfirmSend($target, $attempt)';
-}
-
-/// Re-read what the write would have changed; answer [ConfirmVerified].
-final class ConfirmVerify<T> extends ServerConfirmEffect<T> {
-  final T target;
-  final int attempt;
-
-  const ConfirmVerify(this.target, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is ConfirmVerify &&
-      other.target == target &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(ConfirmVerify, target, attempt);
-
-  @override
-  String toString() => 'ConfirmVerify($target, $attempt)';
 }
 
 typedef ServerConfirmNext<T, C> =

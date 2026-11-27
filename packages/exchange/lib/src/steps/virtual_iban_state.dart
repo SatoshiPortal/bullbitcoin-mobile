@@ -1,10 +1,11 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 import '../domain/entities/virtual_iban.dart';
 import '../domain/exchange_failure.dart';
 import 'step_next.dart';
-
-import 'package:primitives/primitives.dart';
+import 'virtual_iban_effect.dart';
+import 'virtual_iban_event.dart';
 
 /// What the virtual IBAN step loads first: the user's virtual IBAN, if any,
 /// and the account owner's name the intro shows (the IBAN is issued in it).
@@ -527,175 +528,6 @@ final class VibanDeclined extends VirtualIbanState {
 /// A call got HTTP 401. Terminal; the flow ends its session.
 final class VibanSessionEnded extends VirtualIbanState {
   const VibanSessionEnded();
-}
-
-@immutable
-sealed class VirtualIbanEvent {
-  const VirtualIbanEvent();
-}
-
-final class VibanLoaded extends VirtualIbanEvent {
-  final int attempt;
-  final Result<VirtualIbanContext, ExchangeReadFailure> read;
-
-  const VibanLoaded(this.attempt, this.read);
-}
-
-final class VibanCreatePressed extends VirtualIbanEvent {
-  const VibanCreatePressed();
-}
-
-final class VibanCreated extends VirtualIbanEvent {
-  final int attempt;
-  final Result<VirtualIban, ExchangeWriteFailure> write;
-
-  const VibanCreated(this.attempt, this.write);
-}
-
-/// The re-read after an unknown create; [Ok] of null means there is
-/// none.
-final class VibanVerified extends VirtualIbanEvent {
-  final int attempt;
-  final Result<VirtualIban?, ExchangeReadFailure> read;
-
-  const VibanVerified(this.attempt, this.read);
-}
-
-final class VibanPolled extends VirtualIbanEvent {
-  final int ticket;
-  final Result<VirtualIban?, ExchangeReadFailure> read;
-
-  const VibanPolled(this.ticket, this.read);
-}
-
-/// The server pushed `VIRTUAL_IBAN_ACTIVATED`: poll now.
-final class VibanActivatedPushed extends VirtualIbanEvent {
-  const VibanActivatedPushed();
-}
-
-final class VibanVisibilityChanged extends VirtualIbanEvent {
-  final bool visible;
-
-  const VibanVisibilityChanged({required this.visible});
-}
-
-final class VibanDeadlinePassed extends VirtualIbanEvent {
-  final int round;
-
-  const VibanDeadlinePassed(this.round);
-}
-
-final class VibanRetryPressed extends VirtualIbanEvent {
-  const VibanRetryPressed();
-}
-
-/// Use regular SEPA instead.
-final class VibanDeclinePressed extends VirtualIbanEvent {
-  const VibanDeclinePressed();
-}
-
-@immutable
-sealed class VirtualIbanEffect {
-  const VirtualIbanEffect();
-}
-
-/// Load the [VirtualIbanContext]; answer [VibanLoaded].
-final class VibanLoad extends VirtualIbanEffect {
-  final int attempt;
-
-  const VibanLoad(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is VibanLoad && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(VibanLoad, attempt);
-}
-
-/// Create the virtual IBAN; answer [VibanCreated].
-final class VibanCreate extends VirtualIbanEffect {
-  final int attempt;
-
-  const VibanCreate(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is VibanCreate && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(VibanCreate, attempt);
-}
-
-/// Read the virtual IBAN; answer [VibanVerified].
-final class VibanVerify extends VirtualIbanEffect {
-  final int attempt;
-
-  const VibanVerify(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is VibanVerify && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(VibanVerify, attempt);
-}
-
-/// Read the virtual IBAN after the policy's interval, or at once; answer
-/// [VibanPolled] for [ticket]. Replaces any poll scheduled before.
-final class VibanSchedulePoll extends VirtualIbanEffect {
-  final int ticket;
-  final bool immediate;
-
-  const VibanSchedulePoll(this.ticket, {this.immediate = false});
-
-  @override
-  bool operator ==(Object other) =>
-      other is VibanSchedulePoll &&
-      other.ticket == ticket &&
-      other.immediate == immediate;
-
-  @override
-  int get hashCode => Object.hash(VibanSchedulePoll, ticket, immediate);
-}
-
-/// Cancel the scheduled poll (the screen is hidden).
-final class VibanCancelPoll extends VirtualIbanEffect {
-  const VibanCancelPoll();
-
-  @override
-  bool operator ==(Object other) => other is VibanCancelPoll;
-
-  @override
-  int get hashCode => (VibanCancelPoll).hashCode;
-}
-
-/// Answer [VibanDeadlinePassed] for [round] after [after].
-final class VibanStartDeadline extends VirtualIbanEffect {
-  final int round;
-  final Duration after;
-
-  const VibanStartDeadline(this.round, this.after);
-
-  @override
-  bool operator ==(Object other) =>
-      other is VibanStartDeadline &&
-      other.round == round &&
-      other.after == after;
-
-  @override
-  int get hashCode => Object.hash(VibanStartDeadline, round, after);
-}
-
-/// Stop polling and the deadline.
-final class VibanStopWatching extends VirtualIbanEffect {
-  const VibanStopWatching();
-
-  @override
-  bool operator ==(Object other) => other is VibanStopWatching;
-
-  @override
-  int get hashCode => (VibanStopWatching).hashCode;
 }
 
 typedef VirtualIbanNext = StepNext<VirtualIbanState, VirtualIbanEffect>;

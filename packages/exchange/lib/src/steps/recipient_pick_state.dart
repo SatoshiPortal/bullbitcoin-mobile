@@ -1,15 +1,16 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
-import '../domain/exchange_page.dart';
 import '../domain/exchange_failure.dart';
+import '../domain/exchange_page.dart';
 import '../payout/payout_rail.dart';
 import '../payout/recipient_choice.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/entities/recipient_details.dart';
 import '../recipients/domain/entities/recipient_details_input.dart';
+import 'recipient_pick_effect.dart';
+import 'recipient_pick_event.dart';
 import 'step_next.dart';
-
-import 'package:primitives/primitives.dart';
 
 /// What the recipient list shows: the rails it lists (a subset of the
 /// filter's, e.g. one jurisdiction or one SEPA kind) and the search text.
@@ -417,137 +418,6 @@ final class RecipientPickSessionEnded extends RecipientPickState {
 
   @override
   int get hashCode => (RecipientPickSessionEnded).hashCode;
-}
-
-@immutable
-sealed class RecipientPickEvent {
-  const RecipientPickEvent();
-}
-
-final class RecipientPickPageLoaded extends RecipientPickEvent {
-  final int attempt;
-  final Result<ExchangePage<Recipient>, ExchangeListFailure> page;
-
-  const RecipientPickPageLoaded(this.attempt, this.page);
-}
-
-final class RecipientPickQueryChanged extends RecipientPickEvent {
-  final RecipientQuery query;
-
-  const RecipientPickQueryChanged(this.query);
-}
-
-final class RecipientPickMoreRequested extends RecipientPickEvent {
-  const RecipientPickMoreRequested();
-}
-
-final class RecipientPickRetryPressed extends RecipientPickEvent {
-  const RecipientPickRetryPressed();
-}
-
-final class RecipientPickSelected extends RecipientPickEvent {
-  final Recipient recipient;
-
-  const RecipientPickSelected(this.recipient);
-}
-
-final class RecipientPickNewPressed extends RecipientPickEvent {
-  final PayoutRail rail;
-
-  const RecipientPickNewPressed(this.rail);
-}
-
-/// The form of the current rail was submitted with [input].
-final class RecipientPickSubmitted extends RecipientPickEvent {
-  final RecipientDetailsInput input;
-
-  const RecipientPickSubmitted(this.input);
-}
-
-final class RecipientPickSaved extends RecipientPickEvent {
-  final int attempt;
-  final Result<Recipient, ExchangeWriteFailure> write;
-
-  const RecipientPickSaved(this.attempt, this.write);
-}
-
-/// The re-read after an unknown save: [Ok] the recipient with the same
-/// account, [ExchangeMissingFailure] when there is none.
-final class RecipientPickFound extends RecipientPickEvent {
-  final int attempt;
-  final Result<Recipient, ExchangeReadFailure> read;
-
-  const RecipientPickFound(this.attempt, this.read);
-}
-
-final class RecipientPickBackPressed extends RecipientPickEvent {
-  const RecipientPickBackPressed();
-}
-
-@immutable
-sealed class RecipientPickEffect {
-  const RecipientPickEffect();
-}
-
-/// Read [page] of the recipients of [query] (and [owner]); answer
-/// [RecipientPickPageLoaded] for [attempt].
-final class RecipientPickFetchPage extends RecipientPickEffect {
-  final RecipientQuery query;
-  final RecipientOwnership? owner;
-  final int page;
-  final int attempt;
-
-  const RecipientPickFetchPage(this.query, this.owner, this.page, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is RecipientPickFetchPage &&
-      other.query == query &&
-      other.owner == owner &&
-      other.page == page &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode =>
-      Object.hash(RecipientPickFetchPage, query, owner, page, attempt);
-
-  @override
-  String toString() => 'RecipientPickFetchPage(page $page, $attempt)';
-}
-
-/// Save [details]; answer [RecipientPickSaved] for [attempt].
-final class RecipientPickSave extends RecipientPickEffect {
-  final RecipientDetails details;
-  final int attempt;
-
-  const RecipientPickSave(this.details, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is RecipientPickSave &&
-      identical(other.details, details) &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(RecipientPickSave, attempt);
-}
-
-/// Look for a saved recipient with the account of [details] (same rail and
-/// identity, see `recipientIdentity`); answer [RecipientPickFound].
-final class RecipientPickFind extends RecipientPickEffect {
-  final RecipientDetails details;
-  final int attempt;
-
-  const RecipientPickFind(this.details, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is RecipientPickFind &&
-      identical(other.details, details) &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(RecipientPickFind, attempt);
 }
 
 typedef RecipientPickNext = StepNext<RecipientPickState, RecipientPickEffect>;

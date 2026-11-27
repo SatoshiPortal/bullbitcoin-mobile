@@ -3,6 +3,8 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/entities/btc_network.dart';
 import '../domain/exchange_failure.dart';
+import 'pick_effect.dart';
+import 'pick_event.dart';
 import 'step_next.dart';
 
 /// Picking where bitcoin comes from or goes to (composition §4.6):
@@ -240,83 +242,6 @@ final class PickTextInvalid<O> extends PickProblem<O> {
 
   @override
   int get hashCode => Object.hash(PickTextInvalid, text, failure);
-}
-
-@immutable
-sealed class PickEvent<O, V> {
-  const PickEvent();
-}
-
-final class PickChose<O, V> extends PickEvent<O, V> {
-  final O option;
-
-  const PickChose(this.option);
-}
-
-final class PickTyped<O, V> extends PickEvent<O, V> {
-  final String text;
-
-  const PickTyped(this.text);
-}
-
-/// The validation of [text] answered [result].
-final class PickValidated<O, V> extends PickEvent<O, V> {
-  final String text;
-  final Result<V, ExchangeFailure> result;
-
-  const PickValidated(this.text, this.result);
-}
-
-/// The lookup of [option] answered [result].
-final class PickResolved<O, V> extends PickEvent<O, V> {
-  final O option;
-  final Result<V, ExchangeFailure> result;
-
-  const PickResolved(this.option, this.result);
-}
-
-/// Back from the next step, or away from a lookup or validation.
-final class PickBackPressed<O, V> extends PickEvent<O, V> {
-  const PickBackPressed();
-}
-
-@immutable
-sealed class PickEffect<O> {
-  const PickEffect();
-}
-
-/// Look [option] up; answer [PickResolved] for it.
-final class PickResolve<O> extends PickEffect<O> {
-  final O option;
-
-  const PickResolve(this.option);
-
-  @override
-  bool operator ==(Object other) =>
-      other is PickResolve && other.option == option;
-
-  @override
-  int get hashCode => Object.hash(PickResolve, option);
-
-  @override
-  String toString() => 'PickResolve($option)';
-}
-
-/// Validate [text] with the rail it parses as (C4's `BitcoinRail`); answer
-/// [PickValidated] for it.
-final class PickValidate<O> extends PickEffect<O> {
-  final String text;
-
-  const PickValidate(this.text);
-
-  @override
-  bool operator ==(Object other) => other is PickValidate && other.text == text;
-
-  @override
-  int get hashCode => Object.hash(PickValidate, text);
-
-  @override
-  String toString() => 'PickValidate("$text")';
 }
 
 /// Whether an option is a value at once or needs a lookup.

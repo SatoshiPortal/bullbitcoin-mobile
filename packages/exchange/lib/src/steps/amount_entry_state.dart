@@ -1,13 +1,14 @@
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 import '../domain/catalog/exchange_catalog.dart';
 import '../domain/catalog/kyc_policy.dart';
 import '../domain/catalog/market.dart';
 import '../domain/entities/order.dart';
 import '../domain/exchange_failure.dart';
+import 'amount_entry_effect.dart';
+import 'amount_entry_event.dart';
 import 'step_next.dart';
-
-import 'package:primitives/primitives.dart';
 
 enum AmountUnit { fiat, bitcoin }
 
@@ -941,120 +942,6 @@ final class AmountDone extends AmountEntryState {
 /// A rate read got HTTP 401: the flow ends its session. Terminal.
 final class AmountSessionRejected extends AmountEntryState {
   const AmountSessionRejected();
-}
-
-@immutable
-sealed class AmountEntryEvent {
-  const AmountEntryEvent();
-}
-
-final class AmountTyped extends AmountEntryEvent {
-  final String text;
-
-  const AmountTyped(this.text);
-}
-
-final class AmountUnitToggled extends AmountEntryEvent {
-  const AmountUnitToggled();
-}
-
-final class AmountDescriptionTyped extends AmountEntryEvent {
-  final String text;
-
-  const AmountDescriptionTyped(this.text);
-}
-
-final class AmountMarketChosen extends AmountEntryEvent {
-  final Market market;
-
-  const AmountMarketChosen(this.market);
-}
-
-/// The rate read for [market] answered [read] (fiat per bitcoin).
-final class AmountRateArrived extends AmountEntryEvent {
-  final Market market;
-  final Result<double, ExchangeReadFailure> read;
-
-  const AmountRateArrived(this.market, this.read);
-}
-
-final class AmountRateRetryPressed extends AmountEntryEvent {
-  const AmountRateRetryPressed();
-}
-
-final class AmountContinuePressed extends AmountEntryEvent {
-  const AmountContinuePressed();
-}
-
-/// Back from the KYC or funding detour, with the context read again.
-final class AmountDetourReturned extends AmountEntryEvent {
-  final AmountContext context;
-
-  const AmountDetourReturned(this.context);
-}
-
-/// Back from the next step to this one.
-final class AmountEditRequested extends AmountEntryEvent {
-  const AmountEditRequested();
-}
-
-/// The exchange refused an order for the entered amount: it broke [limit].
-/// The step goes back to editing the same draft, knowing the limit.
-final class AmountLimitRefused extends AmountEntryEvent {
-  final ExchangeOrderLimit limit;
-
-  const AmountLimitRefused(this.limit);
-}
-
-@immutable
-sealed class AmountEntryEffect {
-  const AmountEntryEffect();
-}
-
-/// Read the rate of [market]; answer [AmountRateArrived] for it.
-final class AmountFetchRate extends AmountEntryEffect {
-  final Market market;
-
-  const AmountFetchRate(this.market);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AmountFetchRate && other.market == market;
-
-  @override
-  int get hashCode => Object.hash(AmountFetchRate, market);
-
-  @override
-  String toString() => 'AmountFetchRate($market)';
-}
-
-/// Push the KYC web view over the flow (never replace the flow); answer
-/// [AmountDetourReturned] with the context read again.
-final class AmountOpenKyc extends AmountEntryEffect {
-  final Market market;
-
-  const AmountOpenKyc(this.market);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AmountOpenKyc && other.market == market;
-
-  @override
-  int get hashCode => Object.hash(AmountOpenKyc, market);
-}
-
-/// Push the funding flow over this one; answer [AmountDetourReturned].
-final class AmountOpenFunding extends AmountEntryEffect {
-  final Market market;
-
-  const AmountOpenFunding(this.market);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AmountOpenFunding && other.market == market;
-
-  @override
-  int get hashCode => Object.hash(AmountOpenFunding, market);
 }
 
 typedef AmountEntryNext = StepNext<AmountEntryState, AmountEntryEffect>;

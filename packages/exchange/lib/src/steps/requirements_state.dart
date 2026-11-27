@@ -5,10 +5,17 @@ import '../payout/order_payout_params.dart';
 import '../payout/payout_rail.dart';
 import '../payout/payout_requirement.dart';
 import '../payout/recipient_choice.dart';
-import 'interac_security_step.dart';
+import 'interac_security_event.dart';
+import 'interac_security_state.dart';
+import 'requirements_effect.dart';
+import 'requirements_event.dart';
 import 'step_next.dart';
-import 'virtual_iban_step.dart';
-import 'virtual_payee_step.dart';
+import 'virtual_iban_state.dart';
+import 'virtual_iban_event.dart';
+import 'virtual_iban_effect.dart';
+import 'virtual_payee_state.dart';
+import 'virtual_payee_event.dart';
+import 'virtual_payee_effect.dart';
 
 /// Proof that one requirement of a rail is met. Only the requirement steps
 /// make the values it holds.
@@ -281,76 +288,6 @@ bool _sameList<T>(List<T> a, List<T> b) {
     if (a[i] != b[i]) return false;
   }
   return true;
-}
-
-@immutable
-sealed class RequirementsEvent {
-  const RequirementsEvent();
-}
-
-final class RequirementInteracEvent extends RequirementsEvent {
-  final InteracSecurityEvent event;
-
-  const RequirementInteracEvent(this.event);
-}
-
-final class RequirementVirtualIbanEvent extends RequirementsEvent {
-  final VirtualIbanEvent event;
-
-  const RequirementVirtualIbanEvent(this.event);
-}
-
-final class RequirementVirtualPayeeEvent extends RequirementsEvent {
-  final VirtualPayeeEvent event;
-
-  const RequirementVirtualPayeeEvent(this.event);
-}
-
-/// Back out of the step to the recipient list.
-final class RequirementsCancelPressed extends RequirementsEvent {
-  const RequirementsCancelPressed();
-}
-
-@immutable
-sealed class RequirementsEffect {
-  const RequirementsEffect();
-}
-
-final class RequirementVirtualIbanEffect extends RequirementsEffect {
-  final VirtualIbanEffect effect;
-
-  const RequirementVirtualIbanEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is RequirementVirtualIbanEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(RequirementVirtualIbanEffect, effect);
-
-  @override
-  String toString() => 'RequirementVirtualIbanEffect($effect)';
-}
-
-/// A virtual payee effect for the recipient [recipientId].
-final class RequirementVirtualPayeeEffect extends RequirementsEffect {
-  final String recipientId;
-  final VirtualPayeeEffect effect;
-
-  const RequirementVirtualPayeeEffect(this.recipientId, this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is RequirementVirtualPayeeEffect &&
-      other.recipientId == recipientId &&
-      other.effect == effect;
-
-  @override
-  int get hashCode =>
-      Object.hash(RequirementVirtualPayeeEffect, recipientId, effect);
-
-  @override
-  String toString() => 'RequirementVirtualPayeeEffect($recipientId, $effect)';
 }
 
 typedef RequirementsNext = StepNext<RequirementsState, RequirementsEffect>;
