@@ -36,10 +36,26 @@ void main() {
       greaterThan(await operationTimeoutThrough(TorTransport.direct)),
     );
   });
+
+  test(
+    'loopback and clearnet servers are rejected before opening a route',
+    () async {
+      final routes = _Routes(TorTransport.direct);
+      final sessions = KeyServerSessionRepositoryImpl(
+        routes,
+        const TorHttpClientFactory(),
+      );
+      for (final url in ['http://127.0.0.1:1234', 'http://example.com']) {
+        expect(await sessions.open(Uri.parse(url)), isA<Err>());
+      }
+      expect(routes.opens, 0);
+    },
+  );
 }
 
 final class _Routes implements RecoverBullRoutePort {
   final TorTransport transport;
+  int opens = 0;
 
   _Routes(this.transport);
 
@@ -47,17 +63,20 @@ final class _Routes implements RecoverBullRoutePort {
   Future<Result<RecoverBullRoute, RecoverBullFailure>> open({
     bool restartEmbedded = false,
     bool viaSnowflake = false,
-  }) async => Ok(
-    RecoverBullRoute(
-      TorRoute(
-        source: TorSource.embedded,
-        endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9050),
-        evidence: TorReadinessEvidence.embeddedBootstrap,
-        transport: transport,
+  }) async {
+    opens++;
+    return Ok(
+      RecoverBullRoute(
+        TorRoute(
+          source: TorSource.embedded,
+          endpoint: TorProxyEndpoint(host: '127.0.0.1', port: 9050),
+          evidence: TorReadinessEvidence.embeddedBootstrap,
+          transport: transport,
+        ),
+        () async {},
       ),
-      () async {},
-    ),
-  );
+    );
+  }
 
   @override
   bool get snowflakeAvailable => true;
