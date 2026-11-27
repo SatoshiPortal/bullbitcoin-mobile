@@ -163,9 +163,8 @@ final class Sync {
   }
 }
 
-/// Transitional: the writer, spend gate and borrowed reader the app still
-/// uses until spends and lifecycle commands move onto [Wallet]. Exported by
-/// `write.dart` only.
+/// Store access inside Sync, never exported by a consumer library.
+@internal
 extension SyncForegroundStores on Sync {
   ForegroundStores get stores => _stores;
 }

@@ -33,6 +33,21 @@ class _Freezes extends Mock implements FreezeStorePort {}
 
 class _Connections extends Mock implements WalletConnectionPort {}
 
+final class _ProbedKeystore extends FakeSecureStoragePlatform {
+  final Future<void> Function() _beforeRead;
+
+  _ProbedKeystore(this._beforeRead);
+
+  @override
+  Future<String?> read({
+    required String key,
+    required Map<String, String> options,
+  }) async {
+    await _beforeRead();
+    return super.read(key: key, options: options);
+  }
+}
+
 void main() {
   final account = ArkAccountId(
     parent: Fingerprint('00112233'),
@@ -45,6 +60,7 @@ void main() {
   late FakeSecureStoragePlatform keystore;
   late WalletNativeRuntime runtime;
   late _Catalog catalog;
+  late _Freezes freezes;
   Future<Result<void, SyncFailure>> Function(WalletKey) syncSource = (
     _,
   ) async => const Ok(null);
@@ -102,6 +118,8 @@ void main() {
       readRevision: (_) async => const Err(SyncNotFoundFailure()),
     );
     catalog = _Catalog();
+    freezes = _Freezes();
+    when(freezes.readAll).thenAnswer((_) async => const Ok([]));
     runtime = WalletNativeRuntime.open(
       catalog: catalog,
       reserved: _Reserved(),
@@ -112,7 +130,7 @@ void main() {
       },
       sync: engine,
       documentsDirectory: () async => fixture.directory.path,
-      freezes: _Freezes(),
+      freezes: freezes,
       connections: connections,
     );
     selectSource = (_) async => fundingWalletId;
@@ -171,6 +189,169 @@ void main() {
       sha256.convert(utf8.encode('$publicFundingPsbt\n$payload')).toString(),
     );
   }
+
+  Future<WalletRevision> openNativeSource() async {
+    // Public BIP84 account descriptor of the published test vector.
+    const xpub =
+        'tpubDC8msFGeGuwnKG9Upg7DM2b4DaRqg3CUZa5g8v2SRQ6K4NSkxUgd7HsL2XVWbVm39y'
+        'BA4LAxysQAm397zwQSQoQgewGiYZqrA9DsP4zbQ1M';
+    final descriptor = BitcoinWalletDescriptor(
+      key: fundingKey,
+      scriptType: ScriptType.bip84,
+      origin: 'fixture',
+      externalDescriptor: 'wpkh($xpub/0/*)',
+      internalDescriptor: 'wpkh($xpub/1/*)',
+    );
+    when(() => metadata.readWallet(fundingWalletId))
+        .thenAnswer((_) async => Ok(registration()));
+    when(catalog.list).thenAnswer((_) async => Ok([descriptor]));
+    when(() => catalog.find(fundingKey))
+        .thenAnswer((_) async => Ok(descriptor));
+    sourceOk(await runtime.initialize());
+    return sourceOk(await runtime.readRevision(fundingKey)).stamp;
+  }
+
+  test(
+    'reconcile closes a never-prepared request under the native revision',
+    () async {
+      final stamp = await openNativeSource();
+      sourceOk(
+        await fixture.store.begin(
+          operationId: 'never-prepared',
+          accountIdentity: account.canonical,
+          sourceParent: account.parent,
+          key: fundingKey,
+          generation: stamp.generation,
+          context: 'public-context',
+        ),
+      );
+      expect(await actor.reconcileSource('never-prepared'), isA<Ok>());
+      expect(
+        sourceOk(await fixture.store.pendingForAccount(account.canonical)),
+        isNull,
+      );
+      expect(keystore.reads, 0);
+    },
+  );
+
+  test(
+    'reconcile tombstones an unregistered and never-signed reservation',
+    () async {
+      await openNativeSource();
+      await fixture.reserve('unregistered', account: account.canonical);
+      expect(
+        sourceOk(
+          await fixture.store.unregisteredNeverSignedBoard('unregistered'),
+        ),
+        isTrue,
+      );
+      expect(await actor.reconcileSource('unregistered'), isA<Ok>());
+      expect(
+        sourceOk(await fixture.store.pendingForAccount(account.canonical)),
+        isNull,
+      );
+      expect(sourceOk(await fixture.store.reservations()), isEmpty);
+      expect(keystore.reads, 0);
+    },
+  );
+
+  test('exit signing can fetch its key only after the durable seal and lease release', () async {
+    final stamp = await openNativeSource();
+    final output = sourceOk(inspectBitcoinPsbt(publicFundingPsbt))
+        .outputs
+        .single;
+    final address = sourceOk(
+      bitcoinScriptAddress(output.scriptPubkey, account.network),
+    );
+    final chain = Uri.parse('http://chain.invalid');
+    final id = 'exit-reserve-${sha256.convert(utf8.encode(account.canonical))}';
+    final context = jsonEncode({
+      'version': 1,
+      'type': 'exitReserve',
+      'account': account.canonical,
+      'ids': ['fixture'],
+      'destination': address,
+      'reserveAddress': address,
+      'chainSource': chain.toString(),
+      'sats': output.valueSat.toString(),
+    });
+    sourceOk(
+      await fixture.store.beginExitReserveRequest(
+        operationId: id,
+        accountIdentity: account.canonical,
+        sourceParent: account.parent,
+        key: fundingKey,
+        generation: stamp.generation,
+        context: context,
+      ),
+    );
+    sourceOk(
+      await fixture.store.reserve(
+        key: fundingKey,
+        spend: UnsignedSpend(
+          revision: stamp,
+          encoded: publicFundingPsbt,
+          inputs: decodeBitcoinPsbt(publicFundingPsbt).inputs,
+          owner: SpendOwner(protocol: 'ark', session: id),
+        ),
+        context: context,
+      ),
+    );
+    final binding = sourceOk(await fixture.store.readBinding(id));
+    var keystoreReached = false;
+    _ProbedKeystore(() async {
+      // Reacquire the actual spend gate at the first read of the signer key.
+      // The previous gate must already be released, and the CAS already durable.
+      sourceOk(
+        await runtime.withBitcoinRevisionAdmission(fundingKey, (
+          admitted,
+        ) async {
+          expect(admitted, stamp);
+          expect(
+            await fixture.store.admitExitReserveSigning(
+              expected: binding,
+              admittedRevision: admitted,
+            ),
+            isA<Err>().having(
+              (err) => err.failure,
+              'the single-use seal was consumed',
+              isA<SyncSpendRefusedFailure>(),
+            ),
+          );
+        }),
+      );
+      keystoreReached = true;
+      // No key was installed: this fixture stops before producing a signature.
+    }).install();
+    final result = await actor.fundInitialExit(
+      ArkQuote(
+        id: 'fixture',
+        account: account,
+        generation: 1,
+        chainSource: chain,
+        configGeneration: 1,
+        kind: ArkOperationKind.emergencyExit,
+        amount: Sats.fromInt(output.valueSat),
+        fee: Sats.fromInt(output.valueSat - 1000),
+        net: Sats.fromInt(1000),
+        selectedIds: ['fixture'],
+        destination: address,
+        observedTip: 1,
+        validUntil: DateTime.utc(2100),
+      ),
+      address,
+      isCurrent: () => true,
+    );
+    expect(
+      result,
+      isA<Err>().having(
+        (err) => err.failure,
+        'failure',
+        isA<ArkAccountRecoveryFailure>(),
+      ),
+    );
+    expect(keystoreReached, isTrue);
+  });
 
   test(
     'transfer refuses a changed source before any native or metadata call',

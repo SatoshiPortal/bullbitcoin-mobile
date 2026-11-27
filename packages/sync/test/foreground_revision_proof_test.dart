@@ -75,6 +75,7 @@ void main() {
 
   ({WalletNativeRuntime runtime, LifecycleHandle owner}) mount({
     Future<String> Function()? documentsDirectory,
+    FreezeStorePort? freezes,
     void Function(ForegroundStores)? onStoresOpened,
     Future<void> Function()? afterRevisionRead,
     Future<Result<void, SyncFailure>> Function()? afterStoresClosed,
@@ -92,7 +93,7 @@ void main() {
         readRevision: (_) async => throw StateError('Unexpected sync'),
       ),
       documentsDirectory: documentsDirectory ?? () async => directory,
-      freezes: MemoryFreezeStore(),
+      freezes: freezes ?? MemoryFreezeStore(),
       connections: connections,
       onStoresOpened: onStoresOpened,
       afterRevisionRead: afterRevisionRead,
@@ -149,7 +150,9 @@ void main() {
       var physicalClose = 0;
       var nativeReads = 0;
       var holdRead = false;
+      final freezes = _FreezeReadProbe();
       final proof = mount(
+        freezes: freezes,
         onStoresOpened: (stores) {
           opened++;
           reader = stores.revisions;
@@ -167,6 +170,19 @@ void main() {
       );
       expect(opened, 0);
       _expectFailure<SyncClosedFailure>(await proof.runtime.foreground());
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.withBitcoinRevisionAdmission(
+          visible,
+          (_) async => fail('A raw spend admission escaped the proof'),
+        ),
+      );
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.readReservedOutpointsForDisplay(),
+      );
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.readFrozenOutpoints(),
+      );
+      expect(freezes.reads, 0);
       expect(opened, 0);
       _expectFailure<SyncNotFoundFailure>(
         await proof.runtime.readRevision(hidden),
@@ -176,6 +192,11 @@ void main() {
       expect(ok(await raw.read(hidden)).stamp.key, hidden);
       expect(ok(await proof.runtime.readRevision(visible)).stamp.key, visible);
       expect(nativeReads, 1);
+      final warmReads = freezes.reads;
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.readFrozenOutpoints(),
+      );
+      expect(freezes.reads, warmReads);
 
       holdRead = true;
       final reading = proof.runtime.readRevision(visible);
@@ -281,3 +302,21 @@ Future<String> _probeExclusive(String path) => Isolate.run(() async {
     return error.reason;
   }
 });
+
+final class _FreezeReadProbe implements FreezeStorePort {
+  int reads = 0;
+
+  @override
+  Future<Result<List<FrozenOutpoint>, SyncFailure>> readAll() async {
+    reads++;
+    return const Ok([]);
+  }
+
+  @override
+  Future<Result<void, SyncFailure>> freeze(List<FrozenOutpoint> rows) =>
+      throw StateError('Unexpected freeze');
+
+  @override
+  Future<Result<void, SyncFailure>> unfreeze(List<Outpoint> outpoints) =>
+      throw StateError('Unexpected unfreeze');
+}

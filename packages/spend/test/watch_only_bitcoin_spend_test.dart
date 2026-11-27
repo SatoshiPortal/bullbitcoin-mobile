@@ -90,6 +90,7 @@ void main() {
           isA<Ok<void, SpendFailure>>(),
         );
       }
+      expect(reservations.reads, 2);
     });
 
     test('refuse an unreadable freeze store', () async {
@@ -103,6 +104,7 @@ void main() {
           _failure<void, SpendUnavailableFailure>(),
         );
       }
+      expect(reservations.reads, 0);
     });
 
     test('refuse unreadable Payjoin reservations', () async {
@@ -301,13 +303,16 @@ final class _NoReservedAddresses implements ReservedAddressPort {
 
 final class _Reservations implements InputReservationPort {
   SyncFailure? failure;
+  int reads = 0;
 
   @override
-  Future<Result<List<InputReservation>, SyncFailure>> reservations() async =>
-      switch (failure) {
-        final failure? => Err(failure),
-        null => const Ok([]),
-      };
+  Future<Result<List<InputReservation>, SyncFailure>> reservations() async {
+    reads++;
+    return switch (failure) {
+      final failure? => Err(failure),
+      null => const Ok([]),
+    };
+  }
 }
 
 final class _Connections implements WalletConnectionPort {

@@ -67,17 +67,10 @@ final class _Spend extends _SpendPreviews {
   /// Without a selection the wallet chooses its inputs; funding then reads the
   /// freezes and the protocol reservations, so both must be readable now.
   Future<Result<void, SpendFailure>> _unselectedPreconditions() async {
-    if (await _frozen() case Err(:final failure)) return Err(failure);
+    if (await _sync.readFrozenOutpoints() case Err(:final failure)) {
+      return Err(_syncFailure(failure));
+    }
     return (await _sync.checkUnreservedInputs(const {})).mapErr(_syncFailure);
-  }
-
-  Future<Result<List<FrozenOutpoint>, SpendFailure>> _frozen() async {
-    final sync = await _sync.foreground();
-    final freezes = switch (sync) {
-      Ok(:final value) => await value.coins.listFrozen(),
-      Err(:final failure) => Err<List<FrozenOutpoint>, SyncFailure>(failure),
-    };
-    return freezes.mapErr(_syncFailure);
   }
 
   @override
@@ -280,18 +273,16 @@ final class _Spend extends _SpendPreviews {
       case Ok():
         break;
     }
-    switch (await _frozen()) {
+    final inputs = built.inputs.toSet();
+    switch (await _sync.readFrozenOutpoints()) {
       case Err(:final failure):
-        return Err(failure);
+        return Err(_syncFailure(failure));
       case Ok(:final value):
-        final inputs = built.inputs.toSet();
-        if (value.any((entry) => inputs.contains(entry.outpoint))) {
+        if (value.any(inputs.contains)) {
           return const Err(SpendSelectedInputsUnavailableFailure());
         }
     }
-    if (await _sync.checkUnreservedInputs(built.inputs.toSet()) case Err(
-      :final failure,
-    )) {
+    if (await _sync.checkUnreservedInputs(inputs) case Err(:final failure)) {
       return Err(_syncFailure(failure));
     }
     return switch (await _resolve(built.key.id)) {

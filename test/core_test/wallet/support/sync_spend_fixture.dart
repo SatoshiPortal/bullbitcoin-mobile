@@ -10,18 +10,18 @@ import 'package:sync/write.dart';
 import 'package:sync/testing.dart'
     show NoConnections, NoInputReservations, NoReservedAddresses;
 
-/// A foreground [Sync] over [documentsDirectory] holding one real BDK store
+/// A foreground runtime over [documentsDirectory] holding one real BDK store
 /// for [model], so spends run through sync's writer exactly as in the app.
 /// Native fixture writes stay here, in tests.
 final class SyncSpendFixture {
-  final Sync sync;
+  final WalletNativeRuntime runtime;
   final WalletKey key;
   final String documentsDirectory;
   final BitcoinWalletDescriptor descriptor;
   final MemoryFreezeStore freezes;
 
   SyncSpendFixture._(
-    this.sync,
+    this.runtime,
     this.key,
     this.documentsDirectory,
     this.descriptor,
@@ -42,22 +42,30 @@ final class SyncSpendFixture {
       internalDescriptor: model.internalDescriptor,
     );
     final freezes = MemoryFreezeStore();
-    final sync = Sync.foreground(
-      documentsDirectory: documentsDirectory,
+    const connections = NoConnections();
+    final runtime = WalletNativeRuntime.open(
+      documentsDirectory: () async => documentsDirectory,
       catalog: _Catalog(descriptor),
-      reservedAddresses: const NoReservedAddresses(),
+      reserved: const NoReservedAddresses(),
       freezes: freezes,
       inputReservations: reservations ?? NoInputReservations(),
-      connections: const NoConnections(),
+      connections: connections,
+      deleteCatalogEntry: (_) async => throw StateError('Unexpected deletion'),
+      sync: ElectrumSync(
+        connections: connections,
+        documentsDirectory: () async => documentsDirectory,
+        readRevision: (_) async => throw StateError('Unexpected sync'),
+      ),
     );
-    switch (await sync.stores.writer.create(key, expectedGeneration: 0)) {
+    switch (await runtime.initialize()) {
       case p.Ok():
         break;
       case p.Err(:final failure):
+        await runtime.close();
         throw StateError('fixture store: ${failure.logCode}');
     }
     return SyncSpendFixture._(
-      sync,
+      runtime,
       key,
       documentsDirectory,
       descriptor,
@@ -67,7 +75,7 @@ final class SyncSpendFixture {
 
   /// [walletId]'s handle, as the app's runtime hands it out.
   Future<Wallet> wallet(String walletId) async =>
-      switch (await sync.wallet(key)) {
+      switch (await runtime.wallet(key)) {
         p.Ok(:final value) => value,
         p.Err(:final failure) => throw StateError(failure.logCode),
       };
@@ -101,7 +109,11 @@ final class SyncSpendFixture {
     }
   }
 
-  Future<void> close() => sync.close();
+  Future<void> close() async {
+    if (await runtime.close() case p.Err(:final failure)) {
+      throw StateError(failure.logCode);
+    }
+  }
 }
 
 final class _Catalog implements WalletCatalogPort {

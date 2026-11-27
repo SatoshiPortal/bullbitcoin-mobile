@@ -12,6 +12,7 @@ import '../../../sync.dart' as sync show Wallet;
 import '../../../write.dart';
 import '../freeze_authority.dart';
 import '../input_reservations.dart';
+import '../../public/sync.dart' show SyncForegroundStores;
 import 'foreground_lifetime.dart';
 
 typedef _RevisionMount = ({Sync sync, WalletCatalogPort catalog});
@@ -50,7 +51,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final BroadcastObservationFollowUp? _broadcastObservation;
   ForegroundLifetime<_RevisionMount>? _revisionLifetime;
   Future<void> Function()? _afterRevisionRead;
-  Future<Result<void, SyncFailure>>? _revisionClosing;
+  final _scopedRequests = <Future<void>>{};
+  Future<Result<void, SyncFailure>>? _closing;
 
   WalletNativeRuntime.open({
     required this._catalog,
@@ -203,10 +205,16 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<Result<void, SyncFailure>> refreshAll() => _result(_refreshAll);
   Future<Result<void, SyncFailure>> repair(WalletKey key) =>
       _result(() => _repair(key));
-  Future<Result<void, SyncFailure>> close() => switch (_revisionLifetime) {
-    final lifetime? => _revisionClosing ??= _closeRevisionProof(lifetime),
-    null => _result(_close),
-  };
+  Future<Result<void, SyncFailure>> close() {
+    if (_closing case final closing?) return closing;
+    final closed = Completer<Result<void, SyncFailure>>();
+    _closing = closed.future;
+    closed.complete(switch (_revisionLifetime) {
+      final lifetime? => _closeRevisionProof(lifetime),
+      null => _result(_close),
+    });
+    return closed.future;
+  }
 
   Future<Result<void, SyncFailure>> _closeRevisionProof(
     ForegroundLifetime<_RevisionMount> lifetime,
@@ -217,6 +225,64 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }
 
   Stream<WalletRevisionState> get changes => _changes.stream;
+
+  /// Runs the durable callback under the normal Bitcoin spend admission.
+  /// Only the admitted revision is lent; the lease closes before this returns.
+  /// The callback must not reenter Sync or close this runtime, sign, do
+  /// network work, or detach work. Its exceptions propagate unchanged.
+  @useResult
+  Future<Result<void, SyncFailure>> withBitcoinRevisionAdmission(
+    WalletKey key,
+    Future<void> Function(WalletRevision) use,
+  ) => _withScopedStores((stores) async {
+    final admission = await stores.spendGate.acquire(key);
+    if (admission is! BitcoinSpendAdmission) {
+      return const Err(SyncBusyFailure());
+    }
+    try {
+      await use(admission.revision);
+      return const Ok(null);
+    } finally {
+      admission.close();
+    }
+  });
+
+  /// Combined ordinary and funding reservations, without owner metadata.
+  /// A typed reservation read failure means unknown, not an empty snapshot.
+  @useResult
+  Future<Result<Set<Outpoint>?, SyncFailure>>
+  readReservedOutpointsForDisplay() => _withScopedStores((stores) async {
+    return switch (await stores.inputReservations.reservations()) {
+      Ok(:final value) => Ok(Set.unmodifiable(value.map((r) => r.outpoint))),
+      Err() => const Ok(null),
+    };
+  });
+
+  /// Reads the effective freezes now, across all origins, for spend preflight.
+  /// A failed read is not evidence that any input is spendable.
+  @useResult
+  Future<Result<Set<Outpoint>, SyncFailure>> readFrozenOutpoints() =>
+      _withScopedStores((stores) => stores.freezes.forbiddenInputs());
+
+  Future<Result<T, SyncFailure>> _withScopedStores<T>(
+    Future<Result<T, SyncFailure>> Function(ForegroundStores) operation,
+  ) async {
+    if (_closing != null || _revisionLifetime != null) {
+      return const Err(SyncClosedFailure());
+    }
+    final settled = Completer<void>();
+    _scopedRequests.add(settled.future);
+    try {
+      // Map opening failures only, not errors from the operation or callback.
+      return switch (await _result(() async => (await _services).stores)) {
+        Ok(:final value) => await operation(value),
+        Err(:final failure) => Err(failure),
+      };
+    } finally {
+      _scopedRequests.remove(settled.future);
+      settled.complete();
+    }
+  }
 
   /// Checks the current protocol reservations for selected ordinary inputs.
   /// An empty selection checks that the reservation authorities are readable.
@@ -718,6 +784,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }
 
   Future<void> _close() async {
+    await Future.wait(_scopedRequests);
     final opening = _opening;
     if (opening != null) {
       final services = await opening;

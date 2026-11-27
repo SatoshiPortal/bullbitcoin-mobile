@@ -15,8 +15,9 @@ abstract final class SpendFixtures {
     int txSize = 0,
     bool isToSelf = false,
     List<Sats> recipientAmountsSat = const [],
+    UnsignedSpend? native,
   }) => PreparedBitcoinSpend._(
-    null,
+    native,
     unsignedPsbt: unsignedPsbt,
     fee: fee,
     txSize: txSize,
@@ -29,8 +30,9 @@ abstract final class SpendFixtures {
     required Sats fee,
     required Sats amountSent,
     int discountedVsize = 1,
+    UnsignedSpend? native,
   }) => PreparedLiquidSpend._(
-    null,
+    native,
     unsignedPset: unsignedPset,
     fee: fee,
     amountSent: amountSent,

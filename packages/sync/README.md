@@ -68,7 +68,9 @@ Library functions open no wallet and create no store:
 
 `Sync.foreground` requires an `InputReservationPort`. Payjoin owns its input reservations and serves each with its session, wallet, network and state; sync reads them to check the inputs of a spend. A failed read is an `Err`, never an empty list.
 
-Still transitional: `write.dart` builds the writer, the spend gate and the Electrum engine, and its `SyncForegroundStores` extension hands the app the lifecycle writer and the spend gate. The background job still opens `ExistingStores` and an `ElectrumSync` through it, not `BackgroundSync`. No native handle is lent: outside this package, only `secrets` uses BDK and LWK. `diagnostics.dart` publishes the identifier-free lease diagnostic context. `testing.dart` builds real `Wallet`s for consumers' tests.
+The runtime's foreground store getter is internal to Sync. Ark uses `withBitcoinRevisionAdmission` for a durable callback under the normal spend lease: it gets only the admitted revision, and the lease closes before the call returns. It must not reenter Sync, sign, use the network or detach work. `readReservedOutpointsForDisplay` snapshots combined reservations; a null value means unknown, not empty. Terminal runtime close refuses both operations and waits for those already admitted. Neither is mounted in the foreground revision proof.
+
+Still transitional: `write.dart` builds the writer, the spend gate and the Electrum engine. Other consumers still obtain `Sync` for wallet and freeze capabilities. The background job opens `ExistingStores` and an `ElectrumSync` through it, not `BackgroundSync`. No native handle is lent: outside this package, only `secrets` uses BDK and LWK. `diagnostics.dart` publishes the identifier-free lease diagnostic context. `testing.dart` builds real `Wallet`s for consumers' tests.
 
 <!-- sync-api:start -->
 

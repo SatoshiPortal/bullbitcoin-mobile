@@ -12,7 +12,7 @@ import 'package:bull_pricer/bull_pricer.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
-import 'package:sync/write.dart' show SyncForegroundStores, WalletNativeRuntime;
+import 'package:sync/write.dart' show WalletNativeRuntime;
 
 /// Observations only: no coin selection, address allocation or funding writes.
 final class WalletArkDisplayData implements ArkDisplayDataPort {
@@ -102,13 +102,8 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
       final stamp = (loaded as Ok<WalletRevision, SyncFailure>).value;
       final coins = await handle.unspent();
       if (!_live) return const Err(ArkServiceUnavailableFailure());
-      final foreground = await _runtime.foreground();
-      if (foreground case Err()) return const Err(ArkFeatureStorageFailure());
-      final reservations = await (foreground as Ok<Sync, SyncFailure>)
-          .value
-          .stores
-          .inputReservations
-          .reservations();
+      final reservations = await _runtime.readReservedOutpointsForDisplay();
+      if (reservations case Err()) return const Err(ArkFeatureStorageFailure());
       if (!_live) return const Err(ArkServiceUnavailableFailure());
       final code = await _currency();
       if (!_live) return const Err(ArkServiceUnavailableFailure());
@@ -138,7 +133,7 @@ final class WalletArkDisplayData implements ArkDisplayDataPort {
       if (!_live) return const Err(ArkServiceUnavailableFailure());
       Sats? available;
       if (coins case Ok(:final value)) {
-        if (reservations case Ok(value: final held)) {
+        if (reservations case Ok(value: final held?)) {
           if (current case Ok(value: final revision)) {
             available = availableArkSourceBalance(
               stamp: stamp,
@@ -178,7 +173,7 @@ Sats? availableArkSourceBalance({
   required WalletBalances balance,
   required WalletRevisionState revision,
   required CoinList coins,
-  required List<InputReservation> reservations,
+  required Set<Outpoint> reservations,
 }) {
   final value = balance.data;
   if (balance.status != ValueStatus.ready ||
@@ -194,10 +189,9 @@ Sats? availableArkSourceBalance({
   // but the rest of the wallet still can: the native balance knows neither,
   // so they come off it. A held coin outside the trusted balance only makes
   // the amount shown smaller, never larger.
-  final held = reservations.map((item) => item.outpoint).toSet();
   var protected = BigInt.zero;
   for (final coin in coins) {
-    if (coin.frozen || held.contains(coin.outpoint)) {
+    if (coin.frozen || reservations.contains(coin.outpoint)) {
       protected += coin.amountSat;
     }
   }

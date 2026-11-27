@@ -37,20 +37,12 @@ void main() {
       frozen: frozen,
     ),
   ]);
-  InputReservation reservation({Outpoint outpoint = point}) => InputReservation(
-    outpoint: outpoint,
-    protocol: 'ark',
-    session: 'public-operation',
-    walletId: 'other-scope',
-    network: BitcoinNetwork.regtest,
-    state: 'pending',
-  );
   Sats? read({
     int amount = 1234,
     WalletBalances? balance,
     WalletRevisionState? revision,
     bool frozen = false,
-    List<InputReservation> held = const [],
+    Set<Outpoint> held = const {},
   }) => availableArkSourceBalance(
     stamp: stamp,
     balance: balance ?? WalletValue.ready(values(amount), stamp),
@@ -106,14 +98,11 @@ void main() {
   test('a frozen or Board-held output comes off the available amount', () {
     // The only coin is protected: nothing is left for a new Board.
     expect(read(amount: 2000, frozen: true), Sats.zero);
-    // Matching outpoints stay protected even if metadata names another scope.
-    expect(read(amount: 2000, held: [reservation()]), Sats.zero);
+    expect(read(amount: 2000, held: {point}), Sats.zero);
     // The rest of the wallet stays available.
-    expect(read(amount: 5000, held: [reservation()]), Sats.fromInt(3000));
-    expect(
-      read(held: [reservation(outpoint: (txId: 'unrelated', vout: 1))]),
-      Sats.fromInt(1234),
-    );
+    expect(read(amount: 5000, held: {point}), Sats.fromInt(3000));
+    expect(read(amount: 5000, frozen: true, held: {point}), Sats.fromInt(3000));
+    expect(read(held: {(txId: 'unrelated', vout: 1)}), Sats.fromInt(1234));
   });
 
   group('source wallet name', () {
