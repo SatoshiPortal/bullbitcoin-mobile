@@ -5,7 +5,8 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
-import 'package:secrets/storage.dart' show RegisteredWallet, SecretsInventory;
+import 'package:secrets/storage.dart'
+    show RegisteredWallet, SecretsInventory, multiViewSupported;
 import 'package:secrets/src/data/inventory_store.dart';
 import 'package:secrets/testing.dart';
 
@@ -113,3 +114,15 @@ T ok<T, F extends Failure>(Result<T, F> result) {
   expect(result, isA<Ok<T, F>>());
   return (result as Ok<T, F>).value;
 }
+
+/// Suites that need a build supporting more than one view. The gate is a
+/// compile-time constant, so they run in their own invocation, with
+/// `--dart-define=BULL_MULTI_VIEW=true` (`make secrets-multiview-test`), and
+/// are skipped in the ordinary one. Nothing at run time can open the gate.
+void multiViewSuite(void Function() body) => group(
+  'with the multiple-view build',
+  body,
+  skip: multiViewSupported
+      ? false
+      : 'run with --dart-define=BULL_MULTI_VIEW=true',
+);

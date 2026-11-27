@@ -5,12 +5,19 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
+import 'package:secrets/storage.dart' show multiViewSupported;
 
 import 'support/view_fixture.dart';
 
 /// A valid terminal receipt says the data was imported. It does not say the
 /// layout of the views is one this build reads.
-void main() {
+void main() => group(
+  'in a build that supports one view',
+  _suite,
+  skip: multiViewSupported,
+);
+
+void _suite() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late ViewFixture fixture;

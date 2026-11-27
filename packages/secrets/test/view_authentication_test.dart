@@ -3,11 +3,12 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart'
     show SecretFailure, UseSecretFailure, ViewId, ViewNotOpenFailure;
 import 'package:secrets/storage.dart';
-import 'package:secrets/testing.dart' show overrideMultiViewForTests;
 
 import 'support/view_fixture.dart';
 
-void main() {
+void main() => multiViewSuite(_suite);
+
+void _suite() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late ViewFixture fixture;
@@ -15,7 +16,6 @@ void main() {
   late SecretsInventory inventory;
 
   setUp(() async {
-    overrideMultiViewForTests(true);
     fixture = await ViewFixture.create();
     await fixture.sql([
       "INSERT INTO views (id, name, background_enabled) VALUES ('b', 'Bravo', 1)",
@@ -32,7 +32,6 @@ void main() {
   });
 
   tearDown(() async {
-    overrideMultiViewForTests(null);
     await inventory.close();
     await fixture.close();
   });
@@ -61,7 +60,6 @@ void main() {
     await inventory.lock();
     expect(inventory.activeView, isNull);
     expect(inventory.openedViews, isNull);
-    expect(multiViewSupported, isFalse, reason: 'release builds leave it off');
   });
 
   test('with no credential anywhere every view opens and no attempt is '

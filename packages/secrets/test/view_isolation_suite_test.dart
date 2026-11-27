@@ -3,14 +3,15 @@ import 'package:primitives/primitives.dart';
 import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
-import 'package:secrets/testing.dart' show overrideMultiViewForTests;
 
 import 'support/view_fixture.dart';
 
 /// The isolation suite of the multiple views (D63, D69, D96): what one view can
 /// reach of another, through every capability this package publishes. Each
 /// test fixes one side of the line; the gate stays closed in production.
-void main() {
+void main() => multiViewSuite(_suite);
+
+void _suite() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late ViewFixture fixture;
@@ -21,7 +22,6 @@ void main() {
   late Fingerprint inB;
 
   setUp(() async {
-    overrideMultiViewForTests(true);
     fixture = await ViewFixture.create();
     await fixture.sql([
       "INSERT INTO views (id, name, background_enabled) VALUES ('b', 'B', 0)",
@@ -56,7 +56,6 @@ void main() {
   });
 
   tearDown(() async {
-    overrideMultiViewForTests(null);
     await inventory.close();
     await fixture.close();
   });

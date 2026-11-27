@@ -2,11 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
-import 'package:secrets/testing.dart' show overrideMultiViewForTests;
 
 import 'support/view_fixture.dart';
 
-void main() {
+void main() => multiViewSuite(_suite);
+
+void _suite() {
   TestWidgetsFlutterBinding.ensureInitialized();
   group('generation', generationTests);
 
@@ -21,7 +22,6 @@ void main() {
       opened.views.map((view) => view.name).toList();
 
   setUp(() async {
-    overrideMultiViewForTests(true);
     fixture = await ViewFixture.create();
     authority = SessionAuthority();
     inventory = ok(
@@ -47,7 +47,6 @@ void main() {
   });
 
   tearDown(() async {
-    overrideMultiViewForTests(null);
     await inventory.close();
     await fixture.close();
   });
@@ -159,7 +158,6 @@ void generationTests() {
   late Secrets secrets;
 
   setUp(() async {
-    overrideMultiViewForTests(true);
     fixture = await ViewFixture.create();
     authority = SessionAuthority();
     inventory = ok(
@@ -176,7 +174,6 @@ void generationTests() {
   });
 
   tearDown(() async {
-    overrideMultiViewForTests(null);
     await inventory.close();
     await fixture.close();
   });
