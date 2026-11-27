@@ -290,7 +290,7 @@ void main() {
       ]);
       expect(
         swap.routes.first.routes.cast<GoRoute>().map((route) => route.path),
-        ['/swap/confirm', '/swap/in-progress'],
+        ['/swap/confirm'],
       );
       expect(swap.autoswapSettingsRoute.path, 'autoswap-settings');
 
