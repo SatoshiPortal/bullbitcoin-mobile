@@ -12,6 +12,7 @@ import 'package:secrets/src/data/data.dart'
         inventoryCredentialRequiredFailure,
         inventoryLockedFailure,
         viewNotOpenFailure,
+        viewInUseFailure,
         invalidBip85HexLengthFailure,
         unreadableBip85RecordFailure;
 
@@ -24,6 +25,7 @@ import '../data/inventory_repository.dart';
 import '../data/inventory_session.dart';
 import '../data/inventory_store.dart';
 import '../data/ready_inventory_store.dart';
+import '../data/view_administration_repository.dart';
 export '../data/ready_inventory_store.dart' show inventoryReadinessFailure;
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../data/view_format.dart' show multiViewSupported;
@@ -51,6 +53,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   final InventoryRepository _wallets;
   final DerivationRepository _derivations;
   final BackupGuard _guard;
+  final ViewAdministrationRepository _administration;
   final SessionAuthority _authority;
   var _session = 0;
   Future<void>? _pendingDrain;
@@ -63,6 +66,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
 
   SecretsInventory._(this._store, this._access, this._guard, this._authority)
     : _wallets = InventoryRepository(_store.database),
+      _administration = ViewAdministrationRepository(_store.database, _guard),
       _derivations = DerivationRepository(_store.database) {
     _authority.bindMemberships(_seedsOf);
   }

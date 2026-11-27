@@ -75,6 +75,7 @@ const inventoryCredentialRequiredFailure = UseSecretFailure(
 );
 const inventoryLockedFailure = UseSecretFailure('inventory locked');
 const viewNotOpenFailure = ViewNotOpenFailure();
+const viewInUseFailure = ViewInUseFailure();
 
 /// A seed outside the view in use is reported as absent: nothing tells it
 /// from a seed that does not exist.
