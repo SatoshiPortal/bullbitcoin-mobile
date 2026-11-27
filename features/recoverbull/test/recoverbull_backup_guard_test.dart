@@ -403,7 +403,7 @@ void main() {
         expect(_ok(await inventory.unbackedSecrets()), hasLength(2));
 
         _ok(await inventory.setCredential('5678'));
-        inventory.lock();
+        await inventory.lock();
         expect(_ok(await inventory.unlock('1234')).accepted, isFalse);
         expect(_ok(await inventory.unlock('5678')).accepted, isTrue);
       },
