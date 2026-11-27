@@ -63,7 +63,10 @@ class TransactionListItem extends StatelessWidget {
   ) {
     final isLnSwap = transaction.isLnSwap;
     final isChainSwap = transaction.isChainSwap;
-    final walletLeg = walletScoped && transaction.walletTransaction != null;
+    final walletLeg =
+        walletScoped &&
+        transaction.isSwap &&
+        transaction.walletTransaction != null;
     final isOrderType = transaction.isOrder && transaction.order != null;
     final orderAmountAndCurrency = transaction.order
         ?.amountAndCurrencyToDisplay();
