@@ -47,6 +47,7 @@ import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ark/ark_ui.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkFacade, ArkAccountId;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_quick_actions/setup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_ui/bull_ui.dart' show BullTopBar;
 import 'package:bull_ui/testing.dart';
@@ -222,10 +223,17 @@ void main() {
       final directory = Directory.systemTemp.createTempSync('ark-route-');
       final exchange = _ExchangeAccess();
       final wallets = Wallets();
-      final quickActions = createQuickActionsCubit(
+      var promptFactories = 0;
+      final quickActions = QuickActionsFeature.mount(
         storage: Memory(),
         warning: (_) {},
-        exchangeVisible: const Stream.empty(),
+        isIOS: false,
+        exchangeVisible: () => const Stream.empty(),
+        exchangeEntry: () => const Stream.empty(),
+        exchangeOffered: () {
+          promptFactories++;
+          return const Stream.empty();
+        },
       );
       final recovery = RecoverBullFeature.create(
         secrets: Secrets(
@@ -235,13 +243,10 @@ void main() {
         wallets: wallets,
       );
       locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
-      locator.registerSingleton<QuickActionsCubit>(quickActions);
-      final exchangePrompt = createExchangePromptCubit(
-        storage: Memory(),
-        warning: (_) {},
-        offered: const Stream.empty(),
+      locator.registerSingleton<QuickActionsFeature>(
+        quickActions,
+        dispose: (owner) => owner.close(),
       );
-      locator.registerSingleton<ExchangePromptCubit>(exchangePrompt);
       locator.registerSingleton<RecoverBullFeature>(recovery);
       FakeSecureStoragePlatform().install();
       final inventoryFixture = await tester.runAsync(
@@ -475,9 +480,9 @@ void main() {
         ),
       );
       final router = AppRouter.router;
+      expect(promptFactories, 0);
       addTearDown(() async {
         router.dispose();
-        await quickActions.close();
         await recovery.dispose();
         await locator.unregister<AccessFeature>();
         await locator.unregister<ViewsFeature>();
@@ -488,9 +493,7 @@ void main() {
         await locator.unregister<SignersFeature>();
         await signerServices.reset();
         await locator.unregister<Exchange>();
-        await locator.unregister<QuickActionsCubit>();
-        await exchangePrompt.close();
-        await locator.unregister<ExchangePromptCubit>();
+        await locator.unregister<QuickActionsFeature>();
         await locator.unregister<RecoverBullFeature>();
         await locator.unregister<NetworkFeature>();
         await locator.unregister<FeesFeature>();
@@ -639,6 +642,7 @@ void main() {
       expect(find.textContaining('private-query'), findsNothing);
       expect(find.textContaining('private-id'), findsNothing);
       expect(locator.isRegistered<ArkFacade>(), false);
+      expect(promptFactories, 0);
       verifyZeroInteractions(wallets);
       verifyZeroInteractions(exchange);
       expect(tester.takeException(), isNull);

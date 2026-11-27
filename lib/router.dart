@@ -41,6 +41,7 @@ import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:settings/settings.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_quick_actions/setup.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
@@ -358,10 +359,10 @@ class AppRouter {
             arkHost: locator.isRegistered<ArkForegroundHost>()
                 ? locator<ArkForegroundHost>()
                 : null,
-            quickActions: locator<QuickActionsCubit>(),
+            quickActions: () => locator<QuickActionsFeature>().quickActions,
             onQuickAction: _openQuickAction,
             onCustomizeQuickActions: customizeQuickActions,
-            exchangePrompt: locator<ExchangePromptCubit>(),
+            exchangePrompt: () => locator<QuickActionsFeature>().exchangePrompt,
             onActivateExchange: _activateExchange,
             watchUnreadSupportMessages:
                 ExchangeSessionScope.watchUnreadSupportMessages,
@@ -392,7 +393,7 @@ class AppRouter {
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
         childRoutes: settingsChildren(
-          quickActions: locator.call<QuickActionsCubit>,
+          quickActions: () => locator<QuickActionsFeature>().quickActions,
           swapRecoveryRoutes: locator<SwapFeature>().recoveryRoutes,
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
           addressRoutes: [locator<AddressViewFeature>().route],

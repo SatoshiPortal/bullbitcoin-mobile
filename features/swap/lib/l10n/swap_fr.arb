@@ -234,5 +234,12 @@
   "swapServerInvalid": "Saisissez une adresse de serveur valide (p. ex. api.boltz.exchange/v2)",
   "swapServerChangedNotice": "Les swaps utilisent désormais ce serveur.",
   "networkRelaunchRequiredError": "Le réseau a changé depuis l’ouverture de l’application. Fermez-la, rouvrez-la, puis réessayez.",
-  "sendErrorTransactionChanged": "Les détails de la transaction ont changé. Vérifiez le montant, la destination et les frais, puis confirmez à nouveau."
+  "sendErrorTransactionChanged": "Les détails de la transaction ont changé. Vérifiez le montant, la destination et les frais, puis confirmez à nouveau.",
+  "swapHomeInProgress": "Échange en cours",
+  "swapHomeBitcoinToLiquid": "BTC → L-BTC",
+  "swapHomeLiquidToBitcoin": "L-BTC → BTC",
+  "swapHomeLightningToLiquid": "Lightning → L-BTC",
+  "swapHomeLightningToBitcoin": "Lightning → BTC",
+  "swapHomeLiquidToLightning": "L-BTC → Lightning",
+  "swapHomeBitcoinToLightning": "BTC → Lightning"
 }

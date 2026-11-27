@@ -46,7 +46,7 @@ import 'package:signers/storage.dart' show SignerDevices;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
-import 'package:exchange/exchange.dart' show Exchange;
+import 'package:exchange/exchange.dart' show Exchange, ExchangePlatform;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bull_ark/ark_foreground_setup.dart';
@@ -88,7 +88,7 @@ import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:send/send.dart' show ReplaceByFee, SendNavigation;
-import 'package:bb_mobile/features/settings/settings_locator.dart';
+import 'package:bull_quick_actions/setup.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/router.dart';
@@ -483,7 +483,26 @@ class AppLocator {
       },
     );
     locator.registerLazySingleton<Silent>(() => silent.silent);
-    SettingsLocator.setup(locator);
+    Stream<bool> watchExchangeOffer({required bool onlyWhileOff}) =>
+        locator<Exchange>().watchActivationOffer(
+          platform: ExchangePlatform.current,
+          currentSuperuser: () => locator<Settings>().isSuperuser,
+          superuserChanges: locator<Settings>().watchSuperuser(),
+          onlyWhileOff: onlyWhileOff,
+        );
+    locator.registerLazySingleton<QuickActionsFeature>(
+      () => QuickActionsFeature.mount(
+        isIOS: ExchangePlatform.current == ExchangePlatform.ios,
+        warning: log.warning,
+        exchangeVisible: () => locator<Exchange>().watchTradingVisibility(
+          platform: ExchangePlatform.current,
+          superuserChanges: locator<Settings>().watchSuperuser(),
+        ),
+        exchangeEntry: () => watchExchangeOffer(onlyWhileOff: false),
+        exchangeOffered: () => watchExchangeOffer(onlyWhileOff: true),
+      ),
+      dispose: (feature) => feature.close(),
+    );
     locator.registerSingleton(
       BackgroundSchedule.open(dispatcher: backgroundTasksHandler),
     );

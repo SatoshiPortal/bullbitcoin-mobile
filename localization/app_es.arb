@@ -1808,13 +1808,6 @@
   "receiveVerifyBitbox": "Verificar en BitBox",
   "receiveFeeDetails": "Detalle de las comisiones",
   "networkWalletBackupRequired": "Esta vista está protegida por un PIN. Quita el PIN, crea la billetera, verifica la copia de seguridad de su frase de recuperación y vuelve a configurar el PIN.",
-  "walletHomeSwapInProgress": "Intercambio en curso",
   "walletWarningSwapServerUnreachable": "No se puede conectar con Boltz",
-  "walletWarningSwapServerAction": "Toca para configurar",
-  "walletHomeSwapBitcoinToLiquid": "BTC → L-BTC",
-  "walletHomeSwapLiquidToBitcoin": "L-BTC → BTC",
-  "walletHomeSwapLightningToLiquid": "Lightning → L-BTC",
-  "walletHomeSwapLightningToBitcoin": "Lightning → BTC",
-  "walletHomeSwapLiquidToLightning": "L-BTC → Lightning",
-  "walletHomeSwapBitcoinToLightning": "BTC → Lightning"
+  "walletWarningSwapServerAction": "Toca para configurar"
 }
