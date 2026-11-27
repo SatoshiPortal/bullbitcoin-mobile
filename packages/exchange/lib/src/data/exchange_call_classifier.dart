@@ -144,7 +144,78 @@ Result<T, ExchangeWriteFailure> writeNotRun<T>(ExchangeFailure failure) =>
       ExchangeSessionRejectedFailure() => const Err(
         ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
       ),
-      _ => const Err(
+      // Any other failure stopped the write before it was sent.
+      ExchangeAccountUnavailableFailure() ||
+      ExchangeAuthenticationDeferredFailure() ||
+      ExchangeAuthenticationFailure() ||
+      ExchangeApiKeyStorageFailure() ||
+      ExchangeSessionClearFailure() ||
+      ExchangePlatformNotAllowedFailure() ||
+      ExchangePreferencesSaveFailure() ||
+      ExchangePreferencesSaveOutcomeUnknownFailure() ||
+      ExchangeNotificationsUnavailableFailure() ||
+      ExchangeAnnouncementsUnavailableFailure() ||
+      ExchangeAccountDeletionRequestFailure() ||
+      ExchangeNetworkFailure() ||
+      ExchangeUnexpectedFailure() ||
+      ExchangeUnsupportedNetworkFailure() ||
+      ExchangeOrderInventoryUnavailableFailure() ||
+      ExchangeCredentialsUnavailableFailure() ||
+      ExchangeBasicAuthSaveFailure() ||
+      ExchangeApiKeyInvalidFailure() ||
+      ExchangeApiKeySaveFailure() ||
+      ExchangeApiKeyDeleteFailure() ||
+      ExchangeOrderLimitFailure() ||
+      ExchangeConfidentialSepaInactiveFailure() ||
+      ExchangeOrderLoadFailure() ||
+      ExchangeOrderRejectedFailure() ||
+      ExchangeStatisticsUnavailableFailure() ||
+      ExchangeDocumentUploadFailure() ||
+      ExchangeAccountDetailsUnavailableFailure() ||
+      ExchangeUploadStatusUnavailableFailure() ||
+      ExchangeDocumentAlreadySubmittedFailure() ||
+      ExchangeDocumentEmptyFailure() ||
+      ExchangeDocumentTooLargeFailure() ||
+      ExchangeDocumentTypeNotAllowedFailure() ||
+      ExchangeDocumentUnreadableFailure() ||
+      ExchangeWriteBusyFailure() ||
+      ExchangePaymentLinkUnavailableFailure() ||
+      ExchangeDefaultWalletAddressEmptyFailure() ||
+      ExchangeDefaultWalletAddressInvalidFailure() ||
+      ExchangeDefaultWalletSaveFailure() ||
+      ExchangeDefaultWalletDeleteFailure() ||
+      ExchangeConsentRegistrationFailure() ||
+      ExchangeChatLoadMessagesFailure() ||
+      ExchangeChatSendMessageFailure() ||
+      ExchangeChatLoadAttachmentFailure() ||
+      ExchangeChatNotAuthenticatedFailure() ||
+      ExchangeChatMessageEmptyFailure() ||
+      ExchangeChatAttachmentEmptyFailure() ||
+      ExchangeChatPickImagesFailure() ||
+      ExchangeChatAttachLogsFailure() ||
+      ExchangeLimitOrderFailure() ||
+      ExchangeFundingFailure() ||
+      ExchangeVirtualIbanNotAvailableFailure() ||
+      ExchangeEuResidencyRequiredFailure() ||
+      ExchangeJournalFailure() ||
+      ExchangeDestinationUnavailableFailure() ||
+      ExchangeDestinationInvalidFailure() ||
+      ExchangeMissingFailure() ||
+      ExchangeUnreachableFailure() ||
+      ExchangeMalformedFailure() ||
+      ExchangeWriteRefusedFailure() ||
+      ExchangeWriteOutcomeUnknownFailure() ||
+      ExchangeWriteNotSentFailure() ||
+      ExchangePayinBuildFailure() ||
+      ExchangeRecipientsLoadFailure() ||
+      ExchangeRecipientsSaveFailure() ||
+      ExchangeRecipientsInvalidFieldsFailure() ||
+      ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+      ExchangeRecipientsSinpeLookupFailure() ||
+      ExchangeRecipientsCadBillerSearchFailure() ||
+      ExchangeRecipientsSelectionFailure() ||
+      ExchangeRecipientsSavedButNotSelectedFailure() ||
+      ExchangeRecipientsInvalidSecurityDetailsFailure() => const Err(
         ExchangeWriteNotSentFailure(ExchangeNotSentReason.unreachable),
       ),
     };
@@ -175,7 +246,76 @@ Result<T, ExchangeReadFailure> readNotRun<T>(ExchangeFailure failure) =>
           isNetwork: true,
         ),
       ),
-      _ => Err(
+      // Any other failure left the read without an answer.
+      ExchangeAccountUnavailableFailure() ||
+      ExchangeAuthenticationDeferredFailure() ||
+      ExchangeAuthenticationFailure() ||
+      ExchangeSessionClearFailure() ||
+      ExchangePlatformNotAllowedFailure() ||
+      ExchangePreferencesSaveFailure() ||
+      ExchangePreferencesSaveOutcomeUnknownFailure() ||
+      ExchangeNotificationsUnavailableFailure() ||
+      ExchangeAnnouncementsUnavailableFailure() ||
+      ExchangeAccountDeletionRequestFailure() ||
+      ExchangeUnexpectedFailure() ||
+      ExchangeUnsupportedNetworkFailure() ||
+      ExchangeOrderInventoryUnavailableFailure() ||
+      ExchangeCredentialsUnavailableFailure() ||
+      ExchangeBasicAuthSaveFailure() ||
+      ExchangeApiKeyInvalidFailure() ||
+      ExchangeApiKeySaveFailure() ||
+      ExchangeApiKeyDeleteFailure() ||
+      ExchangeOrderLimitFailure() ||
+      ExchangeConfidentialSepaInactiveFailure() ||
+      ExchangeOrderLoadFailure() ||
+      ExchangeOrderRejectedFailure() ||
+      ExchangeStatisticsUnavailableFailure() ||
+      ExchangeDocumentUploadFailure() ||
+      ExchangeAccountDetailsUnavailableFailure() ||
+      ExchangeUploadStatusUnavailableFailure() ||
+      ExchangeDocumentAlreadySubmittedFailure() ||
+      ExchangeDocumentEmptyFailure() ||
+      ExchangeDocumentTooLargeFailure() ||
+      ExchangeDocumentTypeNotAllowedFailure() ||
+      ExchangeDocumentUnreadableFailure() ||
+      ExchangeWriteBusyFailure() ||
+      ExchangePaymentLinkUnavailableFailure() ||
+      ExchangeDefaultWalletAddressEmptyFailure() ||
+      ExchangeDefaultWalletAddressInvalidFailure() ||
+      ExchangeDefaultWalletSaveFailure() ||
+      ExchangeDefaultWalletDeleteFailure() ||
+      ExchangeConsentRegistrationFailure() ||
+      ExchangeChatLoadMessagesFailure() ||
+      ExchangeChatSendMessageFailure() ||
+      ExchangeChatLoadAttachmentFailure() ||
+      ExchangeChatNotAuthenticatedFailure() ||
+      ExchangeChatMessageEmptyFailure() ||
+      ExchangeChatAttachmentEmptyFailure() ||
+      ExchangeChatPickImagesFailure() ||
+      ExchangeChatAttachLogsFailure() ||
+      ExchangeLimitOrderFailure() ||
+      ExchangeFundingFailure() ||
+      ExchangeVirtualIbanNotAvailableFailure() ||
+      ExchangeEuResidencyRequiredFailure() ||
+      ExchangeJournalFailure() ||
+      ExchangeDestinationUnavailableFailure() ||
+      ExchangeDestinationInvalidFailure() ||
+      ExchangeMissingFailure() ||
+      ExchangeUnreachableFailure() ||
+      ExchangeMalformedFailure() ||
+      ExchangeWriteRefusedFailure() ||
+      ExchangeWriteOutcomeUnknownFailure() ||
+      ExchangeWriteNotSentFailure() ||
+      ExchangePayinBuildFailure() ||
+      ExchangeRecipientsLoadFailure() ||
+      ExchangeRecipientsSaveFailure() ||
+      ExchangeRecipientsInvalidFieldsFailure() ||
+      ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+      ExchangeRecipientsSinpeLookupFailure() ||
+      ExchangeRecipientsCadBillerSearchFailure() ||
+      ExchangeRecipientsSelectionFailure() ||
+      ExchangeRecipientsSavedButNotSelectedFailure() ||
+      ExchangeRecipientsInvalidSecurityDetailsFailure() => Err(
         ExchangeUnreachableFailure(
           failure.runtimeType.toString(),
           isNetwork: false,

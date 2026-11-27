@@ -58,7 +58,79 @@ class UpdateExchangePreferencesUsecase {
         ExchangeNetworkFailure() => failure,
         ExchangeNotAuthenticatedFailure() || ExchangeSessionRejectedFailure() =>
           ExchangeNotAuthenticatedFailure(failure.logMessage),
-        _ => ExchangePreferencesSaveFailure(failure.logMessage),
+        ExchangeAccountUnavailableFailure() ||
+        ExchangeAuthenticationDeferredFailure() ||
+        ExchangeAuthenticationFailure() ||
+        ExchangeApiKeyStorageFailure() ||
+        ExchangeSessionClearFailure() ||
+        ExchangePlatformNotAllowedFailure() ||
+        ExchangePreferencesSaveFailure() ||
+        ExchangePreferencesSaveOutcomeUnknownFailure() ||
+        ExchangeNotificationsUnavailableFailure() ||
+        ExchangeAnnouncementsUnavailableFailure() ||
+        ExchangeAccountDeletionRequestFailure() ||
+        ExchangeUnexpectedFailure() ||
+        ExchangeOperationStaleFailure() ||
+        ExchangeUnsupportedNetworkFailure() ||
+        ExchangeOrderInventoryUnavailableFailure() ||
+        ExchangeCredentialReadFailure() ||
+        ExchangeCredentialsUnavailableFailure() ||
+        ExchangeBasicAuthSaveFailure() ||
+        ExchangeApiKeyInvalidFailure() ||
+        ExchangeApiKeySaveFailure() ||
+        ExchangeApiKeyDeleteFailure() ||
+        ExchangeOrderLimitFailure() ||
+        ExchangeConfidentialSepaInactiveFailure() ||
+        ExchangeOrderLoadFailure() ||
+        ExchangeOrderRejectedFailure() ||
+        ExchangeStatisticsUnavailableFailure() ||
+        ExchangeDocumentUploadFailure() ||
+        ExchangeAccountDetailsUnavailableFailure() ||
+        ExchangeUploadStatusUnavailableFailure() ||
+        ExchangeDocumentAlreadySubmittedFailure() ||
+        ExchangeDocumentEmptyFailure() ||
+        ExchangeDocumentTooLargeFailure() ||
+        ExchangeDocumentTypeNotAllowedFailure() ||
+        ExchangeDocumentUnreadableFailure() ||
+        ExchangeWriteBusyFailure() ||
+        ExchangePaymentLinkUnavailableFailure() ||
+        ExchangeDefaultWalletAddressEmptyFailure() ||
+        ExchangeDefaultWalletAddressInvalidFailure() ||
+        ExchangeDefaultWalletSaveFailure() ||
+        ExchangeDefaultWalletDeleteFailure() ||
+        ExchangeConsentRegistrationFailure() ||
+        ExchangeChatLoadMessagesFailure() ||
+        ExchangeChatSendMessageFailure() ||
+        ExchangeChatLoadAttachmentFailure() ||
+        ExchangeChatNotAuthenticatedFailure() ||
+        ExchangeChatMessageEmptyFailure() ||
+        ExchangeChatAttachmentEmptyFailure() ||
+        ExchangeChatPickImagesFailure() ||
+        ExchangeChatAttachLogsFailure() ||
+        ExchangeLimitOrderFailure() ||
+        ExchangeFundingFailure() ||
+        ExchangeVirtualIbanNotAvailableFailure() ||
+        ExchangeEuResidencyRequiredFailure() ||
+        ExchangeJournalFailure() ||
+        ExchangeDestinationUnavailableFailure() ||
+        ExchangeDestinationInvalidFailure() ||
+        ExchangeMissingFailure() ||
+        ExchangeUnreachableFailure() ||
+        ExchangeMalformedFailure() ||
+        ExchangeWriteRefusedFailure() ||
+        ExchangeWriteOutcomeUnknownFailure() ||
+        ExchangeWriteNotSentFailure() ||
+        ExchangePayinBuildFailure() ||
+        ExchangeRecipientsLoadFailure() ||
+        ExchangeRecipientsSaveFailure() ||
+        ExchangeRecipientsInvalidFieldsFailure() ||
+        ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+        ExchangeRecipientsSinpeLookupFailure() ||
+        ExchangeRecipientsCadBillerSearchFailure() ||
+        ExchangeRecipientsSelectionFailure() ||
+        ExchangeRecipientsSavedButNotSelectedFailure() ||
+        ExchangeRecipientsInvalidSecurityDetailsFailure() =>
+          ExchangePreferencesSaveFailure(failure.logMessage),
       },
     );
   }

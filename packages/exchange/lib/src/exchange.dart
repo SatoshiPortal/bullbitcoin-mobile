@@ -868,9 +868,83 @@ final class Exchange {
     if (result case Err(:final failure)) {
       return Err(switch (failure) {
         ExchangeUnsupportedNetworkFailure() => failure,
-        _ => ExchangeAccountDeletionRequestFailure(
-          'sendSupportChatMessage failed: ${failure.runtimeType}',
-        ),
+        ExchangeNotAuthenticatedFailure() ||
+        ExchangeAccountUnavailableFailure() ||
+        ExchangeAuthenticationDeferredFailure() ||
+        ExchangeAuthenticationFailure() ||
+        ExchangeApiKeyStorageFailure() ||
+        ExchangeSessionClearFailure() ||
+        ExchangePlatformNotAllowedFailure() ||
+        ExchangePreferencesSaveFailure() ||
+        ExchangePreferencesSaveOutcomeUnknownFailure() ||
+        ExchangeNotificationsUnavailableFailure() ||
+        ExchangeAnnouncementsUnavailableFailure() ||
+        ExchangeAccountDeletionRequestFailure() ||
+        ExchangeNetworkFailure() ||
+        ExchangeUnexpectedFailure() ||
+        ExchangeOperationStaleFailure() ||
+        ExchangeOrderInventoryUnavailableFailure() ||
+        ExchangeCredentialReadFailure() ||
+        ExchangeCredentialsUnavailableFailure() ||
+        ExchangeBasicAuthSaveFailure() ||
+        ExchangeApiKeyInvalidFailure() ||
+        ExchangeApiKeySaveFailure() ||
+        ExchangeApiKeyDeleteFailure() ||
+        ExchangeOrderLimitFailure() ||
+        ExchangeConfidentialSepaInactiveFailure() ||
+        ExchangeOrderLoadFailure() ||
+        ExchangeOrderRejectedFailure() ||
+        ExchangeStatisticsUnavailableFailure() ||
+        ExchangeDocumentUploadFailure() ||
+        ExchangeAccountDetailsUnavailableFailure() ||
+        ExchangeUploadStatusUnavailableFailure() ||
+        ExchangeDocumentAlreadySubmittedFailure() ||
+        ExchangeDocumentEmptyFailure() ||
+        ExchangeDocumentTooLargeFailure() ||
+        ExchangeDocumentTypeNotAllowedFailure() ||
+        ExchangeDocumentUnreadableFailure() ||
+        ExchangeWriteBusyFailure() ||
+        ExchangePaymentLinkUnavailableFailure() ||
+        ExchangeDefaultWalletAddressEmptyFailure() ||
+        ExchangeDefaultWalletAddressInvalidFailure() ||
+        ExchangeDefaultWalletSaveFailure() ||
+        ExchangeDefaultWalletDeleteFailure() ||
+        ExchangeConsentRegistrationFailure() ||
+        ExchangeChatLoadMessagesFailure() ||
+        ExchangeChatSendMessageFailure() ||
+        ExchangeChatLoadAttachmentFailure() ||
+        ExchangeChatNotAuthenticatedFailure() ||
+        ExchangeChatMessageEmptyFailure() ||
+        ExchangeChatAttachmentEmptyFailure() ||
+        ExchangeChatPickImagesFailure() ||
+        ExchangeChatAttachLogsFailure() ||
+        ExchangeLimitOrderFailure() ||
+        ExchangeFundingFailure() ||
+        ExchangeVirtualIbanNotAvailableFailure() ||
+        ExchangeEuResidencyRequiredFailure() ||
+        ExchangeJournalFailure() ||
+        ExchangeDestinationUnavailableFailure() ||
+        ExchangeDestinationInvalidFailure() ||
+        ExchangeMissingFailure() ||
+        ExchangeUnreachableFailure() ||
+        ExchangeMalformedFailure() ||
+        ExchangeSessionRejectedFailure() ||
+        ExchangeWriteRefusedFailure() ||
+        ExchangeWriteOutcomeUnknownFailure() ||
+        ExchangeWriteNotSentFailure() ||
+        ExchangePayinBuildFailure() ||
+        ExchangeRecipientsLoadFailure() ||
+        ExchangeRecipientsSaveFailure() ||
+        ExchangeRecipientsInvalidFieldsFailure() ||
+        ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+        ExchangeRecipientsSinpeLookupFailure() ||
+        ExchangeRecipientsCadBillerSearchFailure() ||
+        ExchangeRecipientsSelectionFailure() ||
+        ExchangeRecipientsSavedButNotSelectedFailure() ||
+        ExchangeRecipientsInvalidSecurityDetailsFailure() =>
+          ExchangeAccountDeletionRequestFailure(
+            'sendSupportChatMessage failed: ${failure.runtimeType}',
+          ),
       });
     }
     return (await access.signOut()).map(

@@ -2,6 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import '../account_details_failure.dart';
 import '../entities/exchange_preferences.dart';
 
 class GetExchangePreferencesUsecase {
@@ -29,12 +30,5 @@ class GetExchangePreferencesUsecase {
           emailNotificationsEnabled: summary.emailNotificationsEnabled,
         ),
       )
-      .mapErr(
-        (failure) => switch (failure) {
-          ExchangeNotAuthenticatedFailure() ||
-          ExchangeSessionRejectedFailure() =>
-            const ExchangeNotAuthenticatedFailure(),
-          _ => const ExchangeAccountDetailsUnavailableFailure(),
-        },
-      );
+      .mapErr(accountDetailsFailure);
 }
