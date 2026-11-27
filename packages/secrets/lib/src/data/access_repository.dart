@@ -28,17 +28,16 @@ final class AccessRepository {
   @internal
   AccessRepository(this._database, this._guard);
 
-  Future<Result<bool, SecretFailure>> isProtected() => boundary(
-    () async => (await _credential()) != null,
-    orElse: FetchSecretFailure.new,
-  );
+  /// Whether any view requires a credential.
+  Future<Result<bool, SecretFailure>> isProtected() =>
+      boundary(_anyCredential, orElse: FetchSecretFailure.new);
 
   /// The read that opens an admitted inventory. Unlike [isProtected] its
   /// failure keeps the engine's cause, so the caller can tell damaged data
   /// from contention or an access error.
   Future<Result<bool, DatabaseOpenFailure>> protectionAtOpen() async {
     try {
-      return Ok((await _credential()) != null);
+      return Ok(await _anyCredential());
     } on SqliteException catch (error) {
       return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
     } on Exception {
@@ -62,7 +61,7 @@ final class AccessRepository {
           final state = await _stateForUpdate();
           final blocked = _attempt(state, accepted: false);
           if (blocked.remaining > Duration.zero) return blocked;
-          final credential = await _credential();
+          final credential = await _credentialOf(await _view(defaultViewId));
           if (credential == null) return _attempt(state, accepted: true);
 
           final output = await AccessVerifier.derive(
@@ -91,22 +90,26 @@ final class AccessRepository {
         orElse: FetchSecretFailure.new,
       );
 
-  Future<Result<void, SecretFailure>> setBackgroundEnabled(bool enabled) =>
-      boundary(
-        () => guardedTransaction(_database, () async {
-          final view = await _defaultView();
-          await (_database.update(_database.views)
-                ..where((v) => v.id.equals(view.id)))
-              .write(ViewsCompanion(backgroundEnabled: Value(enabled)));
-        }),
-        orElse: StoreSecretFailure.new,
-      );
+  Future<Result<void, SecretFailure>> setBackgroundEnabled(
+    bool enabled,
+    String viewId,
+  ) => boundary(
+    () => guardedTransaction(_database, () async {
+      final view = await _view(viewId);
+      await (_database.update(_database.views)
+            ..where((v) => v.id.equals(view.id)))
+          .write(ViewsCompanion(backgroundEnabled: Value(enabled)));
+    }),
+    orElse: StoreSecretFailure.new,
+  );
 
   /// The secrets of the active view that still lack a tested backup. Read only:
   /// a decision to protect is taken again under the write lock.
-  Future<Result<List<Fingerprint>, SecretFailure>> unbackedSecrets() async {
+  Future<Result<List<Fingerprint>, SecretFailure>> unbackedSecrets(
+    String view,
+  ) async {
     final secrets = await boundary(
-      () => viewSecrets(_database, defaultViewId),
+      () => viewSecrets(_database, view),
       orElse: FetchSecretFailure.new,
     );
     return switch (secrets) {
@@ -117,11 +120,14 @@ final class AccessRepository {
 
   /// Protects the view or replaces its PIN. Either every write commits or none
   /// does, so a refusal keeps the old verifier, counter and protection.
-  Future<Result<void, SecretFailure>> replaceCredential(String? next) async {
+  Future<Result<void, SecretFailure>> replaceCredential(
+    String? next,
+    String view,
+  ) async {
     SecretFailure? refused;
     final result = await boundary(
       () => inventoryWriteTransaction(_database, () async {
-        refused = await _replace(next);
+        refused = await _replace(next, view);
       }),
       orElse: StoreSecretFailure.new,
     );
@@ -129,10 +135,10 @@ final class AccessRepository {
     return refusal == null ? result : Err(refusal);
   }
 
-  Future<SecretFailure?> _replace(String? next) async {
+  Future<SecretFailure?> _replace(String? next, String viewId) async {
     final state = await _stateForUpdate();
-    final view = await _defaultView();
-    final existing = await _credential();
+    final view = await _view(viewId);
+    final existing = await _credentialOf(view);
     if (next != null) {
       // D66 gates protection, not a change of PIN: a view that already has a
       // verifier (a migrated one never proved its seeds) rotates it without
@@ -190,16 +196,28 @@ final class AccessRepository {
     return _state();
   }
 
-  Future<AccessViewRow> _defaultView() async {
+  Future<AccessViewRow> _view(String id) async {
     final view = await (_database.select(
       _database.views,
-    )..where((v) => v.id.equals(defaultViewId))).getSingleOrNull();
+    )..where((v) => v.id.equals(id))).getSingleOrNull();
     if (view == null) throw const _InvalidAccessState();
     return view;
   }
 
-  Future<Credential?> _credential() async {
-    final id = (await _defaultView()).credentialId;
+  Future<bool> _anyCredential() async {
+    final views = await _database.select(_database.views).get();
+    if (views.isEmpty) throw const _InvalidAccessState();
+    for (final view in views) {
+      if (await _credentialOf(view) != null) return true;
+    }
+    return false;
+  }
+
+  /// The credential protecting [view], or null when it has none. A reference
+  /// to a missing or unsupported credential is an invalid state, never an
+  /// unprotected view.
+  Future<Credential?> _credentialOf(AccessViewRow view) async {
+    final id = view.credentialId;
     if (id == null) return null;
     final credential = await (_database.select(
       _database.credentials,

@@ -9,8 +9,10 @@ import 'package:legacy_storage/legacy_storage.dart'
         LegacyOwnerFailure,
         LegacyOwnerFailureCause;
 import 'package:primitives/primitives.dart';
+import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import '../domain/domain.dart';
+import 'encrypted_database.dart' show databaseFileProblemOf;
 import 'inventory_import.dart';
 import 'inventory_store.dart';
 import 'view_format.dart';
@@ -44,6 +46,10 @@ Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
               case Ok():
                 return result;
             }
+          } on SqliteException catch (error) {
+            // Damage to a page of the layout tables is the file's content.
+            await value.close();
+            return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
           } on Exception {
             await value.close();
             return const Err(
