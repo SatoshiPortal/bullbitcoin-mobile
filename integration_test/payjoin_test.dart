@@ -16,6 +16,7 @@ import 'package:sync/sync.dart';
 
 import 'funded_regtest_wallet.dart';
 import 'initialization_result.dart';
+import 'payjoin_peer_relay.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,10 @@ Future<void> main({bool isInitialized = false}) async {
   late Wallet receiverWallet;
   PayjoinPolicy? previousPayjoinPolicy;
 
-  Future<(Process, Directory)> startPeer(List<String> arguments) async {
+  Future<(Process, Directory)> startPeer(
+    List<String> arguments, {
+    Uri? relay,
+  }) async {
     final peer = Platform.environment['BULL_PAYJOIN_TEST_PEER'];
     final certificate = Platform.environment['BULL_PAYJOIN_TEST_CERT'];
     if (peer == null || certificate == null) {
@@ -54,7 +58,7 @@ Future<void> main({bool isInitialized = false}) async {
         '--rpcpassword',
         'ci',
         '--ohttp-relays',
-        'https://127.0.0.1:8041',
+        (relay ?? Uri.parse('https://127.0.0.1:8041')).toString(),
         '--pj-directories',
         'https://localhost:8040',
         '--root-certificate',
@@ -180,7 +184,7 @@ Future<void> main({bool isInitialized = false}) async {
         '--fee-rate',
         '10',
         receiver.pjUri,
-      ]);
+      ], relay: payjoinPeerRelay(receiver.pjUri));
       final stdoutDone = process.stdout.drain<void>();
       final stderrText = process.stderr.transform(utf8.decoder).join();
       try {
