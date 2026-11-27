@@ -21,7 +21,7 @@ sealed class SpendOptionsState {
   bool operator ==(Object other) =>
       other is SpendOptionsState &&
       other.runtimeType == runtimeType &&
-      _same(other._props, _props);
+      spendPropsEqual(other._props, _props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));
@@ -40,7 +40,8 @@ sealed class SpendOptionsState {
   }
 }
 
-bool _same(List<Object?> a, List<Object?> b) {
+/// Element-wise equality of the props of spend states and effects.
+bool spendPropsEqual(List<Object?> a, List<Object?> b) {
   if (a.length != b.length) return false;
   for (var i = 0; i < a.length; i++) {
     if (a[i] != b[i]) return false;
@@ -390,7 +391,7 @@ sealed class SpendOptionsEffect {
   bool operator ==(Object other) =>
       other is SpendOptionsEffect &&
       other.runtimeType == runtimeType &&
-      _same(other._props, _props);
+      spendPropsEqual(other._props, _props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));

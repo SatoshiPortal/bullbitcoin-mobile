@@ -7,7 +7,8 @@ import 'package:primitives/primitives.dart';
 /// the thread.
 const supportChatPageSize = 10;
 
-bool _listEquals<T>(List<T> a, List<T> b) {
+/// Element-wise list equality for the chat's states and effects.
+bool chatListEquals<T>(List<T> a, List<T> b) {
   if (identical(a, b)) return true;
   if (a.length != b.length) return false;
   for (var i = 0; i < a.length; i++) {
@@ -150,7 +151,7 @@ final class ChatThreadLoaded extends ChatThread {
   @override
   bool operator ==(Object other) =>
       other is ChatThreadLoaded &&
-      _listEquals(other.messages, messages) &&
+      chatListEquals(other.messages, messages) &&
       other.nextPage == nextPage &&
       other.refresh == refresh &&
       other.older == older;
@@ -231,7 +232,7 @@ final class ChatComposer {
   bool operator ==(Object other) =>
       other is ChatComposer &&
       other.text == text &&
-      _listEquals(other.attachments, attachments) &&
+      chatListEquals(other.attachments, attachments) &&
       other.attaching == attaching &&
       other.problem == problem;
 
@@ -256,7 +257,7 @@ sealed class ChatOutgoing {
       other.runtimeType == runtimeType &&
       other.localId == localId &&
       other.text == text &&
-      _listEquals(other.attachments, attachments);
+      chatListEquals(other.attachments, attachments);
 
   @override
   int get hashCode =>
@@ -329,7 +330,7 @@ final class SupportChatState {
       other is SupportChatState &&
       other.thread == thread &&
       other.composer == composer &&
-      _listEquals(other.outgoing, outgoing) &&
+      chatListEquals(other.outgoing, outgoing) &&
       _setEquals(other.opening, opening) &&
       other.notice == notice &&
       other.tickets == tickets;
@@ -559,7 +560,7 @@ final class ChatSend extends SupportChatEffect {
       other is ChatSend &&
       other.localId == localId &&
       other.text == text &&
-      _listEquals(other.attachments, attachments);
+      chatListEquals(other.attachments, attachments);
 
   @override
   int get hashCode =>
