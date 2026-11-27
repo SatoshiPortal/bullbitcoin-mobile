@@ -69,6 +69,7 @@ final class SecretsImport implements LegacyImportParticipant {
     _file,
     admission,
     existing: false,
+    adaptEarlyV1: true,
   )).map(_PreparedInventory.new).mapErr(_mapOpenFailure);
 
   @override
@@ -142,9 +143,13 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
   bool checkLayout = true,
 }) async {
   try {
-    final state = await database.select(database.accessState).getSingleOrNull();
+    final rows = await database
+        .customSelect('SELECT import_receipt AS receipt FROM access_state')
+        .get();
+    if (rows.length > 1) return const Err(LegacyImportVerificationFailed());
+    final receipt = rows.isEmpty ? null : rows.single.read<String>('receipt');
     final Result<OwnerReadiness, LegacyImportFailure> readiness =
-        switch (state?.importReceipt) {
+        switch (receipt) {
           null => const Ok<OwnerReadiness, LegacyImportFailure>(
             OwnerReadiness.pending,
           ),

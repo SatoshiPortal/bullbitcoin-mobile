@@ -57,13 +57,16 @@ final class SecretsRetirement implements LegacyRetirementParticipant {
     OwnerOrigin origin,
   ) async {
     try {
-      final state = await database
-          .select(database.accessState)
-          .getSingleOrNull();
+      final rows = await database
+          .customSelect('SELECT import_receipt AS receipt FROM access_state')
+          .get();
+      final receipt = rows.length == 1
+          ? rows.single.read<String>('receipt')
+          : null;
       final expected = origin == OwnerOrigin.legacy
           ? importedWithAccessReceipt
           : freshWithAccessReceipt;
-      if (state?.importReceipt != expected) {
+      if (receipt != expected) {
         return const Err(LegacyImportVerificationFailed());
       }
       // A receipt over a layout this build cannot read authorizes nothing.

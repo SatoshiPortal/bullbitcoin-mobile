@@ -137,7 +137,11 @@ final class SecretsInventory implements WalletInventory {
     InventoryBackupVerification? backupVerification,
     required SessionAuthority authority,
   }) async {
-    final opened = await openReadyInventoryStore(file, admission);
+    final opened = await openReadyInventoryStore(
+      file,
+      admission,
+      foreground: true,
+    );
     switch (opened) {
       case Err(:final failure):
         return Err(failure);

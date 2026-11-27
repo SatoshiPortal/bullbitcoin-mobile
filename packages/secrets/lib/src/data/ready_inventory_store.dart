@@ -14,6 +14,7 @@ import 'package:sqlite3/sqlite3.dart' show SqliteException;
 import '../domain/domain.dart';
 import 'encrypted_database.dart' show databaseFileProblemOf;
 import 'inventory_import.dart';
+import 'early_v1_shape.dart';
 import 'inventory_store.dart';
 import 'view_format.dart';
 
@@ -25,13 +26,32 @@ import 'view_format.dart';
 /// this build cannot read before any of them uses the connection.
 Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
   File file,
-  RuntimeAdmission admission,
-) async {
-  final result = await InventoryStore.open(file, admission, existing: true);
+  RuntimeAdmission admission, {
+  bool foreground = false,
+}) async {
+  final result = await InventoryStore.open(
+    file,
+    admission,
+    existing: true,
+    adaptEarlyV1: foreground,
+  );
   switch (result) {
     case Err():
       return result;
     case Ok(:final value):
+      // A file written before `last_view_id` is adapted by the foreground app
+      // alone; a worker that finds it so waits for the app.
+      if (!foreground) {
+        try {
+          if (!await hasLastViewColumn(value.database)) {
+            await value.close();
+            return const Err(DatabaseNotReady());
+          }
+        } on SqliteException catch (error) {
+          await value.close();
+          return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
+        }
+      }
       switch (await readInventoryReadiness(
         value.database,
         admitted: true,
