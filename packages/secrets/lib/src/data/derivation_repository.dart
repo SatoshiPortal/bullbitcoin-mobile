@@ -152,7 +152,7 @@ final class DerivationRepository {
     }
     final merged = await boundary<DerivationMergeReport?>(() async {
       try {
-        return await _database.transaction(() async {
+        return await guardedTransaction(_database, () async {
           await _database.customStatement(
             'UPDATE access_state SET singleton = singleton WHERE singleton = 1',
           );

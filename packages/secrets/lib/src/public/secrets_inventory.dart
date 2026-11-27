@@ -637,15 +637,13 @@ extension MetadataBackupRestore on SecretsInventory {
     if (!session.isCurrent) {
       return const Err(inventorySessionChangedFailure);
     }
-    Result<T, SecretFailure>? ran;
-    final result = await _inSession((_) async => ran = await run(session.view));
     // A write whose transaction committed before the lock reports what
     // happened: hiding a committed change behind a failure would let the
     // caller retry or journal the wrong state.
-    if (isWrite && result is Err) {
-      if (ran case final Ok<T, SecretFailure> committed) return committed;
-    }
-    return result;
+    return _inSession(
+      (_) => run(session.view),
+      preserveCommittedCommand: isWrite,
+    );
   }
 }
 

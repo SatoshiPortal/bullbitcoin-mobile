@@ -109,7 +109,7 @@ final class InventoryRepository {
     required DateTime? birthday,
   }) async {
     final applied = await boundary<({bool label, bool birthday})?>(
-      () => _database.transaction(() async {
+      () => guardedTransaction(_database, () async {
         final matches = _matches(
           await _listRows(view, networkCode: storedWalletNetwork(network)),
           external,
