@@ -72,7 +72,7 @@ void main() {
       inventory = _Inventory();
       catalog = _Catalog();
       locator = GetIt.asNewInstance();
-      openWallet = WalletLocator.syncAccess(locator).openWallet;
+      openWallet = WalletLocator.walletAccess(locator);
       final dir = Directory.systemTemp.createTempSync('labels-sync-');
       addTearDown(() => dir.delete(recursive: true));
       addTearDown(locator.reset);
@@ -239,7 +239,8 @@ void main() {
       addTearDown(owner.close);
       final labels = createLabelsForTesting(
         database: database,
-        sync: () async => owner,
+        listAttributedFreezes: owner.coins.listFrozen,
+        freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
         readInSession: (read) => inventory.readInSession(read),
         openWallet: (id) async {
           expect(id, _id);

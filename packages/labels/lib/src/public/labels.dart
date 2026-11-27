@@ -68,7 +68,10 @@ class Labels {
   static Future<Result<Labels, LabelFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-    required Future<Sync> Function() sync,
+    required Future<Result<List<FrozenOutpoint>, SyncFailure>> Function()
+    listAttributedFreezes,
+    required Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>)
+    freezeAttributedOutpoints,
     required Future<Wallet> Function(String) openWallet,
     required ReadOwnedOutpointsInSession readInSession,
   }) async {
@@ -91,7 +94,8 @@ class Labels {
             when ready != OwnerReadiness.pending) {
           final owner = _usingDatabase(
             database: store.database,
-            sync: sync,
+            listAttributedFreezes: listAttributedFreezes,
+            freezeAttributedOutpoints: freezeAttributedOutpoints,
             openWallet: openWallet,
             readInSession: readInSession,
             store: store,
@@ -124,14 +128,18 @@ class Labels {
   static Labels _usingDatabase({
     LabelsStore? store,
     required GeneratedDatabase database,
-    required Future<Sync> Function() sync,
+    required Future<Result<List<FrozenOutpoint>, SyncFailure>> Function()
+    listAttributedFreezes,
+    required Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>)
+    freezeAttributedOutpoints,
     required Future<Wallet> Function(String) openWallet,
     required ReadOwnedOutpointsInSession readInSession,
   }) {
     final repository = DriftLabelsRepository(database: database);
     final converter = LabelsConverterAdapter(Bip329LabelsCodec());
     final freezes = WalletFreezeAdapter(
-      sync: sync,
+      listAttributedFreezes: listAttributedFreezes,
+      freezeAttributedOutpoints: freezeAttributedOutpoints,
       openWallet: openWallet,
       readInSession: readInSession,
     );
@@ -254,12 +262,16 @@ extension LabelsSetup on Labels {
 @visibleForTesting
 Labels createLabelsForTesting({
   required GeneratedDatabase database,
-  required Future<Sync> Function() sync,
+  required Future<Result<List<FrozenOutpoint>, SyncFailure>> Function()
+  listAttributedFreezes,
+  required Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>)
+  freezeAttributedOutpoints,
   required Future<Wallet> Function(String) openWallet,
   ReadOwnedOutpointsInSession readInSession = _testReadInSession,
 }) => Labels._usingDatabase(
   database: database,
-  sync: sync,
+  listAttributedFreezes: listAttributedFreezes,
+  freezeAttributedOutpoints: freezeAttributedOutpoints,
   openWallet: openWallet,
   readInSession: readInSession,
 );

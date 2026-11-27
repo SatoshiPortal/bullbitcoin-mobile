@@ -15,8 +15,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_s
 import 'package:get_it/get_it.dart';
 import 'package:sync/sync.dart'
     show
-        CoinFreezes,
-        Sync,
         SyncInvalidCatalogFailure,
         SyncNotFoundFailure,
         SyncStorageFailure,
@@ -27,49 +25,31 @@ import 'package:sync/sync.dart'
 
 class WalletLocator {
   /// Resolves the runtime lazily so composition can wire ports before startup.
-  static ({
-    Future<Sync> Function() foreground,
-    Future<Wallet> Function(String walletId) openWallet,
-  })
-  syncAccess(GetIt locator) => (
-    foreground: () async => WalletSyncBinding.value(
-      await locator<WalletNativeRuntime>().foreground(),
-    ),
-    openWallet: (walletId) async {
-      final key = switch (await locator<WalletInventory>().readWallet(
-        walletId,
-      )) {
-        Ok(:final value) => WalletKey(id: value.id, network: value.network),
-        Err(failure: WalletRegistrationNotFoundFailure()) =>
-          throw const WalletSnapshotException(SyncNotFoundFailure()),
-        Err() => throw const WalletSnapshotException(SyncStorageFailure()),
+  static Future<Wallet> Function(String) walletAccess(GetIt locator) =>
+      (walletId) async {
+        final key = switch (await locator<WalletInventory>().readWallet(
+          walletId,
+        )) {
+          Ok(:final value) => WalletKey(id: value.id, network: value.network),
+          Err(failure: WalletRegistrationNotFoundFailure()) =>
+            throw const WalletSnapshotException(SyncNotFoundFailure()),
+          Err() => throw const WalletSnapshotException(SyncStorageFailure()),
+        };
+        if (!NetworkCapabilities.supports(
+          key.network,
+          NetworkCapability.softwareWallet,
+        )) {
+          throw const WalletSnapshotException(SyncUnsupportedNetworkFailure());
+        }
+        return WalletSyncBinding.value(
+          (await locator<WalletNativeRuntime>().wallet(key)).mapErr(
+            // The authorized row exists, but its exact native handle does not.
+            (failure) => failure is SyncNotFoundFailure
+                ? const SyncInvalidCatalogFailure()
+                : failure,
+          ),
+        );
       };
-      if (!NetworkCapabilities.supports(
-        key.network,
-        NetworkCapability.softwareWallet,
-      )) {
-        throw const WalletSnapshotException(SyncUnsupportedNetworkFailure());
-      }
-      return WalletSyncBinding.value(
-        (await locator<WalletNativeRuntime>().wallet(key)).mapErr(
-          // The authorized row exists, but its exact native handle does not.
-          (failure) => failure is SyncNotFoundFailure
-              ? const SyncInvalidCatalogFailure()
-              : failure,
-        ),
-      );
-    },
-  );
-
-  static Future<void> registerDatasources(GetIt locator) async {
-    locator.registerLazySingleton<CoinFreezes>(
-      () => CoinFreezes(
-        sync: () async => WalletSyncBinding.value(
-          await locator<WalletNativeRuntime>().foreground(),
-        ),
-      ),
-    );
-  }
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<GetWalletsUsecase>(

@@ -50,8 +50,8 @@ void main() {
         );
         final adapter = WalletFreezeAdapter(
           readInSession: (read) async => Ok(await read()),
-          sync: () =>
-              throw StateError('Ownership uses the supplied wallet handle'),
+          listAttributedFreezes: () => fail('Unexpected freeze read'),
+          freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
           openWallet: (id) async {
             expect(id, walletId);
             return wallet;
@@ -71,8 +71,8 @@ void main() {
       const failure = WalletSnapshotException(sync.SyncNotFoundFailure());
       final adapter = WalletFreezeAdapter(
         readInSession: (read) async => Ok(await read()),
-        sync: () =>
-            throw StateError('Ownership uses the supplied wallet handle'),
+        listAttributedFreezes: () => fail('Unexpected freeze read'),
+        freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
         openWallet: (_) async => throw failure,
       );
 
@@ -87,8 +87,8 @@ void main() {
       () async {
         final wallet = await testWallet(key: key, load: false);
         final adapter = WalletFreezeAdapter(
-          sync: () =>
-              throw StateError('Ownership does not open foreground Sync'),
+          listAttributedFreezes: () => fail('Unexpected freeze read'),
+          freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
           openWallet: (_) async => wallet,
           readInSession: (read) async => Ok(await read()),
         );
@@ -102,7 +102,16 @@ void main() {
       final adapter = WalletFreezeAdapter(
         readInSession: (_) =>
             throw StateError('Freeze needs no ownership read'),
-        sync: () async => owner,
+        listAttributedFreezes: owner.coins.listFrozen,
+        freezeAttributedOutpoints: (rows) async {
+          for (final row in rows) {
+            if (await owner.coins.freeze(row.outpoint, origin: row.origin)
+                case Err(:final failure)) {
+              return Err(failure);
+            }
+          }
+          return const Ok(null);
+        },
         openWallet: (_) => throw StateError('Freeze does not load a wallet'),
       );
       await adapter.freeze([

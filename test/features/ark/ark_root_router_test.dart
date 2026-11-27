@@ -328,7 +328,9 @@ void main() {
           inventory: inventoryFixture.inventory,
           loadWallet: (_) async =>
               throw StateError('Unexpected coins wallet read'),
-          foreground: () async => throw StateError('Unexpected coins sync'),
+          readFrozenOutpoints: () => fail('Unexpected freeze read'),
+          freezeWalletOutpoints: (_, _) => fail('Unexpected freeze'),
+          unfreezeOutpoints: (_) => fail('Unexpected unfreeze'),
           labels: _UnusedLabels(),
           preferences: preferences,
           poll: (_) async {},

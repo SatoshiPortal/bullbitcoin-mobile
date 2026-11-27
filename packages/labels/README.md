@@ -3,7 +3,7 @@
 `package:labels/labels.dart` provides label persistence and BIP-329 import and export.
 
 ```dart
-final opened = await Labels.open(file: file, admission: admission, sync: getSync, openWallet: openWallet, readInSession: inventory.readInSession);
+final opened = await Labels.open(file: file, admission: admission, listAttributedFreezes: listFreezes, freezeAttributedOutpoints: freeze, openWallet: openWallet, readInSession: inventory.readInSession);
 if (opened case Err(:final failure)) return Err(failure);
 final labels = (opened as Ok<Labels, LabelFailure>).value;
 final all = await labels.fetch();

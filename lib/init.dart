@@ -352,10 +352,11 @@ class Bull {
       final setup = await AppLocator.setup(
         locator,
         secrets: secrets,
-        openLabels: (sync, openWallet) => Labels.open(
+        openLabels: (listFreezes, freeze, openWallet) => Labels.open(
           file: labelsFile,
           admission: admission,
-          sync: sync,
+          listAttributedFreezes: listFreezes,
+          freezeAttributedOutpoints: freeze,
           openWallet: openWallet,
           readInSession: (read) => inventory.readInSession(read),
         ),

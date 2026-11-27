@@ -169,7 +169,21 @@ void main() {
         },
       );
       expect(opened, 0);
-      _expectFailure<SyncClosedFailure>(await proof.runtime.foreground());
+      const point = (txId: 'fixture', vout: 0);
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.listAttributedFreezes(),
+      );
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.freezeAttributedOutpoints([
+          const FrozenOutpoint(point, origin: ''),
+        ]),
+      );
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.freezeWalletOutpoints(visible, [point]),
+      );
+      _expectFailure<SyncClosedFailure>(
+        await proof.runtime.unfreezeOutpoints([point]),
+      );
       _expectFailure<SyncClosedFailure>(
         await proof.runtime.withBitcoinRevisionAdmission(
           visible,

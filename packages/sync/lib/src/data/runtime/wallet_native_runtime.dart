@@ -194,7 +194,6 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   ) => _result(() => _protectObservedSpend(key, txid));
   Future<Result<sync.Wallet, SyncFailure>> loadWallet(WalletKey key) =>
       _result(() => _loadWallet(key));
-  Future<Result<Sync, SyncFailure>> foreground() => _result(_foreground);
   Future<Result<void, SyncFailure>> refresh(
     WalletKey key, {
     bool catalogChanged = false,
@@ -234,8 +233,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<Result<void, SyncFailure>> withBitcoinRevisionAdmission(
     WalletKey key,
     Future<void> Function(WalletRevision) use,
-  ) => _withScopedStores((stores) async {
-    final admission = await stores.spendGate.acquire(key);
+  ) => _withScopedServices((services) async {
+    final admission = await services.stores.spendGate.acquire(key);
     if (admission is! BitcoinSpendAdmission) {
       return const Err(SyncBusyFailure());
     }
@@ -251,8 +250,8 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   /// A typed reservation read failure means unknown, not an empty snapshot.
   @useResult
   Future<Result<Set<Outpoint>?, SyncFailure>>
-  readReservedOutpointsForDisplay() => _withScopedStores((stores) async {
-    return switch (await stores.inputReservations.reservations()) {
+  readReservedOutpointsForDisplay() => _withScopedServices((services) async {
+    return switch (await services.stores.inputReservations.reservations()) {
       Ok(:final value) => Ok(Set.unmodifiable(value.map((r) => r.outpoint))),
       Err() => const Ok(null),
     };
@@ -262,10 +261,73 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   /// A failed read is not evidence that any input is spendable.
   @useResult
   Future<Result<Set<Outpoint>, SyncFailure>> readFrozenOutpoints() =>
-      _withScopedStores((stores) => stores.freezes.forbiddenInputs());
+      _withScopedServices(
+        (services) => services.stores.freezes.forbiddenInputs(),
+      );
 
-  Future<Result<T, SyncFailure>> _withScopedStores<T>(
-    Future<Result<T, SyncFailure>> Function(ForegroundStores) operation,
+  /// Lists every stored attribution for BIP329 export.
+  @useResult
+  Future<Result<List<FrozenOutpoint>, SyncFailure>> listAttributedFreezes() =>
+      _withScopedServices((services) => services.stores.freezes.read());
+
+  /// Freezes outputs using one wallet generation, checked on each write.
+  @useResult
+  Future<Result<void, SyncFailure>> freezeWalletOutpoints(
+    WalletKey key,
+    List<Outpoint> outpoints,
+  ) {
+    final inputs = List.of(outpoints);
+    return _withScopedServices((services) async {
+      final lookup = await services.sync.wallet(key);
+      if (lookup case Err(:final failure)) return Err(failure);
+      final wallet = _value(lookup);
+      for (final input in inputs) {
+        if (await wallet.coins.freeze(input) case Err(:final failure)) {
+          return Err(failure);
+        }
+      }
+      return const Ok(null);
+    });
+  }
+
+  /// Applies already attributed rows in order; earlier commits survive failure.
+  @useResult
+  Future<Result<void, SyncFailure>> freezeAttributedOutpoints(
+    List<FrozenOutpoint> rows,
+  ) {
+    final inputs = List.of(rows);
+    return _withScopedServices((services) async {
+      for (final row in inputs) {
+        if (await services.stores.freezes.freeze([row]) case Err(
+          :final failure,
+        )) {
+          return Err(failure);
+        }
+      }
+      return const Ok(null);
+    });
+  }
+
+  /// Removes every attribution of each outpoint, in order.
+  @useResult
+  Future<Result<void, SyncFailure>> unfreezeOutpoints(
+    List<Outpoint> outpoints,
+  ) {
+    final inputs = List.of(outpoints);
+    return _withScopedServices((services) async {
+      for (final input in inputs) {
+        if (await services.stores.freezes.unfreeze([input]) case Err(
+          :final failure,
+        )) {
+          return Err(failure);
+        }
+      }
+      return const Ok(null);
+    });
+  }
+
+  Future<Result<T, SyncFailure>> _withScopedServices<T>(
+    Future<Result<T, SyncFailure>> Function(_NativeServices) operation,
   ) async {
     if (_closing != null || _revisionLifetime != null) {
       return const Err(SyncClosedFailure());
@@ -274,7 +336,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     _scopedRequests.add(settled.future);
     try {
       // Map opening failures only, not errors from the operation or callback.
-      return switch (await _result(() async => (await _services).stores)) {
+      return switch (await _result(() => _services)) {
         Ok(:final value) => await operation(value),
         Err(:final failure) => Err(failure),
       };
@@ -741,9 +803,6 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     _value(await wallet.load());
     return wallet;
   }
-
-  /// The foreground [Sync], for freezes. Opens it on first use.
-  Future<Sync> _foreground() async => (await _services).sync;
 
   /// Called after every worker outcome, including interrupted/failed writes.
   Future<void> _refresh(WalletKey key, {bool catalogChanged = false}) async {

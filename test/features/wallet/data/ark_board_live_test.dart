@@ -280,10 +280,11 @@ void main() {
       await AppLocator.setup(
         locator,
         secrets: secrets,
-        openLabels: (sync, openWallet) async => Ok(
+        openLabels: (listFreezes, freeze, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
-            sync: sync,
+            listAttributedFreezes: listFreezes,
+            freezeAttributedOutpoints: freeze,
             openWallet: openWallet,
           ),
         ),

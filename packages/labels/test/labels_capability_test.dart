@@ -15,7 +15,8 @@ void main() {
     addTearDown(database.close);
     labels = createLabelsForTesting(
       database: database,
-      sync: () async => throw StateError('Sync must remain lazy'),
+      listAttributedFreezes: () => fail('Unexpected freeze read'),
+      freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
       openWallet: (_) async =>
           throw StateError('Wallet opening must remain lazy'),
     );

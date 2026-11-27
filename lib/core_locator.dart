@@ -1,5 +1,7 @@
 import 'package:labels/labels.dart';
-import 'package:sync/sync.dart' show Sync, Wallet, WalletConnectionPort;
+import 'package:sync/sync.dart'
+    show FrozenOutpoint, SyncFailure, Wallet, WalletConnectionPort;
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bull_exchange/setup.dart';
@@ -31,7 +33,6 @@ class CoreLocator {
       ),
       dispose: (exchange) => exchange.close(),
     );
-    await WalletLocator.registerDatasources(locator);
   }
 
   static void setupElectrum(GetIt locator, Electrum electrum) {
@@ -58,15 +59,16 @@ class CoreLocator {
   static Future<Result<void, LabelFailure>> registerPorts(
     GetIt locator, {
     required Future<Result<Labels, LabelFailure>> Function(
-      Future<Sync> Function() sync,
+      Future<Result<List<FrozenOutpoint>, SyncFailure>> Function() listFreezes,
+      Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>) freeze,
       Future<Wallet> Function(String) openWallet,
     )
     openLabels,
   }) async {
-    final walletSync = WalletLocator.syncAccess(locator);
     final labels = await openLabels(
-      walletSync.foreground,
-      walletSync.openWallet,
+      () => locator<WalletNativeRuntime>().listAttributedFreezes(),
+      (rows) => locator<WalletNativeRuntime>().freezeAttributedOutpoints(rows),
+      WalletLocator.walletAccess(locator),
     );
     if (labels case Err(:final failure)) return Err(failure);
     setupLabels(locator, (labels as Ok<Labels, LabelFailure>).value);

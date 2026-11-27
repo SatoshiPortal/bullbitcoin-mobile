@@ -135,10 +135,11 @@ void main() {
       var applied = false;
       final result = await AppLocator.setup(
         locator,
-        openLabels: (sync, openWallet) async => Ok(
+        openLabels: (listFreezes, freeze, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
-            sync: sync,
+            listAttributedFreezes: listFreezes,
+            freezeAttributedOutpoints: freeze,
             openWallet: openWallet,
           ),
         ),
@@ -223,10 +224,11 @@ void main() {
       expect(
         await AppLocator.setup(
           locator,
-          openLabels: (sync, openWallet) async => Ok(
+          openLabels: (listFreezes, freeze, openWallet) async => Ok(
             createLabelsForTesting(
               database: database,
-              sync: sync,
+              listAttributedFreezes: listFreezes,
+              freezeAttributedOutpoints: freeze,
               openWallet: openWallet,
             ),
           ),
@@ -529,10 +531,11 @@ void main() {
 
       final result = await AppLocator.setup(
         locator,
-        openLabels: (sync, openWallet) async => Ok(
+        openLabels: (listFreezes, freeze, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
-            sync: sync,
+            listAttributedFreezes: listFreezes,
+            freezeAttributedOutpoints: freeze,
             openWallet: openWallet,
           ),
         ),
@@ -631,10 +634,11 @@ void main() {
     );
     final result = await AppLocator.setup(
       locator,
-      openLabels: (sync, openWallet) async => Ok(
+      openLabels: (listFreezes, freeze, openWallet) async => Ok(
         createLabelsForTesting(
           database: database,
-          sync: sync,
+          listAttributedFreezes: listFreezes,
+          freezeAttributedOutpoints: freeze,
           openWallet: openWallet,
         ),
       ),

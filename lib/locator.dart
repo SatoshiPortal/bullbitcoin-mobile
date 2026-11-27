@@ -105,7 +105,7 @@ import 'package:spend/setup.dart' show SpendCatalog;
 import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
     show
-        Sync,
+        FrozenOutpoint,
         Wallet,
         SyncFailure,
         SyncStorageFailure,
@@ -202,7 +202,8 @@ class AppLocator {
   static Future<Result<void, Failure>> setup(
     GetIt locator, {
     required Future<Result<Labels, LabelFailure>> Function(
-      Future<Sync> Function() sync,
+      Future<Result<List<FrozenOutpoint>, SyncFailure>> Function() listFreezes,
+      Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>) freeze,
       Future<Wallet> Function(String) openWallet,
     )
     openLabels,
@@ -627,7 +628,9 @@ class AppLocator {
       () => CoinsFeature.mount<WalletKey>(
         inventory: inventory,
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
-        foreground: locator<WalletNativeRuntime>().foreground,
+        readFrozenOutpoints: native.readFrozenOutpoints,
+        freezeWalletOutpoints: native.freezeWalletOutpoints,
+        unfreezeOutpoints: native.unfreezeOutpoints,
         labels: locator<Labels>(),
         preferences: locator<AmountDisplayPreferencesReader>(),
         poll: (id) =>

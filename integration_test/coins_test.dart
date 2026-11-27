@@ -68,18 +68,17 @@ Future<void> main({bool isInitialized = false}) async {
       vout: 0,
     );
 
-    late final sync.SyncCoins coins;
+    late final WalletNativeRuntime native;
 
-    setUpAll(() async {
-      final runtime = requireValue(
-        await locator<WalletNativeRuntime>().foreground(),
-        'open foreground Sync',
-      );
-      coins = runtime.coins;
+    setUpAll(() {
+      native = locator<WalletNativeRuntime>();
     });
 
     Future<void> clear() async {
-      requireValue(await coins.unfreeze(outpoint), 'clear the fixture freeze');
+      requireValue(
+        await native.unfreezeOutpoints([outpoint]),
+        'clear the fixture freeze',
+      );
     }
 
     setUp(clear);
@@ -122,7 +121,8 @@ Future<void> main({bool isInitialized = false}) async {
           final opened = await Labels.open(
             file: dbFile,
             admission: admission,
-            sync: () async => runtime,
+            listAttributedFreezes: () => runtime.coins.listFrozen(),
+            freezeAttributedOutpoints: (_) => fail('no writes needed'),
             openWallet: (_) async => fail('no wallet needed for freezes'),
             readInSession: (_) async =>
                 fail('no ownership read needed for freezes'),
@@ -172,13 +172,21 @@ Future<void> main({bool isInitialized = false}) async {
 
     test('unfreeze removes the freeze row', () async {
       requireValue(
-        await coins.freeze(outpoint, origin: walletId),
+        await native.freezeAttributedOutpoints([
+          sync.FrozenOutpoint(outpoint, origin: walletId),
+        ]),
         'freeze the fixture outpoint',
       );
-      requireValue(await coins.unfreeze(outpoint), 'unfreeze the outpoint');
+      requireValue(
+        await native.unfreezeOutpoints([outpoint]),
+        'unfreeze the outpoint',
+      );
       // Freeze is matched by outpoint across all wallets — the global set must
       // no longer carry it after unfreeze.
-      final remaining = requireValue(await coins.listFrozen(), 'read freezes');
+      final remaining = requireValue(
+        await native.listAttributedFreezes(),
+        'read freezes',
+      );
       expect(remaining.map((row) => row.outpoint), isNot(contains(outpoint)));
     });
   });
