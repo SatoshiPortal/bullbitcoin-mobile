@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart';
 
 import '../domain/failures.dart';
+import '../domain/inventory_backup_verification.dart';
 import 'parent_custody_admission.dart';
 import 'secrets.dart';
 import 'seed_reference_port.dart';
@@ -8,9 +9,14 @@ import 'seed_reference_port.dart';
 class SeedReferences implements SeedReferencePort {
   final List<SeedReferencePort> _owners;
   final ParentCustodyAdmissionPort admission;
+  final InventoryBackupVerification _backups;
 
-  SeedReferences(SeedReferencePort walletCatalog, {required this.admission})
-    : _owners = [walletCatalog];
+  SeedReferences(
+    SeedReferencePort walletCatalog, {
+    required this.admission,
+    required InventoryBackupVerification backupVerification,
+  }) : _owners = [walletCatalog],
+       _backups = backupVerification;
 
   /// Register other custody owners in the composition root before deletion is available.
   void register(SeedReferencePort owner) => _owners.add(owner);
@@ -55,6 +61,19 @@ class SeedReferences implements SeedReferencePort {
             return Err(failure);
           }
       }
+    }
+    // A seed is forgotten only once the backup owner proves it can be restored.
+    // Judged after the reference checks and the reconciliation above, so a
+    // referenced seed refuses first and a parent already gone is never asked
+    // for a backup it cannot have, and before the tombstone, so a refusal
+    // changes no durable state.
+    switch (await _backups.verify(parent)) {
+      case Ok(value: BackupProof.verified):
+        break;
+      case Ok(value: BackupProof.missing):
+        return const Err(ParentCustodyBackupRequiredFailure());
+      case Err():
+        return const Err(ParentCustodyBackupUnavailableFailure());
     }
     if (lease.markDeleting() case Err(:final failure)) return Err(failure);
     if (await secrets.trash(parent) case Err()) {

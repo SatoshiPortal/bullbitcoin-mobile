@@ -1,7 +1,8 @@
 import 'package:background_tasks/background_tasks.dart';
 import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bull_recoverbull/storage.dart' show RecoverBullWalletProperties;
+import 'package:bull_recoverbull/storage.dart'
+    show RecoverBullBackupVerification, RecoverBullWalletProperties;
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:notifications/payment_store.dart';
@@ -132,6 +133,9 @@ void registerNativeRuntime(
     final references = SeedReferences(
       locator<SecretsInventory>(),
       admission: locator<ParentCustodyAdmissionPort>(),
+      // The same verifier the inventory opened with: deletion and protection
+      // judge one proof, never two.
+      backupVerification: locator<RecoverBullBackupVerification>(),
     );
     // Ark funding holds keep their source seed referenced.
     if (locator.isRegistered<SqliteArkFundingReservations>()) {

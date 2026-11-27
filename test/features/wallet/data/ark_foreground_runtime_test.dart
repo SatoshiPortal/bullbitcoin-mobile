@@ -236,6 +236,7 @@ void main() {
       final references = SeedReferences(
         _WalletCatalog(),
         admission: _Admission(),
+        backupVerification: const FakeInventoryBackups(),
       );
       locator.registerSingleton<SeedReferences>(references);
       addTearDown(() async {
@@ -297,6 +298,7 @@ void main() {
     final references = SeedReferences(
       _WalletCatalog(),
       admission: _Admission(),
+      backupVerification: const FakeInventoryBackups(),
     );
     locator.registerSingleton<SeedReferences>(references);
     final arkDirectory = Directory('${directory.path}/ark');
@@ -334,6 +336,7 @@ void main() {
       final references = SeedReferences(
         _WalletCatalog(),
         admission: _Admission(),
+        backupVerification: const FakeInventoryBackups(),
       );
       locator.registerSingleton<SeedReferences>(references);
       final arkDirectory = Directory('${directory.path}/ark');
@@ -403,6 +406,7 @@ void main() {
         SeedReferences(
           _WalletCatalog(),
           admission: locator<ParentCustodyAdmissionPort>(),
+          backupVerification: const FakeInventoryBackups(),
         ),
       );
     });
