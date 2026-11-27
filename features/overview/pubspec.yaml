@@ -18,6 +18,7 @@ dependencies:
   primitives:
   secrets:
   silent:
+  startup:
   swap_feature:
   swaps:
   sync:

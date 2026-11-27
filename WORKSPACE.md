@@ -70,6 +70,7 @@ flowchart TD
   pkg_overview --> pkg_bitcoin_price
   pkg_overview --> pkg_bull_quick_actions
   pkg_overview --> pkg_silent
+  pkg_overview --> pkg_startup
   pkg_overview --> pkg_swap_feature
   pkg_receive --> pkg_address_view
   pkg_receive --> pkg_label_editor

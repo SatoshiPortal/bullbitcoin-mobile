@@ -10,6 +10,8 @@ import 'package:sync/write.dart';
 
 import 'balance_startup_probe.dart';
 
+part 'foreground_balance_observation.dart';
+
 typedef _Candidate = ({WalletCatalogueStamp catalogue, int environmentEpoch});
 typedef _Revision = (WalletRevision, WalletLifecycle, int);
 
@@ -36,13 +38,21 @@ final class ForegroundBalanceStartup {
     RetainedBalanceDemand,
   )
   _demand;
+  final Result<BigInt, SyncFailure> Function(
+    WalletCatalogueStamp,
+    WalletRevision,
+  )?
+  _readRetained;
 
+  final _changes = StreamController<void>.broadcast();
+  late final observation = ForegroundBalanceObservation._(this);
+  ForegroundBalanceContext? _context;
   final _subscriptions = <StreamSubscription<void>>[];
   final _keys = <WalletKey>{};
   final _queued = <WalletKey>{};
   final _seen = <WalletKey, _Revision>{};
   final _versions = <WalletKey, int>{};
-  final _completed = <WalletKey, WalletRevision>{};
+  final _receipts = <WalletKey, ForegroundBalanceReceipt>{};
   final _probe = BalanceStartupProbe.enabled ? BalanceStartupProbe() : null;
   _Candidate? _candidate;
   BalanceEnvironment? _environment;
@@ -52,6 +62,7 @@ final class ForegroundBalanceStartup {
   _Candidate? _unprotectedCandidate;
   var _selecting = false;
   var _ready = false;
+  var _settled = false;
   var _disabled = false;
   Future<void>? _work;
   Future<void>? _checkingUnprotected;
@@ -83,6 +94,8 @@ final class ForegroundBalanceStartup {
       capture: (key, environment, {catalogue}) => runtime()
           .captureBalanceDemand(key, environment, catalogue: catalogue),
       demand: (request) => runtime().demandRetainedBalance(request),
+      readRetained: (catalogue, revision) =>
+          runtime().readRetainedBalance(catalogue, revision),
     );
   }
 
@@ -98,6 +111,7 @@ final class ForegroundBalanceStartup {
     required this._revisions,
     required this._capture,
     required this._demand,
+    this._readRetained,
   });
 
   /// Called by the accepted PIN continuation (or the explicit no-PIN path).
@@ -187,17 +201,16 @@ final class ForegroundBalanceStartup {
   }
 
   void initialized(Result<void, SyncFailure> result) {
-    if (_disabled || _ready) return;
+    if (_disabled || _settled) return;
     _probe?.initialized(result is Ok);
-    if (result is Err) {
-      unawaited(dispose());
-      return;
-    }
-    _ready = true;
+    _settled = true;
+    _ready = result is Ok;
     _wake();
   }
 
   void _retire() {
+    final hadContext = _context != null;
+    _context = null;
     _candidate = null;
     _environment = null;
     _selecting = false;
@@ -205,7 +218,8 @@ final class ForegroundBalanceStartup {
     _queued.clear();
     _seen.clear();
     _versions.clear();
-    _completed.clear();
+    _receipts.clear();
+    if (hadContext) _changes.add(null);
   }
 
   void _schedule() {
@@ -256,10 +270,11 @@ final class ForegroundBalanceStartup {
     // pending-to-active transition at that same stamp is new work.
     if (previous == null &&
         state.lifecycle == WalletLifecycle.active &&
-        _completed[key] == state.stamp) {
+        _receipts[key]?.revision == state.stamp) {
       return;
     }
     _versions.update(key, (version) => version + 1, ifAbsent: () => 1);
+    if (_receipts.remove(key) != null) _changes.add(null);
     if (state.lifecycle == WalletLifecycle.active) {
       _queued.add(key);
       _wake();
@@ -272,7 +287,7 @@ final class ForegroundBalanceStartup {
     final candidate = _candidate;
     if (candidate == null ||
         !_current(candidate) ||
-        !_ready ||
+        !_settled ||
         _work != null ||
         (!_selecting && _queued.isEmpty)) {
       return;
@@ -296,7 +311,10 @@ final class ForegroundBalanceStartup {
         // The epoch was captured in the notification, before an older
         // candidate could drain. Never adopt a read spanning a transition.
         final environment = await _readEnvironment();
-        if (!_current(candidate) || environment == null) continue;
+        if (!_current(candidate)) continue;
+        _context = ForegroundBalanceContext._(environment, candidate);
+        _changes.add(null);
+        if (environment == null || !_ready) continue;
         final selection = await _select(candidate.catalogue);
         if (!_current(candidate)) continue;
         if (selection case Ok(:final value)) {
@@ -323,7 +341,13 @@ final class ForegroundBalanceStartup {
       _probe?.attempt();
       final result = await _demand(demand);
       if (!demand.isCurrent) continue;
-      if (result case Ok(:final value)) _completed[key] = value;
+      if (result case Ok(:final value) when value.key == key) {
+        final context = _context;
+        if (context != null) {
+          _receipts[key] = ForegroundBalanceReceipt._(context, value);
+          _changes.add(null);
+        }
+      }
       _probe?.completed(result is Ok, liquid: key.network is LiquidNetwork);
     }
   }
@@ -340,5 +364,6 @@ final class ForegroundBalanceStartup {
     );
     await _checkingUnprotected;
     await _work;
+    unawaited(_changes.close());
   }
 }

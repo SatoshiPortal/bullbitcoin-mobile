@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:sync/sync.dart'
-    show WalletKey, WalletLifecycle, WalletRevision, WalletRevisionState;
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart'
+    show SecretFailure, WalletInventory, WalletSelection, WalletSigner;
+import 'package:startup/balances.dart';
+import 'package:sync/sync.dart' show WalletKey, WalletRevision;
 
 enum OverviewCatalogueStatus {
   revoked,
@@ -14,58 +16,12 @@ enum OverviewCatalogueStatus {
   closed,
 }
 
-enum OverviewCatalogueCompleteness { complete, partial, unreadable }
-
-enum OverviewFinancialStatus { pending, available, unreadable }
-
-/// One publication lifetime; equality deliberately uses object identity even
-/// when a later publication has the same environment or owner generation.
-final class OverviewCatalogueGrant {
-  final NetworkEnv environment;
-  final int generation;
-
-  OverviewCatalogueGrant._(this.environment, this.generation);
-}
-
 typedef OverviewCatalogueEntry = ({
-  WalletRevision revision,
+  WalletKey key,
+  ScriptType script,
+  WalletSigner signer,
   String? label,
   bool isDefault,
-  bool signsLocally,
-});
-
-typedef OverviewFinancialRequest = ({
-  OverviewCatalogueGrant grant,
-  WalletRevision revision,
-});
-
-/// Null is unavailable; zero is a successfully read balance.
-typedef OverviewFinancialRead = ({
-  OverviewFinancialRequest request,
-  int? balanceSat,
-});
-
-abstract interface class OverviewFinancialReader {
-  Future<OverviewFinancialRead> read(OverviewFinancialRequest request);
-}
-
-final class OverviewCatalogueRow {
-  final OverviewCatalogueGrant grant;
-  final OverviewCatalogueEntry entry;
-  final OverviewFinancialStatus financialStatus;
-  final int? balanceSat;
-
-  OverviewCatalogueRow._(
-    this.grant,
-    this.entry,
-    this.financialStatus,
-    this.balanceSat,
-  );
-}
-
-typedef OverviewCatalogueSnapshot = ({
-  OverviewCatalogueStatus status,
-  List<OverviewCatalogueRow> rows,
 });
 
 typedef OverviewWalletSelection = ({
@@ -74,170 +30,222 @@ typedef OverviewWalletSelection = ({
   bool isDefault,
 });
 
-/// Joins admitted catalogue entries with read-only financial values without
-/// imposing a second ordering or granting membership from a Sync revision.
+final class OverviewCatalogueRow {
+  final OverviewCatalogueEntry entry;
+  final OverviewCatalogue _owner;
+  final ForegroundBalanceContext _context;
+  final ForegroundBalanceReceipt? _receipt;
+
+  const OverviewCatalogueRow._(
+    this.entry,
+    this._owner,
+    this._context,
+    this._receipt,
+  );
+
+  /// An old row can outlive an event. Neither accessor returns stale money.
+  BigInt? get balanceSat => _owner._read(this);
+  WalletRevision? get revision =>
+      balanceSat == null ? null : _receipt?.revision;
+}
+
+typedef OverviewCatalogueSnapshot = ({
+  OverviewCatalogueStatus status,
+  List<OverviewCatalogueRow> rows,
+});
+
+/// One join of admitted membership and already-produced financial receipts.
+/// No native change can add or remove an inventory row.
 final class OverviewCatalogue {
-  final OverviewFinancialReader _reader;
+  final ForegroundBalanceObservation _balances;
+  final Future<Result<WalletSelection, SecretFailure>> Function(Network)
+  _membership;
   final _changes = StreamController<void>.broadcast();
-  final _rows = <WalletKey, OverviewCatalogueRow>{};
-  OverviewCatalogueGrant? _grant;
+  late final StreamSubscription<void> _subscription;
+  ForegroundBalanceContext? _context;
+  Future<void>? _loading;
+  Future<void>? _closing;
+  var _closed = false;
   var _status = OverviewCatalogueStatus.revoked;
-  var _published = false;
+  var _entries = <WalletKey, OverviewCatalogueEntry>{};
 
-  OverviewCatalogue(this._reader);
+  OverviewCatalogue.mount({
+    required this._balances,
+    required WalletInventory inventory,
+  }) : _membership = inventory.walletsForNetwork {
+    _subscription = _balances.changes.listen((_) => _woken());
+    _woken();
+  }
 
-  OverviewCatalogueSnapshot get snapshot =>
-      (status: _status, rows: List.unmodifiable(_rows.values));
-
-  /// Notifications carry no captured data: observers read [snapshot] after
-  /// each notification, never an enqueued pre-revocation copy.
+  /// Subscribers always re-read; no event carries membership or money.
   Stream<void> get changes => _changes.stream;
 
-  OverviewCatalogueGrant? replacing(NetworkEnv environment, int generation) {
-    if (_status == OverviewCatalogueStatus.closed) return null;
-    final grant = OverviewCatalogueGrant._(environment, generation);
-    _reset(OverviewCatalogueStatus.replacing, grant);
-    return grant;
+  OverviewCatalogueSnapshot get snapshot {
+    final current = _balances.current;
+    if (_closed || current == null || !identical(current, _context)) {
+      return (
+        status: _closed
+            ? OverviewCatalogueStatus.closed
+            : current == null
+            ? OverviewCatalogueStatus.revoked
+            : OverviewCatalogueStatus.replacing,
+        rows: const [],
+      );
+    }
+    return (
+      status: _status,
+      rows: List.unmodifiable(
+        _entries.values.map(
+          (entry) => OverviewCatalogueRow._(
+            entry,
+            this,
+            current,
+            _balances.receipt(current, entry.key),
+          ),
+        ),
+      ),
+    );
   }
 
-  void revoke(OverviewCatalogueGrant grant) {
-    if (identical(_grant, grant)) _reset(OverviewCatalogueStatus.revoked, null);
+  BigInt? _read(OverviewCatalogueRow row) {
+    if (_closed ||
+        !identical(_context, row._context) ||
+        !_balances.isCurrent(row._context) ||
+        _entries[row.entry.key] != row.entry) {
+      return null;
+    }
+    final receipt = row._receipt;
+    return receipt == null ? null : _balances.read(receipt);
   }
 
-  void publish(
-    OverviewCatalogueGrant grant,
-    OverviewCatalogueCompleteness completeness,
-    Iterable<OverviewCatalogueEntry> entries,
-  ) {
-    if (!identical(_grant, grant) || _published) return;
-    _published = true;
-    if (completeness == OverviewCatalogueCompleteness.unreadable) {
-      _status = OverviewCatalogueStatus.unreadable;
-      _changes.add(null);
+  /// Conservative handoff: require a live local receipt at the point of use.
+  /// The result is not a spend or detail-route authorization.
+  OverviewWalletSelection? selectLocal(OverviewCatalogueRow row) {
+    final entry = row.entry;
+    if (!identical(row._owner, this) ||
+        entry.signer != WalletSigner.local ||
+        _read(row) == null) {
+      return null;
+    }
+    return (key: entry.key, label: entry.label, isDefault: entry.isDefault);
+  }
+
+  void _woken() {
+    if (_closed) return;
+    final current = _balances.current;
+    if (!identical(_context, current)) {
+      _context = current;
+      _entries = {};
+      _status = current == null
+          ? OverviewCatalogueStatus.revoked
+          : OverviewCatalogueStatus.replacing;
+    }
+    _changes.add(null);
+    _schedule();
+  }
+
+  void _schedule() {
+    final context = _context;
+    if (_closed ||
+        context == null ||
+        !_balances.isCurrent(context) ||
+        _loading != null ||
+        _status != OverviewCatalogueStatus.replacing) {
       return;
     }
+    _loading = Future<void>.microtask(() async {
+      try {
+        await _load(context);
+      } finally {
+        _loading = null;
+        _schedule();
+      }
+    });
+  }
 
-    var partial = completeness == OverviewCatalogueCompleteness.partial;
+  Future<void> _load(ForegroundBalanceContext context) async {
+    bool current() =>
+        !_closed &&
+        identical(_context, context) &&
+        _balances.isCurrent(context);
+    if (!current()) return;
+    final List<Network> networks = switch (context.environment) {
+      NetworkEnv.mainnet => [BitcoinNetwork.mainnet, LiquidNetwork.mainnet],
+      NetworkEnv.testnet => [BitcoinNetwork.testnet, LiquidNetwork.testnet],
+      NetworkEnv.regtest => [BitcoinNetwork.regtest, LiquidNetwork.regtest],
+      _ => <Network>[],
+    };
+    final entries = <OverviewCatalogueEntry>[];
+    var complete = true;
+    var readable = 0;
+    for (final network in networks) {
+      final result = await _membership(network);
+      if (!current()) return;
+      switch (result) {
+        case Err():
+          complete = false;
+        case Ok(:final value):
+          readable++;
+          complete &= value.isComplete;
+          for (final wallet in value.wallets) {
+            if (wallet.network != network) {
+              complete = false;
+              continue;
+            }
+            entries.add((
+              key: WalletKey(id: wallet.id, network: wallet.network),
+              script: wallet.scriptType,
+              signer: wallet.signer,
+              label: wallet.label,
+              isDefault: wallet.isDefault,
+            ));
+          }
+      }
+    }
+    if (!current()) return;
+    int rank(OverviewCatalogueEntry entry) => !entry.isDefault
+        ? 2
+        : entry.key.network is BitcoinNetwork
+        ? 0
+        : 1;
+    entries.sort((a, b) {
+      final byRank = rank(a).compareTo(rank(b));
+      if (byRank != 0) return byRank;
+      final byId = a.key.id.compareTo(b.key.id);
+      if (byId != 0) return byId;
+      return (a.key.network is BitcoinNetwork ? 0 : 1).compareTo(
+        b.key.network is BitcoinNetwork ? 0 : 1,
+      );
+    });
     final duplicates = <WalletKey>{};
     for (final entry in entries) {
-      final key = entry.revision.key;
-      if (key.network.env != grant.environment || duplicates.contains(key)) {
-        partial = true;
-        continue;
+      if (duplicates.contains(entry.key)) continue;
+      if (_entries.containsKey(entry.key)) {
+        _entries.remove(entry.key);
+        duplicates.add(entry.key);
+        complete = false;
+      } else {
+        _entries[entry.key] = entry;
       }
-      if (_rows.containsKey(key)) {
-        _rows.remove(key);
-        duplicates.add(key);
-        partial = true;
-        continue;
-      }
-      _rows[key] = _pending(grant, entry);
     }
-    _status = partial
+    _status = readable == 0
+        ? OverviewCatalogueStatus.unreadable
+        : !complete
         ? OverviewCatalogueStatus.partial
-        : _rows.isEmpty
+        : _entries.isEmpty
         ? OverviewCatalogueStatus.empty
         : OverviewCatalogueStatus.ready;
     _changes.add(null);
-    for (final row in _rows.values.toList()) {
-      unawaited(_read(row));
-    }
   }
 
-  void revised(OverviewCatalogueGrant grant, WalletRevisionState revision) {
-    if (!identical(_grant, grant)) return;
-    final stamp = revision.stamp;
-    final row = _rows[stamp.key];
-    if (row == null) return;
-    final current = row.entry.revision;
-    if (stamp.generation < current.generation ||
-        (stamp.generation == current.generation &&
-            stamp.revision < current.revision)) {
-      return;
-    }
-    // A pending write can keep the same stamp. A new native generation
-    // requires a new catalogue grant, even when it is already active.
-    if (revision.lifecycle != WalletLifecycle.active ||
-        stamp.generation != current.generation) {
-      _rows.remove(stamp.key);
-      _status = OverviewCatalogueStatus.partial;
-      _changes.add(null);
-      return;
-    }
-    if (stamp.revision == current.revision) return;
-    final next = _pending(grant, (
-      revision: stamp,
-      label: row.entry.label,
-      isDefault: row.entry.isDefault,
-      signsLocally: row.entry.signsLocally,
-    ));
-    _rows[stamp.key] = next;
+  Future<void> close() => _closing ??= _close();
+
+  Future<void> _close() async {
+    _closed = true;
+    _entries.clear();
     _changes.add(null);
-    unawaited(_read(next));
-  }
-
-  /// Validate at tap time, not when the card was originally built.
-  OverviewWalletSelection? selectLocal(OverviewCatalogueRow row) {
-    final entry = row.entry;
-    final current = _rows[entry.revision.key];
-    if (!identical(_grant, row.grant) ||
-        current?.entry.revision != entry.revision ||
-        !entry.signsLocally) {
-      return null;
-    }
-    return (
-      key: entry.revision.key,
-      label: entry.label,
-      isDefault: entry.isDefault,
-    );
-  }
-
-  Future<void> close() async {
-    if (_status == OverviewCatalogueStatus.closed) return;
-    _reset(OverviewCatalogueStatus.closed, null);
-    await _changes.close();
-  }
-
-  void _reset(OverviewCatalogueStatus status, OverviewCatalogueGrant? grant) {
-    _grant = grant;
-    _published = false;
-    _rows.clear();
-    _status = status;
-    _changes.add(null);
-  }
-
-  OverviewCatalogueRow _pending(
-    OverviewCatalogueGrant grant,
-    OverviewCatalogueEntry entry,
-  ) => OverviewCatalogueRow._(
-    grant,
-    entry,
-    OverviewFinancialStatus.pending,
-    null,
-  );
-
-  Future<void> _read(OverviewCatalogueRow row) async {
-    final revision = row.entry.revision;
-    final request = (grant: row.grant, revision: revision);
-    int? balance;
-    try {
-      final result = await _reader.read(request);
-      if (result.request != request) return;
-      balance = result.balanceSat;
-    } on Exception {
-      balance = null;
-    }
-    if (!identical(_grant, row.grant) || !identical(_rows[revision.key], row)) {
-      return;
-    }
-    _rows[revision.key] = OverviewCatalogueRow._(
-      row.grant,
-      row.entry,
-      balance == null
-          ? OverviewFinancialStatus.unreadable
-          : OverviewFinancialStatus.available,
-      balance,
-    );
-    _changes.add(null);
+    await _subscription.cancel();
+    await _loading;
+    unawaited(_changes.close());
   }
 }

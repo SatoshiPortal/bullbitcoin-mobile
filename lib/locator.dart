@@ -22,6 +22,7 @@ import 'package:notifications/payment_store.dart' show PaymentNotifications;
 import 'package:bull_recoverbull/storage.dart';
 import 'package:bull_recoverbull/setup.dart';
 import 'package:overview/setup.dart';
+import 'package:overview/catalogue.dart';
 import 'package:startup/setup.dart';
 import 'package:startup/startup.dart';
 import 'package:provisioning/provisioning.dart';
@@ -720,14 +721,15 @@ class AppLocator {
     );
 
     WalletNativeRuntime walletRuntime() => locator<WalletNativeRuntime>();
+    final balances = ForegroundBalanceStartup.mount(
+      runtime: walletRuntime,
+      inventory: inventory,
+      preferences: locator<Preferences>(),
+    );
     locator.registerSingleton(
       ForegroundWalletStartup(
         initialize: () => walletRuntime().initialize(),
-        balances: ForegroundBalanceStartup.mount(
-          runtime: walletRuntime,
-          inventory: inventory,
-          preferences: locator<Preferences>(),
-        ),
+        balances: balances,
         startWatchers: () {
           locator<SilentFeature>().startForegroundWatchers();
           locator<SwapFeature>().start(
@@ -778,6 +780,13 @@ class AppLocator {
         ]),
       ),
       dispose: (startup) => startup.dispose(),
+    );
+    locator.registerSingleton(
+      OverviewCatalogue.mount(
+        balances: balances.observation,
+        inventory: inventory,
+      ),
+      dispose: (catalogue) => catalogue.close(),
     );
     return const Ok(null);
   }

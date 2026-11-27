@@ -1,5 +1,4 @@
-/// Isolated Overview catalogue projection. No production inventory or native
-/// runtime is opened by this library.
+/// Foreground Overview catalogue projection. Never opens or hydrates Sync.
 library;
 
 export 'src/domain/overview_catalogue.dart';
