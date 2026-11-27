@@ -4,6 +4,7 @@ import '../domain/failures.dart';
 import '../domain/inventory_backup_verification.dart';
 import 'parent_custody_admission.dart';
 import 'secrets.dart';
+import 'secrets_inventory.dart' show SecretsInventory, custodyReferencesOf;
 import 'seed_reference_port.dart';
 
 class SeedReferences implements SeedReferencePort {
@@ -17,6 +18,19 @@ class SeedReferences implements SeedReferencePort {
     required InventoryBackupVerification backupVerification,
   }) : _owners = [walletCatalog],
        _backups = backupVerification;
+
+  /// The deletion check over the wallet inventory of every view. The
+  /// inventory is not itself a [SeedReferencePort]: its own list is scoped to
+  /// the view in use, and this one is not.
+  factory SeedReferences.forInventory(
+    SecretsInventory inventory, {
+    required ParentCustodyAdmissionPort admission,
+    required InventoryBackupVerification backupVerification,
+  }) => SeedReferences(
+    custodyReferencesOf(inventory),
+    admission: admission,
+    backupVerification: backupVerification,
+  );
 
   /// Register other custody owners in the composition root before deletion is available.
   void register(SeedReferencePort owner) => _owners.add(owner);

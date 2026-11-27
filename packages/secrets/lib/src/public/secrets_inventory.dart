@@ -45,9 +45,37 @@ import 'wallet_inventory.dart';
 part 'bip85_derivations.dart';
 part 'opened_views.dart';
 
+/// Seeds held by locally signing wallets of every view, for the one caller
+/// that may ask: the deletion check, which must not delete a seed a hidden view
+/// still holds. A watch-only origin never keeps a seed alive (#2634); a locked
+/// session, an unreadable inventory or an invalid local reference cannot prove
+/// the seed unused.
+///
+/// This is not on [SecretsInventory], which a view's code holds: that list
+/// names the seeds of views the session may not open. It is reachable only
+/// through `SeedReferences.forInventory`, as the package's own composition.
+@internal
+SeedReferencePort custodyReferencesOf(SecretsInventory inventory) =>
+    _InventoryCustody(inventory);
+
+final class _InventoryCustody implements SeedReferencePort {
+  final SecretsInventory _inventory;
+
+  const _InventoryCustody(this._inventory);
+
+  @override
+  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
+      switch (await _inventory._inSession(
+        (_, _) => _inventory._wallets.custodyFingerprints(),
+      )) {
+        Ok(:final value) => Ok(value),
+        Err() => const Err(SeedReferencesUnavailable()),
+      };
+}
+
 /// The foreground wallet inventory. Access starts with the persisted policy.
 /// Lock invalidates any pending read and the next operation checks the session.
-final class SecretsInventory implements WalletInventory, SeedReferencePort {
+final class SecretsInventory implements WalletInventory {
   final InventoryStore _store;
   final AccessRepository _access;
   final InventoryRepository _wallets;
@@ -401,17 +429,6 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   @useResult
   Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints() =>
       _inSession((_, view) => _wallets.referencedFingerprints(view));
-
-  /// Whether the authorized view has any wallet, including on other networks.
-  /// Seeds held by locally signing wallets of every view. A watch-only origin
-  /// never keeps a seed alive (#2634); a locked session, an unreadable
-  /// inventory or an invalid local reference cannot prove the seed unused.
-  @override
-  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
-      switch (await _inSession((_, _) => _wallets.custodyFingerprints())) {
-        Ok(:final value) => Ok(value),
-        Err() => const Err(SeedReferencesUnavailable()),
-      };
 
   @useResult
   Future<Result<bool, SecretFailure>> hasWallets() async =>
