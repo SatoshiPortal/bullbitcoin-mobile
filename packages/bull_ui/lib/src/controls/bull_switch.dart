@@ -25,9 +25,8 @@ class BullSwitch extends StatelessWidget {
   ///
   /// A Material [Switch] carries no label of its own, so a switch whose caption
   /// is a sibling `Text` is read as an unnamed "switch, off". Pass the
-  /// translated caption here: the switch then owns the name and reaches the
-  /// 48 dp minimum tap target. A switch already inside a [MergeSemantics] that
-  /// covers its caption leaves this null.
+  /// translated caption here: the switch then owns the name. A switch already
+  /// inside a [MergeSemantics] that covers its caption leaves this null.
   final String? semanticLabel;
 
   /// The switch look for [colors], for a `ThemeData.switchTheme` as well as
@@ -58,7 +57,10 @@ class BullSwitch extends StatelessWidget {
       ),
       padding: EdgeInsets.zero,
       overlayColor: WidgetStatePropertyAll(colors.transparent),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      // Keep Material's padded target: it is what makes the whole control
+      // reach 48 dp in both axes. `shrinkWrap` shrinks a switch with no
+      // caption to 40 dp high, under the accessibility minimum.
+      materialTapTargetSize: MaterialTapTargetSize.padded,
       splashRadius: 0,
     );
   }
@@ -72,13 +74,7 @@ class BullSwitch extends StatelessWidget {
     final label = semanticLabel;
     if (label == null) return themed;
     return MergeSemantics(
-      child: Semantics(
-        label: label,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
-          child: themed,
-        ),
-      ),
+      child: Semantics(label: label, child: themed),
     );
   }
 }
