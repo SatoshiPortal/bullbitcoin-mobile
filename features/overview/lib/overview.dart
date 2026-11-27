@@ -16,6 +16,7 @@ export 'src/ui/widgets/wallet_card_list.dart'
     show WalletCardList, WalletCardRow;
 export 'src/ui/widgets/silent_wallet_balance.dart' show SilentWalletBalance;
 export 'src/ui/widgets/wallet_home_app_bar.dart' show WalletHomeAppBar;
+export 'src/ui/widgets/wallet_home_top_section.dart' show WalletHomeTopSection;
 export 'src/ui/widgets/wallet_detail_balance_amount.dart';
 export 'src/ui/widgets/wallet_detail_balance_card.dart'
     show WalletDetailBalanceCard;

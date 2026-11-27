@@ -20,6 +20,7 @@ class BullAmount extends StatefulWidget {
     this.isNegative = false,
     this.interactive = true,
     this.overrideHideAmounts = false,
+    this.forceHideAmounts = false,
     this.style,
     this.color,
     this.textAlign,
@@ -31,6 +32,7 @@ class BullAmount extends StatefulWidget {
     super.key,
     this.interactive = true,
     this.overrideHideAmounts = false,
+    this.forceHideAmounts = false,
     this.style,
     this.color,
     this.textAlign,
@@ -41,6 +43,7 @@ class BullAmount extends StatefulWidget {
   final bool isNegative;
   final bool interactive;
   final bool overrideHideAmounts;
+  final bool forceHideAmounts;
   final TextStyle? style;
   final Color? color;
   final TextAlign? textAlign;
@@ -96,6 +99,7 @@ class _BullAmountState extends State<BullAmount> {
     final unit = _override ?? snapshot?.unit ?? BitcoinUnit.btc;
     final l10n = BullUiLocalizations.of(context);
     final hidden =
+        widget.forceHideAmounts ||
         snapshot == null ||
         !snapshot.isReady ||
         (snapshot.hideAmounts && !widget.overrideHideAmounts);

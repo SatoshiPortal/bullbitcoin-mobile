@@ -10,9 +10,13 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
 import 'package:bull_ark/ark_ui.dart' show ArkHomeCard;
 import 'package:bull_ui/app_theme.dart';
 import 'package:primitives/primitives.dart' show NetworkCapability;
-import 'package:settings/settings.dart' show NetworkCapabilityVisibility;
+import 'package:settings/settings.dart'
+    show NetworkCapabilityVisibility, Settings;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:bitcoin_price/bitcoin_price.dart'
+    show BitcoinPriceFeature, PriceChartWidget;
 import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:overview/overview.dart';
 import 'package:swap_feature/swap_feature.dart' show HomeOngoingSwaps;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -85,7 +89,7 @@ class WalletHomeScreen extends StatelessWidget {
       waitForRefresh: () => context.read<WalletBloc>().waitForRefresh(),
       refreshWallets: () => context.read<WalletBloc>().refresh(),
       headerBackgroundHeight: WalletHomeTopSection.minBackgroundHeight,
-      header: WalletHomeTopSection(
+      header: _WalletHomeHeader(
         actions: WalletQuickActions(
           quickActions: quickActions,
           onAction: onQuickAction,
@@ -163,6 +167,39 @@ class WalletHomeScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _WalletHomeHeader extends StatelessWidget {
+  final Widget actions;
+
+  const _WalletHomeHeader({required this.actions});
+
+  @override
+  Widget build(BuildContext context) {
+    final display = context.select((WalletBloc bloc) {
+      final state = bloc.state;
+      return (
+        totalSat: state.totalBalance(),
+        isLoading:
+            state.status == WalletStatus.initial ||
+            state.status == WalletStatus.loading,
+        hideAmounts: state.amountDisplay?.hideAmounts,
+      );
+    });
+    return WalletHomeTopSection(
+      actions: actions,
+      background: AssetImage(Assets.backgrounds.bgRed.path),
+      totalSat: display.totalSat,
+      isLoading: display.isLoading,
+      hideAmounts: display.hideAmounts,
+      unavailableLabel: context.loc.walletLoadFailed,
+      onCurrencyChanged: Settings.changeDisplayCurrency,
+      showChart: BitcoinPriceFeature.watchChartVisible(context),
+      chart: const PriceChartWidget(),
+      onCloseChart: () => BitcoinPriceFeature.hideChart(context),
+      closeChartLabel: MaterialLocalizations.of(context).backButtonTooltip,
     );
   }
 }

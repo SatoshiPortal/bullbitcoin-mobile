@@ -13,6 +13,7 @@ class BullShimmerBox extends StatelessWidget {
     required this.height,
     this.width,
     this.padding,
+    this.margin = const EdgeInsets.all(16),
   });
 
   /// Box height.
@@ -23,6 +24,7 @@ class BullShimmerBox extends StatelessWidget {
 
   /// Outer padding.
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry margin;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class BullShimmerBox extends StatelessWidget {
             Container(
               width: width ?? double.infinity,
               height: height,
-              margin: const EdgeInsets.all(16.0),
+              margin: margin,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(context.bullShapes.card),
                 color: colors.surface,
