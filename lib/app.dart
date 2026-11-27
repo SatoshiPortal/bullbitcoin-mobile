@@ -12,6 +12,7 @@ import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:backups/backups.dart';
 import 'package:backup_metadata/backup_metadata_ui.dart'
     show backupMetadataLocalizationsDelegate;
+import 'package:backup_metadata/setup.dart' show BackupMetadataFeature;
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_receive_localizations.dart';
@@ -135,6 +136,11 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     // A locked app resumes no engine: they would only be refused by Secrets.
     if (!_locked && locator.isRegistered<ForegroundWalletStartup>()) {
       resumePayjoinsOnAppResume(state, locator<ForegroundWalletStartup>());
+    }
+    if (!_locked &&
+        state == AppLifecycleState.resumed &&
+        locator.isRegistered<BackupMetadataFeature>()) {
+      unawaited(locator<BackupMetadataFeature>().trigger.onResumed());
     }
     if (!_locked &&
         state == AppLifecycleState.resumed &&

@@ -7,6 +7,89 @@ import '../../generated/l10n/backup_metadata_localizations.dart';
 import 'backup_metadata_views.dart';
 import 'widgets/backup_metadata_widgets.dart';
 
+/// Confirms the provider, the account and the wallets before anything is sent.
+class BackupMetadataConfirmDialog extends StatelessWidget {
+  final BackupDestination destination;
+
+  /// As the storage names the account; shown here and nowhere else.
+  final String? account;
+  final List<String> wallets;
+  final VoidCallback onCancel;
+  final VoidCallback onConfirm;
+
+  const BackupMetadataConfirmDialog({
+    super.key,
+    required this.destination,
+    required this.account,
+    required this.wallets,
+    required this.onCancel,
+    required this.onConfirm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = BackupMetadataLocalizations.of(context);
+    final provider = backupDestinationLabel(l10n, destination);
+    return BullDialog(
+      child: Semantics(
+        scopesRoute: true,
+        explicitChildNodes: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Semantics(
+              namesRoute: true,
+              header: true,
+              child: Text(l10n.confirmTitle, style: context.bullType.subtitle),
+            ),
+            const Gap(BullSpacing.md),
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.confirmMessage(provider),
+                      style: context.bullType.body,
+                    ),
+                    const Gap(BullSpacing.sm),
+                    Text(
+                      l10n.confirmAccount(account ?? l10n.unknownAccount),
+                      style: context.bullType.body,
+                    ),
+                    const Gap(BullSpacing.sm),
+                    for (final wallet in wallets)
+                      Text('• $wallet', style: context.bullType.body),
+                  ],
+                ),
+              ),
+            ),
+            const Gap(BullSpacing.md),
+            Row(
+              children: [
+                Expanded(
+                  child: BullButton.secondary(
+                    label: l10n.cancel,
+                    onPressed: onCancel,
+                  ),
+                ),
+                const Gap(BullSpacing.sm),
+                Expanded(
+                  child: BullButton.primary(
+                    label: l10n.confirmAction,
+                    onPressed: onConfirm,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class BackupMetadataTurnOffDialog extends StatelessWidget {
   final bool deleteBackups;
   final ValueChanged<bool> onDeleteBackupsChanged;
@@ -218,6 +301,7 @@ class BackupMetadataRestorePreviewView extends StatelessWidget {
   final int labelsToAdd;
   final int coinsToFreeze;
   final int alreadySame;
+  final int filteredFields;
   final VoidCallback onBack;
   final VoidCallback? onRestore;
 
@@ -230,6 +314,7 @@ class BackupMetadataRestorePreviewView extends StatelessWidget {
     required this.labelsToAdd,
     required this.coinsToFreeze,
     required this.alreadySame,
+    this.filteredFields = 0,
     required this.onBack,
     required this.onRestore,
   });
@@ -261,6 +346,14 @@ class BackupMetadataRestorePreviewView extends StatelessWidget {
         _ChangeCount(title: l10n.coinsToFreeze, count: coinsToFreeze),
         _ChangeCount(title: l10n.alreadySame, count: alreadySame),
         _ChangeCount(title: l10n.different, count: differences.length),
+        if (filteredFields > 0) ...[
+          const Gap(BullSpacing.md),
+          BullInfoBar(
+            message: l10n.restoreFilteredFields(filteredFields),
+            tone: BullInfoTone.warning,
+            icon: BullIcons.warningAmber,
+          ),
+        ],
         for (final difference in differences) ...[
           const Gap(BullSpacing.md),
           BackupSectionTitle(difference.title),
@@ -326,9 +419,27 @@ class BackupMetadataRestoreResultView extends StatelessWidget {
   final int coinsFailed;
   final int labelsRejected;
   final int differencesResolved;
+
+  /// Wallet details attached and BIP85 children added: what Secrets wrote.
+  final int walletsRestored;
+  final int registryAdded;
+
+  /// The Labels step as a whole failed; its counters are then unknown.
+  final bool labelsStepFailed;
+
+  /// The Secrets step as a whole failed.
+  final bool secretsFailed;
+
+  /// The BIP85 list conflicted with this phone's and was not restored.
+  final bool registryRefused;
+
+  /// Fields of the file ignored because they looked like secrets.
+  final int excluded;
   final VoidCallback onDone;
   final VoidCallback? onEnableBackup;
-  final VoidCallback? onRetryFreezes;
+
+  /// Runs the restore again, writing only what is still missing.
+  final VoidCallback? onRetry;
 
   const BackupMetadataRestoreResultView({
     super.key,
@@ -339,15 +450,23 @@ class BackupMetadataRestoreResultView extends StatelessWidget {
     this.coinsFailed = 0,
     this.labelsRejected = 0,
     this.differencesResolved = 0,
+    this.walletsRestored = 0,
+    this.registryAdded = 0,
+    this.labelsStepFailed = false,
+    this.secretsFailed = false,
+    this.registryRefused = false,
+    this.excluded = 0,
     this.onEnableBackup,
-    this.onRetryFreezes,
+    this.onRetry,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = BackupMetadataLocalizations.of(context);
+    final stepFailed = labelsStepFailed || secretsFailed || registryRefused;
+    final freezesOpen = coinsPending > 0 || coinsFailed > 0;
     final incomplete =
-        labelsRejected > 0 || coinsPending > 0 || coinsFailed > 0;
+        labelsRejected > 0 || freezesOpen || stepFailed || excluded > 0;
     return BullSuccessScreen(
       title: l10n.restoreLabels,
       headline: incomplete ? l10n.restorePartial : l10n.labelsRestored,
@@ -362,36 +481,41 @@ class BackupMetadataRestoreResultView extends StatelessWidget {
       amountLine: coinsPending > 0 && coinsFrozen == 0
           ? l10n.pendingAmounts(labelsRestored, coinsPending)
           : l10n.restoredAmounts(labelsRestored, coinsFrozen),
-      message: incomplete || differencesResolved > 0
+      message:
+          incomplete ||
+              differencesResolved > 0 ||
+              walletsRestored > 0 ||
+              registryAdded > 0 ||
+              excluded > 0
           ? Column(
               children: [
                 if (differencesResolved > 0)
                   Text(l10n.differencesResolved(differencesResolved)),
+                if (walletsRestored > 0)
+                  Text(l10n.walletsRestored(walletsRestored)),
+                if (registryAdded > 0)
+                  Text(l10n.registryRestored(registryAdded)),
+                if (secretsFailed) _warning(l10n.restoreSecretsFailed),
+                if (registryRefused) _warning(l10n.restoreRegistryRefused),
+                if (labelsStepFailed) _warning(l10n.restoreLabelsFailed),
+                if (excluded > 0)
+                  _warning(l10n.restoreFilteredFields(excluded)),
                 if (labelsRejected > 0)
-                  BullInfoBar(
-                    message: l10n.labelsRejected(labelsRejected),
-                    tone: BullInfoTone.warning,
-                    icon: BullIcons.warningAmber,
-                  ),
+                  _warning(l10n.labelsRejected(labelsRejected)),
                 if (coinsPending > 0)
-                  BullInfoBar(
-                    message: l10n.freezePending(coinsPending),
-                    tone: BullInfoTone.warning,
-                    icon: BullIcons.warningAmber,
-                  ),
-                if (coinsFailed > 0)
-                  BullInfoBar(
-                    message: l10n.freezeFailed(coinsFailed),
-                    tone: BullInfoTone.warning,
-                    icon: BullIcons.warningAmber,
-                  ),
+                  _warning(l10n.freezePending(coinsPending)),
+                if (coinsFailed > 0) _warning(l10n.freezeFailed(coinsFailed)),
               ],
             )
           : null,
       actions: [
-        if (onRetryFreezes case final retry?
-            when coinsPending > 0 || coinsFailed > 0) ...[
-          BullButton.secondary(label: l10n.retryFreezes, onPressed: retry),
+        // A generic label whenever a step other than the freezes is open: the
+        // retry then reruns the whole restore, not only the freezes.
+        if (onRetry case final retry? when stepFailed || freezesOpen) ...[
+          BullButton.secondary(
+            label: stepFailed ? l10n.retryRestore : l10n.retryFreezes,
+            onPressed: retry,
+          ),
           const Gap(BullSpacing.sm),
         ],
         if (onEnableBackup case final enable?) ...[
@@ -405,4 +529,10 @@ class BackupMetadataRestoreResultView extends StatelessWidget {
       ],
     );
   }
+
+  static Widget _warning(String message) => BullInfoBar(
+    message: message,
+    tone: BullInfoTone.warning,
+    icon: BullIcons.warningAmber,
+  );
 }

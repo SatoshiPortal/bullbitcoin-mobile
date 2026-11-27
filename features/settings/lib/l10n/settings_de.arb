@@ -75,7 +75,7 @@
   "settingsErrorReportingTitle": "Fehlerberichterstattung",
   "errorReportingProgramTitle": "Programm zur Fehlerberichterstattung",
   "errorReportingProgramDescriptionP1": "Helfen Sie uns, Bull zu verbessern, indem Sie an unserem Programm zur Fehlerberichterstattung teilnehmen.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sendet anonymisierte Fehlerberichte, wenn etwas nicht funktioniert.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sendet anonymisierte Fehlerberichte, wenn etwas nicht funktioniert. Auch Diagnoseprotokolle können gesendet werden.",
   "errorReportingProgramDescriptionP3": "So können wir sehen, wie viele Nutzer von einem Fehler betroffen sind, und Korrekturen entsprechend priorisieren. Ohne diese Berichte können wir die Auswirkungen nicht messen.",
   "errorReportingProgramDescriptionP4": "Die Berichte werden nur an den Server von Bull gesendet, niemals an Dritte.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin ist quelloffen. Daher können Sie überprüfen, welche Daten gesendet werden.",

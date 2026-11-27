@@ -56,8 +56,15 @@ void main() {
     pending.complete(true);
     await tester.pumpAndSettle();
     expect(find.text(loc.errorReportingRestartSnackbar), findsOneWidget);
-    await tester.pump(const Duration(seconds: 4));
+    expect(find.text(loc.networkRestartDialogAction), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
+    expect(find.text(loc.errorReportingRestartSnackbar), findsOneWidget);
+
+    await tester.tapAt(const Offset(8, 8));
+    await tester.pumpAndSettle();
+    expect(find.text(loc.errorReportingRestartSnackbar), findsOneWidget);
   });
 
   testWidgets('failed activation does not announce success', (tester) async {
@@ -118,8 +125,10 @@ void main() {
         find.text(loc.errorReportingRestartSnackbar),
         saved ? findsOneWidget : findsNothing,
       );
-      await tester.pump(const Duration(seconds: 4));
-      await tester.pumpAndSettle();
+      expect(
+        find.text(loc.networkRestartDialogAction),
+        saved ? findsOneWidget : findsNothing,
+      );
     });
   }
 
@@ -181,8 +190,7 @@ void main() {
       expect(find.byType(BottomSheet), findsNothing);
       verify(() => settings.toggleErrorReporting(true)).called(1);
       expect(find.text(loc.errorReportingRestartSnackbar), findsOneWidget);
-      await tester.pump(const Duration(seconds: 6));
-      await tester.pumpAndSettle();
+      expect(find.text(loc.networkRestartDialogAction), findsOneWidget);
     });
   }
 }

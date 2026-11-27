@@ -122,15 +122,22 @@ class SpendOptionsSection extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    context.loc.payjoinUseToggle,
-                    style: context.bullType.body,
+                  child: ExcludeSemantics(
+                    child: Text(
+                      context.loc.payjoinUseToggle,
+                      style: context.bullType.body,
+                    ),
                   ),
                 ),
-                BullSwitch(
-                  value: ready.payjoin,
-                  onChanged: (enabled) =>
-                      onEvent(SpendPayjoinChanged(enabled: enabled)),
+                MergeSemantics(
+                  child: Semantics(
+                    label: context.loc.payjoinUseToggle,
+                    child: BullSwitch(
+                      value: ready.payjoin,
+                      onChanged: (enabled) =>
+                          onEvent(SpendPayjoinChanged(enabled: enabled)),
+                    ),
+                  ),
                 ),
               ],
             ),

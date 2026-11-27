@@ -304,7 +304,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends minimized error reports containing app version, device and operating-system metadata, and a random installation identifier when something breaks. Wallet and transaction payloads are removed.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends minimized error reports containing app version, device and operating-system metadata, and a random installation identifier when something breaks. Wallet and transaction payloads are removed. The app may also send diagnostic logs.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

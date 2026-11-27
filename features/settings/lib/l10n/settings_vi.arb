@@ -76,7 +76,7 @@
   "settingsErrorReportingTitle": "Báo cáo lỗi",
   "errorReportingProgramTitle": "Chương trình báo cáo lỗi",
   "errorReportingProgramDescriptionP1": "Giúp chúng tôi cải thiện Bull bằng cách tham gia chương trình báo cáo lỗi của chúng tôi.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin gửi báo cáo lỗi được ẩn danh khi có sự cố xảy ra.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin gửi báo cáo lỗi được ẩn danh khi có sự cố xảy ra. Nhật ký chẩn đoán cũng có thể được gửi.",
   "errorReportingProgramDescriptionP3": "Điều này giúp chúng tôi biết được mỗi lỗi ảnh hưởng đến bao nhiêu người dùng và ưu tiên khắc phục tương ứng; nếu không có nó, chúng tôi không có cách nào đo lường mức độ ảnh hưởng.",
   "errorReportingProgramDescriptionP4": "Báo cáo chỉ được gửi đến máy chủ của Bull, không bao giờ gửi cho bên thứ ba.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin là mã nguồn mở, vì vậy bạn có thể tự kiểm chứng những gì được gửi đi.",

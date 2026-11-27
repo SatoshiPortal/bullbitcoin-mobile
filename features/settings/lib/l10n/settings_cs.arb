@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "Hlášení chyb",
   "errorReportingProgramTitle": "Program hlášení chyb",
   "errorReportingProgramDescriptionP1": "Pomozte nám vylepšit Bull tím, že se zapojíte do našeho programu hlášení chyb.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin odesílá anonymizovaná hlášení o chybách, když něco přestane fungovat.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin odesílá anonymizovaná hlášení o chybách, když něco přestane fungovat. Mohou se také odesílat diagnostické protokoly.",
   "errorReportingProgramDescriptionP3": "Díky tomu vidíme, kolik uživatelů daná chyba postihuje, a můžeme podle toho stanovit prioritu oprav. Bez toho nemáme žádný způsob, jak dopad změřit.",
   "errorReportingProgramDescriptionP4": "Hlášení jsou odesílána pouze na server Bull, nikdy třetím stranám.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin je open source, takže si můžete ověřit, co se odesílá.",

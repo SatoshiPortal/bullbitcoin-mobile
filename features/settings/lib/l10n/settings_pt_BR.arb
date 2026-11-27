@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "Relatório de erros",
   "errorReportingProgramTitle": "Programa de Relatório de Erros",
   "errorReportingProgramDescriptionP1": "Ajude-nos a melhorar o Bull contribuindo com nosso programa de relatório de erros.",
-  "errorReportingProgramDescriptionP2": "A Bull Bitcoin envia relatórios de erros anonimizados quando algo dá errado.",
+  "errorReportingProgramDescriptionP2": "A Bull Bitcoin envia relatórios de erros anonimizados quando algo dá errado. Também podem ser enviados registros de diagnóstico.",
   "errorReportingProgramDescriptionP3": "Isso nos permite ver quantos usuários cada bug afeta e priorizar as correções de acordo. Sem isso, não temos como medir o impacto.",
   "errorReportingProgramDescriptionP4": "Os relatórios vão apenas para o servidor da Bull, nunca para terceiros.",
   "errorReportingProgramDescriptionP5": "A Bull Bitcoin é open source, então você pode verificar o que é enviado.",

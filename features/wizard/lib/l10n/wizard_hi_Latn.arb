@@ -56,7 +56,7 @@
   "@wizardMissionTitle": {
     "description": "Title of the wizard's error-reporting consent page"
   },
-  "wizardMissionBody1": "Hamare software ko behtar banane aur security, privacy aur usability ka uchchatam level dene mein madad karne ke liye, aapka app humein error logs bhej sakta hai jo hamein issues detect karne aur agle updates mein jaldi fix karne ki anumati dete hain.",
+  "wizardMissionBody1": "Hamare software ko behtar banane aur security, privacy aur usability ka uchchatam level dene mein madad karne ke liye, aapka app humein error reports bhej sakta hai jo hamein issues detect karne aur agle updates mein jaldi fix karne ki anumati dete hain. Diagnostic logs bhi bheje ja sakte hain.",
   "@wizardMissionBody1": {
     "description": "First explanatory paragraph on the wizard error-reporting page"
   },

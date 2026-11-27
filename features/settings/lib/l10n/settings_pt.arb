@@ -80,7 +80,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Quando ativado, enviamos automaticamente relatórios de erros quando ocorrem problemas no aplicativo.",
+  "errorReportingProgramDescriptionP2": "Quando ativado, enviamos automaticamente relatórios de erros quando ocorrem problemas no aplicativo. Também podem ser enviados registos de diagnóstico.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

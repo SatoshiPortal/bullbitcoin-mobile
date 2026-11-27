@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "Αναφορά σφαλμάτων",
   "errorReportingProgramTitle": "Πρόγραμμα Αναφοράς Σφαλμάτων",
   "errorReportingProgramDescriptionP1": "Βοηθήστε μας να βελτιώσουμε το Bull συμμετέχοντας στο πρόγραμμα αναφοράς σφαλμάτων μας.",
-  "errorReportingProgramDescriptionP2": "Η Bull Bitcoin στέλνει ανώνυμες αναφορές σφαλμάτων όταν κάτι δεν λειτουργεί σωστά.",
+  "errorReportingProgramDescriptionP2": "Η Bull Bitcoin στέλνει ανώνυμες αναφορές σφαλμάτων όταν κάτι δεν λειτουργεί σωστά. Ενδέχεται επίσης να αποστέλλονται αρχεία καταγραφής διαγνωστικών.",
   "errorReportingProgramDescriptionP3": "Αυτό μας επιτρέπει να δούμε πόσους χρήστες επηρεάζει κάθε σφάλμα και να ιεραρχήσουμε ανάλογα τις διορθώσεις· χωρίς αυτό, δεν έχουμε τρόπο να μετρήσουμε τον αντίκτυπο.",
   "errorReportingProgramDescriptionP4": "Οι αναφορές αποστέλλονται μόνο στον διακομιστή της Bull, ποτέ σε τρίτους.",
   "errorReportingProgramDescriptionP5": "Η Bull Bitcoin είναι ανοιχτού κώδικα, οπότε μπορείτε να επαληθεύσετε τι αποστέλλεται.",

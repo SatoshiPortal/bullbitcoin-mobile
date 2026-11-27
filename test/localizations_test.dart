@@ -34,28 +34,46 @@ void main() {
     );
   });
 
-  testWidgets(
-    'onboarding UI uses the app locale and keeps missing-text fallback',
-    (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          locale: Locale('fr'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: appLocalizationsDelegates,
-          home: Scaffold(),
-        ),
-      );
-      await tester.pumpAndSettle();
+  testWidgets('onboarding UI uses the app locale', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('fr'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: appLocalizationsDelegates,
+        home: Scaffold(),
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(Scaffold));
-      final scanning = ScanningLocalizations.of(context);
-      final mnemonic = MnemonicEntryLocalizations.of(context);
-      expect(scanning.scanningProgressLabel('42'), 'Analyse : 42 %');
-      expect(mnemonic.mnemonicWordCountLabel, 'Mots');
-      expect(
-        mnemonic.mnemonicShuffleKeyboardHint,
-        'Scramble the keys and suggestions on every tap',
-      );
-    },
-  );
+    final context = tester.element(find.byType(Scaffold));
+    final scanning = ScanningLocalizations.of(context);
+    final mnemonic = MnemonicEntryLocalizations.of(context);
+    expect(scanning.scanningProgressLabel('42'), 'Analyse : 42 %');
+    expect(mnemonic.mnemonicWordCountLabel, 'Mots');
+    expect(
+      mnemonic.mnemonicShuffleKeyboardHint,
+      'Mélanger les touches et les suggestions après chaque pression',
+    );
+  });
+
+  testWidgets('missing mnemonic text falls back to English', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('de'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: appLocalizationsDelegates,
+        home: Scaffold(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(Scaffold));
+    final mnemonic = MnemonicEntryLocalizations.of(context);
+    expect(mnemonic.mnemonicWordCountLabel, 'Wörter');
+    expect(
+      mnemonic.mnemonicLanguageAmbiguous,
+      'These words match more than one language. '
+      'Select the language of your recovery phrase.',
+    );
+  });
 }

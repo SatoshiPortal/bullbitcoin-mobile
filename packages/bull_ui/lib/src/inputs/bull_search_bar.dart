@@ -104,7 +104,10 @@ class _BullSearchBarState extends State<BullSearchBar> {
     if (label != null && onTap != null) {
       return Semantics(
         button: true,
+        enabled: true,
+        focusable: true,
         label: label,
+        onTap: onTap,
         excludeSemantics: true,
         child: _Frame(
           onTap: onTap,

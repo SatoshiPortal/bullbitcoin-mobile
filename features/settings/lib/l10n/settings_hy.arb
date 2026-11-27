@@ -77,7 +77,7 @@
   "settingsErrorReportingTitle": "Սխալների զեկուցում",
   "errorReportingProgramTitle": "Սխալների զեկուցման ծրագիր",
   "errorReportingProgramDescriptionP1": "Օգնեք մեզ բարելավել Bull-ը՝ մասնակցելով մեր սխալների զեկուցման ծրագրին։",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin-ն ուղարկում է անանուն սխալի զեկույցներ, երբ ինչ-որ բան փչանում է։",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin-ն ուղարկում է անանուն սխալի զեկույցներ, երբ ինչ-որ բան փչանում է։ Կարող են ուղարկվել նաև ախտորոշիչ մատյաններ։",
   "errorReportingProgramDescriptionP3": "Սա մեզ թույլ է տալիս տեսնել, թե քանի օգտատիրոջ վրա է ազդում յուրաքանչյուր սխալ, և համապատասխանաբար առաջնահերթություն տալ ուղղումներին. առանց դրա, մենք չենք կարող չափել ազդեցությունը։",
   "errorReportingProgramDescriptionP4": "Զեկույցներն ուղարկվում են միայն Bull-ի սերվեր, երբեք երրորդ կողմերին։",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin-ը բաց կոդով է, ուստի կարող եք ստուգել, թե ինչ է ուղարկվում։",

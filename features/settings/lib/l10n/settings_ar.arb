@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "الإبلاغ عن الأخطاء",
   "errorReportingProgramTitle": "برنامج الإبلاغ عن الأخطاء",
   "errorReportingProgramDescriptionP1": "ساعدنا في تحسين Bull من خلال المشاركة في برنامج الإبلاغ عن الأخطاء.",
-  "errorReportingProgramDescriptionP2": "ترسل بول بيتكوين تقارير أخطاء مجهولة الهوية عند حدوث عطل ما.",
+  "errorReportingProgramDescriptionP2": "ترسل بول بيتكوين تقارير أخطاء مجهولة الهوية عند حدوث عطل ما. قد تُرسَل أيضًا سجلات تشخيصية.",
   "errorReportingProgramDescriptionP3": "يتيح لنا هذا معرفة عدد المستخدمين المتأثرين بكل خلل وتحديد أولويات الإصلاح وفقًا لذلك، وبدونه لا نملك وسيلة لقياس التأثير.",
   "errorReportingProgramDescriptionP4": "تُرسَل التقارير فقط إلى خادم بول، ولا تُرسَل أبدًا إلى أطراف ثالثة.",
   "errorReportingProgramDescriptionP5": "بول بيتكوين مفتوحة المصدر، لذا يمكنك التحقق مما يتم إرساله.",
