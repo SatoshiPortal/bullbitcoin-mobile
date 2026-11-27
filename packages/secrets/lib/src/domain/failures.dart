@@ -19,6 +19,13 @@ final class SecretOwnedByAnotherViewFailure extends SecretFailure {
     : super('secret owned by another view');
 }
 
+/// The view was not opened by the authentication that is asking: it may not
+/// exist, or it may belong to a credential this session did not present. The
+/// two are not told apart.
+final class ViewNotOpenFailure extends SecretFailure {
+  const ViewNotOpenFailure() : super('view not open');
+}
+
 sealed class SecretFailure extends Failure {
   const SecretFailure([super.logMessage]);
 }

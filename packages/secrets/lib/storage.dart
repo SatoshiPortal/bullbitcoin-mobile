@@ -10,5 +10,10 @@ export 'src/domain/wallet_property_store.dart';
 export 'src/domain/wallet_registration.dart' show BitcoinRecoveryWallet;
 export 'src/public/ark_background_access.dart'
     show ArkBackgroundAccess, arkChildBip85Index;
+export 'src/domain/view_summary.dart';
 export 'src/public/secrets_inventory.dart'
-    show BackgroundWalletDescriptors, SecretsInventory;
+    show
+        BackgroundWalletDescriptors,
+        OpenedViews,
+        SecretsInventory,
+        ViewAuthentication;

@@ -74,6 +74,7 @@ const inventoryCredentialRequiredFailure = UseSecretFailure(
   'credential required',
 );
 const inventoryLockedFailure = UseSecretFailure('inventory locked');
+const viewNotOpenFailure = ViewNotOpenFailure();
 
 const unreadableBip85RecordFailure = FetchSecretFailure(
   'Unreadable BIP85 record',

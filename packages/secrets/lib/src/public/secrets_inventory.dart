@@ -11,6 +11,7 @@ import 'package:secrets/src/data/data.dart'
         inventorySessionChangedFailure,
         inventoryCredentialRequiredFailure,
         inventoryLockedFailure,
+        viewNotOpenFailure,
         invalidBip85HexLengthFailure,
         unreadableBip85RecordFailure;
 
@@ -40,6 +41,7 @@ import 'seed_reference_port.dart';
 import 'wallet_inventory.dart';
 
 part 'bip85_derivations.dart';
+part 'opened_views.dart';
 
 /// The foreground wallet inventory. Access starts with the persisted policy.
 /// Lock invalidates any pending read and the next operation checks the session.
@@ -53,16 +55,15 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   var _session = 0;
   Future<void>? _pendingDrain;
 
-  SecretsInventory._(
-    this._store,
-    this._access,
-    this._guard,
-    this._authority,
-    bool initiallyProtected,
-  ) : _wallets = InventoryRepository(_store.database),
-      _derivations = DerivationRepository(_store.database) {
-    if (!initiallyProtected) _authority.grant(defaultViewId);
-  }
+  /// The views opened by the authentications of the live session. Empty while
+  /// locked. [_epoch] changes at every lock, so an [OpenedViews] kept across a
+  /// lock is refused even after a new unlock.
+  var _openedViews = <ViewSummary>[];
+  var _epoch = 0;
+
+  SecretsInventory._(this._store, this._access, this._guard, this._authority)
+    : _wallets = InventoryRepository(_store.database),
+      _derivations = DerivationRepository(_store.database);
 
   bool get _unlocked => _authority.current != null;
 
@@ -104,9 +105,23 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
             await value.close();
             return Err(failure);
           case Ok(value: final protected):
-            return Ok(
-              SecretsInventory._(value, access, guard, authority, protected),
+            final inventory = SecretsInventory._(
+              value,
+              access,
+              guard,
+              authority,
             );
+            if (protected) return Ok(inventory);
+            // No view requires a credential: the session starts open.
+            switch (await inventory._openWithoutCredential()) {
+              case Ok():
+                return Ok(inventory);
+              case Err():
+                await inventory.close();
+                return const Err(
+                  DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
+                );
+            }
         }
     }
   }
@@ -133,20 +148,73 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// True on every lock, false on every unlock, in order.
   Stream<bool> get lockedChanges => _authority.changes.map((t) => t == null);
 
+  /// Presents [candidate] to every credential at once and opens the views it
+  /// unlocks. One guess is one attempt, whatever the number of credentials.
+  /// The result names the views opened and nothing about the others.
+  ///
+  /// Authenticating inside a live session adds the views the credential opens
+  /// and keeps the view in use and its handles. Only a locked inventory starts
+  /// a session, on the first opened view by name.
   @useResult
-  Future<Result<AccessAttempt, SecretFailure>> unlock(String candidate) async {
+  Future<Result<ViewAuthentication, SecretFailure>> authenticate(
+    String candidate,
+  ) async {
     if (_pendingDrain != null) return const Err(inventoryLockedFailure);
     final current = _session;
-    final attempt = await _access.unlock(candidate);
+    final outcome = await _access.authenticate(candidate);
     if (current != _session || _pendingDrain != null) {
       return const Err(inventorySessionChangedFailure);
     }
-    if (attempt case Ok(value: AccessAttempt(accepted: true))) {
-      // A re-authentication inside a live session keeps its handles; only a
-      // locked inventory opens a new generation.
-      if (!_unlocked) _authority.grant(defaultViewId);
+    switch (outcome) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (!value.attempt.accepted) {
+          return Ok(ViewAuthentication._(value.attempt, null));
+        }
+        final wasLocked = !_unlocked;
+        if (wasLocked) _epoch++;
+        _mergeOpened(value.opened);
+        final opened = OpenedViews._(this, _epoch);
+        if (wasLocked) _startSession(_choose(value.opened));
+        return Ok(ViewAuthentication._(value.attempt, opened));
     }
-    return attempt;
+  }
+
+  /// The flow of an installation that shows one view: authenticate, then open
+  /// the view the session would start on.
+  @useResult
+  Future<Result<AccessAttempt, SecretFailure>> unlock(String candidate) async =>
+      (await authenticate(candidate)).map((value) => value.attempt);
+
+  void _mergeOpened(List<ViewSummary> add) {
+    final byId = {for (final view in _openedViews) view.id: view};
+    for (final view in add) {
+      byId[view.id] = view;
+    }
+    _openedViews = List.unmodifiable(byId.values);
+  }
+
+  /// The view a session starts on among [opened] (never empty).
+  ViewSummary _choose(List<ViewSummary> opened) => opened.first;
+
+  void _startSession(ViewSummary view) => _authority.grant(view.id.value);
+
+  Future<Result<void, SecretFailure>> _openWithoutCredential() async {
+    final opened = await _access.openWithoutCredential();
+    switch (opened) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: null):
+        return const Err(inventoryCredentialRequiredFailure);
+      case Ok(:final value?):
+        if (!_unlocked) {
+          _epoch++;
+          _mergeOpened(value);
+          _startSession(_choose(value));
+        }
+        return const Ok(null);
+    }
   }
 
   /// Closes the inventory, in this order: the admission and the authority
@@ -169,6 +237,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// running reports [inventorySessionChangedFailure] when it ends.
   Future<bool> lock({Duration drain = const Duration(seconds: 2)}) async {
     _session++;
+    _epoch++;
+    _openedViews = <ViewSummary>[];
     final pending = inventoryWritesSettled();
     _pendingDrain = pending;
     _authority.revoke();
@@ -200,21 +270,11 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     if (_pendingDrain != null) {
       return Future.value(const Err(inventoryLockedFailure));
     }
-    return _inSession(requireUnlocked: false, (session, view) async {
-      switch (await _access.isProtected()) {
-        case Err(:final failure):
-          return Err(failure);
-        case Ok(value: true):
-          return const Err(inventoryCredentialRequiredFailure);
-        case Ok(value: false):
-          if (_pendingDrain != null) {
-            return const Err(inventoryLockedFailure);
-          }
-          if (session == _session && !_unlocked) {
-            _authority.grant(defaultViewId);
-          }
-          return const Ok(null);
-      }
+    return _inSession(requireUnlocked: false, (session, _) async {
+      if (_pendingDrain != null) return const Err(inventoryLockedFailure);
+      final result = await _openWithoutCredential();
+      if (session != _session && _unlocked) return const Ok(null);
+      return result;
     });
   }
 
@@ -236,6 +296,15 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
         (_, view) => _access.replaceCredential(candidate, view),
         preserveCommittedCommand: true,
       );
+
+  /// Gives the active view a credential of its own with the PIN it already
+  /// has, so rotating or removing either no longer moves the other. No effect
+  /// on a view that does not share one.
+  @useResult
+  Future<Result<void, SecretFailure>> dissociateView() => _inSession(
+    (_, view) => _access.dissociate(view),
+    preserveCommittedCommand: true,
+  );
 
   /// Remove access protection from an authenticated foreground session.
   @useResult
