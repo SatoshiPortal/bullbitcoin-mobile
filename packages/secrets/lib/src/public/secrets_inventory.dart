@@ -134,7 +134,9 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
             );
             if (protected) return Ok(inventory);
             // No view requires a credential: the session starts open.
-            switch (await inventory._openWithoutCredential()) {
+            switch (await inventory._openWithoutCredential(
+              inventory._session,
+            )) {
               case Ok():
                 return Ok(inventory);
               case Err():
@@ -252,7 +254,11 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     return _access.rememberView(view.id.value);
   }
 
-  Future<Result<void, SecretFailure>> _openWithoutCredential() async {
+  /// [session] is the generation read before anything was awaited: a lock
+  /// that lands during the reads bumps it, and the grant below is refused.
+  Future<Result<void, SecretFailure>> _openWithoutCredential(
+    int session,
+  ) async {
     final opened = await _access.openWithoutCredential();
     switch (opened) {
       case Err(:final failure):
@@ -261,9 +267,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
         return const Err(inventoryCredentialRequiredFailure);
       case Ok(:final value?):
         if (_unlocked) return const Ok(null);
-        final current = _session;
         final chosen = await _choose(value);
-        if (current != _session || _pendingDrain != null || _unlocked) {
+        if (session != _session || _pendingDrain != null || _unlocked) {
           return const Err(inventorySessionChangedFailure);
         }
         _epoch++;
@@ -328,9 +333,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     }
     return _inSession(requireUnlocked: false, (session, _) async {
       if (_pendingDrain != null) return const Err(inventoryLockedFailure);
-      final result = await _openWithoutCredential();
-      if (session != _session && _unlocked) return const Ok(null);
-      return result;
+      return _openWithoutCredential(session);
     });
   }
 
