@@ -119,19 +119,23 @@ class _CatchAllArms extends RecursiveAstVisitor<void> {
   }
 }
 
-/// Transition functions outside the machine files (named `transition*`).
+/// Transitions outside the machine files: functions named `transition*`
+/// and a state's `next` method.
 class _TransitionFunctions extends RecursiveAstVisitor<void> {
   final found = <AstNode>[];
 
+  bool _isTransition(String name) =>
+      name.startsWith('transition') || name == 'next';
+
   @override
   void visitFunctionDeclaration(FunctionDeclaration node) {
-    if (node.name.lexeme.startsWith('transition')) found.add(node);
+    if (_isTransition(node.name.lexeme)) found.add(node);
     super.visitFunctionDeclaration(node);
   }
 
   @override
   void visitMethodDeclaration(MethodDeclaration node) {
-    if (node.name.lexeme.startsWith('transition')) found.add(node);
+    if (_isTransition(node.name.lexeme)) found.add(node);
     super.visitMethodDeclaration(node);
   }
 }

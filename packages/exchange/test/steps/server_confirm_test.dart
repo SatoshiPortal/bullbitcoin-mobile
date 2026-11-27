@@ -146,7 +146,7 @@ void main() {
   for (final state in _states) {
     for (final (index, event) in _events.indexed) {
       test('$state + ${event.runtimeType} #$index', () {
-        final next = transitionServerConfirm(_policy, state, event);
+        final next = state.next(_policy, event);
         final expected = _table[state]![index];
         if (expected == null) {
           expect(identical(next.state, state), isTrue, reason: '$next');
@@ -219,7 +219,7 @@ void main() {
       final next = <_S>[];
       for (final state in frontier) {
         for (final event in events) {
-          final target = transitionServerConfirm(_policy, state, event).state;
+          final target = state.next(_policy, event).state;
           reached.add(target.runtimeType);
           if (seen.add(target)) next.add(target);
         }
@@ -251,11 +251,10 @@ void main() {
       );
       expect(seen, FinancialWriteKind.orderConfirm);
       expect(
-        transitionServerConfirm(
-          _policy,
-          const ConfirmConfirming<String, String>(_t, 2),
-          answered,
-        ),
+        (const ConfirmConfirming<String, String>(
+          _t,
+          2,
+        )).next(_policy, answered),
         const _Next(_confirmed),
       );
     });
@@ -282,10 +281,7 @@ void main() {
         },
       );
       expect(sent, isFalse);
-      expect(
-        transitionServerConfirm(_policy, _confirming, answered),
-        _toVerifying,
-      );
+      expect(_confirming.next(_policy, answered), _toVerifying);
     });
 
     test('a write in flight is an explicit refusal', () async {
@@ -304,7 +300,7 @@ void main() {
         confirm: (_) async => const Ok(_c),
       );
       expect(
-        transitionServerConfirm(_policy, _confirming, answered),
+        _confirming.next(_policy, answered),
         const _Next(
           ConfirmWriteRefused(
             _t,

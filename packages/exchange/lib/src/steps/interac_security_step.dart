@@ -32,6 +32,38 @@ final class InteracSecurityEvidence {
 @immutable
 sealed class InteracSecurityState {
   const InteracSecurityState();
+
+  InteracSecurityNext next(InteracSecurityEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (final InteracEditing editing, InteracQuestionTyped(:final text)) =>
+        StepNext(editing._with(question: text)),
+      (final InteracEditing editing, InteracAnswerTyped(:final text)) =>
+        StepNext(editing._with(answer: text)),
+      (final InteracEditing editing, InteracSaveAsDefaultSet(:final save)) =>
+        StepNext(editing._with(saveAsDefault: save)),
+      (final InteracEditing editing, InteracContinuePressed()) => _continue(
+        editing,
+      ),
+      (InteracEditing(), InteracEditPressed()) => StepNext.stay(state),
+
+      (InteracAnswered(:final evidence), InteracEditPressed()) => StepNext(
+        InteracEditing(
+          question: evidence.answer.question,
+          answer: evidence.answer.answer,
+          saveAsDefault: evidence.saveAsDefault,
+        ),
+      ),
+      (
+        InteracAnswered(),
+        InteracQuestionTyped() ||
+            InteracAnswerTyped() ||
+            InteracSaveAsDefaultSet() ||
+            InteracContinuePressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class InteracEditing extends InteracSecurityState {
@@ -163,38 +195,4 @@ InteracSecurityNext _continue(
       problem: InteracSecurityAnswer.check(editing.question, editing.answer),
     ),
   ),
-};
-
-InteracSecurityNext transitionInteracSecurity(
-  InteracSecurityState state,
-  InteracSecurityEvent event,
-) => switch ((state, event)) {
-  (final InteracEditing editing, InteracQuestionTyped(:final text)) => StepNext(
-    editing._with(question: text),
-  ),
-  (final InteracEditing editing, InteracAnswerTyped(:final text)) => StepNext(
-    editing._with(answer: text),
-  ),
-  (final InteracEditing editing, InteracSaveAsDefaultSet(:final save)) =>
-    StepNext(editing._with(saveAsDefault: save)),
-  (final InteracEditing editing, InteracContinuePressed()) => _continue(
-    editing,
-  ),
-  (InteracEditing(), InteracEditPressed()) => StepNext.stay(state),
-
-  (InteracAnswered(:final evidence), InteracEditPressed()) => StepNext(
-    InteracEditing(
-      question: evidence.answer.question,
-      answer: evidence.answer.answer,
-      saveAsDefault: evidence.saveAsDefault,
-    ),
-  ),
-  (
-    InteracAnswered(),
-    InteracQuestionTyped() ||
-        InteracAnswerTyped() ||
-        InteracSaveAsDefaultSet() ||
-        InteracContinuePressed(),
-  ) =>
-    StepNext.stay(state),
 };

@@ -333,7 +333,7 @@ AccelerateFlowNext _loading(
         AccelerateSessionChanged():
       return AccelerateFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) {
     return AccelerateFlowNext.stay(state);
   }
@@ -421,11 +421,7 @@ AccelerateFlowNext _confirming(
         AccelerateSessionChanged():
       return AccelerateFlowNext.stay(state);
   }
-  final next = transitionServerConfirm(
-    accelerateConfirmPolicy,
-    state.confirm,
-    stepEvent,
-  );
+  final next = state.confirm.next(accelerateConfirmPolicy, stepEvent);
   if (identical(next.state, state.confirm) && next.effects.isEmpty) {
     return AccelerateFlowNext.stay(state);
   }

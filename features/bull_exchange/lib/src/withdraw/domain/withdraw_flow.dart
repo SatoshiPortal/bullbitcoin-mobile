@@ -574,7 +574,7 @@ WithdrawFlowNext _loading(WithdrawLoading state, WithdrawFlowEvent event) {
         WithdrawSessionChanged():
       return WithdrawFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return WithdrawFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(:final context) => _amountNext(
@@ -624,7 +624,7 @@ WithdrawFlowNext _amount(WithdrawAmount state, WithdrawFlowEvent event) =>
     switch (event) {
       WithdrawAmountChanged(:final event) => _stepped(
         state,
-        transitionAmountEntry(withdrawAmountPolicy, state.amount, event),
+        state.amount.next(withdrawAmountPolicy, event),
         state.amount,
         (next) => _amountNext(state.open, next),
       ),
@@ -665,11 +665,10 @@ WithdrawFlowNext _amountRefused(
   );
   return _amountNext(
     learned,
-    transitionAmountEntry(
-      withdrawAmountPolicy,
-      AmountDone(amount, learned.context.amountContext),
-      AmountLimitRefused(limit),
-    ),
+    AmountDone(
+      amount,
+      learned.context.amountContext,
+    ).next(withdrawAmountPolicy, AmountLimitRefused(limit)),
   );
 }
 
@@ -677,11 +676,10 @@ WithdrawFlowNext _amountRefused(
 WithdrawFlowNext _editAmount(WithdrawOpen open, EnteredAmount amount) =>
     _amountNext(
       open,
-      transitionAmountEntry(
-        withdrawAmountPolicy,
-        AmountDone(amount, open.context.amountContext),
-        const AmountEditRequested(),
-      ),
+      AmountDone(
+        amount,
+        open.context.amountContext,
+      ).next(withdrawAmountPolicy, const AmountEditRequested()),
     );
 
 WithdrawFlowNext _recipient(WithdrawRecipient state, WithdrawFlowEvent event) =>
@@ -763,11 +761,7 @@ WithdrawFlowNext _requirements(
   }
   return _stepped(
     state,
-    transitionRequirements(
-      withdrawRequirementsPolicy,
-      state.requirements,
-      stepEvent,
-    ),
+    state.requirements.next(withdrawRequirementsPolicy, stepEvent),
     state.requirements,
     (next) => _requirementsNext(state.open, state.amount, next),
   );
@@ -832,7 +826,7 @@ WithdrawFlowNext _ordering(WithdrawOrdering state, WithdrawFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionOrderStep(withdrawOrderPolicy, state.order, stepEvent),
+    state.order.next(withdrawOrderPolicy, stepEvent),
     state.order,
     (next) => _order(state.open, state.amount, state.recipient, next),
   );
@@ -918,7 +912,7 @@ WithdrawFlowNext _confirming(
   }
   return _stepped(
     state,
-    transitionServerConfirm(withdrawConfirmPolicy, state.confirm, stepEvent),
+    state.confirm.next(withdrawConfirmPolicy, stepEvent),
     state.confirm,
     (next) =>
         _confirm(state.open, state.amount, state.recipient, state.order, next),

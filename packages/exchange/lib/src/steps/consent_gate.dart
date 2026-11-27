@@ -24,6 +24,105 @@ final class ConsentGiven {
 @immutable
 sealed class ConsentGateState {
   const ConsentGateState();
+
+  ConsentGateNext next(ConsentGateEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (ConsentRequired(), ConsentStartPressed()) => const StepNext(
+        ConsentAsking(),
+      ),
+      (ConsentAsking(), ConsentAcceptPressed()) => const StepNext(
+        ConsentSubmitting(1),
+        [ConsentSubmit(1)],
+      ),
+      (
+        ConsentRequired() ||
+            ConsentAsking() ||
+            ConsentFailed() ||
+            ConsentUnverified(),
+        ConsentDeclinePressed(),
+      ) =>
+        const StepNext(ConsentDeclined()),
+      (
+        ConsentRequired(),
+        ConsentAcceptPressed() ||
+            ConsentSubmitted() ||
+            ConsentVerified() ||
+            ConsentRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        ConsentAsking(),
+        ConsentStartPressed() ||
+            ConsentSubmitted() ||
+            ConsentVerified() ||
+            ConsentRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        ConsentSubmitting(:final attempt),
+        ConsentSubmitted(attempt: final answered, :final write),
+      )
+          when answered == attempt =>
+        _submitted(attempt, write),
+      (
+        ConsentSubmitting(),
+        ConsentStartPressed() ||
+            ConsentAcceptPressed() ||
+            ConsentDeclinePressed() ||
+            ConsentSubmitted() ||
+            ConsentVerified() ||
+            ConsentRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        ConsentVerifying(:final attempt),
+        ConsentVerified(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        _verified(attempt, read),
+      (
+        ConsentVerifying(),
+        ConsentStartPressed() ||
+            ConsentAcceptPressed() ||
+            ConsentDeclinePressed() ||
+            ConsentSubmitted() ||
+            ConsentVerified() ||
+            ConsentRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (ConsentFailed(:final attempt), ConsentRetryPressed()) => StepNext(
+        ConsentSubmitting(attempt + 1),
+        [ConsentSubmit(attempt + 1)],
+      ),
+      (ConsentUnverified(:final attempt), ConsentRetryPressed()) => StepNext(
+        ConsentVerifying(attempt),
+        [ConsentVerify(attempt)],
+      ),
+      (
+        ConsentFailed() || ConsentUnverified(),
+        ConsentStartPressed() ||
+            ConsentAcceptPressed() ||
+            ConsentSubmitted() ||
+            ConsentVerified(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        ConsentGateGiven() || ConsentDeclined() || ConsentSessionEnded(),
+        ConsentStartPressed() ||
+            ConsentAcceptPressed() ||
+            ConsentDeclinePressed() ||
+            ConsentSubmitted() ||
+            ConsentVerified() ||
+            ConsentRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class ConsentRequired extends ConsentGateState {
@@ -247,101 +346,4 @@ ConsentGateNext _verified(
   Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
     ConsentSessionEnded(),
   ),
-};
-
-ConsentGateNext transitionConsentGate(
-  ConsentGateState state,
-  ConsentGateEvent event,
-) => switch ((state, event)) {
-  (ConsentRequired(), ConsentStartPressed()) => const StepNext(ConsentAsking()),
-  (ConsentAsking(), ConsentAcceptPressed()) => const StepNext(
-    ConsentSubmitting(1),
-    [ConsentSubmit(1)],
-  ),
-  (
-    ConsentRequired() ||
-        ConsentAsking() ||
-        ConsentFailed() ||
-        ConsentUnverified(),
-    ConsentDeclinePressed(),
-  ) =>
-    const StepNext(ConsentDeclined()),
-  (
-    ConsentRequired(),
-    ConsentAcceptPressed() ||
-        ConsentSubmitted() ||
-        ConsentVerified() ||
-        ConsentRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-  (
-    ConsentAsking(),
-    ConsentStartPressed() ||
-        ConsentSubmitted() ||
-        ConsentVerified() ||
-        ConsentRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    ConsentSubmitting(:final attempt),
-    ConsentSubmitted(attempt: final answered, :final write),
-  )
-      when answered == attempt =>
-    _submitted(attempt, write),
-  (
-    ConsentSubmitting(),
-    ConsentStartPressed() ||
-        ConsentAcceptPressed() ||
-        ConsentDeclinePressed() ||
-        ConsentSubmitted() ||
-        ConsentVerified() ||
-        ConsentRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    ConsentVerifying(:final attempt),
-    ConsentVerified(attempt: final answered, :final read),
-  )
-      when answered == attempt =>
-    _verified(attempt, read),
-  (
-    ConsentVerifying(),
-    ConsentStartPressed() ||
-        ConsentAcceptPressed() ||
-        ConsentDeclinePressed() ||
-        ConsentSubmitted() ||
-        ConsentVerified() ||
-        ConsentRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (ConsentFailed(:final attempt), ConsentRetryPressed()) => StepNext(
-    ConsentSubmitting(attempt + 1),
-    [ConsentSubmit(attempt + 1)],
-  ),
-  (ConsentUnverified(:final attempt), ConsentRetryPressed()) => StepNext(
-    ConsentVerifying(attempt),
-    [ConsentVerify(attempt)],
-  ),
-  (
-    ConsentFailed() || ConsentUnverified(),
-    ConsentStartPressed() ||
-        ConsentAcceptPressed() ||
-        ConsentSubmitted() ||
-        ConsentVerified(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    ConsentGateGiven() || ConsentDeclined() || ConsentSessionEnded(),
-    ConsentStartPressed() ||
-        ConsentAcceptPressed() ||
-        ConsentDeclinePressed() ||
-        ConsentSubmitted() ||
-        ConsentVerified() ||
-        ConsentRetryPressed(),
-  ) =>
-    StepNext.stay(state),
 };

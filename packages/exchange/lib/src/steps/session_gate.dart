@@ -9,6 +9,103 @@ import 'step_next.dart';
 @immutable
 sealed class SessionGateState {
   const SessionGateState();
+
+  SessionGateNext next(SessionGateEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (SessionChecking(), SessionAccessChanged(:final access)) =>
+        switch (readSessionAccess(access)) {
+          AccessReadingSignedIn(:final session) => StepNext(
+            SessionOpen(session),
+          ),
+          AccessReadingSignedOut() => const StepNext(SessionSignInRequired(), [
+            SessionOpenSignIn(),
+          ]),
+          AccessReadingPending() => StepNext.stay(state),
+          AccessReadingBlocked(:final reason) => StepNext(
+            SessionUnavailable(reason),
+          ),
+        },
+      (
+        SessionChecking(),
+        SessionSignInFinished() ||
+            SessionSignInCancelled() ||
+            SessionRetryPressed() ||
+            SessionServerRejected(),
+      ) =>
+        StepNext.stay(state),
+
+      // A finished sign-in is also seen as the access turning signed in.
+      (SessionSignInRequired(), SessionAccessChanged(:final access)) =>
+        switch (readSessionAccess(access)) {
+          AccessReadingSignedIn(:final session) => StepNext(
+            SessionOpen(session),
+          ),
+          AccessReadingSignedOut() ||
+          AccessReadingPending() ||
+          AccessReadingBlocked() => StepNext.stay(state),
+        },
+      (SessionSignInRequired(), SessionSignInFinished(:final session)) =>
+        StepNext(SessionOpen(session)),
+      (SessionSignInRequired(), SessionSignInCancelled()) => const StepNext(
+        SessionClosed(),
+        [SessionCloseFlow()],
+      ),
+      (
+        SessionSignInRequired(),
+        SessionRetryPressed() || SessionServerRejected(),
+      ) =>
+        StepNext.stay(state),
+
+      (SessionUnavailable(), SessionRetryPressed()) => const StepNext(
+        SessionChecking(),
+        [SessionReadAccess()],
+      ),
+      (
+        SessionUnavailable(),
+        SessionAccessChanged() ||
+            SessionSignInFinished() ||
+            SessionSignInCancelled() ||
+            SessionServerRejected(),
+      ) =>
+        StepNext.stay(state),
+
+      (SessionOpen(:final session), SessionAccessChanged(:final access)) =>
+        switch (readSessionAccess(access)) {
+          AccessReadingSignedIn(session: final current)
+              when current == session =>
+            StepNext.stay(state),
+          AccessReadingSignedIn() ||
+          AccessReadingSignedOut() ||
+          AccessReadingPending() ||
+          AccessReadingBlocked() => _ended,
+        },
+      (
+        SessionOpen(:final session),
+        SessionServerRejected(session: final rejected),
+      )
+          when rejected == session =>
+        _ended,
+      (
+        SessionOpen(),
+        SessionServerRejected() ||
+            SessionSignInFinished() ||
+            SessionSignInCancelled() ||
+            SessionRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        SessionEnded() || SessionClosed(),
+        SessionAccessChanged() ||
+            SessionSignInFinished() ||
+            SessionSignInCancelled() ||
+            SessionRetryPressed() ||
+            SessionServerRejected(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 /// Waiting for the access state.
@@ -188,90 +285,3 @@ SessionAccessReading readSessionAccess(ExchangeAccess access) =>
 const _ended = StepNext<SessionGateState, SessionGateEffect>(SessionEnded(), [
   SessionShowEnded(),
 ]);
-
-SessionGateNext transitionSessionGate(
-  SessionGateState state,
-  SessionGateEvent event,
-) => switch ((state, event)) {
-  (SessionChecking(), SessionAccessChanged(:final access)) =>
-    switch (readSessionAccess(access)) {
-      AccessReadingSignedIn(:final session) => StepNext(SessionOpen(session)),
-      AccessReadingSignedOut() => const StepNext(SessionSignInRequired(), [
-        SessionOpenSignIn(),
-      ]),
-      AccessReadingPending() => StepNext.stay(state),
-      AccessReadingBlocked(:final reason) => StepNext(
-        SessionUnavailable(reason),
-      ),
-    },
-  (
-    SessionChecking(),
-    SessionSignInFinished() ||
-        SessionSignInCancelled() ||
-        SessionRetryPressed() ||
-        SessionServerRejected(),
-  ) =>
-    StepNext.stay(state),
-
-  // A finished sign-in is also seen as the access turning signed in.
-  (SessionSignInRequired(), SessionAccessChanged(:final access)) =>
-    switch (readSessionAccess(access)) {
-      AccessReadingSignedIn(:final session) => StepNext(SessionOpen(session)),
-      AccessReadingSignedOut() ||
-      AccessReadingPending() ||
-      AccessReadingBlocked() => StepNext.stay(state),
-    },
-  (SessionSignInRequired(), SessionSignInFinished(:final session)) => StepNext(
-    SessionOpen(session),
-  ),
-  (SessionSignInRequired(), SessionSignInCancelled()) => const StepNext(
-    SessionClosed(),
-    [SessionCloseFlow()],
-  ),
-  (SessionSignInRequired(), SessionRetryPressed() || SessionServerRejected()) =>
-    StepNext.stay(state),
-
-  (SessionUnavailable(), SessionRetryPressed()) => const StepNext(
-    SessionChecking(),
-    [SessionReadAccess()],
-  ),
-  (
-    SessionUnavailable(),
-    SessionAccessChanged() ||
-        SessionSignInFinished() ||
-        SessionSignInCancelled() ||
-        SessionServerRejected(),
-  ) =>
-    StepNext.stay(state),
-
-  (SessionOpen(:final session), SessionAccessChanged(:final access)) =>
-    switch (readSessionAccess(access)) {
-      AccessReadingSignedIn(session: final current) when current == session =>
-        StepNext.stay(state),
-      AccessReadingSignedIn() ||
-      AccessReadingSignedOut() ||
-      AccessReadingPending() ||
-      AccessReadingBlocked() => _ended,
-    },
-  (SessionOpen(:final session), SessionServerRejected(session: final rejected))
-      when rejected == session =>
-    _ended,
-  (
-    SessionOpen(),
-    SessionServerRejected() ||
-        SessionSignInFinished() ||
-        SessionSignInCancelled() ||
-        SessionRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    SessionEnded() || SessionClosed(),
-    SessionAccessChanged() ||
-        SessionSignInFinished() ||
-        SessionSignInCancelled() ||
-        SessionRetryPressed() ||
-        SessionServerRejected(),
-  ) =>
-    StepNext.stay(state),
-};

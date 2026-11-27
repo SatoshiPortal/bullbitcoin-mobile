@@ -168,6 +168,41 @@ final class VirtualPayeeStep extends RequirementStep {
 @immutable
 sealed class RequirementsState {
   const RequirementsState();
+
+  /// Events for a requirement that is not the current one are stays.
+  RequirementsNext next(RequirementsPolicy policy, RequirementsEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        final RequirementsRunning running,
+        RequirementInteracEvent(:final event),
+      ) =>
+        _onInterac(policy, running, event),
+      (
+        final RequirementsRunning running,
+        RequirementVirtualIbanEvent(:final event),
+      ) =>
+        _onVirtualIban(policy, running, event),
+      (
+        final RequirementsRunning running,
+        RequirementVirtualPayeeEvent(:final event),
+      ) =>
+        _onVirtualPayee(policy, running, event),
+      (final RequirementsRunning running, RequirementsCancelPressed()) =>
+        StepNext(const RequirementsCancelled(), _stopEffects(running)),
+
+      (
+        RequirementsReady() ||
+            RequirementsCancelled() ||
+            RequirementsSessionEnded(),
+        RequirementInteracEvent() ||
+            RequirementVirtualIbanEvent() ||
+            RequirementVirtualPayeeEvent() ||
+            RequirementsCancelPressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class RequirementsRunning extends RequirementsState {
@@ -451,7 +486,7 @@ RequirementsNext _onInterac(
   InteracSecurityEvent event,
 ) {
   if (running.current case InteracStep(state: final current)) {
-    final next = transitionInteracSecurity(current, event);
+    final next = current.next(event);
     if (identical(next.state, current)) return StepNext.stay(running);
     return _settle(policy, _with(running, InteracStep(next.state)), const []);
   }
@@ -464,7 +499,7 @@ RequirementsNext _onVirtualIban(
   VirtualIbanEvent event,
 ) {
   if (running.current case VirtualIbanStep(state: final current)) {
-    final next = transitionVirtualIban(policy.virtualIban, current, event);
+    final next = current.next(policy.virtualIban, event);
     if (identical(next.state, current)) return StepNext.stay(running);
     final (step, effects) = _iban(next);
     return _settle(policy, _with(running, step), effects);
@@ -478,48 +513,13 @@ RequirementsNext _onVirtualPayee(
   VirtualPayeeEvent event,
 ) {
   if (running.current case VirtualPayeeStep(state: final current)) {
-    final next = transitionVirtualPayee(policy.virtualPayee, current, event);
+    final next = current.next(policy.virtualPayee, event);
     if (identical(next.state, current)) return StepNext.stay(running);
     final (step, effects) = _payee(running.chosen, next);
     return _settle(policy, _with(running, step), effects);
   }
   return StepNext.stay(running);
 }
-
-/// Events for a requirement that is not the current one are stays.
-RequirementsNext transitionRequirements(
-  RequirementsPolicy policy,
-  RequirementsState state,
-  RequirementsEvent event,
-) => switch ((state, event)) {
-  (final RequirementsRunning running, RequirementInteracEvent(:final event)) =>
-    _onInterac(policy, running, event),
-  (
-    final RequirementsRunning running,
-    RequirementVirtualIbanEvent(:final event),
-  ) =>
-    _onVirtualIban(policy, running, event),
-  (
-    final RequirementsRunning running,
-    RequirementVirtualPayeeEvent(:final event),
-  ) =>
-    _onVirtualPayee(policy, running, event),
-  (final RequirementsRunning running, RequirementsCancelPressed()) => StepNext(
-    const RequirementsCancelled(),
-    _stopEffects(running),
-  ),
-
-  (
-    RequirementsReady() ||
-        RequirementsCancelled() ||
-        RequirementsSessionEnded(),
-    RequirementInteracEvent() ||
-        RequirementVirtualIbanEvent() ||
-        RequirementVirtualPayeeEvent() ||
-        RequirementsCancelPressed(),
-  ) =>
-    StepNext.stay(state),
-};
 
 /// Leaving while a requirement polls stops its watch.
 List<RequirementsEffect> _stopEffects(RequirementsRunning running) =>

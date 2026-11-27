@@ -35,6 +35,158 @@ final class VirtualPayeePolicy {
 @immutable
 sealed class VirtualPayeeState {
   const VirtualPayeeState();
+
+  VirtualPayeeNext next(VirtualPayeePolicy policy, VirtualPayeeEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        PayeeLoading(:final attempt),
+        PayeeLoaded(attempt: final at, :final read),
+      )
+          when at == attempt =>
+        _loaded(policy, attempt, read),
+      (
+        PayeeLoading(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed() ||
+            PayeeRetryPressed() ||
+            PayeeDeclinePressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (PayeeLoadFailed(:final attempt), PayeeRetryPressed()) ||
+      (
+        PayeeUnknownStatus(:final attempt),
+        PayeeRetryPressed(),
+      ) => StepNext(PayeeLoading(attempt + 1), [PayeeLoad(attempt + 1)]),
+      (
+        PayeeLoadFailed() ||
+            PayeeActivateFailed() ||
+            PayeeUnknownStatus() ||
+            PayeeTimedOut(),
+        PayeeDeclinePressed(),
+      ) =>
+        const StepNext(PayeeDeclined()),
+      (
+        PayeeLoadFailed() || PayeeUnknownStatus(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayeeActivating(:final attempt),
+        PayeeActivated(attempt: final at, :final write),
+      )
+          when at == attempt =>
+        _activated(policy, attempt, write),
+      (
+        PayeeActivating(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed() ||
+            PayeeRetryPressed() ||
+            PayeeDeclinePressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (PayeeActivateFailed(:final attempt), PayeeRetryPressed()) => _activate(
+        attempt + 1,
+      ),
+      (
+        PayeeActivateFailed(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed(),
+      ) =>
+        StepNext.stay(state),
+
+      (final PayeePending at, PayeePolled(:final ticket, :final read))
+          when ticket == at.ticket =>
+        _polled(policy, at, read),
+      (final PayeePending at, PayeeVisibilityChanged(visible: false)) =>
+        StepNext(
+          PayeePaused(at.attempt, at.round, at.ticket + 1, at.polls),
+          const [PayeeCancelPoll()],
+        ),
+      (final PayeePending at, PayeeDeadlinePassed(:final round))
+          when round == at.round =>
+        StepNext(PayeeTimedOut(at.attempt, at.round, at.ticket + 1), const [
+          PayeeStopWatching(),
+        ]),
+      (PayeePending() || PayeePaused(), PayeeDeclinePressed()) =>
+        const StepNext(PayeeDeclined(), [PayeeStopWatching()]),
+      (
+        PayeePending(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed() ||
+            PayeeRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (final PayeePaused at, PayeeVisibilityChanged(visible: true)) => StepNext(
+        PayeePending(at.attempt, at.round, at.ticket + 1, at.polls),
+        [PayeeSchedulePoll(at.ticket + 1, Duration.zero)],
+      ),
+      (final PayeePaused at, PayeeDeadlinePassed(:final round))
+          when round == at.round =>
+        StepNext(PayeeTimedOut(at.attempt, at.round, at.ticket + 1), const [
+          PayeeStopWatching(),
+        ]),
+      (
+        PayeePaused(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed() ||
+            PayeeRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (final PayeeTimedOut at, PayeeRetryPressed()) => StepNext(
+        PayeePending(at.attempt, at.round + 1, at.ticket, 0),
+        [
+          PayeeSchedulePoll(at.ticket, Duration.zero),
+          PayeeStartDeadline(at.round + 1, policy.maxDuration),
+        ],
+      ),
+      (
+        PayeeTimedOut(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayeeActive() || PayeeDeclined() || PayeeSessionEnded(),
+        PayeeLoaded() ||
+            PayeeActivated() ||
+            PayeePolled() ||
+            PayeeVisibilityChanged() ||
+            PayeeDeadlinePassed() ||
+            PayeeRetryPressed() ||
+            PayeeDeclinePressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class PayeeLoading extends VirtualPayeeState {
@@ -453,155 +605,4 @@ VirtualPayeeNext _polled(
     PayeeSessionEnded(),
     [PayeeStopWatching()],
   ),
-};
-
-VirtualPayeeNext transitionVirtualPayee(
-  VirtualPayeePolicy policy,
-  VirtualPayeeState state,
-  VirtualPayeeEvent event,
-) => switch ((state, event)) {
-  (PayeeLoading(:final attempt), PayeeLoaded(attempt: final at, :final read))
-      when at == attempt =>
-    _loaded(policy, attempt, read),
-  (
-    PayeeLoading(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed() ||
-        PayeeRetryPressed() ||
-        PayeeDeclinePressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (PayeeLoadFailed(:final attempt), PayeeRetryPressed()) ||
-  (
-    PayeeUnknownStatus(:final attempt),
-    PayeeRetryPressed(),
-  ) => StepNext(PayeeLoading(attempt + 1), [PayeeLoad(attempt + 1)]),
-  (
-    PayeeLoadFailed() ||
-        PayeeActivateFailed() ||
-        PayeeUnknownStatus() ||
-        PayeeTimedOut(),
-    PayeeDeclinePressed(),
-  ) =>
-    const StepNext(PayeeDeclined()),
-  (
-    PayeeLoadFailed() || PayeeUnknownStatus(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayeeActivating(:final attempt),
-    PayeeActivated(attempt: final at, :final write),
-  )
-      when at == attempt =>
-    _activated(policy, attempt, write),
-  (
-    PayeeActivating(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed() ||
-        PayeeRetryPressed() ||
-        PayeeDeclinePressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (PayeeActivateFailed(:final attempt), PayeeRetryPressed()) => _activate(
-    attempt + 1,
-  ),
-  (
-    PayeeActivateFailed(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed(),
-  ) =>
-    StepNext.stay(state),
-
-  (final PayeePending at, PayeePolled(:final ticket, :final read))
-      when ticket == at.ticket =>
-    _polled(policy, at, read),
-  (final PayeePending at, PayeeVisibilityChanged(visible: false)) => StepNext(
-    PayeePaused(at.attempt, at.round, at.ticket + 1, at.polls),
-    const [PayeeCancelPoll()],
-  ),
-  (final PayeePending at, PayeeDeadlinePassed(:final round))
-      when round == at.round =>
-    StepNext(PayeeTimedOut(at.attempt, at.round, at.ticket + 1), const [
-      PayeeStopWatching(),
-    ]),
-  (PayeePending() || PayeePaused(), PayeeDeclinePressed()) => const StepNext(
-    PayeeDeclined(),
-    [PayeeStopWatching()],
-  ),
-  (
-    PayeePending(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed() ||
-        PayeeRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (final PayeePaused at, PayeeVisibilityChanged(visible: true)) => StepNext(
-    PayeePending(at.attempt, at.round, at.ticket + 1, at.polls),
-    [PayeeSchedulePoll(at.ticket + 1, Duration.zero)],
-  ),
-  (final PayeePaused at, PayeeDeadlinePassed(:final round))
-      when round == at.round =>
-    StepNext(PayeeTimedOut(at.attempt, at.round, at.ticket + 1), const [
-      PayeeStopWatching(),
-    ]),
-  (
-    PayeePaused(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed() ||
-        PayeeRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (final PayeeTimedOut at, PayeeRetryPressed()) => StepNext(
-    PayeePending(at.attempt, at.round + 1, at.ticket, 0),
-    [
-      PayeeSchedulePoll(at.ticket, Duration.zero),
-      PayeeStartDeadline(at.round + 1, policy.maxDuration),
-    ],
-  ),
-  (
-    PayeeTimedOut(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayeeActive() || PayeeDeclined() || PayeeSessionEnded(),
-    PayeeLoaded() ||
-        PayeeActivated() ||
-        PayeePolled() ||
-        PayeeVisibilityChanged() ||
-        PayeeDeadlinePassed() ||
-        PayeeRetryPressed() ||
-        PayeeDeclinePressed(),
-  ) =>
-    StepNext.stay(state),
 };

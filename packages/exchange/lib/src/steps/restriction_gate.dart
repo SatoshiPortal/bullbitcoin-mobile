@@ -21,6 +21,24 @@ final class RestrictionCleared {
 @immutable
 sealed class RestrictionGateState {
   const RestrictionGateState();
+
+  RestrictionGateNext next(RestrictionGateEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (RestrictionRestricted(), RestrictionReloaded(restricted: false)) =>
+        _allowed,
+      (RestrictionRestricted(), RestrictionReloaded(restricted: true)) =>
+        StepNext.stay(state),
+      (RestrictionRestricted(), RestrictionLeavePressed()) => const StepNext(
+        RestrictionLeft(),
+      ),
+      (
+        RestrictionAllowed() || RestrictionLeft(),
+        RestrictionReloaded() || RestrictionLeavePressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class RestrictionAllowed extends RestrictionGateState {
@@ -76,20 +94,3 @@ const _allowed = StepNext<RestrictionGateState, RestrictionGateEffect>(
 
 RestrictionGateNext restrictionGateStart({required bool restricted}) =>
     restricted ? const StepNext(RestrictionRestricted()) : _allowed;
-
-RestrictionGateNext transitionRestrictionGate(
-  RestrictionGateState state,
-  RestrictionGateEvent event,
-) => switch ((state, event)) {
-  (RestrictionRestricted(), RestrictionReloaded(restricted: false)) => _allowed,
-  (RestrictionRestricted(), RestrictionReloaded(restricted: true)) =>
-    StepNext.stay(state),
-  (RestrictionRestricted(), RestrictionLeavePressed()) => const StepNext(
-    RestrictionLeft(),
-  ),
-  (
-    RestrictionAllowed() || RestrictionLeft(),
-    RestrictionReloaded() || RestrictionLeavePressed(),
-  ) =>
-    StepNext.stay(state),
-};

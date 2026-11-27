@@ -256,7 +256,7 @@ final _table = <RecipientPickState, Map<int, _Next>>{
 };
 
 RecipientPickNext _step(RecipientPickState state, RecipientPickEvent event) =>
-    transitionRecipientPick(_filter, state, event);
+    state.next(_filter, event);
 
 void main() {
   test('the table has a row for every state', () {
@@ -292,15 +292,11 @@ void main() {
 
   test('a filter without owner keeps the form owner', () {
     final any = RecipientFilter(rails: [PayoutRails.interacEmail]);
-    final next = transitionRecipientPick(
-      any,
-      RecipientPickCreating(
-        RecipientQuery(rails: any.rails),
-        1,
-        PayoutRails.interacEmail,
-      ),
-      const RecipientPickSubmitted(_input),
-    );
+    final next = RecipientPickCreating(
+      RecipientQuery(rails: any.rails),
+      1,
+      PayoutRails.interacEmail,
+    ).next(any, const RecipientPickSubmitted(_input));
     expect((next.state as RecipientPickSaving).details.isOwner, isFalse);
   });
 
@@ -339,16 +335,12 @@ void main() {
       lastname: 'Silva',
       isOwner: true,
     ).asConfidential();
-    final next = transitionRecipientPick(
-      filter,
-      RecipientPickSaving(
-        RecipientQuery(rails: filter.rails),
-        2,
-        PayoutRails.confidentialSepa,
-        details,
-      ),
-      RecipientPickSaved(2, Ok(savedSepa)),
-    );
+    final next = RecipientPickSaving(
+      RecipientQuery(rails: filter.rails),
+      2,
+      PayoutRails.confidentialSepa,
+      details,
+    ).next(filter, RecipientPickSaved(2, Ok(savedSepa)));
     final picked = next.state as RecipientPickPicked;
     expect(picked.chosen.rail, PayoutRails.confidentialSepa);
     expect(picked.isNew, isTrue);

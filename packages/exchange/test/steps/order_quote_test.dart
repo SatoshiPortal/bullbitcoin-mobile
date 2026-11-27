@@ -216,7 +216,7 @@ void main() {
   for (final state in _states) {
     for (final (index, event) in _events.indexed) {
       test('$state + ${event.runtimeType} #$index', () {
-        final next = transitionOrderStep(_policy, state, event);
+        final next = state.next(_policy, event);
         final expected = _table[state]![index];
         if (expected == null) {
           expect(identical(next.state, state), isTrue, reason: '$next');
@@ -236,14 +236,8 @@ void main() {
   });
 
   test('without a lock a created order is placed', () {
-    expect(
-      transitionOrderStep(_noLock, _creating, _events[0]),
-      const _Next(_placed),
-    );
-    expect(
-      transitionOrderStep(_noLock, _verifying, _events[7]),
-      const _Next(_placed),
-    );
+    expect(_creating.next(_noLock, _events[0]), const _Next(_placed));
+    expect(_verifying.next(_noLock, _events[7]), const _Next(_placed));
   });
 
   test('refresh failures in a row end in unavailable after the bound', () {
@@ -251,11 +245,10 @@ void main() {
       'o1',
       Err(ExchangeUnreachableFailure('timeout', isNetwork: true)),
     );
-    final second = transitionOrderStep(
-      _policy,
-      const OrderQuoted<String, _Order>(_q, QuoteRefreshing(1)),
-      failure,
-    );
+    final second = (const OrderQuoted<String, _Order>(
+      _q,
+      QuoteRefreshing(1),
+    )).next(_policy, failure);
     expect(
       second,
       const _Next(OrderQuoted(_q, QuoteRetrying(2)), [
@@ -263,18 +256,17 @@ void main() {
       ]),
     );
     expect(
-      transitionOrderStep(
-        _policy,
-        const OrderQuoted<String, _Order>(_q, QuoteRefreshing(2)),
-        failure,
-      ),
+      (const OrderQuoted<String, _Order>(
+        _q,
+        QuoteRefreshing(2),
+      )).next(_policy, failure),
       const _Next(_unavailable),
     );
   });
 
   test('a re-read that finds no order never sends the create again', () {
-    final read = transitionOrderStep(_policy, _verifying, _events[8]);
-    final retry = transitionOrderStep(_policy, read.state, _events[19]);
+    final read = _verifying.next(_policy, _events[8]);
+    final retry = read.state.next(_policy, _events[19]);
     expect(
       retry.effects.whereType<OrderSendCreate<String>>(),
       isEmpty,
@@ -299,12 +291,12 @@ void main() {
       final next = <_S>[];
       for (final state in frontier) {
         for (final event in events) {
-          final target = transitionOrderStep(_policy, state, event).state;
+          final target = state.next(_policy, event).state;
           reached.add(target.runtimeType);
           if (seen.add(target)) next.add(target);
         }
         for (final event in events) {
-          final target = transitionOrderStep(_noLock, state, event).state;
+          final target = state.next(_noLock, event).state;
           reached.add(target.runtimeType);
           if (seen.add(target)) next.add(target);
         }
@@ -338,11 +330,7 @@ void main() {
       expect(seen, FinancialWriteKind.orderCreate);
       expect(answered.attempt, 3);
       expect(
-        transitionOrderStep(
-          _policy,
-          const OrderCreating<String, _Order>(_req, 3),
-          answered,
-        ),
+        (const OrderCreating<String, _Order>(_req, 3)).next(_policy, answered),
         const _Next(_live, [OrderStartLockTimer('o1')]),
       );
     });
@@ -370,7 +358,7 @@ void main() {
         );
         expect(sent, isFalse);
         expect(
-          transitionOrderStep(_policy, _creating, answered),
+          _creating.next(_policy, answered),
           const _Next(
             OrderWriteRefused(
               _req,
@@ -396,7 +384,7 @@ void main() {
       );
       expect(journaled, [_req]);
       expect(
-        transitionOrderStep(_policy, _creating, answered),
+        _creating.next(_policy, answered),
         const _Next(OrderVerifying(_req, 1), [OrderFindCreated(_req, 1)]),
       );
     });

@@ -524,7 +524,7 @@ FundFlowNext _loading(FundLoading state, FundFlowEvent event) {
         FundSessionChanged():
       return FundFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return FundFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(context: final account) => _opened(state.session, account),
@@ -611,7 +611,7 @@ FundFlowNext _askConsent(FundOpen open, FundingRail rail) {
     ConsentSessionEnded() => _consentNext(
       open,
       rail,
-      transitionConsentGate(start.state, const ConsentStartPressed()),
+      start.state.next(const ConsentStartPressed()),
     ),
   };
 }
@@ -694,7 +694,7 @@ FundFlowNext _consenting(FundConsenting state, FundFlowEvent event) {
         FundSessionChanged():
       return FundFlowNext.stay(state);
   }
-  final next = transitionConsentGate(state.gate, gateEvent);
+  final next = state.gate.next(gateEvent);
   if (identical(next.state, state.gate)) return FundFlowNext.stay(state);
   return _consentNext(state.open, state.rail, next);
 }
@@ -735,7 +735,7 @@ FundFlowNext _institutions(FundInstitutions state, FundFlowEvent event) {
         FundSessionChanged():
       return FundFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return FundFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(context: final institutions) => FundFlowNext(

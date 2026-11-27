@@ -609,7 +609,7 @@ PayFlowNext _loading(PayLoading state, PayFlowEvent event) {
         PaySessionChanged():
       return PayFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return PayFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(:final context) => PayFlowNext(
@@ -704,11 +704,7 @@ PayFlowNext _requirements(PayRequirements state, PayFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionRequirements(
-      payRequirementsPolicy,
-      state.requirements,
-      stepEvent,
-    ),
+    state.requirements.next(payRequirementsPolicy, stepEvent),
     state.requirements,
     (next) => _requirementsNext(state.open, next),
   );
@@ -747,7 +743,7 @@ PayFlowNext _amountNext(
 PayFlowNext _amount(PayAmount state, PayFlowEvent event) => switch (event) {
   PayAmountChanged(:final event) => _stepped(
     state,
-    transitionAmountEntry(state.policy, state.amount, event),
+    state.amount.next(state.policy, event),
     state.amount,
     (next) => _amountNext(state.open, state.recipient, next),
   ),
@@ -764,9 +760,8 @@ PayFlowNext _amount(PayAmount state, PayFlowEvent event) => switch (event) {
       Ok(value: final context) => _amountNext(
         PayOpen(state.open.session, state.open.context.withAccount(context)),
         state.recipient,
-        transitionAmountEntry(
+        state.amount.next(
           state.policy,
-          state.amount,
           AmountDetourReturned(context.amountContext),
         ),
       ),
@@ -805,11 +800,10 @@ PayFlowNext _editAmount(
 ) => _amountNext(
   open,
   recipient,
-  transitionAmountEntry(
-    payAmountPolicy(recipient.rail.market),
-    AmountDone(amount, open.context.amountContext),
-    const AmountEditRequested(),
-  ),
+  AmountDone(
+    amount,
+    open.context.amountContext,
+  ).next(payAmountPolicy(recipient.rail.market), const AmountEditRequested()),
 );
 
 /// The exchange refused [request]'s amount for [limit]: back to the amount
@@ -823,9 +817,8 @@ PayFlowNext _amountRefused(
   return _amountNext(
     learned,
     request.recipient,
-    transitionAmountEntry(
+    AmountDone(request.amount, learned.context.amountContext).next(
       payAmountPolicy(request.recipient.rail.market),
-      AmountDone(request.amount, learned.context.amountContext),
       AmountLimitRefused(limit),
     ),
   );
@@ -1002,7 +995,7 @@ PayFlowNext _ordering(PayOrdering state, PayFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionOrderStep(payOrderPolicy, state.order, stepEvent),
+    state.order.next(payOrderPolicy, stepEvent),
     state.order,
     (next) => _order(state.open, state.request, state.spend, next, commit),
   );
@@ -1131,7 +1124,7 @@ PayFlowNext _paying(PayPaying state, PayFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionPayin(payPayinPolicy, state.payin, stepEvent),
+    state.payin.next(payPayinPolicy, stepEvent),
     state.payin,
     (next) =>
         _payin(state.open, state.request, state.quoted, state.spend, next),
@@ -1194,7 +1187,7 @@ PayFlowNext _done(PayDone state, PayFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionOutcomeWatch(payReceiptPolicy, receipt, watchEvent),
+    receipt.next(payReceiptPolicy, watchEvent),
     receipt,
     (next) => _receipt(state, next),
   );

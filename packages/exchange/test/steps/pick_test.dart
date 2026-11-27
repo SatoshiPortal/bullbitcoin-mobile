@@ -141,7 +141,7 @@ void main() {
   for (final state in _states) {
     for (final (index, event) in _events.indexed) {
       test('$state + ${event.runtimeType} #$index', () {
-        final next = transitionPick(_policy, state, event);
+        final next = state.next(_policy, event);
         final expected = _table[state]![index];
         if (expected == null) {
           expect(identical(next.state, state), isTrue, reason: '$next');
@@ -155,7 +155,7 @@ void main() {
 
   test('a destination pick without a typed address ignores typing', () {
     final noTyped = destinationPolicy(acceptsTyped: false);
-    final next = transitionPick(noTyped, _choosing, const PickTyped('bc1q'));
+    final next = _choosing.next(noTyped, const PickTyped('bc1q'));
     expect(identical(next.state, _choosing), isTrue);
   });
 
@@ -164,28 +164,20 @@ void main() {
     const outside = PayinOptionExternal(BtcNetwork.lightning);
     final start = pickStart<PayinOption, PayinSource>([app, outside]);
     expect(
-      transitionPick(payinSourcePolicy, start.state, const PickChose(outside)),
+      start.state.next(payinSourcePolicy, const PickChose(outside)),
       const StepNext<
         PickState<PayinOption, PayinSource>,
         PickEffect<PayinOption>
       >(PickChosen([app, outside], PayinFromExternal(BtcNetwork.lightning))),
     );
     expect(
-      transitionPick(
-        payinSourcePolicy,
-        start.state,
-        const PickChose(app),
-      ).state,
+      start.state.next(payinSourcePolicy, const PickChose(app)).state,
       const PickChosen<PayinOption, PayinSource>([
         app,
         outside,
       ], PayinFromAppWallet('w1', BtcNetwork.liquid)),
     );
-    final typed = transitionPick(
-      payinSourcePolicy,
-      start.state,
-      const PickTyped('bc1q'),
-    );
+    final typed = start.state.next(payinSourcePolicy, const PickTyped('bc1q'));
     expect(identical(typed.state, start.state), isTrue);
   });
 
@@ -197,7 +189,7 @@ void main() {
       final next = <_S>[];
       for (final state in frontier) {
         for (final event in _events) {
-          final target = transitionPick(_policy, state, event).state;
+          final target = state.next(_policy, event).state;
           if (reached.add(target.runtimeType)) next.add(target);
         }
       }

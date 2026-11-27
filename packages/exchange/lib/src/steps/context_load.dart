@@ -11,6 +11,44 @@ import 'package:primitives/primitives.dart';
 @immutable
 sealed class ContextLoadState<C> {
   const ContextLoadState();
+
+  StepNext<ContextLoadState<C>, ContextLoadEffect> next(
+    ContextLoadEvent<C> event,
+  ) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        ContextLoading(:final attempt),
+        ContextLoaded(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        switch (read) {
+          Ok(:final value) => StepNext(ContextReady<C>(value)),
+          Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+            ContextSessionRejected<C>(),
+          ),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(
+            failure: ExchangeMalformedFailure(),
+          ) => StepNext(ContextFailed<C>(attempt, ReadProblem.of(read)!)),
+        },
+      (ContextLoading(), ContextLoaded() || ContextRetryPressed()) =>
+        StepNext.stay(state),
+
+      (ContextFailed(:final attempt), ContextRetryPressed()) => StepNext(
+        ContextLoading<C>(attempt + 1),
+        [ContextFetch(attempt + 1)],
+      ),
+      (ContextFailed(), ContextLoaded()) => StepNext.stay(state),
+
+      (
+        ContextReady() || ContextSessionRejected(),
+        ContextLoaded() || ContextRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class ContextLoading<C> extends ContextLoadState<C> {
@@ -118,40 +156,3 @@ final class ContextFetch extends ContextLoadEffect {
 
 StepNext<ContextLoadState<C>, ContextLoadEffect> contextLoadStart<C>() =>
     StepNext(ContextLoading<C>(1), const [ContextFetch(1)]);
-
-StepNext<ContextLoadState<C>, ContextLoadEffect> transitionContextLoad<C>(
-  ContextLoadState<C> state,
-  ContextLoadEvent<C> event,
-) => switch ((state, event)) {
-  (
-    ContextLoading(:final attempt),
-    ContextLoaded(attempt: final answered, :final read),
-  )
-      when answered == attempt =>
-    switch (read) {
-      Ok(:final value) => StepNext(ContextReady<C>(value)),
-      Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
-        ContextSessionRejected<C>(),
-      ),
-      Err(failure: ExchangeMissingFailure()) ||
-      Err(failure: ExchangeUnreachableFailure()) ||
-      Err(
-        failure: ExchangeMalformedFailure(),
-      ) => StepNext(ContextFailed<C>(attempt, ReadProblem.of(read)!)),
-    },
-  (ContextLoading(), ContextLoaded() || ContextRetryPressed()) => StepNext.stay(
-    state,
-  ),
-
-  (ContextFailed(:final attempt), ContextRetryPressed()) => StepNext(
-    ContextLoading<C>(attempt + 1),
-    [ContextFetch(attempt + 1)],
-  ),
-  (ContextFailed(), ContextLoaded()) => StepNext.stay(state),
-
-  (
-    ContextReady() || ContextSessionRejected(),
-    ContextLoaded() || ContextRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-};

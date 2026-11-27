@@ -154,7 +154,7 @@ void main() {
   for (final state in _states) {
     for (final (index, event) in _events.indexed) {
       test('$state + ${event.runtimeType} #$index', () {
-        final next = transitionOutcomeWatch(_policy, state, event);
+        final next = state.next(_policy, event);
         final expected = _table[state]![index];
         if (expected == null) {
           expect(identical(next.state, state), isTrue, reason: '$next');
@@ -185,28 +185,19 @@ void main() {
 
   test('a done order without a receipt keeps the receipt closed', () {
     const plain = WatchDone<_Order>(_Order('o1', 'done-no-receipt'));
-    final next = transitionOutcomeWatch(
-      _policy,
-      plain,
-      const WatchReceiptOpened<_Order>(),
-    );
+    final next = plain.next(_policy, const WatchReceiptOpened<_Order>());
     expect(identical(next.state, plain), isTrue);
   });
 
   test('a poll in flight when the watch paused lands nowhere', () {
-    final paused = transitionOutcomeWatch(
+    final paused = _watching
+        .next(_policy, const WatchVisibilityChanged<_Order>(visible: false))
+        .state;
+    final resumed = paused
+        .next(_policy, const WatchVisibilityChanged<_Order>(visible: true))
+        .state;
+    final late = resumed.next(
       _policy,
-      _watching,
-      const WatchVisibilityChanged<_Order>(visible: false),
-    ).state;
-    final resumed = transitionOutcomeWatch(
-      _policy,
-      paused,
-      const WatchVisibilityChanged<_Order>(visible: true),
-    ).state;
-    final late = transitionOutcomeWatch(
-      _policy,
-      resumed,
       const WatchPolled<_Order>('o1', 1, Ok(_done)),
     );
     expect(identical(late.state, resumed), isTrue);
@@ -216,11 +207,9 @@ void main() {
     var state = outcomeWatchStart(_policy, _o).state;
     for (var i = 0; i < 3; i++) {
       final ticket = (state as WatchWatching<_Order>).ticket;
-      state = transitionOutcomeWatch(
-        _policy,
-        state,
-        WatchPolled('o1', ticket, const Ok(_o)),
-      ).state;
+      state = state
+          .next(_policy, WatchPolled('o1', ticket, const Ok(_o)))
+          .state;
     }
     expect(state, const WatchTimedOut(_o, 4));
   });
@@ -257,7 +246,7 @@ void main() {
       final next = <_S>[];
       for (final state in frontier) {
         for (final event in events) {
-          final target = transitionOutcomeWatch(_policy, state, event).state;
+          final target = state.next(_policy, event).state;
           reached.add(target.runtimeType);
           if (seen.add(target)) next.add(target);
         }

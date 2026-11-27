@@ -390,6 +390,457 @@ PayinCheck payinCheckFrom({
 @immutable
 sealed class PayinState<P> extends _PayinValue {
   const PayinState();
+
+  PayinNext<P> next(PayinPolicy policy, PayinEvent<P> event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        PayinBuilding(
+          :final order,
+          :final target,
+          :final spend,
+          :final attempt,
+        ),
+        PayinBuildAnswered(attempt: final answered, :final result, :final at),
+      )
+          when answered == attempt =>
+        _built(order, target, spend, attempt, result, at),
+      (PayinBuilding(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
+      (
+        PayinBuilding(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinBroadcasting(
+          :final order,
+          :final target,
+          :final attempt,
+          :final built,
+        ),
+        PayinSendAnswered(attempt: final answered, :final answer),
+      )
+          when answered == attempt =>
+        _sent(policy, order, target, attempt, built, answer),
+      (
+        PayinBroadcasting(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinBackPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinWriteRefused(
+          :final order,
+          :final target,
+          :final attempt,
+          :final built,
+        ),
+        PayinRetryPressed(),
+      ) =>
+        _rechecking(order, target, attempt + 1, PayinResumeSend<P>(built)),
+      (PayinWriteRefused(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
+      (
+        PayinSendFailed(
+          :final order,
+          :final target,
+          :final attempt,
+          :final resume,
+        ),
+        PayinRetryPressed(),
+      ) =>
+        _rechecking(order, target, attempt + 1, resume),
+      (PayinSendFailed(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
+      (
+        PayinWriteRefused() || PayinSendFailed(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinResendPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        final PayinRechecking<P> rechecking,
+        PayinRechecked(attempt: final answered, :final read, :final at),
+      )
+          when answered == rechecking.attempt =>
+        _rechecked(policy, rechecking, read, at),
+      (
+        PayinRechecking(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinBackPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinRecheckFailed(
+          :final order,
+          :final target,
+          :final attempt,
+          :final resume,
+        ),
+        PayinRetryPressed(),
+      ) =>
+        _rechecking(order, target, attempt, resume),
+      (PayinRecheckFailed(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
+      (
+        PayinRecheckFailed(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinResendPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        final PayinPayjoinNegotiating<P> negotiating,
+        PayinPayjoinUpdated(:final sessionId, progress: PayjoinPaused()),
+      )
+          when sessionId == negotiating.sessionId =>
+        _payjoinPaused(negotiating),
+      (
+        final PayinPayjoinPaused<P> paused,
+        PayinPayjoinUpdated(:final sessionId, progress: PayjoinNegotiating()),
+      )
+          when sessionId == paused.sessionId =>
+        _payjoinResumed(paused),
+      (final PayinPayjoinPaused<P> paused, PayinRetryPressed()) =>
+        _payjoinResumed(paused, [PayinRetryPayjoin<P>(paused.sessionId)]),
+      (
+        PayinPayjoinNegotiating(
+              :final order,
+              :final target,
+              :final sessionId,
+            ) ||
+            PayinPayjoinPaused(:final order, :final target, :final sessionId),
+        PayinPayjoinUpdated(
+          sessionId: final updated,
+          progress: PayjoinSent(:final txid),
+        ),
+      )
+          when updated == sessionId =>
+        _watching(policy, order, target, txid, [
+          PayinStopPayjoin<P>(sessionId),
+        ]),
+      (
+        PayinPayjoinNegotiating(
+              :final order,
+              :final target,
+              :final attempt,
+              :final sessionId,
+              :final originalTxid,
+            ) ||
+            PayinPayjoinPaused(
+              :final order,
+              :final target,
+              :final attempt,
+              :final sessionId,
+              :final originalTxid,
+            ),
+        PayinPayjoinUpdated(
+          sessionId: final updated,
+          progress: PayjoinExpired(),
+        ),
+      )
+          when updated == sessionId =>
+        _verifying(order, target, attempt, originalTxid, null, [
+          PayinStopPayjoin<P>(sessionId),
+        ]),
+      (
+        PayinPayjoinNegotiating(
+              :final order,
+              :final target,
+              :final attempt,
+              :final sessionId,
+              :final originalTxid,
+            ) ||
+            PayinPayjoinPaused(
+              :final order,
+              :final target,
+              :final attempt,
+              :final sessionId,
+              :final originalTxid,
+            ),
+        PayinPayjoinWatchEnded(sessionId: final ended),
+      )
+          when ended == sessionId =>
+        _verifying(order, target, attempt, originalTxid, null),
+      (
+        PayinPayjoinNegotiating() || PayinPayjoinPaused(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinBackPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        final PayinVerifying<P> verifying,
+        PayinVerified(attempt: final answered, :final check),
+      )
+          when answered == verifying.attempt =>
+        _checked(policy, verifying, check),
+      (
+        PayinVerifying(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinBackPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinUnseen(
+              :final order,
+              :final target,
+              :final attempt,
+              :final txid,
+              :final built,
+            ) ||
+            PayinUnverified(
+              :final order,
+              :final target,
+              :final attempt,
+              :final txid,
+              :final built,
+            ),
+        PayinRetryPressed(),
+      ) =>
+        _verifying(order, target, attempt, txid, built),
+      (
+        PayinUnseen(:final order, :final target, :final attempt, :final built?),
+        PayinResendPressed(),
+      ) =>
+        _rechecking(order, target, attempt + 1, PayinResumeSend<P>(built)),
+      (
+        PayinUnseen(:final order, :final txid) ||
+            PayinUnverified(:final order, :final txid),
+        PayinBackPressed(),
+      ) =>
+        StepNext(PayinLeftPending<P>(order, txid)),
+      (
+        PayinUnseen() || PayinUnverified(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinResendPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinWatching(:final order, :final target, :final txid, :final watch),
+        PayinWatchEvent(event: final watchEvent),
+      ) =>
+        _watchStep(
+              policy,
+              order,
+              target,
+              txid,
+              watch,
+              watchEvent,
+              (latest, next) => PayinWatching<P>(latest, target, txid, next),
+            ) ??
+            StepNext.stay(state),
+      (
+        PayinWatching(:final order, :final target, :final txid, :final watch),
+        PayinBackPressed(),
+      ) =>
+        _watchStep(
+              policy,
+              order,
+              target,
+              txid,
+              watch,
+              const WatchLeavePressed<Order>(),
+              (latest, next) => PayinWatching<P>(latest, target, txid, next),
+            ) ??
+            StepNext.stay(state),
+      (
+        PayinWatching(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinExternal(:final order, :final target, :final watch),
+        PayinWatchEvent(event: final watchEvent),
+      ) =>
+        _watchStep(
+              policy,
+              order,
+              target,
+              null,
+              watch,
+              watchEvent,
+              (latest, next) => PayinExternal<P>(latest, target, next),
+            ) ??
+            StepNext.stay(state),
+      (
+        PayinExternal(:final order, :final target, :final watch),
+        PayinBackPressed(),
+      ) =>
+        StepNext(PayinExternalLeaving<P>(order, target, watch)),
+      (
+        PayinExternal(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinExternalLeaving(:final order, :final target, :final watch),
+        PayinWatchEvent(event: final watchEvent),
+      ) =>
+        _watchStep(
+              policy,
+              order,
+              target,
+              null,
+              watch,
+              watchEvent,
+              (latest, next) => PayinExternalLeaving<P>(latest, target, next),
+            ) ??
+            StepNext.stay(state),
+      (
+        PayinExternalLeaving(:final order, :final target, :final watch),
+        PayinLeaveConfirmed(),
+      ) =>
+        _watchStep(
+              policy,
+              order,
+              target,
+              null,
+              watch,
+              const WatchLeavePressed<Order>(),
+              (latest, next) => PayinExternalLeaving<P>(latest, target, next),
+            ) ??
+            StepNext(PayinLeftPending<P>(order, null)),
+      (
+        PayinExternalLeaving(:final order, :final target, :final watch),
+        PayinLeaveCancelled() || PayinBackPressed(),
+      ) =>
+        StepNext(PayinExternal<P>(order, target, watch)),
+      (
+        PayinExternalLeaving(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinRetryPressed() ||
+            PayinResendPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        PayinCompleted() ||
+            PayinRefusedByExchange() ||
+            PayinQuoteLapsed() ||
+            PayinOrderEnded() ||
+            PayinDepositRefused() ||
+            PayinLeft() ||
+            PayinLeftPending() ||
+            PayinSessionEnded(),
+        PayinBuildAnswered() ||
+            PayinSendAnswered() ||
+            PayinRechecked() ||
+            PayinVerified() ||
+            PayinPayjoinUpdated() ||
+            PayinPayjoinWatchEnded() ||
+            PayinWatchEvent() ||
+            PayinRetryPressed() ||
+            PayinResendPressed() ||
+            PayinBackPressed() ||
+            PayinLeaveConfirmed() ||
+            PayinLeaveCancelled(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 /// Preparing and signing from the app wallet; nothing is sent.
@@ -1135,7 +1586,7 @@ PayinNext<P>? _watchStep<P>(
   OutcomeWatchEvent<Order> event,
   PayinState<P> Function(Order order, OutcomeWatchState<Order> watch) keep,
 ) {
-  final next = transitionOutcomeWatch(policy.watchFor(target), watch, event);
+  final next = watch.next(policy.watchFor(target), event);
   if (identical(next.state, watch) && next.effects.isEmpty) return null;
   return _afterWatch(order, txid, next, keep);
 }
@@ -1319,438 +1770,3 @@ PayinNext<P> _payjoinResumed<P>(
   ),
   effects,
 );
-
-PayinNext<P> transitionPayin<P>(
-  PayinPolicy policy,
-  PayinState<P> state,
-  PayinEvent<P> event,
-) => switch ((state, event)) {
-  (
-    PayinBuilding(:final order, :final target, :final spend, :final attempt),
-    PayinBuildAnswered(attempt: final answered, :final result, :final at),
-  )
-      when answered == attempt =>
-    _built(order, target, spend, attempt, result, at),
-  (PayinBuilding(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
-  (
-    PayinBuilding(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinBroadcasting(
-      :final order,
-      :final target,
-      :final attempt,
-      :final built,
-    ),
-    PayinSendAnswered(attempt: final answered, :final answer),
-  )
-      when answered == attempt =>
-    _sent(policy, order, target, attempt, built, answer),
-  (
-    PayinBroadcasting(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinBackPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinWriteRefused(
-      :final order,
-      :final target,
-      :final attempt,
-      :final built,
-    ),
-    PayinRetryPressed(),
-  ) =>
-    _rechecking(order, target, attempt + 1, PayinResumeSend<P>(built)),
-  (PayinWriteRefused(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
-  (
-    PayinSendFailed(:final order, :final target, :final attempt, :final resume),
-    PayinRetryPressed(),
-  ) =>
-    _rechecking(order, target, attempt + 1, resume),
-  (PayinSendFailed(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
-  (
-    PayinWriteRefused() || PayinSendFailed(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinResendPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    final PayinRechecking<P> rechecking,
-    PayinRechecked(attempt: final answered, :final read, :final at),
-  )
-      when answered == rechecking.attempt =>
-    _rechecked(policy, rechecking, read, at),
-  (
-    PayinRechecking(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinBackPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinRecheckFailed(
-      :final order,
-      :final target,
-      :final attempt,
-      :final resume,
-    ),
-    PayinRetryPressed(),
-  ) =>
-    _rechecking(order, target, attempt, resume),
-  (PayinRecheckFailed(), PayinBackPressed()) => StepNext(PayinLeft<P>()),
-  (
-    PayinRecheckFailed(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinResendPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    final PayinPayjoinNegotiating<P> negotiating,
-    PayinPayjoinUpdated(:final sessionId, progress: PayjoinPaused()),
-  )
-      when sessionId == negotiating.sessionId =>
-    _payjoinPaused(negotiating),
-  (
-    final PayinPayjoinPaused<P> paused,
-    PayinPayjoinUpdated(:final sessionId, progress: PayjoinNegotiating()),
-  )
-      when sessionId == paused.sessionId =>
-    _payjoinResumed(paused),
-  (final PayinPayjoinPaused<P> paused, PayinRetryPressed()) => _payjoinResumed(
-    paused,
-    [PayinRetryPayjoin<P>(paused.sessionId)],
-  ),
-  (
-    PayinPayjoinNegotiating(:final order, :final target, :final sessionId) ||
-        PayinPayjoinPaused(:final order, :final target, :final sessionId),
-    PayinPayjoinUpdated(
-      sessionId: final updated,
-      progress: PayjoinSent(:final txid),
-    ),
-  )
-      when updated == sessionId =>
-    _watching(policy, order, target, txid, [PayinStopPayjoin<P>(sessionId)]),
-  (
-    PayinPayjoinNegotiating(
-          :final order,
-          :final target,
-          :final attempt,
-          :final sessionId,
-          :final originalTxid,
-        ) ||
-        PayinPayjoinPaused(
-          :final order,
-          :final target,
-          :final attempt,
-          :final sessionId,
-          :final originalTxid,
-        ),
-    PayinPayjoinUpdated(sessionId: final updated, progress: PayjoinExpired()),
-  )
-      when updated == sessionId =>
-    _verifying(order, target, attempt, originalTxid, null, [
-      PayinStopPayjoin<P>(sessionId),
-    ]),
-  (
-    PayinPayjoinNegotiating(
-          :final order,
-          :final target,
-          :final attempt,
-          :final sessionId,
-          :final originalTxid,
-        ) ||
-        PayinPayjoinPaused(
-          :final order,
-          :final target,
-          :final attempt,
-          :final sessionId,
-          :final originalTxid,
-        ),
-    PayinPayjoinWatchEnded(sessionId: final ended),
-  )
-      when ended == sessionId =>
-    _verifying(order, target, attempt, originalTxid, null),
-  (
-    PayinPayjoinNegotiating() || PayinPayjoinPaused(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinBackPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    final PayinVerifying<P> verifying,
-    PayinVerified(attempt: final answered, :final check),
-  )
-      when answered == verifying.attempt =>
-    _checked(policy, verifying, check),
-  (
-    PayinVerifying(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinBackPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinUnseen(
-          :final order,
-          :final target,
-          :final attempt,
-          :final txid,
-          :final built,
-        ) ||
-        PayinUnverified(
-          :final order,
-          :final target,
-          :final attempt,
-          :final txid,
-          :final built,
-        ),
-    PayinRetryPressed(),
-  ) =>
-    _verifying(order, target, attempt, txid, built),
-  (
-    PayinUnseen(:final order, :final target, :final attempt, :final built?),
-    PayinResendPressed(),
-  ) =>
-    _rechecking(order, target, attempt + 1, PayinResumeSend<P>(built)),
-  (
-    PayinUnseen(:final order, :final txid) ||
-        PayinUnverified(:final order, :final txid),
-    PayinBackPressed(),
-  ) =>
-    StepNext(PayinLeftPending<P>(order, txid)),
-  (
-    PayinUnseen() || PayinUnverified(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinResendPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinWatching(:final order, :final target, :final txid, :final watch),
-    PayinWatchEvent(event: final watchEvent),
-  ) =>
-    _watchStep(
-          policy,
-          order,
-          target,
-          txid,
-          watch,
-          watchEvent,
-          (latest, next) => PayinWatching<P>(latest, target, txid, next),
-        ) ??
-        StepNext.stay(state),
-  (
-    PayinWatching(:final order, :final target, :final txid, :final watch),
-    PayinBackPressed(),
-  ) =>
-    _watchStep(
-          policy,
-          order,
-          target,
-          txid,
-          watch,
-          const WatchLeavePressed<Order>(),
-          (latest, next) => PayinWatching<P>(latest, target, txid, next),
-        ) ??
-        StepNext.stay(state),
-  (
-    PayinWatching(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinExternal(:final order, :final target, :final watch),
-    PayinWatchEvent(event: final watchEvent),
-  ) =>
-    _watchStep(
-          policy,
-          order,
-          target,
-          null,
-          watch,
-          watchEvent,
-          (latest, next) => PayinExternal<P>(latest, target, next),
-        ) ??
-        StepNext.stay(state),
-  (
-    PayinExternal(:final order, :final target, :final watch),
-    PayinBackPressed(),
-  ) =>
-    StepNext(PayinExternalLeaving<P>(order, target, watch)),
-  (
-    PayinExternal(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinExternalLeaving(:final order, :final target, :final watch),
-    PayinWatchEvent(event: final watchEvent),
-  ) =>
-    _watchStep(
-          policy,
-          order,
-          target,
-          null,
-          watch,
-          watchEvent,
-          (latest, next) => PayinExternalLeaving<P>(latest, target, next),
-        ) ??
-        StepNext.stay(state),
-  (
-    PayinExternalLeaving(:final order, :final target, :final watch),
-    PayinLeaveConfirmed(),
-  ) =>
-    _watchStep(
-          policy,
-          order,
-          target,
-          null,
-          watch,
-          const WatchLeavePressed<Order>(),
-          (latest, next) => PayinExternalLeaving<P>(latest, target, next),
-        ) ??
-        StepNext(PayinLeftPending<P>(order, null)),
-  (
-    PayinExternalLeaving(:final order, :final target, :final watch),
-    PayinLeaveCancelled() || PayinBackPressed(),
-  ) =>
-    StepNext(PayinExternal<P>(order, target, watch)),
-  (
-    PayinExternalLeaving(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinRetryPressed() ||
-        PayinResendPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    PayinCompleted() ||
-        PayinRefusedByExchange() ||
-        PayinQuoteLapsed() ||
-        PayinOrderEnded() ||
-        PayinDepositRefused() ||
-        PayinLeft() ||
-        PayinLeftPending() ||
-        PayinSessionEnded(),
-    PayinBuildAnswered() ||
-        PayinSendAnswered() ||
-        PayinRechecked() ||
-        PayinVerified() ||
-        PayinPayjoinUpdated() ||
-        PayinPayjoinWatchEnded() ||
-        PayinWatchEvent() ||
-        PayinRetryPressed() ||
-        PayinResendPressed() ||
-        PayinBackPressed() ||
-        PayinLeaveConfirmed() ||
-        PayinLeaveCancelled(),
-  ) =>
-    StepNext.stay(state),
-};

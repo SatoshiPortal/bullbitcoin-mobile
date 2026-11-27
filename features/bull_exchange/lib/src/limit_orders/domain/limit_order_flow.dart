@@ -874,7 +874,7 @@ LimitFlowNext _loading(LimitLoading state, LimitFlowEvent event) {
         LimitConfirmChanged():
       return LimitFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return LimitFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(:final context) => _opened(LimitOpen(state.session, context)),
@@ -1073,7 +1073,7 @@ LimitPickNext _pick(LimitPickState pick, LimitPickEvent event) {
     PickResolving() ||
     PickValidating() => pick,
   };
-  final next = transitionPick(_destinationPolicy, from, event);
+  final next = from.next(_destinationPolicy, event);
   return identical(next.state, from) && !identical(from, pick)
       ? LimitPickNext(from)
       : next;
@@ -1158,9 +1158,8 @@ LimitFlowNext _amountNext(
           open,
           target,
           destination,
-          transitionAmountEntry(
+          next.state.next(
             limitAmountPolicy(target, destination),
-            next.state,
             AmountRateArrived(market, Ok(target.limitPrice)),
           ),
         );
@@ -1191,7 +1190,7 @@ LimitFlowNext _amount(LimitAmount state, LimitFlowEvent event) {
     case LimitAmountChanged(:final event):
       return _stepped(
         state,
-        transitionAmountEntry(state.policy, state.amount, event),
+        state.amount.next(state.policy, event),
         state.amount,
         (next) =>
             _amountNext(state.open, state.target, state.destination, next),
@@ -1199,11 +1198,7 @@ LimitFlowNext _amount(LimitAmount state, LimitFlowEvent event) {
     case LimitContinuePressed():
       return _stepped(
         state,
-        transitionAmountEntry(
-          state.policy,
-          state.amount,
-          const AmountContinuePressed(),
-        ),
+        state.amount.next(state.policy, const AmountContinuePressed()),
         state.amount,
         (next) =>
             _amountNext(state.open, state.target, state.destination, next),
@@ -1226,9 +1221,8 @@ LimitFlowNext _amount(LimitAmount state, LimitFlowEvent event) {
             LimitOpen(state.open.session, context),
             state.target,
             state.destination,
-            transitionAmountEntry(
+            state.amount.next(
               state.policy,
-              state.amount,
               AmountDetourReturned(context.amountContext),
             ),
           ),
@@ -1287,9 +1281,8 @@ LimitFlowNext _editAmount(LimitOpen open, LimitOrderRequest request) =>
       open,
       request.target,
       request.destination,
-      transitionAmountEntry(
+      AmountDone(request.amount, open.context.amountContext).next(
         limitAmountPolicy(request.target, request.destination),
-        AmountDone(request.amount, open.context.amountContext),
         const AmountEditRequested(),
       ),
     );
@@ -1421,7 +1414,7 @@ LimitFlowNext _creating(LimitCreating state, LimitFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionServerConfirm(limitOrderCreatePolicy, state.confirm, stepEvent),
+    state.confirm.next(limitOrderCreatePolicy, stepEvent),
     state.confirm,
     (next) => _creatingNext(state.open, state.request, state.rate, next),
   );

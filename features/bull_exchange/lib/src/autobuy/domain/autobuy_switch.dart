@@ -238,15 +238,11 @@ AutoBuySwitchNext transitionAutoBuySwitch(
   (final SwitchDeactivating deactivating, SwitchConfirmChanged(:final event)) =>
     _stepped(
       deactivating,
-      transitionServerConfirm(autoBuyWritePolicy, deactivating.confirm, event),
+      deactivating.confirm.next(autoBuyWritePolicy, event),
     ),
   (final SwitchDeactivating deactivating, SwitchRetryPressed()) => _stepped(
     deactivating,
-    transitionServerConfirm(
-      autoBuyWritePolicy,
-      deactivating.confirm,
-      const ConfirmRetryPressed(),
-    ),
+    deactivating.confirm.next(autoBuyWritePolicy, const ConfirmRetryPressed()),
   ),
   // A write is in flight or unverified: the summary may predate it.
   (SwitchDeactivating(), SwitchSummaryChanged() || SwitchDeactivatePressed()) =>

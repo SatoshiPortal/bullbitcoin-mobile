@@ -97,7 +97,7 @@ void main() {
   for (final state in _states) {
     for (final (index, event) in _events.indexed) {
       test('$state + ${event.runtimeType} #$index', () {
-        final next = transitionConsentGate(state, event);
+        final next = state.next(event);
         final expected = _table[state]![index];
         if (expected == null) {
           expect(identical(next.state, state), isTrue, reason: '$next');
@@ -127,7 +127,7 @@ void main() {
       final next = <ConsentGateState>[];
       for (final state in frontier) {
         for (final event in _events) {
-          final target = transitionConsentGate(state, event).state;
+          final target = state.next(event).state;
           if (reached.add(target.runtimeType)) next.add(target);
         }
       }

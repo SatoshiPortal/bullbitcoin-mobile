@@ -555,7 +555,7 @@ DcaFlowNext _loading(DcaLoading state, DcaFlowEvent event) {
         DcaSessionChanged():
       return DcaFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return DcaFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(:final context) => _setupOf(
@@ -636,16 +636,12 @@ DcaFlowNext _setup(DcaSetup state, DcaFlowEvent event) => switch (event) {
   DcaAmountChanged(event: AmountContinuePressed()) ||
   DcaContinuePressed() => _stepped(
     state,
-    transitionAmountEntry(
-      dcaAmountPolicy,
-      state.amount,
-      const AmountContinuePressed(),
-    ),
+    state.amount.next(dcaAmountPolicy, const AmountContinuePressed()),
     state.frequency,
   ),
   DcaAmountChanged(:final event) => _stepped(
     state,
-    transitionAmountEntry(dcaAmountPolicy, state.amount, event),
+    state.amount.next(dcaAmountPolicy, event),
     state.frequency,
   ),
   DcaFrequencyPicked(:final frequency) =>
@@ -721,9 +717,8 @@ DcaFlowNext _setup(DcaSetup state, DcaFlowEvent event) => switch (event) {
 
 DcaFlowNext _detourReturned(DcaSetup state, DcaOpen open) => _setupOf(
   open,
-  transitionAmountEntry(
+  state.amount.next(
     dcaAmountPolicy,
-    state.amount,
     AmountDetourReturned(open.context.amountContext),
   ),
   state.frequency,
@@ -856,11 +851,7 @@ DcaFlowNext _confirming(DcaConfirming state, DcaFlowEvent event) {
         DcaSessionChanged():
       return DcaFlowNext.stay(state);
   }
-  final next = transitionServerConfirm(
-    dcaConfirmPolicy,
-    state.confirm,
-    stepEvent,
-  );
+  final next = state.confirm.next(dcaConfirmPolicy, stepEvent);
   if (identical(next.state, state.confirm) && next.effects.isEmpty) {
     return DcaFlowNext.stay(state);
   }

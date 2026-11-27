@@ -84,6 +84,24 @@ sealed class RecipientPickState {
   final int attempt;
 
   const RecipientPickState(this.query, this.attempt);
+
+  RecipientPickNext next(RecipientFilter filter, RecipientPickEvent event) {
+    final state = this;
+    return switch (state) {
+      final RecipientPickLoading s => _fromLoading(filter, s, event),
+      final RecipientPickLoadFailed s => _fromListFailed(filter, s, event),
+      final RecipientPickBrowsing s => _fromBrowsing(filter, s, event),
+      final RecipientPickLoadingMore s => _fromLoadingMore(filter, s, event),
+      final RecipientPickMoreFailed s => _fromMoreFailed(filter, s, event),
+      final RecipientPickCreating s => _fromCreating(filter, s, event),
+      final RecipientPickSaving s => _fromSaving(filter, s, event),
+      final RecipientPickVerifying s => _fromVerifying(filter, s, event),
+      final RecipientPickUnverified s => _fromUnverified(filter, s, event),
+      RecipientPickPicked() ||
+      RecipientPickNotAdmitted() => _fromDone(filter, state, event),
+      RecipientPickSessionEnded() => StepNext.stay(state),
+    };
+  }
 }
 
 final class RecipientPickLoading extends RecipientPickState {
@@ -979,23 +997,4 @@ RecipientPickNext _fromDone(
   RecipientPickSubmitted() ||
   RecipientPickSaved() ||
   RecipientPickFound() => StepNext.stay(state),
-};
-
-RecipientPickNext transitionRecipientPick(
-  RecipientFilter filter,
-  RecipientPickState state,
-  RecipientPickEvent event,
-) => switch (state) {
-  final RecipientPickLoading s => _fromLoading(filter, s, event),
-  final RecipientPickLoadFailed s => _fromListFailed(filter, s, event),
-  final RecipientPickBrowsing s => _fromBrowsing(filter, s, event),
-  final RecipientPickLoadingMore s => _fromLoadingMore(filter, s, event),
-  final RecipientPickMoreFailed s => _fromMoreFailed(filter, s, event),
-  final RecipientPickCreating s => _fromCreating(filter, s, event),
-  final RecipientPickSaving s => _fromSaving(filter, s, event),
-  final RecipientPickVerifying s => _fromVerifying(filter, s, event),
-  final RecipientPickUnverified s => _fromUnverified(filter, s, event),
-  RecipientPickPicked() ||
-  RecipientPickNotAdmitted() => _fromDone(filter, state, event),
-  RecipientPickSessionEnded() => StepNext.stay(state),
 };

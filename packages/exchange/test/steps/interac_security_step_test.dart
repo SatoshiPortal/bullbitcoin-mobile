@@ -14,10 +14,7 @@ const _invalid = InteracEditing(
   answer: 'New York',
   saveAsDefault: false,
 );
-final _answered = transitionInteracSecurity(
-  _editing,
-  const InteracContinuePressed(),
-).state;
+final _answered = _editing.next(const InteracContinuePressed()).state;
 
 final _states = <InteracSecurityState>[_editing, _invalid, _answered];
 
@@ -74,7 +71,7 @@ void main() {
   for (final state in _states) {
     for (final (index, event) in _events.indexed) {
       test('$state + ${event.runtimeType} #$index', () {
-        final next = transitionInteracSecurity(state, event);
+        final next = state.next(event);
         final expected = _table[state]![index];
         if (expected == null) {
           expect(identical(next.state, state), isTrue, reason: '$next');
@@ -112,10 +109,9 @@ void main() {
   );
 
   test('an empty answer is refused, never sent', () {
-    final next = transitionInteracSecurity(
-      interacSecurityStart(const InteracSecurityRequired()).state,
-      const InteracContinuePressed(),
-    );
+    final next = (interacSecurityStart(
+      const InteracSecurityRequired(),
+    ).state).next(const InteracContinuePressed());
     expect(
       next.state,
       const InteracEditing(
@@ -139,7 +135,7 @@ void main() {
       final next = <InteracSecurityState>[];
       for (final state in frontier) {
         for (final event in _events) {
-          final target = transitionInteracSecurity(state, event).state;
+          final target = state.next(event).state;
           if (reached.add(target.runtimeType)) next.add(target);
         }
       }

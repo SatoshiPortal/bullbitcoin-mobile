@@ -58,7 +58,7 @@ const _payeeActive = RequirementVirtualPayeeEvent(
 const _cancel = RequirementsCancelPressed();
 
 RequirementsNext _step(RequirementsState state, RequirementsEvent event) =>
-    transitionRequirements(_policy, state, event);
+    state.next(_policy, event);
 
 RequirementsState _run(
   RequirementsState state,

@@ -888,7 +888,7 @@ BuyFlowNext _loading(BuyLoading state, BuyFlowEvent event) {
         BuySessionChanged():
       return BuyFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return BuyFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(:final context) => _opened(BuyOpen(state.session, context)),
@@ -912,9 +912,8 @@ BuyFlowNext _opened(BuyOpen open) {
   final initial = open.context.initialWallet;
   final destination = initial == null
       ? start
-      : transitionPick(
+      : start.state.next(
           buyDestinationPolicy,
-          start.state,
           PickChose<DestinationOption, Destination>(initial.option),
         );
   return _entryOf(
@@ -1004,11 +1003,7 @@ BuyFlowNext _entryAmount(BuyEntry state, AmountEntryNext next) =>
 BuyFlowNext _continue(BuyEntry state) => switch (state.destination) {
   PickChosen() => _stepped(
     state,
-    transitionAmountEntry(
-      buyAmountPolicy,
-      state.amount,
-      const AmountContinuePressed(),
-    ),
+    state.amount.next(buyAmountPolicy, const AmountContinuePressed()),
     state.amount,
     (next) => _entryAmount(state, next),
   ),
@@ -1052,7 +1047,7 @@ BuyFlowNext _toOrder(
 PickNext<DestinationOption, Destination> _pick(
   BuyDestinationState state,
   BuyDestinationEvent event,
-) => transitionPick(buyDestinationPolicy, state, event);
+) => state.next(buyDestinationPolicy, event);
 
 PickNext<DestinationOption, Destination> _repick(
   BuyDestinationState state,
@@ -1114,7 +1109,7 @@ BuyFlowNext _entry(BuyEntry state, BuyFlowEvent event) => switch (event) {
   BuyContinuePressed() => _continue(state),
   BuyAmountChanged(:final event) => _stepped(
     state,
-    transitionAmountEntry(buyAmountPolicy, state.amount, event),
+    state.amount.next(buyAmountPolicy, event),
     state.amount,
     (next) => _entryAmount(state, next),
   ),
@@ -1197,9 +1192,8 @@ BuyFlowNext _reload(BuyEntry state) => BuyFlowNext(
 
 BuyFlowNext _detourReturned(BuyEntry state, BuyOpen open) => _entryOf(
   open,
-  transitionAmountEntry(
+  state.amount.next(
     buyAmountPolicy,
-    state.amount,
     AmountDetourReturned(open.context.amountContext),
   ),
   PickNext<DestinationOption, Destination>(state.destination),
@@ -1228,11 +1222,10 @@ BuyFlowNext _amountRefused(
   final learned = BuyOpen(open.session, open.context.withExchangeLimit(limit));
   return _entryOf(
     learned,
-    transitionAmountEntry(
-      buyAmountPolicy,
-      AmountDone(request.amount, learned.context.amountContext),
-      AmountLimitRefused(limit),
-    ),
+    AmountDone(
+      request.amount,
+      learned.context.amountContext,
+    ).next(buyAmountPolicy, AmountLimitRefused(limit)),
     PickNext<DestinationOption, Destination>(
       PickChosen<DestinationOption, Destination>(
         learned.context.options,
@@ -1245,11 +1238,10 @@ BuyFlowNext _amountRefused(
 
 BuyFlowNext _editEntry(BuyOpen open, BuyRequest request) => _entryOf(
   open,
-  transitionAmountEntry(
-    buyAmountPolicy,
-    AmountDone(request.amount, open.context.amountContext),
-    const AmountEditRequested(),
-  ),
+  AmountDone(
+    request.amount,
+    open.context.amountContext,
+  ).next(buyAmountPolicy, const AmountEditRequested()),
   PickNext<DestinationOption, Destination>(
     PickChosen<DestinationOption, Destination>(
       open.context.options,
@@ -1341,7 +1333,7 @@ BuyFlowNext _ordering(BuyOrdering state, BuyFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionOrderStep(buyOrderPolicy, state.order, stepEvent),
+    state.order.next(buyOrderPolicy, stepEvent),
     state.order,
     (next) => _orderNext(state.open, state.request, next),
   );
@@ -1389,7 +1381,7 @@ BuyFlowNext _review(BuyReview state, BuyFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionOrderStep(buyOrderPolicy, state.quote, stepEvent),
+    state.quote.next(buyOrderPolicy, stepEvent),
     state.quote,
     (next) => _orderNext(state.open, state.request, next, notice: notice),
   );
@@ -1480,7 +1472,7 @@ BuyFlowNext _confirming(BuyConfirming state, BuyFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionServerConfirm(buyConfirmPolicy, state.confirm, stepEvent),
+    state.confirm.next(buyConfirmPolicy, stepEvent),
     state.confirm,
     (next) => _confirmNext(state.open, state.request, state.order, next),
   );
@@ -1553,7 +1545,7 @@ BuyFlowNext _done(BuyDone state, BuyFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionOutcomeWatch(buyOutcomePolicy, state.watch, watchEvent),
+    state.watch.next(buyOutcomePolicy, watchEvent),
     state.watch,
     (next) => _watchNext(
       state.open,

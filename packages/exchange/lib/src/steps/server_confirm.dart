@@ -90,6 +90,94 @@ UnknownWrite? openEntryFor<T>(
 @immutable
 sealed class ServerConfirmState<T, C> {
   const ServerConfirmState();
+
+  ServerConfirmNext<T, C> next(
+    ServerConfirmPolicy<T> policy,
+    ServerConfirmEvent<T, C> event,
+  ) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        ConfirmConfirming(:final target, :final attempt),
+        ConfirmAnswered(attempt: final answered, :final answer),
+      )
+          when answered == attempt =>
+        _answered(policy, target, attempt, answer),
+      (
+        ConfirmConfirming(),
+        ConfirmAnswered() ||
+            ConfirmVerified() ||
+            ConfirmCommitPressed() ||
+            ConfirmRetryPressed() ||
+            ConfirmBackPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        ConfirmWriteRefused(:final target, :final attempt),
+        ConfirmRetryPressed(),
+      ) =>
+        StepNext(ConfirmConfirming<T, C>(target, attempt + 1), [
+          ConfirmSend(target, attempt + 1),
+        ]),
+      (ConfirmFailed(:final target, :final attempt), ConfirmCommitPressed()) =>
+        StepNext(ConfirmConfirming<T, C>(target, attempt + 1), [
+          ConfirmSend(target, attempt + 1),
+        ]),
+      (
+        ConfirmWriteRefused() || ConfirmFailed() || ConfirmUnverified(),
+        ConfirmBackPressed(),
+      ) =>
+        StepNext(ConfirmLeft<T, C>()),
+      (
+        ConfirmWriteRefused(),
+        ConfirmAnswered() || ConfirmVerified() || ConfirmCommitPressed(),
+      ) =>
+        StepNext.stay(state),
+      (
+        ConfirmFailed(),
+        ConfirmAnswered() || ConfirmVerified() || ConfirmRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        ConfirmVerifying(:final target, :final attempt),
+        ConfirmVerified(attempt: final answered, :final check),
+      )
+          when answered == attempt =>
+        _checked(target, attempt, check),
+      (
+        ConfirmVerifying(),
+        ConfirmAnswered() ||
+            ConfirmVerified() ||
+            ConfirmCommitPressed() ||
+            ConfirmRetryPressed() ||
+            ConfirmBackPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        ConfirmUnverified(:final target, :final attempt),
+        ConfirmRetryPressed(),
+      ) =>
+        _verifying(target, attempt),
+      (
+        ConfirmUnverified(),
+        ConfirmAnswered() || ConfirmVerified() || ConfirmCommitPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        ConfirmConfirmed() || ConfirmSessionEnded() || ConfirmLeft(),
+        ConfirmAnswered() ||
+            ConfirmVerified() ||
+            ConfirmCommitPressed() ||
+            ConfirmRetryPressed() ||
+            ConfirmBackPressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class ConfirmConfirming<T, C> extends ServerConfirmState<T, C> {
@@ -418,84 +506,4 @@ ServerConfirmNext<T, C> _checked<T, C>(
     ConfirmUnverified<T, C>(target, attempt, problem),
   ),
   ConfirmCheckSessionRejected() => StepNext(ConfirmSessionEnded<T, C>()),
-};
-
-ServerConfirmNext<T, C> transitionServerConfirm<T, C>(
-  ServerConfirmPolicy<T> policy,
-  ServerConfirmState<T, C> state,
-  ServerConfirmEvent<T, C> event,
-) => switch ((state, event)) {
-  (
-    ConfirmConfirming(:final target, :final attempt),
-    ConfirmAnswered(attempt: final answered, :final answer),
-  )
-      when answered == attempt =>
-    _answered(policy, target, attempt, answer),
-  (
-    ConfirmConfirming(),
-    ConfirmAnswered() ||
-        ConfirmVerified() ||
-        ConfirmCommitPressed() ||
-        ConfirmRetryPressed() ||
-        ConfirmBackPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (ConfirmWriteRefused(:final target, :final attempt), ConfirmRetryPressed()) =>
-    StepNext(ConfirmConfirming<T, C>(target, attempt + 1), [
-      ConfirmSend(target, attempt + 1),
-    ]),
-  (ConfirmFailed(:final target, :final attempt), ConfirmCommitPressed()) =>
-    StepNext(ConfirmConfirming<T, C>(target, attempt + 1), [
-      ConfirmSend(target, attempt + 1),
-    ]),
-  (
-    ConfirmWriteRefused() || ConfirmFailed() || ConfirmUnverified(),
-    ConfirmBackPressed(),
-  ) =>
-    StepNext(ConfirmLeft<T, C>()),
-  (
-    ConfirmWriteRefused(),
-    ConfirmAnswered() || ConfirmVerified() || ConfirmCommitPressed(),
-  ) =>
-    StepNext.stay(state),
-  (
-    ConfirmFailed(),
-    ConfirmAnswered() || ConfirmVerified() || ConfirmRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    ConfirmVerifying(:final target, :final attempt),
-    ConfirmVerified(attempt: final answered, :final check),
-  )
-      when answered == attempt =>
-    _checked(target, attempt, check),
-  (
-    ConfirmVerifying(),
-    ConfirmAnswered() ||
-        ConfirmVerified() ||
-        ConfirmCommitPressed() ||
-        ConfirmRetryPressed() ||
-        ConfirmBackPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (ConfirmUnverified(:final target, :final attempt), ConfirmRetryPressed()) =>
-    _verifying(target, attempt),
-  (
-    ConfirmUnverified(),
-    ConfirmAnswered() || ConfirmVerified() || ConfirmCommitPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    ConfirmConfirmed() || ConfirmSessionEnded() || ConfirmLeft(),
-    ConfirmAnswered() ||
-        ConfirmVerified() ||
-        ConfirmCommitPressed() ||
-        ConfirmRetryPressed() ||
-        ConfirmBackPressed(),
-  ) =>
-    StepNext.stay(state),
 };

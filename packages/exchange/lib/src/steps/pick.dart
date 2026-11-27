@@ -15,6 +15,97 @@ sealed class PickState<O, V> {
   const PickState();
 
   List<O> get options;
+
+  PickNext<O, V> next(PickPolicy<O, V> policy, PickEvent<O, V> event) {
+    final state = this;
+    return switch ((state, event)) {
+      (PickChoosing(), PickChose(:final option)) => _chose(
+        policy,
+        state,
+        option,
+      ),
+      (PickChoosing(:final problem), PickTyped(:final text))
+          when problem == null && text.trim().isEmpty =>
+        StepNext.stay(state),
+      (PickChoosing(), PickTyped(:final text)) => _typed(policy, state, text),
+      (
+        PickChoosing(),
+        PickValidated() || PickResolved() || PickBackPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (PickResolving(:final option), PickChose(option: final chosen))
+          when chosen == option =>
+        StepNext.stay(state),
+      (PickResolving(), PickChose(:final option)) => _chose(
+        policy,
+        state,
+        option,
+      ),
+      (PickResolving(), PickTyped(:final text)) when text.trim().isEmpty =>
+        StepNext.stay(state),
+      (PickResolving(), PickTyped(:final text)) => _typed(policy, state, text),
+      (
+        PickResolving(:final options, :final option),
+        PickResolved(option: final answered, :final result),
+      )
+          when answered == option =>
+        switch (result) {
+          Ok(:final value) => StepNext(PickChosen<O, V>(options, value)),
+          Err(:final failure) => StepNext(
+            PickChoosing<O, V>(
+              options,
+              problem: PickResolveFailed(option, failure),
+            ),
+          ),
+        },
+      (PickResolving(), PickResolved() || PickValidated()) => StepNext.stay(
+        state,
+      ),
+      (PickResolving(:final options), PickBackPressed()) => StepNext(
+        PickChoosing<O, V>(options),
+      ),
+
+      (PickValidating(), PickChose(:final option)) => _chose(
+        policy,
+        state,
+        option,
+      ),
+      (PickValidating(text: final current), PickTyped(:final text))
+          when text.trim() == current =>
+        StepNext.stay(state),
+      (PickValidating(), PickTyped(:final text)) => _typed(policy, state, text),
+      (
+        PickValidating(:final options, text: final current),
+        PickValidated(:final text, :final result),
+      )
+          when text == current =>
+        switch (result) {
+          Ok(:final value) => StepNext(PickChosen<O, V>(options, value)),
+          Err(:final failure) => StepNext(
+            PickChoosing<O, V>(
+              options,
+              problem: PickTextInvalid(current, failure),
+            ),
+          ),
+        },
+      (PickValidating(), PickValidated() || PickResolved()) => StepNext.stay(
+        state,
+      ),
+      (PickValidating(:final options), PickBackPressed()) => StepNext(
+        PickChoosing<O, V>(options),
+      ),
+
+      (PickChosen(:final options), PickBackPressed()) => StepNext(
+        PickChoosing<O, V>(options),
+      ),
+      (
+        PickChosen(),
+        PickChose() || PickTyped() || PickValidated() || PickResolved(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class PickChoosing<O, V> extends PickState<O, V> {
@@ -286,76 +377,6 @@ PickNext<O, V> _typed<O, V>(
     PickValidate(trimmed),
   ]);
 }
-
-PickNext<O, V> transitionPick<O, V>(
-  PickPolicy<O, V> policy,
-  PickState<O, V> state,
-  PickEvent<O, V> event,
-) => switch ((state, event)) {
-  (PickChoosing(), PickChose(:final option)) => _chose(policy, state, option),
-  (PickChoosing(:final problem), PickTyped(:final text))
-      when problem == null && text.trim().isEmpty =>
-    StepNext.stay(state),
-  (PickChoosing(), PickTyped(:final text)) => _typed(policy, state, text),
-  (PickChoosing(), PickValidated() || PickResolved() || PickBackPressed()) =>
-    StepNext.stay(state),
-
-  (PickResolving(:final option), PickChose(option: final chosen))
-      when chosen == option =>
-    StepNext.stay(state),
-  (PickResolving(), PickChose(:final option)) => _chose(policy, state, option),
-  (PickResolving(), PickTyped(:final text)) when text.trim().isEmpty =>
-    StepNext.stay(state),
-  (PickResolving(), PickTyped(:final text)) => _typed(policy, state, text),
-  (
-    PickResolving(:final options, :final option),
-    PickResolved(option: final answered, :final result),
-  )
-      when answered == option =>
-    switch (result) {
-      Ok(:final value) => StepNext(PickChosen<O, V>(options, value)),
-      Err(:final failure) => StepNext(
-        PickChoosing<O, V>(
-          options,
-          problem: PickResolveFailed(option, failure),
-        ),
-      ),
-    },
-  (PickResolving(), PickResolved() || PickValidated()) => StepNext.stay(state),
-  (PickResolving(:final options), PickBackPressed()) => StepNext(
-    PickChoosing<O, V>(options),
-  ),
-
-  (PickValidating(), PickChose(:final option)) => _chose(policy, state, option),
-  (PickValidating(text: final current), PickTyped(:final text))
-      when text.trim() == current =>
-    StepNext.stay(state),
-  (PickValidating(), PickTyped(:final text)) => _typed(policy, state, text),
-  (
-    PickValidating(:final options, text: final current),
-    PickValidated(:final text, :final result),
-  )
-      when text == current =>
-    switch (result) {
-      Ok(:final value) => StepNext(PickChosen<O, V>(options, value)),
-      Err(:final failure) => StepNext(
-        PickChoosing<O, V>(options, problem: PickTextInvalid(current, failure)),
-      ),
-    },
-  (PickValidating(), PickValidated() || PickResolved()) => StepNext.stay(state),
-  (PickValidating(:final options), PickBackPressed()) => StepNext(
-    PickChoosing<O, V>(options),
-  ),
-
-  (PickChosen(:final options), PickBackPressed()) => StepNext(
-    PickChoosing<O, V>(options),
-  ),
-  (
-    PickChosen(),
-    PickChose() || PickTyped() || PickValidated() || PickResolved(),
-  ) =>
-    StepNext.stay(state),
-};
 
 /// Where a sell or pay payin comes from.
 @immutable

@@ -663,7 +663,7 @@ SellFlowNext _loading(SellLoading state, SellFlowEvent event) {
         SellSessionChanged():
       return SellFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return SellFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(:final context) => _amountNext(
@@ -708,7 +708,7 @@ SellFlowNext _amountNext(SellOpen open, AmountEntryNext next) =>
 SellFlowNext _amount(SellAmount state, SellFlowEvent event) => switch (event) {
   SellAmountChanged(:final event) => _stepped(
     state,
-    transitionAmountEntry(sellAmountPolicy, state.amount, event),
+    state.amount.next(sellAmountPolicy, event),
     state.amount,
     (next) => _amountNext(state.open, next),
   ),
@@ -724,9 +724,8 @@ SellFlowNext _amount(SellAmount state, SellFlowEvent event) => switch (event) {
     AmountKycDetour() => switch (read) {
       Ok(value: final context) => _amountNext(
         SellOpen(state.open.session, state.open.context.withAccount(context)),
-        transitionAmountEntry(
+        state.amount.next(
           sellAmountPolicy,
-          state.amount,
           AmountDetourReturned(context.amountContext),
         ),
       ),
@@ -768,22 +767,20 @@ SellFlowNext _amountRefused(
   final learned = SellOpen(open.session, open.context.withExchangeLimit(limit));
   return _amountNext(
     learned,
-    transitionAmountEntry(
-      sellAmountPolicy,
-      AmountDone(request.amount, learned.context.amountContext),
-      AmountLimitRefused(limit),
-    ),
+    AmountDone(
+      request.amount,
+      learned.context.amountContext,
+    ).next(sellAmountPolicy, AmountLimitRefused(limit)),
   );
 }
 
 /// Back to the amount with the entered draft kept.
 SellFlowNext _editAmount(SellOpen open, EnteredAmount amount) => _amountNext(
   open,
-  transitionAmountEntry(
-    sellAmountPolicy,
-    AmountDone(amount, open.context.amountContext),
-    const AmountEditRequested(),
-  ),
+  AmountDone(
+    amount,
+    open.context.amountContext,
+  ).next(sellAmountPolicy, const AmountEditRequested()),
 );
 
 SellFlowNext _source(SellSource state, SellFlowEvent event) => switch (event) {
@@ -923,11 +920,7 @@ SellFlowNext _requirements(SellRequirements state, SellFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionRequirements(
-      sellRequirementsPolicy,
-      state.requirements,
-      stepEvent,
-    ),
+    state.requirements.next(sellRequirementsPolicy, stepEvent),
     state.requirements,
     (next) => _requirementsNext(state.open, state.amount, state.source, next),
   );
@@ -1097,7 +1090,7 @@ SellFlowNext _ordering(SellOrdering state, SellFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionOrderStep(sellOrderPolicy, state.order, stepEvent),
+    state.order.next(sellOrderPolicy, stepEvent),
     state.order,
     (next) => _order(state.open, state.request, state.spend, next, commit),
   );
@@ -1252,7 +1245,7 @@ SellFlowNext _paying(SellPaying state, SellFlowEvent event) {
   }
   return _stepped(
     state,
-    transitionPayin(sellPayinPolicy, state.payin, stepEvent),
+    state.payin.next(sellPayinPolicy, stepEvent),
     state.payin,
     (next) =>
         _payin(state.open, state.request, state.quoted, state.spend, next),

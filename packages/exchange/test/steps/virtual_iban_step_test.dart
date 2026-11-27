@@ -195,7 +195,7 @@ final _table = <VirtualIbanState, Map<int, _Next>>{
 };
 
 VirtualIbanNext _step(VirtualIbanState state, VirtualIbanEvent event) =>
-    transitionVirtualIban(_policy, state, event);
+    state.next(_policy, event);
 
 void main() {
   test('the table has a row for every state', () {

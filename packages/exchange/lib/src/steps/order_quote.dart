@@ -99,6 +99,152 @@ final class QuoteUnavailable extends QuoteStatus {
 @immutable
 sealed class OrderStepState<R, O> {
   const OrderStepState();
+
+  OrderStepNext<R, O> next(OrderPolicy<O> policy, OrderStepEvent<R, O> event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        OrderCreating(:final request, :final attempt),
+        OrderCreateAnswered(attempt: final answered, :final answer),
+      )
+          when answered == attempt =>
+        _created(policy, request, attempt, answer),
+      (
+        OrderCreating(),
+        OrderCreateAnswered() ||
+            OrderFindAnswered() ||
+            OrderLockDue() ||
+            OrderRefreshed() ||
+            OrderRetryDue() ||
+            OrderRetryPressed() ||
+            OrderCommitPressed() ||
+            OrderBackPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        OrderWriteRefused(:final request, :final attempt) ||
+            OrderCreateFailed(:final request, :final attempt),
+        OrderRetryPressed(),
+      ) =>
+        StepNext(OrderCreating<R, O>(request, attempt + 1), [
+          OrderSendCreate(request, attempt + 1),
+        ]),
+      (
+        OrderWriteRefused() || OrderCreateFailed() || OrderUnverified(),
+        OrderBackPressed(),
+      ) =>
+        StepNext(OrderLeft<R, O>()),
+      (
+        OrderWriteRefused() || OrderCreateFailed(),
+        OrderCreateAnswered() ||
+            OrderFindAnswered() ||
+            OrderLockDue() ||
+            OrderRefreshed() ||
+            OrderRetryDue() ||
+            OrderCommitPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        OrderVerifying(:final request, :final attempt),
+        OrderFindAnswered(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        _found(policy, request, attempt, read),
+      (
+        OrderVerifying(),
+        OrderCreateAnswered() ||
+            OrderFindAnswered() ||
+            OrderLockDue() ||
+            OrderRefreshed() ||
+            OrderRetryDue() ||
+            OrderRetryPressed() ||
+            OrderCommitPressed() ||
+            OrderBackPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (OrderUnverified(:final request, :final attempt), OrderRetryPressed()) =>
+        StepNext(OrderVerifying<R, O>(request, attempt), [
+          OrderFindCreated(request, attempt),
+        ]),
+      (
+        OrderUnverified(),
+        OrderCreateAnswered() ||
+            OrderFindAnswered() ||
+            OrderLockDue() ||
+            OrderRefreshed() ||
+            OrderRetryDue() ||
+            OrderCommitPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        OrderQuoted(:final quoted, status: QuoteLive()),
+        OrderLockDue(:final orderId),
+      )
+          when orderId == quoted.id =>
+        StepNext(OrderQuoted<R, O>(quoted, const QuoteRefreshing(0)), [
+          OrderRefresh(quoted.id),
+        ]),
+      (
+        OrderQuoted(:final quoted, status: QuoteRefreshing(:final failures)),
+        OrderRefreshed(:final orderId, :final read),
+      )
+          when orderId == quoted.id =>
+        _refreshed(policy, quoted, failures, read),
+      (
+        OrderQuoted(:final quoted, status: QuoteRetrying(:final failures)),
+        OrderRetryDue(:final orderId),
+      )
+          when orderId == quoted.id =>
+        StepNext(OrderQuoted<R, O>(quoted, QuoteRefreshing(failures)), [
+          OrderRefresh(quoted.id),
+        ]),
+      (
+        OrderQuoted(:final quoted, status: QuoteUnavailable()),
+        OrderRetryPressed(),
+      ) =>
+        StepNext(OrderQuoted<R, O>(quoted, const QuoteRefreshing(0)), [
+          OrderRefresh(quoted.id),
+        ]),
+      (OrderQuoted(:final quoted, status: QuoteLive()), OrderCommitPressed()) =>
+        StepNext(OrderCommitted<R, O>(quoted), [OrderStopTimers(quoted.id)]),
+      (OrderQuoted(:final quoted), OrderBackPressed()) => StepNext(
+        OrderLeft<R, O>(),
+        [OrderStopTimers(quoted.id), OrderRelease(quoted.id)],
+      ),
+      (
+        OrderQuoted(),
+        OrderCreateAnswered() ||
+            OrderFindAnswered() ||
+            OrderLockDue() ||
+            OrderRefreshed() ||
+            OrderRetryDue() ||
+            OrderRetryPressed() ||
+            OrderCommitPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        OrderPlaced() ||
+            OrderCommitted() ||
+            OrderAmountRefused() ||
+            OrderSessionEnded() ||
+            OrderLeft(),
+        OrderCreateAnswered() ||
+            OrderFindAnswered() ||
+            OrderLockDue() ||
+            OrderRefreshed() ||
+            OrderRetryDue() ||
+            OrderRetryPressed() ||
+            OrderCommitPressed() ||
+            OrderBackPressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 /// The create of [attempt] is in flight. Back is a stay.
@@ -611,151 +757,4 @@ OrderStepNext<R, O> _refreshed<R, O>(
         : StepNext(OrderQuoted<R, O>(quoted, QuoteRetrying(failures + 1)), [
             OrderScheduleRefreshRetry(quoted.id, failures + 1),
           ]),
-};
-
-OrderStepNext<R, O> transitionOrderStep<R, O>(
-  OrderPolicy<O> policy,
-  OrderStepState<R, O> state,
-  OrderStepEvent<R, O> event,
-) => switch ((state, event)) {
-  (
-    OrderCreating(:final request, :final attempt),
-    OrderCreateAnswered(attempt: final answered, :final answer),
-  )
-      when answered == attempt =>
-    _created(policy, request, attempt, answer),
-  (
-    OrderCreating(),
-    OrderCreateAnswered() ||
-        OrderFindAnswered() ||
-        OrderLockDue() ||
-        OrderRefreshed() ||
-        OrderRetryDue() ||
-        OrderRetryPressed() ||
-        OrderCommitPressed() ||
-        OrderBackPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    OrderWriteRefused(:final request, :final attempt) ||
-        OrderCreateFailed(:final request, :final attempt),
-    OrderRetryPressed(),
-  ) =>
-    StepNext(OrderCreating<R, O>(request, attempt + 1), [
-      OrderSendCreate(request, attempt + 1),
-    ]),
-  (
-    OrderWriteRefused() || OrderCreateFailed() || OrderUnverified(),
-    OrderBackPressed(),
-  ) =>
-    StepNext(OrderLeft<R, O>()),
-  (
-    OrderWriteRefused() || OrderCreateFailed(),
-    OrderCreateAnswered() ||
-        OrderFindAnswered() ||
-        OrderLockDue() ||
-        OrderRefreshed() ||
-        OrderRetryDue() ||
-        OrderCommitPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    OrderVerifying(:final request, :final attempt),
-    OrderFindAnswered(attempt: final answered, :final read),
-  )
-      when answered == attempt =>
-    _found(policy, request, attempt, read),
-  (
-    OrderVerifying(),
-    OrderCreateAnswered() ||
-        OrderFindAnswered() ||
-        OrderLockDue() ||
-        OrderRefreshed() ||
-        OrderRetryDue() ||
-        OrderRetryPressed() ||
-        OrderCommitPressed() ||
-        OrderBackPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (OrderUnverified(:final request, :final attempt), OrderRetryPressed()) =>
-    StepNext(OrderVerifying<R, O>(request, attempt), [
-      OrderFindCreated(request, attempt),
-    ]),
-  (
-    OrderUnverified(),
-    OrderCreateAnswered() ||
-        OrderFindAnswered() ||
-        OrderLockDue() ||
-        OrderRefreshed() ||
-        OrderRetryDue() ||
-        OrderCommitPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    OrderQuoted(:final quoted, status: QuoteLive()),
-    OrderLockDue(:final orderId),
-  )
-      when orderId == quoted.id =>
-    StepNext(OrderQuoted<R, O>(quoted, const QuoteRefreshing(0)), [
-      OrderRefresh(quoted.id),
-    ]),
-  (
-    OrderQuoted(:final quoted, status: QuoteRefreshing(:final failures)),
-    OrderRefreshed(:final orderId, :final read),
-  )
-      when orderId == quoted.id =>
-    _refreshed(policy, quoted, failures, read),
-  (
-    OrderQuoted(:final quoted, status: QuoteRetrying(:final failures)),
-    OrderRetryDue(:final orderId),
-  )
-      when orderId == quoted.id =>
-    StepNext(OrderQuoted<R, O>(quoted, QuoteRefreshing(failures)), [
-      OrderRefresh(quoted.id),
-    ]),
-  (
-    OrderQuoted(:final quoted, status: QuoteUnavailable()),
-    OrderRetryPressed(),
-  ) =>
-    StepNext(OrderQuoted<R, O>(quoted, const QuoteRefreshing(0)), [
-      OrderRefresh(quoted.id),
-    ]),
-  (OrderQuoted(:final quoted, status: QuoteLive()), OrderCommitPressed()) =>
-    StepNext(OrderCommitted<R, O>(quoted), [OrderStopTimers(quoted.id)]),
-  (OrderQuoted(:final quoted), OrderBackPressed()) => StepNext(
-    OrderLeft<R, O>(),
-    [OrderStopTimers(quoted.id), OrderRelease(quoted.id)],
-  ),
-  (
-    OrderQuoted(),
-    OrderCreateAnswered() ||
-        OrderFindAnswered() ||
-        OrderLockDue() ||
-        OrderRefreshed() ||
-        OrderRetryDue() ||
-        OrderRetryPressed() ||
-        OrderCommitPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    OrderPlaced() ||
-        OrderCommitted() ||
-        OrderAmountRefused() ||
-        OrderSessionEnded() ||
-        OrderLeft(),
-    OrderCreateAnswered() ||
-        OrderFindAnswered() ||
-        OrderLockDue() ||
-        OrderRefreshed() ||
-        OrderRetryDue() ||
-        OrderRetryPressed() ||
-        OrderCommitPressed() ||
-        OrderBackPressed(),
-  ) =>
-    StepNext.stay(state),
 };

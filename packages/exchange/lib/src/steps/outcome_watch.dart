@@ -45,6 +45,129 @@ final class OutcomePolicy<O> {
 @immutable
 sealed class OutcomeWatchState<O> {
   const OutcomeWatchState();
+
+  OutcomeWatchNext<O> next(
+    OutcomePolicy<O> policy,
+    OutcomeWatchEvent<O> event,
+  ) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        final WatchWatching<O> watching,
+        WatchPolled(:final orderId, :final ticket, :final read),
+      )
+          when orderId == policy.idOf(watching.order) &&
+              ticket == watching.ticket =>
+        _polled(policy, watching, read),
+      (
+        WatchWatching(
+          :final order,
+          :final polls,
+          :final unreadable,
+          :final ticket,
+        ),
+        WatchVisibilityChanged(visible: false),
+      ) =>
+        StepNext(WatchPaused<O>(order, polls, unreadable, ticket + 1), [
+          WatchCancelPoll(policy.idOf(order)),
+        ]),
+      (
+        WatchWatching(:final order, :final ticket) ||
+            WatchPaused(:final order, :final ticket),
+        WatchDeadlinePassed(:final orderId),
+      )
+          when orderId == policy.idOf(order) =>
+        StepNext(WatchTimedOut<O>(order, ticket + 1), [
+          WatchStop(policy.idOf(order)),
+        ]),
+      (
+        WatchWatching(:final order) || WatchPaused(:final order),
+        WatchLeavePressed(),
+      ) =>
+        StepNext(WatchLeft<O>(), [WatchStop(policy.idOf(order))]),
+      (
+        WatchWatching(),
+        WatchPolled() ||
+            WatchVisibilityChanged() ||
+            WatchDeadlinePassed() ||
+            WatchReceiptOpened() ||
+            WatchReceiptClosed() ||
+            WatchRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        WatchPaused(
+          :final order,
+          :final polls,
+          :final unreadable,
+          :final ticket,
+        ),
+        WatchVisibilityChanged(visible: true),
+      ) =>
+        StepNext(WatchWatching<O>(order, polls, unreadable, ticket), [
+          WatchSchedulePoll(policy.idOf(order), ticket, immediate: true),
+        ]),
+      (
+        WatchPaused(),
+        WatchPolled() ||
+            WatchVisibilityChanged() ||
+            WatchDeadlinePassed() ||
+            WatchReceiptOpened() ||
+            WatchReceiptClosed() ||
+            WatchRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (WatchDone(:final order), WatchReceiptOpened())
+          when policy.hasReceipt(order) =>
+        StepNext(WatchReceipt<O>(order)),
+      (WatchReceipt(:final order), WatchReceiptClosed()) => StepNext(
+        WatchDone<O>(order),
+      ),
+      (
+        WatchUnreadable(:final order, :final nextTicket) ||
+            WatchTimedOut(:final order, :final nextTicket),
+        WatchRetryPressed(),
+      ) =>
+        _watchFrom(policy, order, nextTicket),
+      (
+        WatchDone() ||
+            WatchReceipt() ||
+            WatchFailed() ||
+            WatchUnreadable() ||
+            WatchTimedOut(),
+        WatchLeavePressed(),
+      ) =>
+        StepNext(WatchLeft<O>()),
+      (
+        WatchDone() ||
+            WatchReceipt() ||
+            WatchFailed() ||
+            WatchUnreadable() ||
+            WatchTimedOut(),
+        WatchPolled() ||
+            WatchVisibilityChanged() ||
+            WatchDeadlinePassed() ||
+            WatchReceiptOpened() ||
+            WatchReceiptClosed() ||
+            WatchRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        WatchSessionEnded() || WatchLeft(),
+        WatchPolled() ||
+            WatchVisibilityChanged() ||
+            WatchDeadlinePassed() ||
+            WatchReceiptOpened() ||
+            WatchReceiptClosed() ||
+            WatchRetryPressed() ||
+            WatchLeavePressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class WatchWatching<O> extends OutcomeWatchState<O> {
@@ -399,114 +522,3 @@ OutcomeWatchNext<O> _polled<O>(
             ),
   };
 }
-
-OutcomeWatchNext<O> transitionOutcomeWatch<O>(
-  OutcomePolicy<O> policy,
-  OutcomeWatchState<O> state,
-  OutcomeWatchEvent<O> event,
-) => switch ((state, event)) {
-  (
-    final WatchWatching<O> watching,
-    WatchPolled(:final orderId, :final ticket, :final read),
-  )
-      when orderId == policy.idOf(watching.order) &&
-          ticket == watching.ticket =>
-    _polled(policy, watching, read),
-  (
-    WatchWatching(:final order, :final polls, :final unreadable, :final ticket),
-    WatchVisibilityChanged(visible: false),
-  ) =>
-    StepNext(WatchPaused<O>(order, polls, unreadable, ticket + 1), [
-      WatchCancelPoll(policy.idOf(order)),
-    ]),
-  (
-    WatchWatching(:final order, :final ticket) ||
-        WatchPaused(:final order, :final ticket),
-    WatchDeadlinePassed(:final orderId),
-  )
-      when orderId == policy.idOf(order) =>
-    StepNext(WatchTimedOut<O>(order, ticket + 1), [
-      WatchStop(policy.idOf(order)),
-    ]),
-  (
-    WatchWatching(:final order) || WatchPaused(:final order),
-    WatchLeavePressed(),
-  ) =>
-    StepNext(WatchLeft<O>(), [WatchStop(policy.idOf(order))]),
-  (
-    WatchWatching(),
-    WatchPolled() ||
-        WatchVisibilityChanged() ||
-        WatchDeadlinePassed() ||
-        WatchReceiptOpened() ||
-        WatchReceiptClosed() ||
-        WatchRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    WatchPaused(:final order, :final polls, :final unreadable, :final ticket),
-    WatchVisibilityChanged(visible: true),
-  ) =>
-    StepNext(WatchWatching<O>(order, polls, unreadable, ticket), [
-      WatchSchedulePoll(policy.idOf(order), ticket, immediate: true),
-    ]),
-  (
-    WatchPaused(),
-    WatchPolled() ||
-        WatchVisibilityChanged() ||
-        WatchDeadlinePassed() ||
-        WatchReceiptOpened() ||
-        WatchReceiptClosed() ||
-        WatchRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (WatchDone(:final order), WatchReceiptOpened())
-      when policy.hasReceipt(order) =>
-    StepNext(WatchReceipt<O>(order)),
-  (WatchReceipt(:final order), WatchReceiptClosed()) => StepNext(
-    WatchDone<O>(order),
-  ),
-  (
-    WatchUnreadable(:final order, :final nextTicket) ||
-        WatchTimedOut(:final order, :final nextTicket),
-    WatchRetryPressed(),
-  ) =>
-    _watchFrom(policy, order, nextTicket),
-  (
-    WatchDone() ||
-        WatchReceipt() ||
-        WatchFailed() ||
-        WatchUnreadable() ||
-        WatchTimedOut(),
-    WatchLeavePressed(),
-  ) =>
-    StepNext(WatchLeft<O>()),
-  (
-    WatchDone() ||
-        WatchReceipt() ||
-        WatchFailed() ||
-        WatchUnreadable() ||
-        WatchTimedOut(),
-    WatchPolled() ||
-        WatchVisibilityChanged() ||
-        WatchDeadlinePassed() ||
-        WatchReceiptOpened() ||
-        WatchReceiptClosed() ||
-        WatchRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    WatchSessionEnded() || WatchLeft(),
-    WatchPolled() ||
-        WatchVisibilityChanged() ||
-        WatchDeadlinePassed() ||
-        WatchReceiptOpened() ||
-        WatchReceiptClosed() ||
-        WatchRetryPressed() ||
-        WatchLeavePressed(),
-  ) =>
-    StepNext.stay(state),
-};

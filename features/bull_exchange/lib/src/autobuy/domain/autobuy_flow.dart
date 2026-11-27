@@ -429,7 +429,7 @@ AutoBuyFlowNext _loading(AutoBuyLoading state, AutoBuyFlowEvent event) {
         AutoBuySessionChanged():
       return AutoBuyFlowNext.stay(state);
   }
-  final next = transitionContextLoad(state.load, loadEvent);
+  final next = state.load.next(loadEvent);
   if (identical(next.state, state.load)) return AutoBuyFlowNext.stay(state);
   return switch (next.state) {
     ContextReady(:final context) => _introOf(
@@ -493,7 +493,7 @@ AutoBuyFlowNext _intro(
 AutoBuyFlowNext _kyc(AutoBuyKyc state, AutoBuyFlowEvent event) {
   switch (event) {
     case AutoBuyKycReturned():
-      final next = transitionKycGate(state.kyc, const KycGateOpenPressed());
+      final next = state.kyc.next(const KycGateOpenPressed());
       return switch (next.state) {
         final KycGateInKyc inKyc => AutoBuyFlowNext(
           AutoBuyKyc(state.open, state.cleared, inKyc),
@@ -508,10 +508,7 @@ AutoBuyFlowNext _kyc(AutoBuyKyc state, AutoBuyFlowEvent event) {
         (KycGateInKyc(), Ok(value: final context)) => _kycNext(
           AutoBuyOpen(state.open.session, context),
           state.cleared,
-          transitionKycGate(
-            state.kyc,
-            KycGateReturned(context.summary.kycGroups),
-          ).state,
+          state.kyc.next(KycGateReturned(context.summary.kycGroups)).state,
         ),
         (KycGateInKyc(), Err(failure: ExchangeSessionRejectedFailure())) =>
           _ended,
@@ -645,11 +642,7 @@ AutoBuyFlowNext _activating(AutoBuyActivating state, AutoBuyFlowEvent event) {
         AutoBuySessionChanged():
       return AutoBuyFlowNext.stay(state);
   }
-  final next = transitionServerConfirm(
-    autoBuyWritePolicy,
-    state.confirm,
-    stepEvent,
-  );
+  final next = state.confirm.next(autoBuyWritePolicy, stepEvent);
   if (identical(next.state, state.confirm) && next.effects.isEmpty) {
     return AutoBuyFlowNext.stay(state);
   }

@@ -597,6 +597,245 @@ List<Market> amountMarkets(AmountPolicy policy, AmountContext context) =>
 @immutable
 sealed class AmountEntryState {
   const AmountEntryState();
+
+  AmountEntryNext next(AmountPolicy policy, AmountEntryEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        AmountEditing(:final draft, :final quote, :final context),
+        AmountTyped(:final text),
+      ) =>
+        StepNext(
+          AmountEditing(
+            draft: draft.copyWith(text: text),
+            quote: quote,
+            context: context,
+          ),
+        ),
+      (
+        AmountEditing(:final draft, :final quote, :final context),
+        AmountUnitToggled(),
+      ) =>
+        policy.allowBitcoinUnit
+            ? StepNext(
+                AmountEditing(
+                  draft: draft.copyWith(
+                    text: '',
+                    unit: switch (draft.unit) {
+                      AmountUnit.fiat => AmountUnit.bitcoin,
+                      AmountUnit.bitcoin => AmountUnit.fiat,
+                    },
+                  ),
+                  quote: quote,
+                  context: context,
+                ),
+              )
+            : StepNext.stay(state),
+      (
+        AmountEditing(
+          :final draft,
+          :final quote,
+          :final context,
+          :final problem,
+        ),
+        AmountDescriptionTyped(:final text),
+      ) =>
+        policy.withDescription
+            ? StepNext(
+                AmountEditing(
+                  draft: draft.copyWith(description: text),
+                  quote: quote,
+                  context: context,
+                  problem: problem,
+                ),
+              )
+            : StepNext.stay(state),
+      (
+        AmountEditing(:final draft, :final context),
+        AmountMarketChosen(:final market),
+      ) =>
+        market != draft.market &&
+                amountMarkets(policy, context).contains(market)
+            ? StepNext(
+                AmountEditing(
+                  draft: draft.copyWith(market: market),
+                  quote: RateLoading(market),
+                  context: context,
+                ),
+                [AmountFetchRate(market)],
+              )
+            : StepNext.stay(state),
+      (
+        AmountEditing(
+          :final draft,
+          :final quote,
+          :final context,
+          :final problem,
+        ),
+        final AmountRateArrived arrived,
+      ) =>
+        _onRate(
+          state,
+          quote,
+          arrived,
+          (answered) => AmountEditing(
+            draft: draft,
+            quote: answered,
+            context: context,
+            problem: problem,
+          ),
+        ),
+      (
+        AmountEditing(:final draft, :final quote, :final context),
+        AmountRateRetryPressed(),
+      ) =>
+        switch (quote) {
+          RateFailed(:final market) => StepNext(
+            AmountEditing(
+              draft: draft,
+              quote: RateLoading(market),
+              context: context,
+            ),
+            [AmountFetchRate(market)],
+          ),
+          RateLoading() || RateReady() => StepNext.stay(state),
+        },
+      (
+        AmountEditing(:final draft, :final quote, :final context),
+        AmountContinuePressed(),
+      ) =>
+        switch (checkAmount(policy, draft, quote, context)) {
+          AmountCheckPassed(:final amount) => StepNext(
+            AmountDone(amount, context),
+          ),
+          AmountCheckRefused(:final problem) => StepNext(
+            AmountEditing(
+              draft: draft,
+              quote: quote,
+              context: context,
+              problem: problem,
+            ),
+          ),
+          AmountCheckKycRequired() => StepNext(AmountKycDetour(draft, quote), [
+            AmountOpenKyc(draft.market),
+          ]),
+          AmountCheckShortfall() => StepNext(
+            AmountFundingDetour(draft, quote),
+            [AmountOpenFunding(draft.market)],
+          ),
+        },
+      (
+        AmountEditing(),
+        AmountDetourReturned() || AmountEditRequested() || AmountLimitRefused(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        AmountKycDetour(:final draft, :final quote) ||
+            AmountFundingDetour(:final draft, :final quote),
+        AmountDetourReturned(:final context),
+      ) =>
+        StepNext(
+          AmountEditing(
+            draft: draft,
+            quote: quote,
+            context: context,
+            problem: _problemOnReturn(
+              checkAmount(policy, draft, quote, context),
+            ),
+          ),
+        ),
+      (
+        AmountKycDetour(:final draft, :final quote),
+        final AmountRateArrived arrived,
+      ) =>
+        _onRate(
+          state,
+          quote,
+          arrived,
+          (answered) => AmountKycDetour(draft, answered),
+        ),
+      (
+        AmountFundingDetour(:final draft, :final quote),
+        final AmountRateArrived arrived,
+      ) =>
+        _onRate(
+          state,
+          quote,
+          arrived,
+          (answered) => AmountFundingDetour(draft, answered),
+        ),
+      (
+        AmountKycDetour() || AmountFundingDetour(),
+        AmountTyped() ||
+            AmountUnitToggled() ||
+            AmountDescriptionTyped() ||
+            AmountMarketChosen() ||
+            AmountRateRetryPressed() ||
+            AmountContinuePressed() ||
+            AmountEditRequested() ||
+            AmountLimitRefused(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        AmountDone(:final amount, :final context),
+        AmountLimitRefused(:final limit),
+      ) =>
+        _onLimitRefused(policy, amount, context, limit),
+      (AmountDone(:final amount, :final context), AmountEditRequested()) =>
+        StepNext(
+          AmountEditing(
+            draft: amount.draft,
+            quote: RateReady(amount.rate),
+            context: context,
+          ),
+        ),
+      (
+        AmountDone(),
+        AmountTyped() ||
+            AmountUnitToggled() ||
+            AmountDescriptionTyped() ||
+            AmountMarketChosen() ||
+            AmountRateArrived() ||
+            AmountRateRetryPressed() ||
+            AmountContinuePressed() ||
+            AmountDetourReturned(),
+      ) =>
+        StepNext.stay(state),
+
+      (AmountNoMarket(), AmountDetourReturned(:final context)) =>
+        amountEntryStart(policy, context),
+      (
+        AmountNoMarket(),
+        AmountTyped() ||
+            AmountUnitToggled() ||
+            AmountDescriptionTyped() ||
+            AmountMarketChosen() ||
+            AmountRateArrived() ||
+            AmountRateRetryPressed() ||
+            AmountContinuePressed() ||
+            AmountEditRequested() ||
+            AmountLimitRefused(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        AmountSessionRejected(),
+        AmountTyped() ||
+            AmountUnitToggled() ||
+            AmountDescriptionTyped() ||
+            AmountMarketChosen() ||
+            AmountRateArrived() ||
+            AmountRateRetryPressed() ||
+            AmountContinuePressed() ||
+            AmountDetourReturned() ||
+            AmountEditRequested() ||
+            AmountLimitRefused(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 /// No market can be offered (e.g. nothing funded). Funding the account and
@@ -910,229 +1149,3 @@ AmountEntryNext _onRate(
     ),
   };
 }
-
-AmountEntryNext transitionAmountEntry(
-  AmountPolicy policy,
-  AmountEntryState state,
-  AmountEntryEvent event,
-) => switch ((state, event)) {
-  (
-    AmountEditing(:final draft, :final quote, :final context),
-    AmountTyped(:final text),
-  ) =>
-    StepNext(
-      AmountEditing(
-        draft: draft.copyWith(text: text),
-        quote: quote,
-        context: context,
-      ),
-    ),
-  (
-    AmountEditing(:final draft, :final quote, :final context),
-    AmountUnitToggled(),
-  ) =>
-    policy.allowBitcoinUnit
-        ? StepNext(
-            AmountEditing(
-              draft: draft.copyWith(
-                text: '',
-                unit: switch (draft.unit) {
-                  AmountUnit.fiat => AmountUnit.bitcoin,
-                  AmountUnit.bitcoin => AmountUnit.fiat,
-                },
-              ),
-              quote: quote,
-              context: context,
-            ),
-          )
-        : StepNext.stay(state),
-  (
-    AmountEditing(:final draft, :final quote, :final context, :final problem),
-    AmountDescriptionTyped(:final text),
-  ) =>
-    policy.withDescription
-        ? StepNext(
-            AmountEditing(
-              draft: draft.copyWith(description: text),
-              quote: quote,
-              context: context,
-              problem: problem,
-            ),
-          )
-        : StepNext.stay(state),
-  (
-    AmountEditing(:final draft, :final context),
-    AmountMarketChosen(:final market),
-  ) =>
-    market != draft.market && amountMarkets(policy, context).contains(market)
-        ? StepNext(
-            AmountEditing(
-              draft: draft.copyWith(market: market),
-              quote: RateLoading(market),
-              context: context,
-            ),
-            [AmountFetchRate(market)],
-          )
-        : StepNext.stay(state),
-  (
-    AmountEditing(:final draft, :final quote, :final context, :final problem),
-    final AmountRateArrived arrived,
-  ) =>
-    _onRate(
-      state,
-      quote,
-      arrived,
-      (answered) => AmountEditing(
-        draft: draft,
-        quote: answered,
-        context: context,
-        problem: problem,
-      ),
-    ),
-  (
-    AmountEditing(:final draft, :final quote, :final context),
-    AmountRateRetryPressed(),
-  ) =>
-    switch (quote) {
-      RateFailed(:final market) => StepNext(
-        AmountEditing(
-          draft: draft,
-          quote: RateLoading(market),
-          context: context,
-        ),
-        [AmountFetchRate(market)],
-      ),
-      RateLoading() || RateReady() => StepNext.stay(state),
-    },
-  (
-    AmountEditing(:final draft, :final quote, :final context),
-    AmountContinuePressed(),
-  ) =>
-    switch (checkAmount(policy, draft, quote, context)) {
-      AmountCheckPassed(:final amount) => StepNext(AmountDone(amount, context)),
-      AmountCheckRefused(:final problem) => StepNext(
-        AmountEditing(
-          draft: draft,
-          quote: quote,
-          context: context,
-          problem: problem,
-        ),
-      ),
-      AmountCheckKycRequired() => StepNext(AmountKycDetour(draft, quote), [
-        AmountOpenKyc(draft.market),
-      ]),
-      AmountCheckShortfall() => StepNext(AmountFundingDetour(draft, quote), [
-        AmountOpenFunding(draft.market),
-      ]),
-    },
-  (
-    AmountEditing(),
-    AmountDetourReturned() || AmountEditRequested() || AmountLimitRefused(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    AmountKycDetour(:final draft, :final quote) ||
-        AmountFundingDetour(:final draft, :final quote),
-    AmountDetourReturned(:final context),
-  ) =>
-    StepNext(
-      AmountEditing(
-        draft: draft,
-        quote: quote,
-        context: context,
-        problem: _problemOnReturn(checkAmount(policy, draft, quote, context)),
-      ),
-    ),
-  (
-    AmountKycDetour(:final draft, :final quote),
-    final AmountRateArrived arrived,
-  ) =>
-    _onRate(
-      state,
-      quote,
-      arrived,
-      (answered) => AmountKycDetour(draft, answered),
-    ),
-  (
-    AmountFundingDetour(:final draft, :final quote),
-    final AmountRateArrived arrived,
-  ) =>
-    _onRate(
-      state,
-      quote,
-      arrived,
-      (answered) => AmountFundingDetour(draft, answered),
-    ),
-  (
-    AmountKycDetour() || AmountFundingDetour(),
-    AmountTyped() ||
-        AmountUnitToggled() ||
-        AmountDescriptionTyped() ||
-        AmountMarketChosen() ||
-        AmountRateRetryPressed() ||
-        AmountContinuePressed() ||
-        AmountEditRequested() ||
-        AmountLimitRefused(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    AmountDone(:final amount, :final context),
-    AmountLimitRefused(:final limit),
-  ) =>
-    _onLimitRefused(policy, amount, context, limit),
-  (AmountDone(:final amount, :final context), AmountEditRequested()) =>
-    StepNext(
-      AmountEditing(
-        draft: amount.draft,
-        quote: RateReady(amount.rate),
-        context: context,
-      ),
-    ),
-  (
-    AmountDone(),
-    AmountTyped() ||
-        AmountUnitToggled() ||
-        AmountDescriptionTyped() ||
-        AmountMarketChosen() ||
-        AmountRateArrived() ||
-        AmountRateRetryPressed() ||
-        AmountContinuePressed() ||
-        AmountDetourReturned(),
-  ) =>
-    StepNext.stay(state),
-
-  (AmountNoMarket(), AmountDetourReturned(:final context)) => amountEntryStart(
-    policy,
-    context,
-  ),
-  (
-    AmountNoMarket(),
-    AmountTyped() ||
-        AmountUnitToggled() ||
-        AmountDescriptionTyped() ||
-        AmountMarketChosen() ||
-        AmountRateArrived() ||
-        AmountRateRetryPressed() ||
-        AmountContinuePressed() ||
-        AmountEditRequested() ||
-        AmountLimitRefused(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    AmountSessionRejected(),
-    AmountTyped() ||
-        AmountUnitToggled() ||
-        AmountDescriptionTyped() ||
-        AmountMarketChosen() ||
-        AmountRateArrived() ||
-        AmountRateRetryPressed() ||
-        AmountContinuePressed() ||
-        AmountDetourReturned() ||
-        AmountEditRequested() ||
-        AmountLimitRefused(),
-  ) =>
-    StepNext.stay(state),
-};

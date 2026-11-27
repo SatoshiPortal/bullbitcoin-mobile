@@ -38,6 +38,34 @@ final class KycCleared {
 @immutable
 sealed class KycGateState {
   const KycGateState();
+
+  KycGateNext next(KycGateEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (KycGateRequired(:final market, :final amount), KycGateOpenPressed()) =>
+        StepNext(KycGateInKyc(market, amount: amount), [
+          KycGateOpenKyc(market),
+        ]),
+      (KycGateRequired(), KycGateLeavePressed()) => const StepNext(
+        KycGateLeft(),
+      ),
+      (KycGateRequired(), KycGateReturned()) => StepNext.stay(state),
+
+      (
+        KycGateInKyc(:final market, :final amount),
+        KycGateReturned(:final groups),
+      ) =>
+        StepNext(_checked(market, groups, amount)),
+      (KycGateInKyc(), KycGateOpenPressed() || KycGateLeavePressed()) =>
+        StepNext.stay(state),
+
+      (
+        KycGatePassed() || KycGateLeft(),
+        KycGateOpenPressed() || KycGateReturned() || KycGateLeavePressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class KycGateRequired extends KycGateState {
@@ -151,27 +179,3 @@ KycGateNext kycGateStart(
   Set<KycGroup> groups, {
   double? amount,
 }) => StepNext(_checked(market, groups, amount));
-
-KycGateNext transitionKycGate(
-  KycGateState state,
-  KycGateEvent event,
-) => switch ((state, event)) {
-  (KycGateRequired(:final market, :final amount), KycGateOpenPressed()) =>
-    StepNext(KycGateInKyc(market, amount: amount), [KycGateOpenKyc(market)]),
-  (KycGateRequired(), KycGateLeavePressed()) => const StepNext(KycGateLeft()),
-  (KycGateRequired(), KycGateReturned()) => StepNext.stay(state),
-
-  (
-    KycGateInKyc(:final market, :final amount),
-    KycGateReturned(:final groups),
-  ) =>
-    StepNext(_checked(market, groups, amount)),
-  (KycGateInKyc(), KycGateOpenPressed() || KycGateLeavePressed()) =>
-    StepNext.stay(state),
-
-  (
-    KycGatePassed() || KycGateLeft(),
-    KycGateOpenPressed() || KycGateReturned() || KycGateLeavePressed(),
-  ) =>
-    StepNext.stay(state),
-};

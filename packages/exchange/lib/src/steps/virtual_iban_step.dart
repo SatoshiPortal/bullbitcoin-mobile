@@ -50,6 +50,247 @@ final class VirtualIbanPolicy {
 @immutable
 sealed class VirtualIbanState {
   const VirtualIbanState();
+
+  VirtualIbanNext next(VirtualIbanPolicy policy, VirtualIbanEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        VibanLoading(:final attempt),
+        VibanLoaded(attempt: final at, :final read),
+      )
+          when at == attempt =>
+        _loaded(policy, attempt, read),
+      (
+        VibanLoading(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed() ||
+            VibanRetryPressed() ||
+            VibanDeclinePressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (VibanLoadFailed(:final attempt), VibanRetryPressed()) => StepNext(
+        VibanLoading(attempt + 1),
+        [VibanLoad(attempt + 1)],
+      ),
+      (
+        VibanLoadFailed() ||
+            VibanIntro() ||
+            VibanCreateFailed() ||
+            VibanUnverified(),
+        VibanDeclinePressed(),
+      ) =>
+        const StepNext(VibanDeclined()),
+      (
+        VibanLoadFailed(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed(),
+      ) =>
+        StepNext.stay(state),
+
+      (VibanIntro(:final ownerName), VibanCreatePressed()) => StepNext(
+        VibanCreating(ownerName, 1),
+        const [VibanCreate(1)],
+      ),
+      (
+        VibanIntro(),
+        VibanLoaded() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed() ||
+            VibanRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        VibanCreating(:final ownerName, :final attempt),
+        VibanCreated(attempt: final at, :final write),
+      )
+          when at == attempt =>
+        _created(policy, ownerName, attempt, write),
+      (
+        VibanCreating(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed() ||
+            VibanRetryPressed() ||
+            VibanDeclinePressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        VibanCreateFailed(:final ownerName, :final attempt),
+        VibanRetryPressed(),
+      ) =>
+        StepNext(VibanCreating(ownerName, attempt + 1), [
+          VibanCreate(attempt + 1),
+        ]),
+      (
+        VibanCreateFailed(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        VibanVerifying(:final ownerName, :final attempt),
+        VibanVerified(attempt: final at, :final read),
+      )
+          when at == attempt =>
+        _verified(policy, ownerName, attempt, read),
+      (
+        VibanVerifying(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed() ||
+            VibanRetryPressed() ||
+            VibanDeclinePressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        VibanUnverified(:final ownerName, :final attempt),
+        VibanRetryPressed(),
+      ) =>
+        StepNext(VibanVerifying(ownerName, attempt), [VibanVerify(attempt)]),
+      (
+        VibanUnverified(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed(),
+      ) =>
+        StepNext.stay(state),
+
+      (final VibanActivating at, VibanPolled(:final ticket, :final read))
+          when ticket == at.ticket =>
+        _polled(policy, at, read),
+      (final VibanActivating at, VibanActivatedPushed()) => StepNext(
+        VibanActivating(at.ownerName, at.round, at.ticket + 1, at.polls),
+        [VibanSchedulePoll(at.ticket + 1, immediate: true)],
+      ),
+      (final VibanActivating at, VibanVisibilityChanged(visible: false)) =>
+        StepNext(
+          VibanPaused(at.ownerName, at.round, at.ticket + 1, at.polls),
+          const [VibanCancelPoll()],
+        ),
+      (final VibanActivating at, VibanDeadlinePassed(:final round))
+          when round == at.round =>
+        StepNext(VibanTimedOut(at.ownerName, at.round, at.ticket + 1), const [
+          VibanStopWatching(),
+        ]),
+      (VibanActivating() || VibanPaused(), VibanDeclinePressed()) =>
+        const StepNext(VibanDeclined(), [VibanStopWatching()]),
+      (
+        VibanActivating(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed() ||
+            VibanRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (final VibanPaused at, VibanVisibilityChanged(visible: true)) => StepNext(
+        VibanActivating(at.ownerName, at.round, at.ticket + 1, at.polls),
+        [VibanSchedulePoll(at.ticket + 1, immediate: true)],
+      ),
+      (final VibanPaused at, VibanDeadlinePassed(:final round))
+          when round == at.round =>
+        StepNext(VibanTimedOut(at.ownerName, at.round, at.ticket + 1), const [
+          VibanStopWatching(),
+        ]),
+      (
+        VibanPaused(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed() ||
+            VibanRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+
+      (final VibanTimedOut at, VibanRetryPressed()) => StepNext(
+        VibanActivating(at.ownerName, at.round + 1, at.ticket, 0),
+        [
+          VibanSchedulePoll(at.ticket, immediate: true),
+          VibanStartDeadline(at.round + 1, policy.maxDuration),
+        ],
+      ),
+      (VibanTimedOut(), VibanDeclinePressed()) => const StepNext(
+        VibanDeclined(),
+      ),
+      (
+        VibanTimedOut(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed(),
+      ) =>
+        StepNext.stay(state),
+
+      (
+        VibanActive() || VibanDeclined() || VibanSessionEnded(),
+        VibanLoaded() ||
+            VibanCreatePressed() ||
+            VibanCreated() ||
+            VibanVerified() ||
+            VibanPolled() ||
+            VibanActivatedPushed() ||
+            VibanVisibilityChanged() ||
+            VibanDeadlinePassed() ||
+            VibanRetryPressed() ||
+            VibanDeclinePressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
 }
 
 final class VibanLoading extends VirtualIbanState {
@@ -569,235 +810,4 @@ VirtualIbanNext _polled(
     VibanSessionEnded(),
     [VibanStopWatching()],
   ),
-};
-
-VirtualIbanNext transitionVirtualIban(
-  VirtualIbanPolicy policy,
-  VirtualIbanState state,
-  VirtualIbanEvent event,
-) => switch ((state, event)) {
-  (VibanLoading(:final attempt), VibanLoaded(attempt: final at, :final read))
-      when at == attempt =>
-    _loaded(policy, attempt, read),
-  (
-    VibanLoading(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed() ||
-        VibanRetryPressed() ||
-        VibanDeclinePressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (VibanLoadFailed(:final attempt), VibanRetryPressed()) => StepNext(
-    VibanLoading(attempt + 1),
-    [VibanLoad(attempt + 1)],
-  ),
-  (
-    VibanLoadFailed() ||
-        VibanIntro() ||
-        VibanCreateFailed() ||
-        VibanUnverified(),
-    VibanDeclinePressed(),
-  ) =>
-    const StepNext(VibanDeclined()),
-  (
-    VibanLoadFailed(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed(),
-  ) =>
-    StepNext.stay(state),
-
-  (VibanIntro(:final ownerName), VibanCreatePressed()) => StepNext(
-    VibanCreating(ownerName, 1),
-    const [VibanCreate(1)],
-  ),
-  (
-    VibanIntro(),
-    VibanLoaded() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed() ||
-        VibanRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    VibanCreating(:final ownerName, :final attempt),
-    VibanCreated(attempt: final at, :final write),
-  )
-      when at == attempt =>
-    _created(policy, ownerName, attempt, write),
-  (
-    VibanCreating(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed() ||
-        VibanRetryPressed() ||
-        VibanDeclinePressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (VibanCreateFailed(:final ownerName, :final attempt), VibanRetryPressed()) =>
-    StepNext(VibanCreating(ownerName, attempt + 1), [VibanCreate(attempt + 1)]),
-  (
-    VibanCreateFailed(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    VibanVerifying(:final ownerName, :final attempt),
-    VibanVerified(attempt: final at, :final read),
-  )
-      when at == attempt =>
-    _verified(policy, ownerName, attempt, read),
-  (
-    VibanVerifying(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed() ||
-        VibanRetryPressed() ||
-        VibanDeclinePressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (VibanUnverified(:final ownerName, :final attempt), VibanRetryPressed()) =>
-    StepNext(VibanVerifying(ownerName, attempt), [VibanVerify(attempt)]),
-  (
-    VibanUnverified(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed(),
-  ) =>
-    StepNext.stay(state),
-
-  (final VibanActivating at, VibanPolled(:final ticket, :final read))
-      when ticket == at.ticket =>
-    _polled(policy, at, read),
-  (final VibanActivating at, VibanActivatedPushed()) => StepNext(
-    VibanActivating(at.ownerName, at.round, at.ticket + 1, at.polls),
-    [VibanSchedulePoll(at.ticket + 1, immediate: true)],
-  ),
-  (final VibanActivating at, VibanVisibilityChanged(visible: false)) =>
-    StepNext(
-      VibanPaused(at.ownerName, at.round, at.ticket + 1, at.polls),
-      const [VibanCancelPoll()],
-    ),
-  (final VibanActivating at, VibanDeadlinePassed(:final round))
-      when round == at.round =>
-    StepNext(VibanTimedOut(at.ownerName, at.round, at.ticket + 1), const [
-      VibanStopWatching(),
-    ]),
-  (VibanActivating() || VibanPaused(), VibanDeclinePressed()) => const StepNext(
-    VibanDeclined(),
-    [VibanStopWatching()],
-  ),
-  (
-    VibanActivating(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed() ||
-        VibanRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (final VibanPaused at, VibanVisibilityChanged(visible: true)) => StepNext(
-    VibanActivating(at.ownerName, at.round, at.ticket + 1, at.polls),
-    [VibanSchedulePoll(at.ticket + 1, immediate: true)],
-  ),
-  (final VibanPaused at, VibanDeadlinePassed(:final round))
-      when round == at.round =>
-    StepNext(VibanTimedOut(at.ownerName, at.round, at.ticket + 1), const [
-      VibanStopWatching(),
-    ]),
-  (
-    VibanPaused(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed() ||
-        VibanRetryPressed(),
-  ) =>
-    StepNext.stay(state),
-
-  (final VibanTimedOut at, VibanRetryPressed()) => StepNext(
-    VibanActivating(at.ownerName, at.round + 1, at.ticket, 0),
-    [
-      VibanSchedulePoll(at.ticket, immediate: true),
-      VibanStartDeadline(at.round + 1, policy.maxDuration),
-    ],
-  ),
-  (VibanTimedOut(), VibanDeclinePressed()) => const StepNext(VibanDeclined()),
-  (
-    VibanTimedOut(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed(),
-  ) =>
-    StepNext.stay(state),
-
-  (
-    VibanActive() || VibanDeclined() || VibanSessionEnded(),
-    VibanLoaded() ||
-        VibanCreatePressed() ||
-        VibanCreated() ||
-        VibanVerified() ||
-        VibanPolled() ||
-        VibanActivatedPushed() ||
-        VibanVisibilityChanged() ||
-        VibanDeadlinePassed() ||
-        VibanRetryPressed() ||
-        VibanDeclinePressed(),
-  ) =>
-    StepNext.stay(state),
 };

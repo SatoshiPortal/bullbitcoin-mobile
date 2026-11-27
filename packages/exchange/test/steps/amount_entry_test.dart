@@ -301,7 +301,7 @@ void main() {
     for (final state in _states) {
       for (final (index, event) in _events.indexed) {
         test('$state + ${event.runtimeType} #$index', () {
-          final next = transitionAmountEntry(_buy, state, event);
+          final next = state.next(_buy, event);
           final expected = _table[state]![index];
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
@@ -353,11 +353,10 @@ void main() {
       final fixed = _policy(currencySource: const CurrencyFixed(_eur));
       expect(amountMarkets(fixed, _ctx), [_eur]);
       expect(
-        transitionAmountEntry(
-          fixed,
-          _editing(const AmountDraft(market: _eur), const RateLoading(_eur)),
-          const AmountMarketChosen(_cad),
-        ).effects,
+        _editing(
+          const AmountDraft(market: _eur),
+          const RateLoading(_eur),
+        ).next(fixed, const AmountMarketChosen(_cad)).effects,
         isEmpty,
       );
     });
@@ -567,11 +566,11 @@ void main() {
         balances: {FiatCurrency.cad: 500},
       );
       expect(
-        transitionAmountEntry(
-          _buy,
-          _editing(_d, const RateReady(_rate), context: noKyc),
-          const AmountContinuePressed(),
-        ),
+        _editing(
+          _d,
+          const RateReady(_rate),
+          context: noKyc,
+        ).next(_buy, const AmountContinuePressed()),
         const _Next(AmountKycDetour(_d, RateReady(_rate)), [
           AmountOpenKyc(_cad),
         ]),
@@ -581,11 +580,10 @@ void main() {
     test('a shortfall offers funding with the draft', () {
       const draft = AmountDraft(market: _cad, text: '600');
       expect(
-        transitionAmountEntry(
-          _buy,
-          _editing(draft, const RateReady(_rate)),
-          const AmountContinuePressed(),
-        ),
+        _editing(
+          draft,
+          const RateReady(_rate),
+        ).next(_buy, const AmountContinuePressed()),
         const _Next(AmountFundingDetour(draft, RateReady(_rate)), [
           AmountOpenFunding(_cad),
         ]),
@@ -598,11 +596,10 @@ void main() {
         balances: {FiatCurrency.cad: 500},
       );
       expect(
-        transitionAmountEntry(
-          _buy,
-          const AmountKycDetour(_d, RateReady(_rate)),
-          const AmountDetourReturned(noKyc),
-        ),
+        (const AmountKycDetour(
+          _d,
+          RateReady(_rate),
+        )).next(_buy, const AmountDetourReturned(noKyc)),
         _to(
           _editing(
             _d,
@@ -614,11 +611,10 @@ void main() {
       );
       const big = AmountDraft(market: _cad, text: '600');
       expect(
-        transitionAmountEntry(
-          _buy,
-          const AmountFundingDetour(big, RateReady(_rate)),
-          const AmountDetourReturned(_ctx),
-        ),
+        (const AmountFundingDetour(
+          big,
+          RateReady(_rate),
+        )).next(_buy, const AmountDetourReturned(_ctx)),
         _to(
           _editing(
             big,
@@ -632,45 +628,27 @@ void main() {
 
   test('an unreadable rate value is a failed rate', () {
     expect(
-      transitionAmountEntry(
-        _buy,
-        _loading,
-        const AmountRateArrived(_cad, Ok(0)),
-      ),
+      _loading.next(_buy, const AmountRateArrived(_cad, Ok(0))),
       _to(_editing(_d, const RateFailed(_cad, ReadProblemMalformed()))),
     );
   });
 
   group('a limit refusal from the exchange', () {
     test('goes back to the draft with the limit, and Continue now refuses', () {
-      final back = transitionAmountEntry(
-        _buy,
-        _done,
-        const AmountLimitRefused(_minimum150),
-      ).state;
+      final back = _done
+          .next(_buy, const AmountLimitRefused(_minimum150))
+          .state;
       expect(
         back,
         isA<AmountEditing>()
             .having((s) => s.draft, 'draft', _d)
             .having((s) => s.problem, 'problem', const AmountBelowMinimum(150)),
       );
-      final again = transitionAmountEntry(
-        _buy,
-        back,
-        const AmountContinuePressed(),
-      ).state;
+      final again = back.next(_buy, const AmountContinuePressed()).state;
       expect((again as AmountEditing).problem, const AmountBelowMinimum(150));
-      final raised = transitionAmountEntry(
-        _buy,
-        again,
-        const AmountTyped('200'),
-      );
+      final raised = again.next(_buy, const AmountTyped('200'));
       expect(
-        transitionAmountEntry(
-          _buy,
-          raised.state,
-          const AmountContinuePressed(),
-        ).state,
+        raised.state.next(_buy, const AmountContinuePressed()).state,
         isA<AmountDone>(),
       );
     });
@@ -681,11 +659,7 @@ void main() {
         10,
         'EUR',
       );
-      final back = transitionAmountEntry(
-        _buy,
-        _done,
-        const AmountLimitRefused(limit),
-      ).state;
+      final back = _done.next(_buy, const AmountLimitRefused(limit)).state;
       expect(
         (back as AmountEditing).problem,
         const AmountRefusedByExchange(limit),
@@ -720,7 +694,7 @@ void main() {
       final next = <AmountEntryState>[];
       for (final state in frontier) {
         for (final event in events) {
-          final target = transitionAmountEntry(funded, state, event).state;
+          final target = state.next(funded, event).state;
           if (seen.add(target)) next.add(target);
         }
       }

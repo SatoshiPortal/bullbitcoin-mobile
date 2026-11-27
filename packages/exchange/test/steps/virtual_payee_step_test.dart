@@ -153,7 +153,7 @@ final _table = <VirtualPayeeState, Map<int, _Next>>{
 };
 
 VirtualPayeeNext _step(VirtualPayeeState state, VirtualPayeeEvent event) =>
-    transitionVirtualPayee(_policy, state, event);
+    state.next(_policy, event);
 
 void main() {
   test('the table has a row for every state', () {

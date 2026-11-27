@@ -391,7 +391,7 @@ void main() {
       test(
         '#$stateIndex ${state.runtimeType} + ${event.runtimeType} #$index',
         () {
-          final next = transitionPayin(_policy, state, event);
+          final next = state.next(_policy, event);
           final expected = _table[state]![index];
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
@@ -435,14 +435,15 @@ void main() {
     });
 
     test('a rebuild after a refused broadcast keeps the options', () {
-      final refused = transitionPayin(
-        _policy,
-        _broadcasting,
-        const PayinSendAnswered<String>(
-          1,
-          GateAdmitted(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
-        ),
-      ).state;
+      final refused = _broadcasting
+          .next(
+            _policy,
+            const PayinSendAnswered<String>(
+              1,
+              GateAdmitted(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
+            ),
+          )
+          .state;
       expect(
         refused,
         isA<PayinSendFailed<String>>().having(
@@ -663,7 +664,7 @@ void main() {
       final next = <_S>[];
       for (final state in frontier) {
         for (final event in _events) {
-          final target = transitionPayin(_policy, state, event).state;
+          final target = state.next(_policy, event).state;
           reached.add(target.runtimeType);
           if (seen.add(target)) next.add(target);
         }
@@ -729,10 +730,7 @@ void main() {
         () async => const PayinBroadcastOutcomeUnknown(null),
       );
       expect(journaled, [('o-1', BtcNetwork.bitcoin, 'tx1')]);
-      expect(
-        transitionPayin(_policy, _broadcasting, answered).state,
-        _verifying,
-      );
+      expect(_broadcasting.next(_policy, answered).state, _verifying);
     });
 
     test(
@@ -744,7 +742,7 @@ void main() {
         );
         expect(journaled, [('o-1', BtcNetwork.bitcoin, 'orig-1')]);
         expect(
-          transitionPayin(_policy, _broadcasting, answered).state,
+          _broadcasting.next(_policy, answered).state,
           isA<PayinPayjoinNegotiating<String>>(),
         );
       },
@@ -773,7 +771,7 @@ void main() {
         now: _deadline,
       );
       expect(sent, isEmpty);
-      expect(transitionPayin(_policy, _broadcasting, answered).state, _lapsed);
+      expect(_broadcasting.next(_policy, answered).state, _lapsed);
     });
 
     test('an unsettled payin of this order verifies instead', () async {
@@ -791,7 +789,7 @@ void main() {
         () async => const PayinBroadcastAccepted('tx1'),
       );
       expect(sent, isEmpty);
-      expect(transitionPayin(_policy, _broadcasting, answered), _toVerifying);
+      expect(_broadcasting.next(_policy, answered), _toVerifying);
     });
 
     test('a write in flight is an explicit refusal, nothing sent', () async {
@@ -807,10 +805,7 @@ void main() {
       );
       await held;
       expect(sent, isEmpty);
-      expect(
-        transitionPayin(_policy, _broadcasting, answered).state,
-        _writeRefused,
-      );
+      expect(_broadcasting.next(_policy, answered).state, _writeRefused);
     });
   });
 }
