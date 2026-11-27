@@ -38,7 +38,8 @@ import 'package:bull_exchange/bull_exchange.dart'
         SellRoute;
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullSpacing;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSnackBar, BullSpacing, BullThemeX;
 import 'package:settings/settings.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_quick_actions/setup.dart';
@@ -85,9 +86,8 @@ import 'package:bull_payjoin/bull_payjoin.dart'
         PayjoinSessions;
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
-import 'package:overview/overview.dart' show WalletHomeAppBar;
-import 'package:bb_mobile/features/wallet/ui/widgets/silent_wallet_balance.dart'
-    show SilentWalletPresentation;
+import 'package:overview/overview.dart'
+    show EyeToggle, SilentWalletBalance, WalletHomeAppBar;
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
@@ -140,8 +140,30 @@ class AppRouter {
     },
     walletHomePath: WalletRoute.walletHome.path,
     openSend: SendNavigation.openSilent,
-    balanceBuilder: SilentWalletPresentation.balance,
-    settingsIconBuilder: SilentWalletPresentation.settingsIcon,
+    balanceBuilder: (context, balanceSat) => SilentWalletBalance(
+      background: AssetImage(Assets.backgrounds.bgSecureWallet.path),
+      balanceSat: balanceSat,
+      eyeToggle: Builder(
+        builder: (context) => EyeToggle(
+          hideAmounts: context.select(
+            (WalletBloc bloc) => bloc.state.amountDisplay?.hideAmounts,
+          ),
+          showLabel: context.loc.walletShowAmountsTooltip,
+          hideLabel: context.loc.walletHideAmountsTooltip,
+          onChanged: (hide) => Settings.setAmountsHidden(context, hide),
+        ),
+      ),
+      fiatBalance: HomeFiatBalance(
+        balanceSat: balanceSat,
+        onCurrencyChanged: Settings.changeDisplayCurrency,
+      ),
+    ),
+    settingsIconBuilder: (context) => Image.asset(
+      Assets.icons.settingsLine.path,
+      width: 24,
+      height: 24,
+      color: context.bull.onSurface,
+    ),
   );
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
