@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/data/bbx_api_order_stats_repository.dart';
+import 'package:exchange/src/data/bbx_api_order_stats_datasource.dart';
 
 class _Http implements HttpClientAdapter {
   final Object? body;
@@ -37,10 +37,10 @@ class _Http implements HttpClientAdapter {
 }
 
 /// A repository whose client reads [readApiKey] before each request.
-BbxApiOrderStatsRepository _new(
+BbxApiOrderStatsDatasource _new(
   HttpClientAdapter http, {
   Future<Result<String?, BbxFailure>> Function()? readApiKey,
-}) => BbxApiOrderStatsRepository(
+}) => BbxApiOrderStatsDatasource(
   api: bbxForTesting(
     endpoint: 'https://example.invalid',
     adapter: http,

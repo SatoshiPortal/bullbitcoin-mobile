@@ -6,16 +6,16 @@ import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
 
-import 'data/bbx_api_account_repository.dart';
-import 'data/bbx_api_exchange_recipient_repository.dart';
+import 'data/bbx_api_account_datasource.dart';
+import 'data/bbx_api_default_wallets_datasource.dart';
 import 'data/bbx_api_funding_repository.dart';
-import 'data/bbx_api_kyc_repository.dart';
+import 'data/bbx_api_kyc_datasource.dart';
 import 'data/bbx_api_limit_orders_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
-import 'data/bbx_api_order_stats_repository.dart';
+import 'data/bbx_api_order_stats_datasource.dart';
 import 'data/bbx_api_orders_repository.dart';
-import 'data/bbx_api_support_chat_repository.dart';
-import 'data/bbx_api_user_repository.dart';
+import 'data/bbx_api_support_chat_datasource.dart';
+import 'data/bbx_api_user_datasource.dart';
 import 'data/bbx_api_virtual_ibans_repository.dart';
 import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
@@ -398,10 +398,10 @@ final class Exchange {
     return Exchange._(
       inventory.hasPendingOrders,
       () => withClient(
-        (client) => BbxApiOrderStatsRepository(api: client).getOrderStats(),
+        (client) => BbxApiOrderStatsDatasource(api: client).getOrderStats(),
       ),
       ({required fileBytes, required fileName}) => withClient(
-        (client) => BbxApiKycRepository(api: client).uploadDocument(
+        (client) => BbxApiKycDatasource(api: client).uploadDocument(
           fileBytes: fileBytes,
           fileName: fileName,
           docType: 'ID',
@@ -409,16 +409,16 @@ final class Exchange {
         ),
       ),
       (environment) => withClient(
-        (client) => BbxApiAccountRepository(client).getAccount(),
+        (client) => BbxApiAccountDatasource(client).getAccount(),
         environment: environment,
         credentialReadFailure: ExchangeAccountUnavailableFailure.new,
       ),
       (environment) => withClient(
-        (client) => BbxApiUserRepository(api: client).getUserSummary(),
+        (client) => BbxApiUserDatasource(api: client).getUserSummary(),
         environment: environment,
       ),
       (environment) => withClient(
-        (client) => BbxApiUserRepository(api: client).listAnnouncements(),
+        (client) => BbxApiUserDatasource(api: client).listAnnouncements(),
         environment: environment,
       ),
       (
@@ -429,7 +429,7 @@ final class Exchange {
         autoBuyEnabled,
         emailNotificationsEnabled,
       }) => withClient(
-        (client) => BbxApiUserRepository(api: client).saveUserPreference(
+        (client) => BbxApiUserDatasource(api: client).saveUserPreference(
           language: language,
           currency: currency,
           dcaEnabled: dcaEnabled,
@@ -441,8 +441,7 @@ final class Exchange {
       (
         get: () => withClient(
           (client) =>
-              BbxApiExchangeRecipientRepository(api: client)
-                  .getDefaultWallets(),
+              BbxApiDefaultWalletsDatasource(api: client).getDefaultWallets(),
           completionCheck: _CompletionCheck.read,
         ),
         save:
@@ -452,7 +451,7 @@ final class Exchange {
               existingRecipientId,
             }) async => switch (await withClient<ExchangeWrite<DefaultWallet>>(
               (client) async => Ok(
-                await BbxApiExchangeRecipientRepository(api: client)
+                await BbxApiDefaultWalletsDatasource(api: client)
                     .saveDefaultWallet(
                       walletType: walletType,
                       address: address,
@@ -471,7 +470,7 @@ final class Exchange {
               required address,
             }) async => switch (await withClient<ExchangeWrite<void>>(
               (client) async => Ok(
-                await BbxApiExchangeRecipientRepository(api: client)
+                await BbxApiDefaultWalletsDatasource(api: client)
                     .deleteDefaultWallet(
                       recipientId: recipientId,
                       walletType: walletType,
@@ -499,21 +498,21 @@ final class Exchange {
       ),
       (
         getMessages: ({page, pageSize}) => withClient(
-          (client) => BbxApiSupportChatRepository(
+          (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).getMessages(page: page, pageSize: pageSize),
           credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
         ),
         sendMessage: ({required text, attachments}) => withClient(
-          (client) => BbxApiSupportChatRepository(
+          (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).sendMessage(text: text, attachments: attachments),
           credentialReadFailure: ExchangeChatSendMessageFailure.new,
         ),
         getAttachment: (attachmentId) => withClient(
-          (client) => BbxApiSupportChatRepository(
+          (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).getMessageAttachment(attachmentId),
@@ -522,7 +521,7 @@ final class Exchange {
         getUnreadCount: (session) async =>
             switch (await withClient<ExchangeRead<int>>(
               (client) async => Ok(
-                await BbxApiSupportChatRepository(
+                await BbxApiSupportChatDatasource(
                   users: client.users,
                   commcenter: client.commcenter,
                 ).readUnreadMessageCount(),
@@ -536,7 +535,7 @@ final class Exchange {
         markAllRead: (session) async =>
             switch (await withClient<ExchangeWrite<void>>(
               (client) async => Ok(
-                await BbxApiSupportChatRepository(
+                await BbxApiSupportChatDatasource(
                   users: client.users,
                   commcenter: client.commcenter,
                 ).markAllMessagesRead(),
@@ -606,7 +605,7 @@ final class Exchange {
               () => _loadWebPreferences(sessionPreferences, basicAuth),
             ),
       () => withClient((client) async {
-        switch (await BbxApiUserRepository(api: client).getUserSummary()) {
+        switch (await BbxApiUserDatasource(api: client).getUserSummary()) {
           case Err():
             return const Err(ExchangeAccountUnavailableFailure());
           case Ok(:final value):

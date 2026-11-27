@@ -6,11 +6,11 @@ import 'package:bbx_api/bbx_api.dart'
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/data/bbx_api_support_chat_repository.dart';
+import 'package:exchange/src/data/bbx_api_support_chat_datasource.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import 'bbx_api_support_chat_repository_legacy.dart';
+import 'bbx_api_support_chat_datasource_legacy.dart';
 
 /// Answers each JSON-RPC method with its body in [bodies], or throws [error].
 class _ChatHttp implements HttpClientAdapter {
@@ -88,7 +88,7 @@ const _rpcError = {
   'error': {'code': -32000, 'message': 'rejected'},
 };
 
-BbxApiSupportChatRepository _new(
+BbxApiSupportChatDatasource _new(
   HttpClientAdapter http, {
   Future<Result<String?, BbxFailure>> Function()? key,
 }) {
@@ -97,7 +97,7 @@ BbxApiSupportChatRepository _new(
     adapter: http,
     readActiveApiKey: key ?? () async => const Ok('synthetic-anonymous-key'),
   );
-  return BbxApiSupportChatRepository(
+  return BbxApiSupportChatDatasource(
     users: api.users,
     commcenter: api.commcenter,
   );
@@ -138,7 +138,7 @@ Object? _outcome(Result<Object?, ExchangeFailure> result) => switch (result) {
 };
 
 typedef _Call = Future<Result<Object?, ExchangeFailure>> Function(
-  BbxApiSupportChatRepository,
+  BbxApiSupportChatDatasource,
 );
 
 /// Runs [call] on the repository; returns what the old repository sent and

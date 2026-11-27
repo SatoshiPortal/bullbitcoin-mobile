@@ -9,10 +9,10 @@ import 'btc_network_wire.dart';
 import 'exchange_call_classifier.dart';
 
 /// Default Bitcoin, Lightning and Liquid payouts for one session.
-final class BbxApiExchangeRecipientRepository {
+final class BbxApiDefaultWalletsDatasource {
   final bbx.Bbx _api;
 
-  BbxApiExchangeRecipientRepository({required this._api});
+  BbxApiDefaultWalletsDatasource({required this._api});
 
   Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() async {
     final result = await _api.recipients.listMyRecipients(

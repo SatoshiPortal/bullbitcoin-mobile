@@ -1,7 +1,7 @@
 import 'package:bbx_api/bbx_api.dart'
     show BbxCredentialUnavailableFailure, BbxFailure;
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/data/bbx_api_account_repository.dart';
+import 'package:exchange/src/data/bbx_api_account_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -21,7 +21,7 @@ const _summary = {
 Future<Result<UserSummary, ExchangeFailure>> _account(
   FakeBbxHttp http, {
   Future<Result<String?, BbxFailure>> Function()? readApiKey,
-}) => BbxApiAccountRepository(http.client(readApiKey: readApiKey)).getAccount();
+}) => BbxApiAccountDatasource(http.client(readApiKey: readApiKey)).getAccount();
 
 ExchangeFailure _failureOf(Result<UserSummary, ExchangeFailure> result) =>
     switch (result) {

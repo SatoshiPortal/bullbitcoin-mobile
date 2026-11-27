@@ -1,6 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:bbx_api/bbx_api.dart' show BbxCredentialUnavailableFailure;
-import 'package:exchange/src/data/bbx_api_user_repository.dart';
+import 'package:exchange/src/data/bbx_api_user_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
@@ -51,14 +51,14 @@ const _rpcError = {
   'error': {'code': -1, 'message': 'rejected for sat@example.com'},
 };
 
-BbxApiUserRepository _repository(FakeBbxHttp http) =>
-    BbxApiUserRepository(api: http.client());
+BbxApiUserDatasource _repository(FakeBbxHttp http) =>
+    BbxApiUserDatasource(api: http.client());
 
-BbxApiUserRepository _signedOut(FakeBbxHttp http) => BbxApiUserRepository(
+BbxApiUserDatasource _signedOut(FakeBbxHttp http) => BbxApiUserDatasource(
   api: http.client(readApiKey: () async => const Ok(null)),
 );
 
-BbxApiUserRepository _unreadableKey(FakeBbxHttp http) => BbxApiUserRepository(
+BbxApiUserDatasource _unreadableKey(FakeBbxHttp http) => BbxApiUserDatasource(
   api: http.client(
     readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
   ),

@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/data/bbx_api_kyc_repository.dart';
+import 'package:exchange/src/data/bbx_api_kyc_datasource.dart';
 
 /// One sent request: path, content type and body, with the multipart
 /// boundary replaced by `BOUNDARY`.
@@ -62,10 +62,10 @@ class _UploadHttp implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-BbxApiKycRepository _new(
+BbxApiKycDatasource _new(
   HttpClientAdapter http, {
   Future<Result<String?, BbxFailure>> Function()? key,
-}) => BbxApiKycRepository(
+}) => BbxApiKycDatasource(
   api: bbxForTesting(
     endpoint: 'https://example.invalid',
     adapter: http,
@@ -74,7 +74,7 @@ BbxApiKycRepository _new(
 );
 
 Future<Result<void, ExchangeFailure>> _upload(
-  BbxApiKycRepository repository, {
+  BbxApiKycDatasource repository, {
   String fileName = 'doc-u-1-ID',
 }) => repository.uploadDocument(
   fileBytes: const [0, 1, 2, 255],

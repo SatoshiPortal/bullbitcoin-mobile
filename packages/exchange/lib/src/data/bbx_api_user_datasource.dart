@@ -7,10 +7,10 @@ import '../domain/entities/user_summary.dart';
 import '../domain/exchange_failure.dart';
 import 'read_user_summary.dart';
 
-final class BbxApiUserRepository {
+final class BbxApiUserDatasource {
   final bbx.Bbx _api;
 
-  const BbxApiUserRepository({required this._api});
+  const BbxApiUserDatasource({required this._api});
 
   /// The signed-in user's summary, through the one `getUserSummary`
   /// classification shared with the account repository.

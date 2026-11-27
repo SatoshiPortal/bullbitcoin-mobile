@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bbx_api/bbx_api.dart' show BbxCredentialUnavailableFailure;
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/data/bbx_api_exchange_recipient_repository.dart';
+import 'package:exchange/src/data/bbx_api_default_wallets_datasource.dart';
 import 'package:dio/dio.dart' show DioExceptionType;
 import 'package:test/test.dart';
 import 'package:primitives/primitives.dart';
@@ -35,8 +35,8 @@ const _rpcError = {
   'error': {'code': -32602, 'message': 'invalid address bc1qsecret'},
 };
 
-BbxApiExchangeRecipientRepository _repository(FakeBbxHttp http) =>
-    BbxApiExchangeRecipientRepository(api: http.client());
+BbxApiDefaultWalletsDatasource _repository(FakeBbxHttp http) =>
+    BbxApiDefaultWalletsDatasource(api: http.client());
 
 List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
   for (final r in http.requests)
@@ -74,7 +74,7 @@ Matcher _failure<T>(Matcher matcher) => isA<Err<T, ExchangeFailure>>().having(
 void main() {
   group('the requests are the ones the old repository sent, as recorded', () {
     final calls =
-        <String, Future<void> Function(BbxApiExchangeRecipientRepository)>{
+        <String, Future<void> Function(BbxApiDefaultWalletsDatasource)>{
           'getDefaultWallets': (r) => r.getDefaultWallets(),
           'saveDefaultWallet, new': (r) => r.saveDefaultWallet(
             walletType: BtcNetwork.lightning,
@@ -289,7 +289,7 @@ void main() {
 
     test('no credential is a missing API key', () async {
       final http = FakeBbxHttp();
-      final repository = BbxApiExchangeRecipientRepository(
+      final repository = BbxApiDefaultWalletsDatasource(
         api: http.client(readApiKey: () async => const Ok(null)),
       );
 
@@ -301,7 +301,7 @@ void main() {
     });
 
     test('an unreadable credential is unavailable', () async {
-      final repository = BbxApiExchangeRecipientRepository(
+      final repository = BbxApiDefaultWalletsDatasource(
         api: FakeBbxHttp().client(
           readApiKey: () async => const Err(BbxCredentialUnavailableFailure()),
         ),

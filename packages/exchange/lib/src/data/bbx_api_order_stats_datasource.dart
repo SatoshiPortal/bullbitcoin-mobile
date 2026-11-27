@@ -4,10 +4,10 @@ import 'package:primitives/primitives.dart';
 import '../domain/entities/order_stats.dart';
 import '../domain/exchange_failure.dart';
 
-final class BbxApiOrderStatsRepository {
+final class BbxApiOrderStatsDatasource {
   final bbx.Bbx _api;
 
-  const BbxApiOrderStatsRepository({required this._api});
+  const BbxApiOrderStatsDatasource({required this._api});
 
   Future<Result<OrderStatistics, ExchangeFailure>> getOrderStats() async {
     final result = await _api.orders.getOrderStats();

@@ -12,13 +12,13 @@ import 'exchange_call_classifier.dart';
 ///
 /// [users] and [commcenter] may come from different clients: the chat calls
 /// carry attachments and run without the request timeout.
-final class BbxApiSupportChatRepository {
+final class BbxApiSupportChatDatasource {
   static const _source = 'BULL Mobile';
 
   final bbx.UsersApi _users;
   final bbx.CommcenterApi _commcenter;
 
-  const BbxApiSupportChatRepository({
+  const BbxApiSupportChatDatasource({
     required this._users,
     required this._commcenter,
   });

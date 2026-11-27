@@ -3,10 +3,10 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_failure.dart';
 
-final class BbxApiKycRepository {
+final class BbxApiKycDatasource {
   final bbx.Bbx _api;
 
-  const BbxApiKycRepository({required this._api});
+  const BbxApiKycDatasource({required this._api});
 
   Future<Result<void, ExchangeFailure>> uploadDocument({
     required List<int> fileBytes,
