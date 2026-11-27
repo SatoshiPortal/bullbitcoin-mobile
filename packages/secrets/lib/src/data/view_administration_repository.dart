@@ -142,7 +142,8 @@ final class ViewAdministrationRepository {
       }),
       orElse: StoreSecretFailure.new,
     );
-    return refused == null ? result : Err(refused!);
+    final refusal = refused;
+    return refusal == null ? result : Err(refusal);
   }
 
   /// Adds a seed held by [source] to [target]. A protected target takes it only
@@ -184,7 +185,8 @@ final class ViewAdministrationRepository {
       }),
       orElse: StoreSecretFailure.new,
     );
-    return refused == null ? result : Err(refused!);
+    final refusal = refused;
+    return refusal == null ? result : Err(refusal);
   }
 
   /// Removes [secret] from [view] without touching the seed or its wallets.
@@ -215,7 +217,8 @@ final class ViewAdministrationRepository {
       }),
       orElse: StoreSecretFailure.new,
     );
-    return refused == null ? result : Err(refused!);
+    final refusal = refused;
+    return refusal == null ? result : Err(refusal);
   }
 
   Future<Set<String>> _members(String view) async => {

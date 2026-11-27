@@ -218,6 +218,8 @@ final class AccessRepository {
         if (refusal != null) return refusal;
         credentialId = _newCredentialId();
       }
+      final target = credentialId;
+      if (target == null) throw const _InvalidAccessState();
       final salt = AccessVerifier.newSalt();
       final verifier = await AccessVerifier.derive(next, salt);
       if (existing == null) {
@@ -227,7 +229,7 @@ final class AccessRepository {
             .into(_database.credentials)
             .insert(
               CredentialsCompanion.insert(
-                id: credentialId!,
+                id: target,
                 scheme: AccessVerifier.scheme,
                 salt: salt,
                 params: AccessVerifier.params,
