@@ -47,7 +47,7 @@ void _suite() {
   Future<OpenedViews> authenticate(String pin) async {
     final result = ok(await inventory.authenticate(pin));
     expect(result.attempt.accepted, isTrue);
-    return result.views!;
+    return present(result.views);
   }
 
   test('the live session names its views and none while locked', () async {
@@ -122,7 +122,7 @@ void _suite() {
 
     test('activating another view revokes the first one\'s session', () async {
       final views = await authenticate('1111');
-      final first = authority.current!;
+      final first = present(authority.current);
       ok(await views.activate(const ViewId('b')));
       expect(authority.isCurrent(first), isFalse);
       expect(authority.current?.activeView, 'b');

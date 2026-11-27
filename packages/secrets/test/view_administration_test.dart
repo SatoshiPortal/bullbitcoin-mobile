@@ -36,7 +36,7 @@ void _suite() {
       authority: authority,
     );
     await inventory.lock();
-    opened = ok(await inventory.authenticate('')).views!;
+    opened = present(ok(await inventory.authenticate('')).views);
     seed = ok(await secrets.generate()).id;
     ok(
       await inventory.registerWallet(
@@ -57,7 +57,7 @@ void _suite() {
     );
     expect(created.name, 'Work');
     expect(await names(), ['All', 'Work']);
-    final foreign = Fingerprint.tryParse('deadbeef')!;
+    final foreign = present(Fingerprint.tryParse('deadbeef'));
     final refused = await opened.administration.create(
       name: 'Other',
       secrets: {foreign},
@@ -103,7 +103,7 @@ void _suite() {
     expect(await names(), ['All']);
     // With one view left the installation keeps it.
     await inventory.lock();
-    final again = ok(await inventory.authenticate('')).views!;
+    final again = present(ok(await inventory.authenticate('')).views);
     ok(await again.activate(const ViewId('all')));
   });
 
@@ -186,12 +186,12 @@ void generationTests() {
         viewWallet('mine', signer: 'local', fingerprint: seed.hex),
       ),
     );
-    final kept = inventory.openedViews!.administration;
+    final kept = present(inventory.openedViews).administration;
     await inventory.lock();
     ok(await inventory.authenticate(''));
     expect(await kept.create(name: 'Late'), isA<Err>());
     expect(await kept.detach(seed), isA<Err>());
-    expect(inventory.openedViews!.views.map((v) => v.name), [
+    expect(present(inventory.openedViews).views.map((v) => v.name), [
       'All',
     ], reason: 'nothing was written by the stale capability');
   });
@@ -204,7 +204,7 @@ void generationTests() {
         viewWallet('mine', signer: 'local', fingerprint: seed.hex),
       ),
     );
-    final parent = inventory.openedViews!;
+    final parent = present(inventory.openedViews);
     await inventory.lock();
     expect(await parent.administration.create(name: 'Locked'), isA<Err>());
     ok(await inventory.authenticate(''));
@@ -213,11 +213,13 @@ void generationTests() {
     expect(await fromParent.create(name: 'Late'), isA<Err>());
     expect(await fromParent.detach(seed), isA<Err>());
     expect(await fromParent.rename(const ViewId('all'), 'Late'), isA<Err>());
-    expect(inventory.openedViews!.views.map((v) => v.name), [
+    expect(present(inventory.openedViews).views.map((v) => v.name), [
       'All',
     ], reason: 'nothing was written through the old parent');
     expect(
-      ok(await inventory.openedViews!.administration.create(name: 'Now')).name,
+      ok(
+        await present(inventory.openedViews).administration.create(name: 'Now'),
+      ).name,
       'Now',
     );
   });
@@ -225,7 +227,7 @@ void generationTests() {
   test(
     'an administration kept before a view switch is refused after it',
     () async {
-      final opened = inventory.openedViews!;
+      final opened = present(inventory.openedViews);
       final kept = opened.administration;
       final other = ok(await kept.create(name: 'Other'));
       ok(await opened.activate(other.id));

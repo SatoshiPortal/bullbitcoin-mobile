@@ -88,7 +88,7 @@ void _suite() {
     );
     expect(await inventory.removeWallet(aPublic.id), isA<Err>());
     authority.grant('all');
-    final wallet = ok(await inventory.findWallet(aPublic.id))!;
+    final wallet = present(ok(await inventory.findWallet(aPublic.id)));
     expect(wallet.label, 'label-a-public');
   });
 

@@ -53,7 +53,10 @@ void main() {
         expect(result, isA<Ok>());
       } else {
         expect(result, isA<Err>());
-        expect((result! as Err).failure, isA<DatabaseViewsUnsupported>());
+        expect(
+          (present(result) as Err).failure,
+          isA<DatabaseViewsUnsupported>(),
+        );
       }
     }
   }
@@ -135,12 +138,13 @@ void main() {
       ) as Ok<SecretsInventory, DatabaseOpenFailure>).value;
       final opened = inventory.openedViews;
       expect(opened, isNotNull);
-      final created = await opened!.administration.create(name: 'Second');
+      final created = await present(opened).administration
+          .create(name: 'Second');
       expect(
         (created as Err<ViewSummary, SecretFailure>).failure,
         isA<ViewsUnsupportedFailure>(),
       );
-      expect(opened.views.map((v) => v.name), ['All']);
+      expect(present(opened).views.map((v) => v.name), ['All']);
       await inventory.close();
       for (final result in await open()) {
         expect(result, isA<Ok>());

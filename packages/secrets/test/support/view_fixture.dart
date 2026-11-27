@@ -144,3 +144,9 @@ void multiViewSuite(void Function() body) => group(
       ? false
       : 'run with --dart-define=BULL_MULTI_VIEW=true',
 );
+
+/// The value, or a failed expectation: the tests' replacement for `!`.
+T present<T extends Object>(T? value) {
+  if (value case final found?) return found;
+  fail('expected a value, found null');
+}

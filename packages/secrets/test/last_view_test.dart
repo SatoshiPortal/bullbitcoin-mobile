@@ -42,7 +42,7 @@ void _suite() {
   test('with no PIN anywhere the last view opened is the one that opens '
       'again', () async {
     expect(await active(), 'all');
-    final views = ok(await inventory.authenticate('')).views!;
+    final views = present(ok(await inventory.authenticate('')).views);
     ok(await views.activate(const ViewId('c')));
     await inventory.lock();
     expect(await inventory.resumeUnprotected(), isA<Ok>());
@@ -62,20 +62,20 @@ void _suite() {
     authority.grant('c');
     ok(await inventory.setCredential('2222'));
     await inventory.lock();
-    final first = ok(await inventory.authenticate('2222')).views!;
+    final first = present(ok(await inventory.authenticate('2222')).views);
     ok(await first.activate(const ViewId('c')));
     await inventory.lock();
     ok(await inventory.authenticate('2222'));
     expect(await active(), 'c', reason: 'its own PIN opens where it left off');
     await inventory.lock();
-    final other = ok(await inventory.authenticate('1111')).views!;
+    final other = present(ok(await inventory.authenticate('1111')).views);
     expect(other.views.map((v) => v.name), isNot(contains('Charlie')));
     expect(await active(), isNot('c'), reason: 'a memory is not a right');
     expect(await active(), isNotNull);
   });
 
   test('deleting the remembered view forgets it', () async {
-    final views = ok(await inventory.authenticate('')).views!;
+    final views = present(ok(await inventory.authenticate('')).views);
     ok(await views.activate(const ViewId('b')));
     ok(await views.activate(const ViewId('all')));
     ok(await views.administration.delete(const ViewId('b')));
