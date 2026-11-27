@@ -17,10 +17,12 @@ void main() {
     VoidCallback? onPaste,
     VoidCallback? onScan,
     VoidCallback? onClear,
+    ValueChanged<String>? onCommitted,
   }) => wrapWithTheme(
     BullPaymentDestinationInput(
       value: value,
       onChanged: onChanged ?? (_) {},
+      onCommitted: onCommitted,
       label: label,
       hint: 'Address',
       pasteLabel: 'Paste',
@@ -35,6 +37,109 @@ void main() {
       keyboardType: keyboardType,
     ),
   );
+
+  testWidgets('commit mode reports the text only when the field is left', (
+    tester,
+  ) async {
+    final changed = <String>[];
+    final committed = <String>[];
+    await tester.pumpWidget(
+      field(onChanged: changed.add, onCommitted: committed.add),
+    );
+    await tester.tap(find.byType(EditableText));
+    await tester.pump();
+    await tester.enterText(find.byType(EditableText), 'ishi@w');
+    await tester.enterText(
+      find.byType(EditableText),
+      'ishi@walletofsatoshi.com',
+    );
+    await tester.pump();
+    expect(changed, isEmpty);
+    expect(committed, isEmpty);
+
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    expect(committed, ['ishi@walletofsatoshi.com']);
+    expect(changed, isEmpty);
+  });
+
+  testWidgets('commit mode keeps typed text when the host rebuilds', (
+    tester,
+  ) async {
+    await tester.pumpWidget(field(onCommitted: (_) {}));
+    await tester.tap(find.byType(EditableText));
+    await tester.pump();
+    await tester.enterText(find.byType(EditableText), 'ishi@wal');
+    await tester.pumpWidget(field(onCommitted: (_) {}));
+    expect(find.text('ishi@wal'), findsOneWidget);
+  });
+
+  testWidgets('commit mode hides an old error while typing', (tester) async {
+    await tester.pumpWidget(
+      field(value: 'nope', error: 'Invalid', onCommitted: (_) {}),
+    );
+    expect(find.text('Invalid'), findsOneWidget);
+    await tester.tap(find.byType(EditableText));
+    await tester.pump();
+    expect(find.text('Invalid'), findsNothing);
+  });
+
+  testWidgets('paste while typing does not commit the typed text', (
+    tester,
+  ) async {
+    final committed = <String>[];
+    var pastes = 0;
+    await tester.pumpWidget(
+      field(onCommitted: committed.add, onPaste: () => pastes++),
+    );
+    await tester.tap(find.byType(EditableText));
+    await tester.pump();
+    await tester.enterText(find.byType(EditableText), 'ishi@w');
+    await tester.tap(find.text('Paste'));
+    await tester.pump();
+    expect(pastes, 1);
+    expect(committed, isEmpty);
+  });
+
+  testWidgets('a recognised prefix does not lock the field while typing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(field());
+    await tester.tap(find.byType(EditableText));
+    await tester.pump();
+    await tester.enterText(find.byType(EditableText), 'ishi@w');
+    await tester.pumpWidget(
+      field(value: 'ishi@w', validAddress: const Text('ishi@w')),
+    );
+    expect(find.byType(EditableText), findsOneWidget);
+
+    await tester.enterText(
+      find.byType(EditableText),
+      'ishi@walletofsatoshi.com',
+    );
+    await tester.pumpWidget(
+      field(
+        value: 'ishi@walletofsatoshi.com',
+        validAddress: const Text('ishi@walletofsatoshi.com'),
+      ),
+    );
+    expect(find.byType(EditableText), findsOneWidget);
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pump();
+    expect(find.byType(EditableText), findsNothing);
+    expect(find.text('ishi@walletofsatoshi.com'), findsOneWidget);
+  });
+
+  testWidgets('a pasted destination shows as recognised at once', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      field(value: 'bc1example', validAddress: const Text('bc1example')),
+    );
+    expect(find.byType(EditableText), findsNothing);
+    expect(find.text('bc1example'), findsOneWidget);
+  });
 
   testWidgets('the destination name stays on the editable node', (
     tester,

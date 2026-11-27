@@ -93,6 +93,14 @@ sealed class TransferState with _$TransferState {
     return '${toWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
   }
 
+  /// [sats] in the display currency, or null without a price.
+  String? formattedFiatOf(int sats) {
+    final rate = exchangeRate;
+    final currency = fiatCurrencyCode;
+    if (rate == null || currency == null || currency.isEmpty) return null;
+    return FormatAmount.fiat(ConvertAmount.satsToFiat(sats, rate), currency);
+  }
+
   String get displayFromCurrencyCode {
     return '${fromWallet?.isLiquid ?? false ? 'L-' : ''}${bitcoinUnit.code}';
   }

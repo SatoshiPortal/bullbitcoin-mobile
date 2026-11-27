@@ -228,10 +228,13 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       children: [
         _ReceiveInvoiceRow(
           label: context.loc.amountLabel,
-          value: BullAmount.signedSats(
-            amount ?? 0,
-            textAlign: TextAlign.end,
-            interactive: false,
+          value: _ReceiveAmountValue(
+            BullAmount.signedSats(
+              amount ?? 0,
+              textAlign: TextAlign.end,
+              interactive: false,
+            ),
+            fiat: state.formattedFiatOf(amount ?? 0),
           ),
           action: BullFieldAction(
             label: context.loc.receiveEditAmount,
@@ -243,10 +246,13 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           label: context.loc.receiveFees,
           value: fees == null
               ? const BullShimmerLine(width: 90, height: 16)
-              : BullAmount.signedSats(
-                  fees,
-                  textAlign: TextAlign.end,
-                  interactive: false,
+              : _ReceiveAmountValue(
+                  BullAmount.signedSats(
+                    fees,
+                    textAlign: TextAlign.end,
+                    interactive: false,
+                  ),
+                  fiat: state.formattedFiatOf(fees),
                 ),
           action: BullFieldAction(
             label: context.loc.receiveFeeDetails,
@@ -259,13 +265,16 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           label: context.loc.receiveYouReceive,
           value: net == null
               ? const BullShimmerLine(width: 90, height: 16)
-              : BullAmount.signedSats(
-                  net,
-                  textAlign: TextAlign.end,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w700,
+              : _ReceiveAmountValue(
+                  BullAmount.signedSats(
+                    net,
+                    textAlign: TextAlign.end,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                    interactive: false,
                   ),
-                  interactive: false,
+                  fiat: state.formattedFiatOf(net),
                 ),
         ),
         if (state.confirmedNote.isNotEmpty)
@@ -348,10 +357,13 @@ class ReceiveLnFeesDetails extends StatelessWidget {
   Widget _row(BuildContext context, String label, int amount) =>
       _ReceiveInvoiceRow(
         label: label,
-        value: BullAmount.signedSats(
-          amount,
-          textAlign: TextAlign.end,
-          interactive: false,
+        value: _ReceiveAmountValue(
+          BullAmount.signedSats(
+            amount,
+            textAlign: TextAlign.end,
+            interactive: false,
+          ),
+          fiat: context.read<ReceiveBloc>().state.formattedFiatOf(amount),
         ),
       );
 
@@ -397,7 +409,21 @@ class ReceiveLnFeesDetails extends StatelessWidget {
   }
 }
 
-/// Invoice values share an edge and reserve the same action slot on every row.
+class _ReceiveAmountValue extends StatelessWidget {
+  const _ReceiveAmountValue(this.amount, {required this.fiat});
+
+  final Widget amount;
+  final String? fiat;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.end,
+    mainAxisSize: MainAxisSize.min,
+    children: [amount, BullFiatEquivalent(fiat)],
+  );
+}
+
+/// A value ends at its action, or at the row's edge when it has none.
 class _ReceiveInvoiceRow extends StatelessWidget {
   const _ReceiveInvoiceRow({
     required this.label,
@@ -450,8 +476,10 @@ class _ReceiveInvoiceRow extends StatelessWidget {
                 ),
               ),
             ),
-            const Gap(8),
-            SizedBox(width: 48, height: 48, child: action),
+            if (action case final action?) ...[
+              const Gap(8),
+              SizedBox(width: 48, height: 48, child: action),
+            ],
           ],
         ),
       ),

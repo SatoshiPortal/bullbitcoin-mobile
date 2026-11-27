@@ -33,7 +33,6 @@ export 'src/presentation/internal_ark_transfer_cubit.dart';
 export 'src/presentation/swap_failure_l10n.dart';
 export 'src/presentation/transfer_bloc.dart';
 export 'src/presentation/transfer_confirm_error.dart';
-export 'src/ui/pages/swap_in_progress_page.dart';
 export 'src/ui/pages/swap_page.dart';
 export 'src/ui/swap_router.dart';
 export 'src/ui/widgets/internal_transfer_form.dart';

@@ -153,8 +153,6 @@ class ReceiveAmountContinueButton extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (state.creatingSwap)
-              const BullFadingLinearProgress(trigger: true),
             BullButton.primary(
               label: state.creatingSwap
                   ? context.loc.receiveCreatingInvoice

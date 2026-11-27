@@ -64,15 +64,16 @@ BullPaymentPhase receivePayjoinPhase({
     : BullPaymentPhase.sending;
 
 /// Statuses of a Lightning receive. A Boltz reverse swap goes through the
-/// Boltz lockup, the claim broadcast and the claim's confirmation; a direct
+/// Boltz lockup and the claim broadcast, then it is complete; a direct
 /// payment (paid straight to the chain address) is detected, then confirmed.
 /// [steps] holds three labels for a swap and two for a direct payment.
 ///
-/// Boltz `completed` is written when the claim is broadcast, so only
-/// [confirmed], the wallet observing the `receiveTxid` transaction as
-/// confirmed, completes a swap. A direct payment's `receiveTxid` is only a
-/// candidate until the swap resolver accepts it by setting the swap
-/// `completed`: it completes only when both hold.
+/// A swap is complete once our claim is broadcast: the store then holds the
+/// `receiveTxid` with the swap `completed`, and the payer's invoice is
+/// settled. It does not wait for the claim's confirmation. A direct payment's
+/// `receiveTxid` is only a candidate until the swap resolver accepts it by
+/// setting the swap `completed`: it completes only when that holds and the
+/// wallet observes the transaction as [confirmed].
 BullPaymentProgress receiveLightningProgress({
   required List<String> steps,
   required SwapStatus status,
@@ -94,6 +95,11 @@ BullPaymentProgress receiveLightningProgress({
   if (status.hasFailed && !hasReceiveTxid) {
     return BullPaymentProgress(steps: steps, completed: 0, failedAt: 0);
   }
+  final claimed = _reverseSwapClaimed(
+    status: status,
+    hasReceiveTxid: hasReceiveTxid,
+    confirmed: confirmed,
+  );
   final claimBroadcast = hasReceiveTxid || status == SwapStatus.completed;
   final held =
       status.hasFailed ||
@@ -101,18 +107,26 @@ BullPaymentProgress receiveLightningProgress({
       status == SwapStatus.refundable;
   return BullPaymentProgress(
     steps: steps,
-    completed: confirmed && hasReceiveTxid
+    completed: claimed
         ? 2
         : claimBroadcast
         ? 1
         : 0,
-    currentState: held
+    currentState: claimed
+        ? BullPaymentStepState.active
+        : held
         ? BullPaymentStepState.held
-        : claimBroadcast && !confirmed
+        : claimBroadcast
         ? BullPaymentStepState.broadcast
         : BullPaymentStepState.active,
   );
 }
+
+bool _reverseSwapClaimed({
+  required SwapStatus status,
+  required bool hasReceiveTxid,
+  required bool confirmed,
+}) => hasReceiveTxid && (confirmed || status == SwapStatus.completed);
 
 BullPaymentPhase receiveLightningPhase({
   required SwapStatus status,
@@ -125,7 +139,13 @@ BullPaymentPhase receiveLightningPhase({
         ? BullPaymentPhase.success
         : BullPaymentPhase.sending;
   }
-  if (confirmed && hasReceiveTxid) return BullPaymentPhase.success;
+  if (_reverseSwapClaimed(
+    status: status,
+    hasReceiveTxid: hasReceiveTxid,
+    confirmed: confirmed,
+  )) {
+    return BullPaymentPhase.success;
+  }
   if (!wasDirectPayment && status.hasFailed && !hasReceiveTxid) {
     return BullPaymentPhase.failed;
   }

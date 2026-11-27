@@ -43,8 +43,9 @@ void main() {
         (SwapStatus.paid, false, false, 0, .active, null, .sending),
         (SwapStatus.claimable, false, false, 0, .active, null, .sending),
         (SwapStatus.paid, true, false, 1, .broadcast, null, .sending),
-        (SwapStatus.completed, true, false, 1, .broadcast, null, .sending),
+        (SwapStatus.completed, true, false, 2, .active, null, .success),
         (SwapStatus.completed, true, true, 2, .active, null, .success),
+        (SwapStatus.paid, true, true, 2, .active, null, .success),
         (SwapStatus.completed, false, false, 1, .broadcast, null, .sending),
         (SwapStatus.failed, false, false, 0, .active, 0, .failed),
         (SwapStatus.expired, false, false, 0, .active, 0, .failed),
@@ -58,7 +59,7 @@ void main() {
       in reverseCases) {
     test('reverse $status txid=$txid confirmed=$confirmed', () {
       final progress = receiveLightningProgress(
-        steps: const ['Boltz lockup', 'Claim broadcast', 'Confirmed'],
+        steps: const ['Boltz lockup', 'Claim broadcast', 'Completed'],
         status: status,
         wasDirectPayment: false,
         hasReceiveTxid: txid,

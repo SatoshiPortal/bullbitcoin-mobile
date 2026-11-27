@@ -66,6 +66,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullAlertCard,
         BullAmount,
+        BullFiatEquivalent,
         BullKeyboardActions,
         BullOnchainSendInfoSection,
         BullFieldAction,
@@ -1058,6 +1059,7 @@ class AddressField extends StatelessWidget {
       enabled: !state.selectedInputsUnavailable,
       hint: context.loc.sendPasteAddressOrInvoice,
       onChanged: onInput ?? cubit.onChangedText,
+      onCommitted: onInput ?? cubit.onChangedText,
       pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
       scanLabel: context.silentLoc.silentScan,
       clearLabel: context.silentLoc.silentClearButton,
@@ -2764,13 +2766,16 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  BullAmount.signedSats(
-                    sendAmountSat,
-                    interactive: true,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w400,
+                  _SwapSendAmount(
+                    sats: sendAmountSat,
+                    amount: BullAmount.signedSats(
+                      sendAmountSat,
+                      interactive: true,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                      color: context.appColors.text,
                     ),
-                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -2783,13 +2788,16 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  BullAmount.signedSats(
-                    receiveAmountSat,
-                    interactive: true,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w400,
+                  _SwapSendAmount(
+                    sats: receiveAmountSat,
+                    amount: BullAmount.signedSats(
+                      receiveAmountSat,
+                      interactive: true,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                      color: context.appColors.text,
                     ),
-                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -2801,14 +2809,17 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               title: context.loc.sendSendNetworkFee,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: BullAmount.signedSats(
-                  networkFee,
-                  interactive: true,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w400,
+                child: _SwapSendAmount(
+                  sats: networkFee,
+                  amount: BullAmount.signedSats(
+                    networkFee,
+                    interactive: true,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                    color: context.appColors.text,
+                    textAlign: TextAlign.end,
                   ),
-                  color: context.appColors.text,
-                  textAlign: TextAlign.end,
                 ),
               ),
             ),
@@ -2819,14 +2830,17 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               title: context.loc.sendTransferFee,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: BullAmount.signedSats(
-                  swapFee,
-                  interactive: true,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w400,
+                child: _SwapSendAmount(
+                  sats: swapFee,
+                  amount: BullAmount.signedSats(
+                    swapFee,
+                    interactive: true,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                    color: context.appColors.text,
+                    textAlign: TextAlign.end,
                   ),
-                  color: context.appColors.text,
-                  textAlign: TextAlign.end,
                 ),
               ),
             ),
@@ -2862,11 +2876,16 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
-          BullAmount.signedSats(
-            amt,
-            style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
-            color: context.appColors.secondary,
-            interactive: false,
+          _SwapSendAmount(
+            sats: amt,
+            amount: BullAmount.signedSats(
+              amt,
+              style: context.bullType.label.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
+              color: context.appColors.secondary,
+              interactive: false,
+            ),
           ),
         ],
       ),
@@ -2902,13 +2921,16 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                     color: context.appColors.onSurfaceVariant,
                   ),
                   const Spacer(),
-                  BullAmount.signedSats(
-                    total,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                  _SwapSendAmount(
+                    sats: total,
+                    amount: BullAmount.signedSats(
+                      total,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      color: context.appColors.secondary,
+                      interactive: false,
                     ),
-                    color: context.appColors.secondary,
-                    interactive: false,
                   ),
                   const Gap(4),
                   Icon(
@@ -3073,13 +3095,16 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: .end,
               children: [
-                BullAmount.signedSats(
-                  sendAmount,
-                  interactive: true,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w400,
+                _SwapSendAmount(
+                  sats: sendAmount,
+                  amount: BullAmount.signedSats(
+                    sendAmount,
+                    interactive: true,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                    color: context.appColors.text,
                   ),
-                  color: context.appColors.text,
                 ),
               ],
             ),
@@ -3091,13 +3116,16 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  BullAmount.signedSats(
-                    receiveAmount,
-                    interactive: true,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w400,
+                  _SwapSendAmount(
+                    sats: receiveAmount,
+                    amount: BullAmount.signedSats(
+                      receiveAmount,
+                      interactive: true,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                      color: context.appColors.text,
                     ),
-                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -3109,13 +3137,16 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  BullAmount.signedSats(
-                    absoluteFees,
-                    interactive: true,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w400,
+                  _SwapSendAmount(
+                    sats: absoluteFees,
+                    amount: BullAmount.signedSats(
+                      absoluteFees,
+                      interactive: true,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                      color: context.appColors.text,
                     ),
-                    color: context.appColors.text,
                   ),
                 ],
               ),
@@ -3130,16 +3161,22 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               title: context.loc.sendTransferFee,
               details: Align(
                 alignment: Alignment.centerRight,
-                child: BullAmount.signedSats(
-                  (orderSwap.order!.payinAmountSat -
-                          orderSwap.order!.payoutAmountSat)
-                      .toInt(),
-                  interactive: true,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w400,
+                child: _SwapSendAmount(
+                  sats:
+                      (orderSwap.order!.payinAmountSat -
+                              orderSwap.order!.payoutAmountSat)
+                          .toInt(),
+                  amount: BullAmount.signedSats(
+                    (orderSwap.order!.payinAmountSat -
+                            orderSwap.order!.payoutAmountSat)
+                        .toInt(),
+                    interactive: true,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w400,
+                    ),
+                    color: context.appColors.text,
+                    textAlign: TextAlign.end,
                   ),
-                  color: context.appColors.text,
-                  textAlign: TextAlign.end,
                 ),
               ),
             ),
@@ -3151,6 +3188,25 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SwapSendAmount extends StatelessWidget {
+  const _SwapSendAmount({required this.sats, required this.amount});
+
+  final int sats;
+  final Widget amount;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: .end,
+    mainAxisSize: .min,
+    children: [
+      amount,
+      BullFiatEquivalent(
+        context.select((SendCubit cubit) => cubit.state.formattedFiatOf(sats)),
+      ),
+    ],
+  );
 }
 
 class SendConfirmTopArea extends StatelessWidget {

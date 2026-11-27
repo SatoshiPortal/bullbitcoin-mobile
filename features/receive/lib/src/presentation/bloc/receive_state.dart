@@ -314,6 +314,16 @@ abstract class ReceiveState with _$ReceiveState {
         : ConvertAmount.btcToFiat(confirmedAmountBtc, rate);
   }
 
+  /// [sats] in the display currency, or null without a price.
+  String? formattedFiatOf(int sats) {
+    final rate = exchangeRate;
+    if (rate == null || fiatCurrencyCode.isEmpty) return null;
+    return FormatAmount.fiat(
+      ConvertAmount.satsToFiat(sats, rate),
+      fiatCurrencyCode,
+    );
+  }
+
   String get formattedConfirmedAmountFiat {
     // No price: no fiat equivalent rather than a misleading zero.
     final fiat = confirmedAmountFiat;

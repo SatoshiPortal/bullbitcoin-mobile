@@ -5,7 +5,8 @@ import 'package:swap_feature/src/swap_l10n.dart';
 import 'package:swap_feature/src/presentation/transfer_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFiatEquivalent, Gap, BullTypographyX;
 
 class SwapFeesRow extends StatelessWidget {
   const SwapFeesRow({super.key, required this.amountSat});
@@ -19,6 +20,9 @@ class SwapFeesRow extends StatelessWidget {
     );
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
+    );
+    final estimatedFeesFiat = context.select(
+      (TransferBloc bloc) => bloc.state.formattedFiatOf(estimatedFeesSat),
     );
     final estimatedFees = bitcoinUnit == BitcoinUnit.sats
         ? FormatAmount.sats(estimatedFeesSat)
@@ -34,6 +38,8 @@ class SwapFeesRow extends StatelessWidget {
         ),
         const Gap(4),
         Text(estimatedFees, style: context.bullType.label),
+        const Gap(4),
+        BullFiatEquivalent(estimatedFeesFiat, textAlign: TextAlign.start),
       ],
     );
   }
