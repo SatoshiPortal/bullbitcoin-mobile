@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/custody.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart' show overrideMultiViewForTests;
@@ -151,11 +152,26 @@ void main() {
   });
 
   group('custody', () {
-    test('seeds still count as held by the other view, by design', () async {
-      final held = ok(await inventory.getCustodyFingerprints()) as Set;
-      expect(held, containsAll([inA, inB]));
+    test('the inventory published to consumers does not list the seeds of '
+        'every view', () async {
+      expect(
+        inventory,
+        isNot(isA<SeedReferencePort>()),
+        reason: 'the global list is the deletion check\'s, not a consumer\'s',
+      );
+      expect(ok(await inventory.referencedFingerprints()), [inB]);
       authority.grant('all');
       expect(ok(await inventory.referencedFingerprints()), [inA]);
+    });
+
+    test('the deletion check still counts the seeds of every view', () async {
+      final references = SeedReferences.forInventory(
+        inventory,
+        admission: _NoAdmission(),
+        backupVerification: _NoBackups(),
+      );
+      final held = ok(await references.getCustodyFingerprints());
+      expect(held, containsAll([inA, inB]));
     });
   });
 
@@ -177,4 +193,14 @@ void main() {
       expect(result, isA<Err>());
     });
   });
+}
+
+final class _NoAdmission implements ParentCustodyAdmissionPort {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
+}
+
+final class _NoBackups implements InventoryBackupVerification {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }

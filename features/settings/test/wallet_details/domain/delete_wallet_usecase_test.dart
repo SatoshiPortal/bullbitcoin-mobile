@@ -150,7 +150,7 @@ void main() {
     when(
       () => orders.getPendingOrders(),
     ).thenAnswer((_) async => const Ok<List<OrderSwapRecord>, SwapFailure>([]));
-    references = SeedReferences(
+    references = SeedReferences.forInventory(
       inventory.inventory,
       admission: SqliteParentCustodyAdmission(
         directory: () async => inventory.directory.path,
