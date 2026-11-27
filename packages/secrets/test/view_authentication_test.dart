@@ -183,6 +183,40 @@ void main() {
       );
     });
 
+    test('removing and setting a PIN again never rewrites the row a sibling '
+        'still uses', () async {
+      authority.grant('b');
+      ok(await inventory.removeCredential());
+      ok(await inventory.setCredential('2222'));
+      await inventory.lock();
+      expect((await authenticate('1111')).views.map((v) => v.name), [
+        'All',
+        'Charlie',
+      ], reason: 'Charlie keeps the PIN it had');
+      await inventory.lock();
+      expect((await authenticate('2222')).views.map((v) => v.name), [
+        'All',
+        'Bravo',
+      ]);
+    });
+
+    test('dissociating gives the view a new row, and a later rotation of '
+        'either leaves the other', () async {
+      authority.grant('b');
+      ok(await inventory.dissociateView());
+      ok(await inventory.setCredential('3333'));
+      await inventory.lock();
+      expect((await authenticate('1111')).views.map((v) => v.name), [
+        'All',
+        'Charlie',
+      ]);
+      await inventory.lock();
+      expect((await authenticate('3333')).views.map((v) => v.name), [
+        'All',
+        'Bravo',
+      ]);
+    });
+
     test('rotating it moves every view that shares it, a dissociated view '
         'keeps its own PIN', () async {
       authority.grant('c');
