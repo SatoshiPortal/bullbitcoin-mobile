@@ -58,7 +58,7 @@ class BullValueViewer extends StatelessWidget {
         },
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final truncated = _fitToWidth(
+            final truncated = fitToWidth(
               data,
               effectiveStyle,
               constraints.maxWidth,
@@ -82,9 +82,20 @@ class BullValueViewer extends StatelessWidget {
     );
   }
 
-  static String _fitToWidth(String data, TextStyle style, double maxWidth) {
+  /// Fits [data] on one line inside [maxWidth], keeping both ends visible.
+  ///
+  /// [measure] exists so tests can count the layout passes instead of timing
+  /// them; production always measures with the real text style.
+  @visibleForTesting
+  static String fitToWidth(
+    String data,
+    TextStyle style,
+    double maxWidth, {
+    double Function(String text, TextStyle style)? measure,
+  }) {
+    final widthOf = measure ?? _measure;
     if (data.isEmpty) return data;
-    if (_measure(data, style) <= maxWidth) return data;
+    if (widthOf(data, style) <= maxWidth) return data;
 
     const separator = '…';
     const minChars = 5;
@@ -92,13 +103,26 @@ class BullValueViewer extends StatelessWidget {
     if (data.length <= minChars * 2) return data;
 
     final maxSide = (data.length - 1) ~/ 2;
-    for (int n = maxSide; n >= minChars; n--) {
-      final truncated =
-          '${data.substring(0, n)}$separator${data.substring(data.length - n)}';
-      if (_measure(truncated, style) <= maxWidth) return truncated;
+    String truncatedAt(int keep) =>
+        '${data.substring(0, keep)}$separator'
+        '${data.substring(data.length - keep)}';
+    // A wider truncation is never narrower than a shorter one, so the number of
+    // characters kept can be searched instead of shrunk one at a time: ~8
+    // layouts instead of ~170 for a 383-character invoice.
+    var low = minChars;
+    var high = maxSide;
+    var widest = 0;
+    while (low <= high) {
+      final keep = low + (high - low) ~/ 2;
+      if (widthOf(truncatedAt(keep), style) <= maxWidth) {
+        widest = keep;
+        low = keep + 1;
+      } else {
+        high = keep - 1;
+      }
     }
 
-    return '${data.substring(0, minChars)}$separator${data.substring(data.length - minChars)}';
+    return truncatedAt(widest == 0 ? minChars : widest);
   }
 
   static double _measure(String text, TextStyle style) {
