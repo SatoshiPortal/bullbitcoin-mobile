@@ -4008,6 +4008,7 @@
   "recipientsInfoCard": "Kortti",
   "recipientsInfoLabel": "Tunniste",
   "recipientsValidationFieldRequired": "Tämä kenttä ei voi olla tyhjä",
+  "recipientsValidationEmailInvalid": "Anna kelvollinen sähköpostiosoite",
   "recipientsValidationClabeLength": "CLABE-numerossa on 18 numeroa",
   "recipientsValidationClabeCheckDigit": "Tämä CLABE ei ole kelvollinen. Tarkista numero",
   "recipientsValidationSpeiPhone": "Anna 10-numeroinen puhelinnumero ilman maatunnusta",

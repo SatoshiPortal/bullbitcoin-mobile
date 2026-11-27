@@ -3268,6 +3268,7 @@
   "recipientsInfoCard": "Thẻ",
   "recipientsInfoLabel": "Nhãn",
   "recipientsValidationFieldRequired": "Trường này không được để trống",
+  "recipientsValidationEmailInvalid": "Nhập địa chỉ email hợp lệ",
   "recipientsValidationClabeLength": "Số CLABE gồm 18 chữ số",
   "recipientsValidationClabeCheckDigit": "Số CLABE này không hợp lệ. Vui lòng kiểm tra lại",
   "recipientsValidationSpeiPhone": "Nhập số điện thoại 10 chữ số, không kèm mã quốc gia",

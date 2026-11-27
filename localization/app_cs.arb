@@ -10967,6 +10967,7 @@
   "recipientsInfoCard": "Karta",
   "recipientsInfoLabel": "Štítek",
   "recipientsValidationFieldRequired": "Toto pole nemůže být prázdné",
+  "recipientsValidationEmailInvalid": "Zadejte platnou e-mailovou adresu",
   "recipientsValidationClabeLength": "CLABE má 18 číslic",
   "recipientsValidationClabeCheckDigit": "Tato CLABE není platná. Zkontrolujte číslo",
   "recipientsValidationSpeiPhone": "Zadejte 10místné telefonní číslo bez předvolby země",

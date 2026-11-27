@@ -10979,6 +10979,7 @@
   "recipientsInfoCard": "Cartão",
   "recipientsInfoLabel": "Etiqueta",
   "recipientsValidationFieldRequired": "Este campo não pode estar vazio",
+  "recipientsValidationEmailInvalid": "Insira um endereço de e-mail válido",
   "recipientsValidationClabeLength": "Uma CLABE tem 18 dígitos",
   "recipientsValidationClabeCheckDigit": "Esta CLABE não é válida. Verifique o número",
   "recipientsValidationSpeiPhone": "Insira o número de telefone de 10 dígitos, sem o código do país",

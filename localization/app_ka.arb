@@ -3391,6 +3391,7 @@
   "recipientsInfoCard": "ბარათი",
   "recipientsInfoLabel": "იარლიყი",
   "recipientsValidationFieldRequired": "ეს ველი არ შეიძლება იყოს ცარიელი",
+  "recipientsValidationEmailInvalid": "შეიყვანეთ სწორი ელფოსტის მისამართი",
   "recipientsValidationClabeLength": "CLABE შედგება 18 ციფრისგან",
   "recipientsValidationClabeCheckDigit": "ეს CLABE არასწორია. შეამოწმეთ ნომერი",
   "recipientsValidationSpeiPhone": "შეიყვანეთ 10-ნიშნა ტელეფონის ნომერი ქვეყნის კოდის გარეშე",

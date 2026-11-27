@@ -11467,6 +11467,7 @@
   "recipientsInfoCard": "البطاقة",
   "recipientsInfoLabel": "التسمية",
   "recipientsValidationFieldRequired": "لا يمكن ترك هذا الحقل فارغًا",
+  "recipientsValidationEmailInvalid": "أدخل عنوان بريد إلكتروني صالحًا",
   "recipientsValidationClabeLength": "يتكون رقم CLABE من 18 رقمًا",
   "recipientsValidationClabeCheckDigit": "رقم CLABE هذا غير صالح. تحقق من الرقم",
   "recipientsValidationSpeiPhone": "أدخل رقم الهاتف المكوّن من 10 أرقام، بدون رمز الدولة",

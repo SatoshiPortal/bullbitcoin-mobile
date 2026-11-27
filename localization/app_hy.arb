@@ -3250,6 +3250,7 @@
   "recipientsInfoCard": "Քարտ",
   "recipientsInfoLabel": "Պիտակ",
   "recipientsValidationFieldRequired": "Այս դաշտը չի կարող դատարկ լինել",
+  "recipientsValidationEmailInvalid": "Մուտքագրեք վավեր էլ. փոստի հասցե",
   "recipientsValidationClabeLength": "CLABE-ն ունի 18 թվանշան",
   "recipientsValidationClabeCheckDigit": "Այս CLABE-ն վավեր չէ։ Ստուգեք համարը",
   "recipientsValidationSpeiPhone": "Մուտքագրեք 10 թվանշանանոց հեռախոսահամարը՝ առանց երկրի կոդի",

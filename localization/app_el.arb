@@ -10967,6 +10967,7 @@
   "recipientsInfoCard": "Κάρτα",
   "recipientsInfoLabel": "Ετικέτα",
   "recipientsValidationFieldRequired": "Αυτό το πεδίο δεν μπορεί να είναι κενό",
+  "recipientsValidationEmailInvalid": "Εισαγάγετε μια έγκυρη διεύθυνση email",
   "recipientsValidationClabeLength": "Ένα CLABE έχει 18 ψηφία",
   "recipientsValidationClabeCheckDigit": "Αυτό το CLABE δεν είναι έγκυρο. Ελέγξτε τον αριθμό",
   "recipientsValidationSpeiPhone": "Εισαγάγετε τον 10ψήφιο αριθμό τηλεφώνου, χωρίς τον κωδικό χώρας",

@@ -11470,6 +11470,7 @@
   "recipientsInfoCard": "카드",
   "recipientsInfoLabel": "라벨",
   "recipientsValidationFieldRequired": "이 필드는 비워둘 수 없습니다",
+  "recipientsValidationEmailInvalid": "올바른 이메일 주소를 입력하세요",
   "recipientsValidationClabeLength": "CLABE는 18자리 숫자입니다",
   "recipientsValidationClabeCheckDigit": "유효하지 않은 CLABE입니다. 번호를 확인하세요",
   "recipientsValidationSpeiPhone": "국가 코드 없이 10자리 전화번호를 입력하세요",

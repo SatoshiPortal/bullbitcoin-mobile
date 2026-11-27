@@ -4026,6 +4026,7 @@
   "recipientsInfoCard": "Карта",
   "recipientsInfoLabel": "Метка",
   "recipientsValidationFieldRequired": "Это поле не может быть пустым",
+  "recipientsValidationEmailInvalid": "Введите действительный адрес электронной почты",
   "recipientsValidationClabeLength": "CLABE состоит из 18 цифр",
   "recipientsValidationClabeCheckDigit": "Этот CLABE недействителен. Проверьте номер",
   "recipientsValidationSpeiPhone": "Введите 10-значный номер телефона без кода страны",

@@ -11464,6 +11464,7 @@
   "recipientsInfoCard": "Kart",
   "recipientsInfoLabel": "Etiket",
   "recipientsValidationFieldRequired": "Bu alan boş bırakılamaz",
+  "recipientsValidationEmailInvalid": "Geçerli bir e-posta adresi girin",
   "recipientsValidationClabeLength": "CLABE 18 haneden oluşur",
   "recipientsValidationClabeCheckDigit": "Bu CLABE geçerli değil. Numarayı kontrol edin",
   "recipientsValidationSpeiPhone": "Ülke kodu olmadan 10 haneli telefon numarasını girin",

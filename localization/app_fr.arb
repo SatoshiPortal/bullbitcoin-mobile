@@ -4005,6 +4005,7 @@
   "recipientsInfoCard": "Carte",
   "recipientsInfoLabel": "Libellé",
   "recipientsValidationFieldRequired": "Ce champ ne peut pas être vide",
+  "recipientsValidationEmailInvalid": "Saisissez une adresse e-mail valide",
   "recipientsValidationClabeLength": "Une CLABE comporte 18 chiffres",
   "recipientsValidationClabeCheckDigit": "Cette CLABE n’est pas valide. Vérifiez le numéro",
   "recipientsValidationSpeiPhone": "Saisissez le numéro de téléphone à 10 chiffres, sans l’indicatif du pays",

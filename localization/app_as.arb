@@ -8837,6 +8837,7 @@
   "recipientsInfoCard": "কাৰ্ড",
   "recipientsInfoLabel": "লেবেল",
   "recipientsValidationFieldRequired": "এই ক্ষেত্ৰখন খালী থাকিব নোৱাৰে",
+  "recipientsValidationEmailInvalid": "এটা বৈধ ইমেইল ঠিকনা দিয়ক",
   "recipientsValidationClabeLength": "CLABE ত 18টা অংক থাকে",
   "recipientsValidationClabeCheckDigit": "এই CLABE বৈধ নহয়। নম্বৰটো পৰীক্ষা কৰক",
   "recipientsValidationSpeiPhone": "দেশৰ ক'ড অবিহনে 10 অংকৰ ফোন নম্বৰটো দিয়ক",

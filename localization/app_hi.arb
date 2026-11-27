@@ -11653,6 +11653,7 @@
   "recipientsInfoCard": "कार्ड",
   "recipientsInfoLabel": "लेबल",
   "recipientsValidationFieldRequired": "यह क्षेत्र खाली नहीं हो सकता है",
+  "recipientsValidationEmailInvalid": "एक मान्य ईमेल पता दर्ज करें",
   "recipientsValidationClabeLength": "CLABE में 18 अंक होते हैं",
   "recipientsValidationClabeCheckDigit": "यह CLABE मान्य नहीं है। नंबर जाँचें",
   "recipientsValidationSpeiPhone": "देश कोड के बिना 10 अंकों का फ़ोन नंबर दर्ज करें",

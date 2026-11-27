@@ -48,4 +48,11 @@ void main() {
       SpeiProblem.debitCardNotSixteenDigits,
     );
   });
+
+  test('an email needs one @, a dotted domain and no spaces', () {
+    expect(emailLooksValid('ada@example.co'), isTrue);
+    expect(emailLooksValid('ada@example'), isFalse);
+    expect(emailLooksValid('ada example.co'), isFalse);
+    expect(emailLooksValid('ada@@example.co'), isFalse);
+  });
 }

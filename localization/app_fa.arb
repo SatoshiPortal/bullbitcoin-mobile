@@ -11464,6 +11464,7 @@
   "recipientsInfoCard": "کارت",
   "recipientsInfoLabel": "برچسب",
   "recipientsValidationFieldRequired": "این فیلد نمی‌تواند خالی باشد",
+  "recipientsValidationEmailInvalid": "یک آدرس ایمیل معتبر وارد کنید",
   "recipientsValidationClabeLength": "شماره CLABE از ۱۸ رقم تشکیل شده است",
   "recipientsValidationClabeCheckDigit": "این CLABE معتبر نیست. شماره را بررسی کنید",
   "recipientsValidationSpeiPhone": "شماره تلفن ۱۰ رقمی را بدون کد کشور وارد کنید",

@@ -11670,6 +11670,7 @@
   "recipientsInfoCard": "কার্ড",
   "recipientsInfoLabel": "লেবেল",
   "recipientsValidationFieldRequired": "এই ক্ষেত্রটি খালি থাকতে পারে না",
+  "recipientsValidationEmailInvalid": "একটি বৈধ ইমেইল ঠিকানা লিখুন",
   "recipientsValidationClabeLength": "CLABE-তে 18টি অঙ্ক থাকে",
   "recipientsValidationClabeCheckDigit": "এই CLABE বৈধ নয়। নম্বরটি যাচাই করুন",
   "recipientsValidationSpeiPhone": "দেশের কোড ছাড়া 10 অঙ্কের ফোন নম্বর লিখুন",

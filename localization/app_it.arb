@@ -4020,6 +4020,7 @@
   "recipientsInfoCard": "Carta",
   "recipientsInfoLabel": "Etichetta",
   "recipientsValidationFieldRequired": "Questo campo non può essere vuoto",
+  "recipientsValidationEmailInvalid": "Inserisci un indirizzo email valido",
   "recipientsValidationClabeLength": "Una CLABE ha 18 cifre",
   "recipientsValidationClabeCheckDigit": "Questa CLABE non è valida. Controlla il numero",
   "recipientsValidationSpeiPhone": "Inserisci il numero di telefono di 10 cifre, senza prefisso internazionale",

@@ -210,36 +210,65 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       }(),
       RecipientType.pseColombia => () {
         final d = details as PseColombiaDetails;
-        return RecipientDetailsModel(
-          recipientTypeFiat: type.value,
-          isOwner: d.isOwner,
-          label: d.label,
-          isDefault: d.isDefault,
-          accountType: d.accountType,
-          bankAccount: d.bankAccount,
-          bankCode: d.bankCode,
-          bankName: d.bankName,
-          documentId: d.documentId,
-          documentType: d.documentType,
-          name: d.name,
+        return _withColombiaPayee(
+          RecipientDetailsModel(
+            recipientTypeFiat: type.value,
+            isOwner: d.isOwner,
+            label: d.label,
+            isDefault: d.isDefault,
+            accountType: d.accountType,
+            bankAccount: d.bankAccount,
+            bankCode: d.bankCode,
+            documentId: d.documentId,
+            documentType: d.documentType,
+          ),
+          d.payee,
         );
       }(),
       RecipientType.nequiColombia => () {
         final d = details as NequiColombiaDetails;
-        return RecipientDetailsModel(
-          recipientTypeFiat: type.value,
-          isOwner: d.isOwner,
-          label: d.label,
-          isDefault: d.isDefault,
-          // Nequi uses phone number as bank account and API field is bankAccount
-          bankAccount: d.phoneNumber,
-          documentId: d.documentId,
-          documentType: d.documentType,
-          name: d.name,
+        return _withColombiaPayee(
+          RecipientDetailsModel(
+            recipientTypeFiat: type.value,
+            isOwner: d.isOwner,
+            label: d.label,
+            isDefault: d.isDefault,
+            // Nequi uses phone number as bank account and API field is bankAccount
+            bankAccount: d.phoneNumber,
+            documentId: d.documentId,
+            documentType: d.documentType,
+          ),
+          d.payee,
         );
       }(),
     };
   }
+
+  /// The holder and email fields of a Colombian recipient: `isCorporate`,
+  /// then `name` and `lastname` for a person or `corporateName` for a
+  /// company, and `email`.
+  static RecipientDetailsModel _withColombiaPayee(
+    RecipientDetailsModel model,
+    ColombiaPayee payee,
+  ) => switch (payee) {
+    ColombiaContact(
+      :final email,
+      holder: CopIndividual(:final name, :final lastname),
+    ) =>
+      model.copyWith(
+        isCorporate: false,
+        name: name,
+        lastname: lastname,
+        email: email,
+      ),
+    ColombiaContact(:final email, holder: CopCorporate(:final corporateName)) =>
+      model.copyWith(
+        isCorporate: true,
+        corporateName: corporateName,
+        email: email,
+      ),
+    ColombiaNameOnly(:final name) => model.copyWith(name: name),
+  };
 
   /// Convert from model to domain value object via DTO
   RecipientDetails toDomain() {

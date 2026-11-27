@@ -105,7 +105,7 @@ extension RecipientViewModelMapper on Recipient {
       type: d.type,
       label: d.label,
       isOwner: d.isOwner,
-      name: d.name,
+      name: d.payee.displayName,
       bankAccount: d.bankAccount,
     ),
     final NequiColombiaDetails d => RecipientViewModel(
@@ -113,7 +113,7 @@ extension RecipientViewModelMapper on Recipient {
       type: d.type,
       label: d.label,
       isOwner: d.isOwner,
-      name: d.name,
+      name: d.payee.displayName,
       phoneNumber: d.phoneNumber,
     ),
   };

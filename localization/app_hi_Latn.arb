@@ -11847,6 +11847,7 @@
   "recipientsInfoCard": "Card",
   "recipientsInfoLabel": "Label",
   "recipientsValidationFieldRequired": "Ye field khali nahi reh sakta",
+  "recipientsValidationEmailInvalid": "Ek valid email address daalein",
   "recipientsValidationClabeLength": "CLABE mein 18 digits hote hain",
   "recipientsValidationClabeCheckDigit": "Yah CLABE valid nahin hai. Number check karein",
   "recipientsValidationSpeiPhone": "Country code ke bina 10 digit ka phone number daalein",

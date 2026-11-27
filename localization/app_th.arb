@@ -11468,6 +11468,7 @@
   "recipientsInfoCard": "บัตร",
   "recipientsInfoLabel": "ป้ายกำกับ",
   "recipientsValidationFieldRequired": "ช่องนี้ต้องไม่เว้นว่าง",
+  "recipientsValidationEmailInvalid": "กรอกที่อยู่อีเมลที่ถูกต้อง",
   "recipientsValidationClabeLength": "CLABE มี 18 หลัก",
   "recipientsValidationClabeCheckDigit": "CLABE นี้ไม่ถูกต้อง โปรดตรวจสอบหมายเลข",
   "recipientsValidationSpeiPhone": "กรอกหมายเลขโทรศัพท์ 10 หลัก โดยไม่ต้องใส่รหัสประเทศ",

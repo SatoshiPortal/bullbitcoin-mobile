@@ -12349,6 +12349,10 @@
   "@recipientsValidationFieldRequired": {
     "description": "Validation error shown when a required recipient form field is empty."
   },
+  "recipientsValidationEmailInvalid": "Enter a valid email address",
+  "@recipientsValidationEmailInvalid": {
+    "description": "Recipient form: the email field does not look like an email address"
+  },
   "recipientsValidationClabeLength": "A CLABE has 18 digits",
   "@recipientsValidationClabeLength": {
     "description": "Recipient form (Mexico SPEI): the CLABE is not 18 digits"

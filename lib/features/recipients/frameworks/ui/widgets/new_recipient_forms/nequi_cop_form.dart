@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/cop_document_type_label.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/cop_holder_fields.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/cop_document_type.dart';
@@ -26,7 +27,11 @@ class NequiCopFormState extends State<NequiCopForm> {
   String _phoneNumber = '';
   CopDocumentType _documentType = CopDocumentType.cc;
   String _documentId = '';
-  String _name = '';
+  CopHolderFormData _holder = const CopIndividualFormData(
+    firstName: '',
+    lastName: '',
+  );
+  String _email = '';
   String _label = '';
 
   @override
@@ -47,7 +52,8 @@ class NequiCopFormState extends State<NequiCopForm> {
         phoneNumber: _phoneNumber,
         documentType: _documentType.value,
         documentId: _documentId,
-        name: _name,
+        holder: _holder,
+        email: _email,
         label: _label.isEmpty ? null : _label,
       );
 
@@ -144,19 +150,12 @@ class NequiCopFormState extends State<NequiCopForm> {
             },
           ),
           const Gap(12.0),
-          BBTextFormField(
-            labelText: context.loc.recipientsFieldRecipientNameLabel,
-            hintText: context.loc.recipientsFieldNameHint,
+          CopHolderFields(
             focusNode: _nameFocusNode,
-            textInputAction: .next,
-            onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
-            onChanged: (value) {
-              setState(() {
-                _name = value;
-              });
+            onDone: _labelFocusNode.requestFocus,
+            onChanged: (holder, email) {
+              _holder = holder;
+              _email = email;
             },
           ),
           const Gap(12.0),
