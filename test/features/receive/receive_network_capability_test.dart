@@ -124,6 +124,10 @@ void main() {
       );
       final catalogue = _WalletBloc();
       var generation = 1;
+      final actionChanges = StreamController<void>.broadcast();
+      addTearDown(actionChanges.close);
+      when(() => catalogue.walletActionChanges)
+          .thenAnswer((_) => actionChanges.stream);
       when(() => catalogue.walletActionsGeneration)
           .thenAnswer((_) => generation);
       whenListen(
@@ -213,6 +217,14 @@ void main() {
       expect(received, isNull);
       expect(sent, isNull);
       expect(find.byType(WalletBottomButtons), findsOneWidget);
+
+      // A new admission need not change WalletState (the same catalogue can
+      // be published after re-authentication).
+      actionChanges.add(null);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(loc.walletButtonReceive));
+      await tester.pumpAndSettle();
+      expect(find.text('Lightning route'), findsOneWidget);
     },
   );
 
