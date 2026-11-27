@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "سرور Mempool سفارشی",
   "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
   "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
-  "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید."
+  "onboardingBackupVerificationError": "کیف پول شما بازیابی شد، اما تأیید نسخه پشتیبان کامل نشد. لطفاً دوباره تلاش کنید.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "واردات Mnemonic",
+  "networkFeatureUnavailable": "این قابلیت در شبکه انتخاب‌شده در دسترس نیست.",
+  "onboardingCreateWalletButtonLabel": "ایجاد کیف پول",
+  "receiveLiquid": "مایع",
+  "walletDeletionErrorWalletNotFound": "کیف پولی که می خواهید حذف کنید وجود ندارد.",
+  "walletDetailsWalletFingerprintLabel": "اثر انگشت",
+  "walletLoadFailed": "کیف‌پول‌های شما بارگذاری نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید."
 }

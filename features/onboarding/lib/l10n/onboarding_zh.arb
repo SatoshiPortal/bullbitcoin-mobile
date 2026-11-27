@@ -27,5 +27,14 @@
   "onboardingAdvancedOptionsCustomMempool": "自定义 Mempool 服务器",
   "onboardingAdvancedOptionsCustomRecoverbull": "自定义 Recoverbull 服务器",
   "onboardingAdvancedOptionsFooter": "您可以稍后在应用设置中更改这些设置",
-  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。"
+  "onboardingBackupVerificationError": "您的钱包已恢复，但备份验证未能完成，请重试。",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "测试网",
+  "importWalletImportMnemonic": "导入助记词",
+  "networkFeatureUnavailable": "所选网络不支持此功能。",
+  "onboardingCreateWalletButtonLabel": "创建钱包",
+  "receiveLiquid": "流动资金",
+  "walletDeletionErrorWalletNotFound": "您试图删除的钱包不存在",
+  "walletDetailsWalletFingerprintLabel": "Wallet finger",
+  "walletLoadFailed": "无法加载您的钱包。请检查网络连接后重试。"
 }

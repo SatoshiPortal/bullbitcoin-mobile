@@ -69,5 +69,14 @@
   "onboardingAdvancedOptionsCustomRecoverbull": "Персонализиран сървър Recoverbull",
   "onboardingAdvancedOptionsFooter": "Можете да промените тези настройки по-късно в настройките на приложението",
   "torSettingsTitle": "Настройки на Tor",
-  "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново."
+  "onboardingBackupVerificationError": "Портфейлът ви беше възстановен, но проверката на резервното копие не можа да бъде завършена. Моля, опитайте отново.",
+  "electrumMainnet": "Основна мрежа",
+  "electrumTestnet": "Тестова мрежа",
+  "importWalletImportMnemonic": "- Импортирай мнемоника",
+  "networkFeatureUnavailable": "Тази функция не е налична в избраната мрежа.",
+  "onboardingCreateWalletButtonLabel": "Създаване на портфейл",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Портфейлът, който опитвате да изтриете, не съществува.",
+  "walletDetailsWalletFingerprintLabel": "Отпечатък на портфейла",
+  "walletLoadFailed": "Портфейлите ви не можаха да бъдат заредени. Проверете връзката си и опитайте отново."
 }

@@ -2,8 +2,6 @@ import 'package:provisioning/provisioning.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 
-import 'presentation/network_wallet_setup_cubit.dart';
-
 import 'package:electrum/electrum.dart' show ElectrumSyncResult;
 
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -52,9 +50,6 @@ class WalletLocator {
         defaults: locator<DefaultWalletProvisioning>(),
         secrets: locator<Secrets>(),
       ),
-    );
-    locator.registerFactory<NetworkWalletSetupCubit>(
-      () => NetworkWalletSetupCubit(locator<NetworkWalletProvisioning>()),
     );
     locator.registerLazySingleton<SyncWalletValuesDatasource>(
       () => SyncWalletValuesDatasource(

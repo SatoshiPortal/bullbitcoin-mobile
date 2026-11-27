@@ -18,6 +18,7 @@ import 'onboarding_navigation.dart';
 import 'presentation/bloc/onboarding_bloc.dart';
 import 'presentation/onboarding_failure_l10n.dart';
 import 'ui/screens/advanced_options.dart';
+import 'ui/screens/empty_network_wallets.dart';
 import 'ui/screens/onboarding_physical_recovery.dart';
 import 'ui/screens/onboarding_splash.dart';
 import 'ui/screens/recover_options.dart';
@@ -62,6 +63,25 @@ final class OnboardingFeature {
 
   /// The startup view can be rendered before any onboarding route is active.
   Widget buildLoadingSplash(BuildContext context) => _loadingSplash();
+
+  /// Shows setup only when the host has confirmed that the network is empty.
+  static Widget emptyNetworkWallets({
+    required NetworkWalletProvisioning Function() provisioning,
+    required Stream<bool> refreshing,
+    required bool initiallyRefreshing,
+    required VoidCallback onMainnet,
+    required VoidCallback onImport,
+    required VoidCallback onRecoverEncryptedVault,
+    required VoidCallback onReady,
+  }) => EmptyNetworkWallets(
+    provisioning: provisioning,
+    refreshing: refreshing,
+    initiallyRefreshing: initiallyRefreshing,
+    onMainnet: onMainnet,
+    onImport: onImport,
+    onRecoverEncryptedVault: onRecoverEncryptedVault,
+    onReady: onReady,
+  );
 }
 
 /// Mounts the onboarding routes over already composed wallet operations.

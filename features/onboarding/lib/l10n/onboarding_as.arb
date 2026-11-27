@@ -30,5 +30,14 @@
   "onboardingAdvancedOptionsCustomMempool": "কাষ্টম Mempool চাৰ্ভাৰ",
   "onboardingAdvancedOptionsCustomRecoverbull": "কাষ্টম Recoverbull চাৰ্ভাৰ",
   "onboardingAdvancedOptionsFooter": "আপুনি পিছত App Settings ত এই ছেটিংছ সলনি কৰিব পাৰে",
-  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।"
+  "onboardingBackupVerificationError": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰা হৈছে, কিন্তু বেকআপ সত্যাপন সম্পূৰ্ণ কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Mnemonic আমদানি কৰক",
+  "networkFeatureUnavailable": "বাছনি কৰা নেটৱৰ্কত এই সুবিধাটো উপলব্ধ নহয়।",
+  "onboardingCreateWalletButtonLabel": "Wallet তৈয়াৰ কৰক",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "আপুনি মচিব বিচৰা wallet বিদ্যমান নাই।",
+  "walletDetailsWalletFingerprintLabel": "Wallet ফিংগাৰপ্ৰিন্ট",
+  "walletLoadFailed": "আপোনাৰ ৱালেটসমূহ লʼড কৰিব পৰা নগʼল। আপোনাৰ সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।"
 }

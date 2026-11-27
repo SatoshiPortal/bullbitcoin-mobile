@@ -24,5 +24,14 @@
   "onboardingCreateNewWallet": "ახალი საფულის შექმნა",
   "continueButton": "გაგრძელება",
   "torSettingsTitle": "Tor-ის პარამეტრები",
-  "onboardingBackupVerificationError": "თქვენი საფულე აღდგა, მაგრამ სარეზერვო ასლის დადასტურება ვერ დასრულდა. გთხოვთ, სცადოთ ხელახლა."
+  "onboardingBackupVerificationError": "თქვენი საფულე აღდგა, მაგრამ სარეზერვო ასლის დადასტურება ვერ დასრულდა. გთხოვთ, სცადოთ ხელახლა.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "მნემონიკის იმპორტი",
+  "networkFeatureUnavailable": "ეს ფუნქცია მიუწვდომელია არჩეულ ქსელზე.",
+  "onboardingCreateWalletButtonLabel": "საფულის შექმნა",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "საფულე, რომლის წაშლასაც ცდილობთ, არ არსებობს.",
+  "walletDetailsWalletFingerprintLabel": "საფულის თითის ანაბეჭდი",
+  "walletLoadFailed": "თქვენი საფულეების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა."
 }

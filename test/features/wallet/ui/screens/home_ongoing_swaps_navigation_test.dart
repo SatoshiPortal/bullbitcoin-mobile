@@ -88,7 +88,8 @@ void main() {
           onActivateExchange: (_) {},
           watchUnreadSupportMessages: (_) => 0,
           announcements: () => const SizedBox.shrink(),
-          createSetupCubit: () => throw StateError('Unexpected Wallet setup'),
+          networkWalletProvisioning: () =>
+              throw StateError('Unexpected Wallet setup'),
         ),
         GoRoute(
           name: TransactionsRoute.swapTransactionDetails.name,

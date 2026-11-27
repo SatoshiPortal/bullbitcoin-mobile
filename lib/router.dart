@@ -44,7 +44,7 @@ import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_quick_actions/setup.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
-import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
+import 'package:provisioning/provisioning.dart' show NetworkWalletProvisioning;
 
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:startup/startup.dart' show RouteErrorScreen;
@@ -399,7 +399,7 @@ class AppRouter {
             onActivateExchange: _activateExchange,
             watchUnreadSupportMessages:
                 ExchangeSessionScope.watchUnreadSupportMessages,
-            createSetupCubit: () => locator<NetworkWalletSetupCubit>(),
+            networkWalletProvisioning: locator.call<NetworkWalletProvisioning>,
             announcements: () => _announcements.carousel(),
           ),
           ?_exchangeFeature.dashboardRoute,

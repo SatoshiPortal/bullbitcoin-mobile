@@ -1,7 +1,7 @@
 import 'package:coins/coins.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
+import 'package:provisioning/provisioning.dart' show NetworkWalletProvisioning;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:flutter/widgets.dart';
@@ -29,7 +29,7 @@ class WalletRouter {
     required void Function(BuildContext) onActivateExchange,
     required int Function(BuildContext) watchUnreadSupportMessages,
     required Widget Function() announcements,
-    required NetworkWalletSetupCubit Function() createSetupCubit,
+    required NetworkWalletProvisioning Function() networkWalletProvisioning,
   }) => GoRoute(
     name: WalletRoute.walletHome.name,
     path: WalletRoute.walletHome.path,
@@ -38,7 +38,7 @@ class WalletRouter {
         key: state.pageKey,
         child: WalletHomeScreen(
           arkHost: arkHost,
-          createSetupCubit: createSetupCubit,
+          networkWalletProvisioning: networkWalletProvisioning,
           onEmptyMainnet: () => OnboardingNavigation.go(GoRouter.of(context)),
           onImportNetworkWallet: () =>
               OnboardingNavigation.openPhysicalRecovery(context),

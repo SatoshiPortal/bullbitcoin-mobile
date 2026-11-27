@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Vlastní server Mempool",
   "onboardingAdvancedOptionsCustomRecoverbull": "Vlastní server Recoverbull",
   "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
-  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu."
+  "onboardingBackupVerificationError": "Vaše peněženka byla obnovena, ale ověření zálohy se nepodařilo dokončit. Zkuste to prosím znovu.",
+  "electrumMainnet": "Čeština",
+  "electrumTestnet": "Čeština",
+  "importWalletImportMnemonic": "Import Mnemonic",
+  "networkFeatureUnavailable": "Tato funkce není ve vybrané síti dostupná.",
+  "onboardingCreateWalletButtonLabel": "Vytvořit peněženku",
+  "receiveLiquid": "Čeština",
+  "walletDeletionErrorWalletNotFound": "Peněženka se snaží odstranit neexistuje.",
+  "walletDetailsWalletFingerprintLabel": "Peněženka otisků prstů",
+  "walletLoadFailed": "Vaše peněženky se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu."
 }

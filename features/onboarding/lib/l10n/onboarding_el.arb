@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Προσαρμοσμένος διακομιστής Mempool",
   "onboardingAdvancedOptionsCustomRecoverbull": "Προσαρμοσμένος διακομιστής Recoverbull",
   "onboardingAdvancedOptionsFooter": "Μπορείτε να αλλάξετε αυτές τις ρυθμίσεις αργότερα στις Ρυθμίσεις εφαρμογής",
-  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά."
+  "onboardingBackupVerificationError": "Το πορτοφόλι σας ανακτήθηκε, αλλά η επαλήθευση του αντιγράφου ασφαλείας δεν ολοκληρώθηκε. Παρακαλώ δοκιμάστε ξανά.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Εισαγωγή Mnemonic",
+  "networkFeatureUnavailable": "Αυτή η λειτουργία δεν είναι διαθέσιμη στο επιλεγμένο δίκτυο.",
+  "onboardingCreateWalletButtonLabel": "Δημιουργήστε πορτοφόλι",
+  "receiveLiquid": "Υγρό",
+  "walletDeletionErrorWalletNotFound": "Το πορτοφόλι που προσπαθείτε να διαγράψετε δεν υπάρχει.",
+  "walletDetailsWalletFingerprintLabel": "Wallet δακτυλικό αποτύπωμα",
+  "walletLoadFailed": "Δεν ήταν δυνατή η φόρτωση των πορτοφολιών σας. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά."
 }

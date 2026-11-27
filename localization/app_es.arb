@@ -1654,8 +1654,6 @@
   "backgroundPaymentCount": "{count, plural, =1{Has recibido un pago} other{Has recibido {count} pagos}}",
   "electrumRegtest": "Regtest",
   "networkFeatureUnavailable": "Esta función no está disponible en la red seleccionada.",
-  "networkWalletSetupTitle": "No hay billeteras en esta red",
-  "networkWalletReuseSecret": "Reutilizar el secreto de una billetera existente",
   "swapUnderReviewTitle": "Intercambio en revisión",
   "swapUnderReviewDescription": "Este intercambio requiere una revisión manual. Contacte con soporte para obtener ayuda. Si no tiene una cuenta de soporte, solo necesita crear una; no se requiere KYC.",
   "swapUnderReviewContactSupport": "Contactar con soporte",
@@ -1678,7 +1676,6 @@
   "settingsDarkModeTitle": "Modo oscuro",
   "parentCustodyMetadataUnavailable": "Faltan los registros de seguridad de la billetera o están dañados. Se ha detenido esta acción para proteger tu semilla. Contacta con soporte antes de volver a intentarlo.",
   "torSettingsExternalProxyUnavailableDescription": "Bull no pudo conectarse al proxy SOCKS5 configurado.",
-  "networkWalletReuseNoRecoveryPhrase": "Esta billetera no tiene frase de recuperación, así que no se puede reutilizar aquí. Importa una frase de recuperación o crea una billetera nueva.",
   "walletTypeBitcoinNetwork": "Red Bitcoin",
   "walletTypeLiquidAndLightning": "Liquid y Lightning",
   "walletTypeWatchOnly": "Solo lectura",
@@ -1807,7 +1804,6 @@
   "receiveRecipientMessageHint": "Opcional, visible para quien paga",
   "receiveVerifyBitbox": "Verificar en BitBox",
   "receiveFeeDetails": "Detalle de las comisiones",
-  "networkWalletBackupRequired": "Esta vista está protegida por un PIN. Quita el PIN, crea la billetera, verifica la copia de seguridad de su frase de recuperación y vuelve a configurar el PIN.",
   "walletWarningSwapServerUnreachable": "No se puede conectar con Boltz",
   "walletWarningSwapServerAction": "Toca para configurar"
 }

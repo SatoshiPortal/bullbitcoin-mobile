@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_failure_l10n.dart';
-import 'package:bb_mobile/localizations.dart';
+import 'package:onboarding/src/presentation/network_wallet_setup_failure_l10n.dart';
+import 'package:onboarding/onboarding.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -23,19 +23,22 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
-          localizationsDelegates: appLocalizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates:
+              OnboardingLocalizations.localizationsDelegates,
+          supportedLocales: OnboardingLocalizations.supportedLocales,
           home: Builder(
             builder: (context) => Text(failure.toTranslated(context)),
           ),
         ),
       );
-      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final l10n = await OnboardingLocalizations.delegate.load(
+        const Locale('en'),
+      );
       expect(
         find.text(l10n.networkWalletReuseNoRecoveryPhrase),
         findsOneWidget,
       );
-      expect(find.text(l10n.oopsSomethingWentWrong), findsNothing);
+      expect(find.text(l10n.walletLoadFailed), findsNothing);
     },
   );
 
@@ -61,14 +64,16 @@ void main() {
     expect(failure, isA<NetworkWalletSetupBackupRequiredFailure>());
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: appLocalizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: OnboardingLocalizations.localizationsDelegates,
+        supportedLocales: OnboardingLocalizations.supportedLocales,
         home: Builder(
           builder: (context) => Text(failure.toTranslated(context)),
         ),
       ),
     );
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    final l10n = await OnboardingLocalizations.delegate.load(
+      const Locale('en'),
+    );
     expect(find.text(l10n.networkWalletBackupRequired), findsOneWidget);
     expect(find.text(l10n.walletLoadFailed), findsNothing);
   });

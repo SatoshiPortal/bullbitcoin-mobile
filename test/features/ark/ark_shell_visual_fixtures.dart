@@ -147,7 +147,7 @@ class ArkShellVisualFixtures {
                 arkHost: fixture._host,
                 // A loaded, nonempty WalletState cannot enter setup. Fail if
                 // a future lifecycle change tries to do so in this fixture.
-                createSetupCubit: () => throw StateError(
+                networkWalletProvisioning: () => throw StateError(
                   'The loaded shell fixture must not create a wallet',
                 ),
                 onEmptyMainnet: () {},

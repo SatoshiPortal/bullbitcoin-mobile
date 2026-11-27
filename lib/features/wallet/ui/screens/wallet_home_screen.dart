@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/empty_network_wallets.dart';
+import 'package:onboarding/setup.dart' show OnboardingFeature;
+import 'package:provisioning/provisioning.dart' show NetworkWalletProvisioning;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
@@ -18,7 +18,7 @@ import 'package:go_router/go_router.dart';
 
 class WalletHomeScreen extends StatelessWidget {
   final ArkForegroundHost? arkHost;
-  final NetworkWalletSetupCubit Function() createSetupCubit;
+  final NetworkWalletProvisioning Function() networkWalletProvisioning;
   final VoidCallback onEmptyMainnet;
   final Widget announcements;
   final VoidCallback onImportNetworkWallet;
@@ -33,7 +33,7 @@ class WalletHomeScreen extends StatelessWidget {
   const WalletHomeScreen({
     super.key,
     required this.arkHost,
-    required this.createSetupCubit,
+    required this.networkWalletProvisioning,
     required this.onEmptyMainnet,
     required this.announcements,
     required this.onImportNetworkWallet,
@@ -57,11 +57,20 @@ class WalletHomeScreen extends StatelessWidget {
     return OverviewHome(
       homePath: WalletRoute.walletHome.path,
       empty: noWallets
-          ? EmptyNetworkWallets(
-              createSetupCubit: createSetupCubit,
+          ? OnboardingFeature.emptyNetworkWallets(
+              provisioning: networkWalletProvisioning,
+              refreshing: context.read<WalletBloc>().stream.map(
+                (state) => state.isRefreshing,
+              ),
+              initiallyRefreshing: context
+                  .read<WalletBloc>()
+                  .state
+                  .isRefreshing,
               onMainnet: onEmptyMainnet,
               onImport: onImportNetworkWallet,
               onRecoverEncryptedVault: onRecoverEncryptedVault,
+              onReady: () =>
+                  context.read<WalletBloc>().add(const WalletStarted()),
             )
           : null,
       isRefreshing: isRefreshing,

@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Servidor Mempool personalizado",
   "onboardingAdvancedOptionsCustomRecoverbull": "Servidor Recoverbull personalizado",
   "onboardingAdvancedOptionsFooter": "Você pode alterar essas configurações mais tarde nas configurações do aplicativo",
-  "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente."
+  "onboardingBackupVerificationError": "Sua carteira foi recuperada, mas a verificação do backup não pôde ser concluída. Por favor, tente novamente.",
+  "electrumMainnet": "Principal",
+  "electrumTestnet": "Testneta",
+  "importWalletImportMnemonic": "Importação Mnemonic",
+  "networkFeatureUnavailable": "Este recurso não está disponível na rede selecionada.",
+  "onboardingCreateWalletButtonLabel": "Criar carteira",
+  "receiveLiquid": "Líquido",
+  "walletDeletionErrorWalletNotFound": "A carteira que você está tentando excluir não existe.",
+  "walletDetailsWalletFingerprintLabel": "Carteira digital",
+  "walletLoadFailed": "Não foi possível carregar suas carteiras. Verifique sua conexão e tente novamente."
 }

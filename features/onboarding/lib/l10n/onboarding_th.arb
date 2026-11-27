@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "เซิร์ฟเวอร์ Mempool ที่กำหนดเอง",
   "onboardingAdvancedOptionsCustomRecoverbull": "เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง",
   "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
-  "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง"
+  "onboardingBackupVerificationError": "กระเป๋าสตางค์ของคุณได้รับการกู้คืนแล้ว แต่ไม่สามารถยืนยันข้อมูลสำรองให้เสร็จสมบูรณ์ได้ กรุณาลองใหม่อีกครั้ง",
+  "electrumMainnet": "สงวนลิขสิทธิ์",
+  "electrumTestnet": "การทดสอบ",
+  "importWalletImportMnemonic": "นําเข้า Mnemonic",
+  "networkFeatureUnavailable": "ฟีเจอร์นี้ไม่พร้อมใช้งานบนเครือข่ายที่เลือก",
+  "onboardingCreateWalletButtonLabel": "สร้างกระเป๋าสตางค์",
+  "receiveLiquid": "ของเหลว",
+  "walletDeletionErrorWalletNotFound": "กระเป๋าเงินที่คุณพยายามที่จะลบ.",
+  "walletDetailsWalletFingerprintLabel": "ลายนิ้วมือ",
+  "walletLoadFailed": "ไม่สามารถโหลดกระเป๋าเงินของคุณได้ ตรวจสอบการเชื่อมต่อแล้วลองใหม่อีกครั้ง"
 }

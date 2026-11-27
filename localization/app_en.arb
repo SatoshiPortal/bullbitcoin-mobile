@@ -4997,14 +4997,6 @@
   "@networkFeatureUnavailable": {
     "description": "Refusal when a service does not support the active network"
   },
-  "networkWalletSetupTitle": "No wallets on this network",
-  "@networkWalletSetupTitle": {
-    "description": "Empty-network wallet setup heading"
-  },
-  "networkWalletReuseSecret": "Reuse an existing wallet secret",
-  "@networkWalletReuseSecret": {
-    "description": "Create wallets on the selected network with an existing secret"
-  },
   "walletSpendAwaitingObservation": "Spending is unavailable until this wallet is synced and has seen its previous payments on the network. Refresh the wallet or use Scan for missing transactions, then try again.",
   "@walletSpendAwaitingObservation": {
     "description": "Bitcoin wallet spend gate. No timeout releases a payment: a sync must see it, or prove it can no longer confirm. A payment no sync ever sees keeps the wallet blocked, so the text promises no end."
@@ -5056,10 +5048,6 @@
   "parentCustodyMetadataUnavailable": "Wallet security records are missing or damaged. This action was stopped to protect your seed. Contact support before trying again.",
   "@parentCustodyMetadataUnavailable": {
     "description": "Refusal to import or delete a seed when durable parent custody state is missing or corrupt; never recreate it automatically."
-  },
-  "networkWalletReuseNoRecoveryPhrase": "This wallet has no recovery phrase, so it can't be reused here. Import a recovery phrase or create a new wallet.",
-  "@networkWalletReuseNoRecoveryPhrase": {
-    "description": "Shown when a test-network wallet setup tries to reuse a wallet stored as a raw seed, which has no recovery phrase."
   },
   "walletTypeBitcoinNetwork": "Bitcoin network",
   "@walletTypeBitcoinNetwork": {
@@ -5490,10 +5478,6 @@
   "sendErrorInvoiceExpiryTooShort": "This invoice expires too soon. Ask the recipient for a new invoice.",
   "@sendErrorInvoiceExpiryTooShort": {
     "description": "Error shown when Boltz rejects a Lightning invoice with too little time before expiry"
-  },
-  "networkWalletBackupRequired": "A PIN protects this view. Remove the PIN, create the wallet, verify its recovery phrase backup, then set the PIN again.",
-  "@networkWalletBackupRequired": {
-    "description": "Explains why a new seed cannot be added to a PIN-protected view"
   },
   "walletWarningSwapServerUnreachable": "Unable to connect to Boltz",
   "@walletWarningSwapServerUnreachable": {

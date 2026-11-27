@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:bitcoin_price/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:material_ui/material_ui.dart';
@@ -52,12 +51,10 @@ void main() {
       ),
     );
     final references = _References();
-    NetworkWalletSetupCubit createSetupCubit() => NetworkWalletSetupCubit(
-      NetworkWalletProvisioning(
-        settings: settings,
-        inventory: references,
-        defaults: _Defaults(),
-      ),
+    NetworkWalletProvisioning provisioning() => NetworkWalletProvisioning(
+      settings: settings,
+      inventory: references,
+      defaults: _Defaults(),
     );
     final quickActions = createQuickActionsCubit(
       storage: _MemoryQuickActionsStorage(),
@@ -76,7 +73,7 @@ void main() {
               builder: (_, _) => WalletHomeScreen(
                 announcements: const SizedBox.shrink(),
                 arkHost: null,
-                createSetupCubit: createSetupCubit,
+                networkWalletProvisioning: provisioning,
                 onEmptyMainnet: () {},
                 onImportNetworkWallet: () {},
                 onRecoverEncryptedVault: () {},

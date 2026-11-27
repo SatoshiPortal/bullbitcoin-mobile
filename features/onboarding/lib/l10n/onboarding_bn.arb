@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "কাস্টম Mempool সার্ভার",
   "onboardingAdvancedOptionsCustomRecoverbull": "কাস্টম Recoverbull সার্ভার",
   "onboardingAdvancedOptionsFooter": "আপনি পরে App Settings এ এই সেটিংস পরিবর্তন করতে পারেন",
-  "onboardingBackupVerificationError": "আপনার ওয়ালেট পুনরুদ্ধার করা হয়েছে, কিন্তু ব্যাকআপ যাচাইকরণ সম্পূর্ণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
+  "onboardingBackupVerificationError": "আপনার ওয়ালেট পুনরুদ্ধার করা হয়েছে, কিন্তু ব্যাকআপ যাচাইকরণ সম্পূর্ণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "electrumMainnet": "মেইননেট",
+  "electrumTestnet": "টেস্টনেট",
+  "importWalletImportMnemonic": "Mnemonic আমদানি",
+  "networkFeatureUnavailable": "নির্বাচিত নেটওয়ার্কে এই ফিচারটি উপলব্ধ নয়।",
+  "onboardingCreateWalletButtonLabel": "ওয়ালেট তৈরি করুন",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "আপনি যে ওয়ালেট মুছতে চাইছেন তা বিদ্যমান নেই।",
+  "walletDetailsWalletFingerprintLabel": "ওয়ালেট ফিঙ্গারপ্রিন্ট",
+  "walletLoadFailed": "আপনার ওয়ালেটগুলি লোড করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
 }

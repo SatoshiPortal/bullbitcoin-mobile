@@ -27,5 +27,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Власний сервер Mempool",
   "onboardingAdvancedOptionsCustomRecoverbull": "Власний сервер Recoverbull",
   "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
-  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз."
+  "onboardingBackupVerificationError": "Ваш гаманець було відновлено, але не вдалося завершити перевірку резервної копії. Будь ласка, спробуйте ще раз.",
+  "electrumMainnet": "Головна",
+  "electrumTestnet": "Тестування",
+  "importWalletImportMnemonic": "Імпортний мнемічний",
+  "networkFeatureUnavailable": "Ця функція недоступна у вибраній мережі.",
+  "onboardingCreateWalletButtonLabel": "Створити гаманець",
+  "receiveLiquid": "Рідина",
+  "walletDeletionErrorWalletNotFound": "Гаманець ви намагаєтеся видалити не існує.",
+  "walletDetailsWalletFingerprintLabel": "Гаманець відбитків пальців",
+  "walletLoadFailed": "Не вдалося завантажити ваші гаманці. Перевірте підключення та спробуйте ще раз."
 }

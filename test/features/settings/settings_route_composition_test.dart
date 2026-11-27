@@ -187,7 +187,8 @@ void main() {
           onActivateExchange: (_) {},
           watchUnreadSupportMessages: (_) => 0,
           announcements: () => const SizedBox.shrink(),
-          createSetupCubit: () => throw StateError('Wallet setup not expected'),
+          networkWalletProvisioning: () =>
+              throw StateError('Wallet setup not expected'),
         ),
         GoRoute(
           path: '/settings',

@@ -119,5 +119,61 @@
   "onboardingContinueWithoutChecking": "Continue without checking",
   "@onboardingContinueWithoutChecking": {
     "description": "Continue recovering a wallet when the history scan failed."
+  },
+  "electrumMainnet": "Mainnet",
+  "@electrumMainnet": {
+    "description": "Mainnet environment label"
+  },
+  "electrumRegtest": "Regtest",
+  "@electrumRegtest": {
+    "description": "Local regression test network for developers"
+  },
+  "electrumTestnet": "Testnet",
+  "@electrumTestnet": {
+    "description": "Testnet environment label"
+  },
+  "importWalletImportMnemonic": "Import Mnemonic",
+  "@importWalletImportMnemonic": {
+    "description": "Button to import wallet from seed phrase"
+  },
+  "networkFeatureUnavailable": "This feature is unavailable on the selected network.",
+  "@networkFeatureUnavailable": {
+    "description": "Refusal when a service does not support the active network"
+  },
+  "networkWalletBackupRequired": "A PIN protects this view. Remove the PIN, create the wallet, verify its recovery phrase backup, then set the PIN again.",
+  "@networkWalletBackupRequired": {
+    "description": "Explains why a new seed cannot be added to a PIN-protected view"
+  },
+  "networkWalletReuseNoRecoveryPhrase": "This wallet has no recovery phrase, so it can't be reused here. Import a recovery phrase or create a new wallet.",
+  "@networkWalletReuseNoRecoveryPhrase": {
+    "description": "Shown when a test-network wallet setup tries to reuse a wallet stored as a raw seed, which has no recovery phrase."
+  },
+  "networkWalletReuseSecret": "Reuse an existing wallet secret",
+  "@networkWalletReuseSecret": {
+    "description": "Create wallets on the selected network with an existing secret"
+  },
+  "networkWalletSetupTitle": "No wallets on this network",
+  "@networkWalletSetupTitle": {
+    "description": "Empty-network wallet setup heading"
+  },
+  "onboardingCreateWalletButtonLabel": "Create wallet",
+  "@onboardingCreateWalletButtonLabel": {
+    "description": "The label for the button to create a wallet from the onboarding screen"
+  },
+  "receiveLiquid": "Liquid",
+  "@receiveLiquid": {
+    "description": "Label for receiving Bitcoin via Liquid Network"
+  },
+  "walletDeletionErrorWalletNotFound": "The wallet you are trying to delete does not exist.",
+  "@walletDeletionErrorWalletNotFound": {
+    "description": "Error message when the wallet to delete cannot be found"
+  },
+  "walletDetailsWalletFingerprintLabel": "Wallet fingerprint",
+  "@walletDetailsWalletFingerprintLabel": {
+    "description": "Label for the wallet fingerprint field in wallet details"
+  },
+  "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
+  "@walletLoadFailed": {
+    "description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."
   }
 }

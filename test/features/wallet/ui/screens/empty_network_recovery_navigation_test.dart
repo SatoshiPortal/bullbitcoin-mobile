@@ -6,7 +6,6 @@ import 'package:bitcoin_price/testing.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -60,12 +59,10 @@ void main() {
       );
       final references = _References();
       final defaults = _Defaults();
-      NetworkWalletSetupCubit createSetupCubit() => NetworkWalletSetupCubit(
-        NetworkWalletProvisioning(
-          settings: settings,
-          inventory: references,
-          defaults: defaults,
-        ),
+      NetworkWalletProvisioning provisioning() => NetworkWalletProvisioning(
+        settings: settings,
+        inventory: references,
+        defaults: defaults,
       );
       final wallets = _WalletBloc();
       whenListen(
@@ -99,7 +96,7 @@ void main() {
                 exchangePrompt: () => quickActions.exchangePrompt,
                 onActivateExchange: (_) {},
                 announcements: () => const SizedBox.shrink(),
-                createSetupCubit: createSetupCubit,
+                networkWalletProvisioning: provisioning,
               ),
             ],
           ),
