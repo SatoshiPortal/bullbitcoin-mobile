@@ -18,7 +18,8 @@ AutoBuySwitchState _apply(
   return next;
 }
 
-const _on = SwitchShown(active: true, restricted: false);
+const _on = SwitchOn(restricted: false);
+const _off = SwitchOff(restricted: false);
 final _deactivating = _apply(_on, const [SwitchDeactivatePressed()]);
 final _unverified = _apply(_deactivating, const [
   SwitchConfirmChanged(
@@ -28,10 +29,11 @@ final _unverified = _apply(_deactivating, const [
     ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),
   ),
 ]);
-const _ended = SwitchSessionEnded(true, false);
+const _ended = SwitchSessionEnded();
 
 final _states = <String, AutoBuySwitchState>{
-  'shown': _on,
+  'on': _on,
+  'off': _off,
   'deactivating': _deactivating,
   'unverified': _unverified,
   'ended': _ended,
@@ -47,8 +49,8 @@ final _events = <String, AutoBuySwitchEvent>{
 };
 
 const _moves = <(String, String), Type>{
-  ('shown', 'summary'): SwitchShown,
-  ('shown', 'deactivate'): SwitchDeactivating,
+  ('on', 'summary'): SwitchOff,
+  ('on', 'deactivate'): SwitchDeactivating,
   ('deactivating', 'confirm'): SwitchDeactivating,
   ('unverified', 'retry'): SwitchDeactivating,
 };
@@ -98,7 +100,12 @@ void main() {
         reached.add(state.next(event).state.runtimeType);
       }
     }
-    expect(reached, {SwitchShown, SwitchDeactivating, SwitchSessionEnded});
+    expect(reached, {
+      SwitchOn,
+      SwitchOff,
+      SwitchDeactivating,
+      SwitchSessionEnded,
+    });
   });
 
   test('deactivating writes off once, then verifies by re-reading', () {
@@ -121,10 +128,7 @@ void main() {
       final verified = _deactivating.next(
         const SwitchConfirmChanged(ConfirmAnswered(1, Ok(false))),
       );
-      expect(
-        verified.state,
-        const SwitchShown(active: false, restricted: false),
-      );
+      expect(verified.state, const SwitchOff(restricted: false));
       expect(verified.effects, [const SwitchAccountChanged()]);
     },
   );
@@ -150,16 +154,26 @@ void main() {
     ]);
     expect(
       failed,
-      isA<SwitchShown>()
-          .having((s) => s.active, 'active', isTrue)
-          .having((s) => s.problem, 'problem', isA<SwitchWriteFailed>()),
+      isA<SwitchOn>().having(
+        (s) => s.problem,
+        'problem',
+        isA<SwitchWriteFailed>(),
+      ),
+    );
+  });
+
+  test('a summary that turns AutoBuy on shows it on', () {
+    expect(
+      _off
+          .next(const SwitchSummaryChanged(active: true, restricted: false))
+          .state,
+      _on,
     );
   });
 
   test('an inactive switch offers no deactivation', () {
-    const off = SwitchShown(active: false, restricted: false);
     expect(
-      identical(off.next(const SwitchDeactivatePressed()).state, off),
+      identical(_off.next(const SwitchDeactivatePressed()).state, _off),
       isTrue,
     );
   });

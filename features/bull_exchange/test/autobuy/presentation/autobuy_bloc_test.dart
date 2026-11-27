@@ -110,7 +110,7 @@ void main() {
     await _settle();
     expect(calls.log, ['write false 1', 'summary']);
     expect(calls.sessions, {autoBuySession});
-    expect(bloc.state, const SwitchShown(active: false, restricted: false));
+    expect(bloc.state, const SwitchOff(restricted: false));
     expect(refreshed, 1);
   });
 
@@ -120,7 +120,7 @@ void main() {
     addTearDown(bloc.close);
     bloc.add(const SwitchDeactivatePressed());
     await _settle();
-    expect(bloc.state, const SwitchShown(active: true, restricted: false));
+    expect(bloc.state, const SwitchOn(restricted: false));
     expect(calls.log, isEmpty);
   });
 }

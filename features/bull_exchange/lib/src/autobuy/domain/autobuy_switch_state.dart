@@ -9,34 +9,38 @@ import 'autobuy_switch_event.dart';
 /// The home card's AutoBuy switch. Turning it on opens the activation flow;
 /// turning it off is a preference write verified by re-reading the account.
 /// After a verified write the card shows what the re-read said, not the
-/// summary it was built from (AB-3).
+/// summary it was built from (AB-3). Whether AutoBuy is on is a state
+/// ([SwitchOff], [SwitchOn]): only an active AutoBuy can be deactivated, and
+/// a deactivation (and the session ending during one) always starts from on.
+/// [restricted] is the account's flag the card shows (the switch is not
+/// offered while it is set); no transition depends on it.
 @immutable
 sealed class AutoBuySwitchState {
   const AutoBuySwitchState();
-
-  bool get active;
-  bool get restricted;
 
   AutoBuySwitchNext next(AutoBuySwitchEvent event) {
     final state = this;
     return switch ((state, event)) {
       (
-        SwitchShown(:final active, :final restricted, :final problem),
+        SwitchOff(:final restricted, :final problem) ||
+            SwitchOn(:final restricted, :final problem),
         SwitchSummaryChanged(active: final now, restricted: final r),
       ) =>
-        now == active && r == restricted
+        now == (state is SwitchOn) && r == restricted
             ? StepNext.stay(state)
-            : StepNext(
-                SwitchShown(active: now, restricted: r, problem: problem),
-              ),
-      (SwitchShown(:final active), SwitchDeactivatePressed()) when active =>
-        _confirmNext(state, serverConfirmStart<AutoBuyTarget, bool>(_off)),
+            : StepNext(_shown(active: now, restricted: r, problem: problem)),
+      (SwitchOn(:final restricted), SwitchDeactivatePressed()) => _confirmNext(
+        restricted,
+        serverConfirmStart<AutoBuyTarget, bool>(_off),
+      ),
       (
-        SwitchShown(),
+        SwitchOff(),
         SwitchDeactivatePressed() ||
             SwitchRetryPressed() ||
             SwitchConfirmChanged(),
       ) =>
+        StepNext.stay(state),
+      (SwitchOn(), SwitchRetryPressed() || SwitchConfirmChanged()) =>
         StepNext.stay(state),
       (
         final SwitchDeactivating deactivating,
@@ -103,70 +107,70 @@ final class SwitchWriteFailed extends AutoBuySwitchProblem {
   int get hashCode => Object.hash(SwitchWriteFailed, problem);
 }
 
-final class SwitchShown extends AutoBuySwitchState {
-  @override
-  final bool active;
-  @override
+/// AutoBuy is off; [problem] is why the last deactivation did not take
+/// effect, when the summary turned it off since.
+final class SwitchOff extends AutoBuySwitchState {
   final bool restricted;
   final AutoBuySwitchProblem? problem;
 
-  const SwitchShown({
-    required this.active,
-    required this.restricted,
-    this.problem,
-  });
+  const SwitchOff({required this.restricted, this.problem});
 
   @override
   bool operator ==(Object other) =>
-      other is SwitchShown &&
-      other.active == active &&
+      other is SwitchOff &&
       other.restricted == restricted &&
       other.problem == problem;
 
   @override
-  int get hashCode => Object.hash(SwitchShown, active, restricted, problem);
+  int get hashCode => Object.hash(SwitchOff, restricted, problem);
 }
 
-/// Deactivating: [confirm] is Confirming, Verifying or Unverified (Check
-/// again); the switch is not offered meanwhile.
+/// AutoBuy is on; [problem] is why the last deactivation did not take
+/// effect.
+final class SwitchOn extends AutoBuySwitchState {
+  final bool restricted;
+  final AutoBuySwitchProblem? problem;
+
+  const SwitchOn({required this.restricted, this.problem});
+
+  @override
+  bool operator ==(Object other) =>
+      other is SwitchOn &&
+      other.restricted == restricted &&
+      other.problem == problem;
+
+  @override
+  int get hashCode => Object.hash(SwitchOn, restricted, problem);
+}
+
+/// Deactivating an active AutoBuy: [confirm] is Confirming, Verifying or
+/// Unverified (Check again); the switch is not offered meanwhile.
 final class SwitchDeactivating extends AutoBuySwitchState {
-  @override
-  final bool active;
-  @override
   final bool restricted;
   final AutoBuyConfirmState confirm;
 
-  const SwitchDeactivating(this.active, this.restricted, this.confirm);
+  const SwitchDeactivating(this.restricted, this.confirm);
 
   @override
   bool operator ==(Object other) =>
       other is SwitchDeactivating &&
-      other.active == active &&
       other.restricted == restricted &&
       other.confirm == confirm;
 
   @override
-  int get hashCode =>
-      Object.hash(SwitchDeactivating, active, restricted, confirm);
+  int get hashCode => Object.hash(SwitchDeactivating, restricted, confirm);
 }
 
-/// The session of the card ended. Terminal; the dashboard rebuilds the card.
+/// The session of the card ended during a deactivation (so AutoBuy was on).
+/// Terminal; the dashboard rebuilds the card.
 final class SwitchSessionEnded extends AutoBuySwitchState {
-  @override
-  final bool active;
-  @override
-  final bool restricted;
-
-  const SwitchSessionEnded(this.active, this.restricted);
+  const SwitchSessionEnded();
 
   @override
-  bool operator ==(Object other) =>
-      other is SwitchSessionEnded &&
-      other.active == active &&
-      other.restricted == restricted;
+  bool operator ==(Object other) => other is SwitchSessionEnded;
 
   @override
-  int get hashCode => Object.hash(SwitchSessionEnded, active, restricted);
+  int get hashCode => (SwitchSessionEnded).hashCode;
 }
 
 typedef AutoBuySwitchNext = StepNext<AutoBuySwitchState, AutoBuySwitchEffect>;
@@ -176,41 +180,39 @@ const _off = AutoBuyTarget(enabled: false);
 AutoBuySwitchNext autoBuySwitchStart({
   required bool active,
   required bool restricted,
-}) => StepNext(SwitchShown(active: active, restricted: restricted));
+}) => StepNext(_shown(active: active, restricted: restricted));
 
+AutoBuySwitchState _shown({
+  required bool active,
+  required bool restricted,
+  AutoBuySwitchProblem? problem,
+}) => active
+    ? SwitchOn(restricted: restricted, problem: problem)
+    : SwitchOff(restricted: restricted, problem: problem);
+
+/// The switch after the deactivation step moved to [next]; the deactivation
+/// started from on.
 AutoBuySwitchNext _confirmNext(
-  AutoBuySwitchState state,
+  bool restricted,
   ServerConfirmNext<AutoBuyTarget, bool> next,
 ) => switch (next.state) {
   ConfirmConfirmed(:final confirmed) => StepNext(
-    SwitchShown(active: confirmed, restricted: state.restricted),
+    _shown(active: confirmed, restricted: restricted),
     const [SwitchAccountChanged()],
   ),
-  ConfirmSessionEnded() => StepNext(
-    SwitchSessionEnded(state.active, state.restricted),
-  ),
+  ConfirmSessionEnded() => StepNext(const SwitchSessionEnded()),
   ConfirmWriteRefused(:final refusal) => StepNext(
-    SwitchShown(
-      active: state.active,
-      restricted: state.restricted,
-      problem: SwitchWriteRefused(refusal),
-    ),
+    SwitchOn(restricted: restricted, problem: SwitchWriteRefused(refusal)),
   ),
   // The re-read says the write did not apply, or it was refused / not
   // sent: nothing changed, the switch is offered again.
   ConfirmFailed(:final problem) => StepNext(
-    SwitchShown(
-      active: state.active,
-      restricted: state.restricted,
-      problem: SwitchWriteFailed(problem),
-    ),
+    SwitchOn(restricted: restricted, problem: SwitchWriteFailed(problem)),
     const [SwitchAccountChanged()],
   ),
-  ConfirmLeft() => StepNext(
-    SwitchShown(active: state.active, restricted: state.restricted),
-  ),
+  ConfirmLeft() => StepNext(SwitchOn(restricted: restricted)),
   ConfirmConfirming() || ConfirmVerifying() || ConfirmUnverified() => StepNext(
-    SwitchDeactivating(state.active, state.restricted, next.state),
+    SwitchDeactivating(restricted, next.state),
     [for (final effect in next.effects) SwitchConfirmEffect(effect)],
   ),
 };
@@ -220,4 +222,4 @@ AutoBuySwitchNext _stepped(
   ServerConfirmNext<AutoBuyTarget, bool> next,
 ) => identical(next.state, state.confirm) && next.effects.isEmpty
     ? StepNext.stay(state)
-    : _confirmNext(state, next);
+    : _confirmNext(state.restricted, next);
