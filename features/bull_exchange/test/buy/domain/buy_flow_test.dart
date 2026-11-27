@@ -111,7 +111,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionBuyFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -129,7 +129,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionBuyFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -151,8 +151,7 @@ void main() {
     });
 
     test('a failed load has a Retry that loads again', () {
-      final failed = transitionBuyFlow(
-        buyLoadingState,
+      final failed = buyLoadingState.next(
         const BuyContextLoaded(
           1,
           Err(ExchangeUnreachableFailure('down', isNetwork: true)),
@@ -162,16 +161,13 @@ void main() {
         (failed.state as BuyLoading).load,
         isA<ContextFailed<BuyContext>>(),
       );
-      expect(transitionBuyFlow(failed.state, const BuyRetryPressed()).effects, [
+      expect(failed.state.next(const BuyRetryPressed()).effects, [
         const BuyLoadContext(2),
       ]);
     });
 
     test('the entry loads the rate and the initial wallet address', () {
-      final next = transitionBuyFlow(
-        buyLoadingState,
-        BuyContextLoaded(1, Ok(buyContext)),
-      );
+      final next = buyLoadingState.next(BuyContextLoaded(1, Ok(buyContext)));
       expect(next.effects, [
         const BuyFetchRate(ExchangeCatalog.cad),
         BuyDestinationEffect(PickResolve(buyLiquidWallet.option)),
@@ -179,8 +175,7 @@ void main() {
     });
 
     test('several Liquid setup wallets start on an external address', () {
-      final next = transitionBuyFlow(
-        buyLoadingState,
+      final next = buyLoadingState.next(
         BuyContextLoaded(
           1,
           Ok(
@@ -205,17 +200,11 @@ void main() {
 
     test('no funded balance has no market, and funding reloads', () {
       final empty = buyContextWith(summary: buySummaryWith(balances: const []));
-      final entry = transitionBuyFlow(
-        buyLoadingState,
-        BuyContextLoaded(1, Ok(empty)),
-      ).state;
+      final entry = buyLoadingState.next(BuyContextLoaded(1, Ok(empty))).state;
       expect(_entryOf(entry).amount, isA<AmountNoMarket>());
-      final reload = transitionBuyFlow(entry, const BuyFundingReturned());
+      final reload = entry.next(const BuyFundingReturned());
       expect(reload.effects, [const BuyReloadForDetour()]);
-      final funded = transitionBuyFlow(
-        reload.state,
-        BuyDetourLoaded(Ok(buyContext)),
-      );
+      final funded = reload.state.next(BuyDetourLoaded(Ok(buyContext)));
       expect(_entryOf(funded.state).amount, isA<AmountEditing>());
       expect(funded.effects, [const BuyFetchRate(ExchangeCatalog.cad)]);
     });
@@ -232,10 +221,7 @@ void main() {
         isA<PickChoosing<DestinationOption, Destination>>(),
       );
       expect(
-        identical(
-          transitionBuyFlow(external, const BuyContinuePressed()).state,
-          external,
-        ),
+        identical(external.next(const BuyContinuePressed()).state, external),
         isTrue,
       );
     });
@@ -270,8 +256,7 @@ void main() {
         BuyAddressTyped('bc1qa'),
         BuyAddressTyped('bc1qab'),
       ]).state;
-      final late = transitionBuyFlow(
-        typed,
+      final late = typed.next(
         const BuyDestinationChanged(
           PickValidated(
             'bc1qa',
@@ -348,17 +333,14 @@ void main() {
         BuyContinuePressed(),
       ]).state;
       expect(_entryOf(detour).amount, isA<AmountFundingDetour>());
-      final reload = transitionBuyFlow(detour, const BuyFundingReturned());
+      final reload = detour.next(const BuyFundingReturned());
       expect(reload.effects, [const BuyReloadForDetour()]);
       final rich = buyContextWith(
         summary: buySummaryWith(
           balances: const [UserBalance(amount: 1000, currencyCode: 'CAD')],
         ),
       );
-      final back = transitionBuyFlow(
-        reload.state,
-        BuyDetourLoaded(Ok(rich)),
-      ).state;
+      final back = reload.state.next(BuyDetourLoaded(Ok(rich))).state;
       expect(
         _entryOf(back).amount,
         isA<AmountEditing>()
@@ -382,10 +364,10 @@ void main() {
         const BuyContinuePressed(),
       ]).state;
       expect(_entryOf(entry).amount, isA<AmountKycDetour>());
-      expect(transitionBuyFlow(entry, const BuyKycReturned()).effects, [
+      expect(entry.next(const BuyKycReturned()).effects, [
         const BuyReloadForDetour(),
       ]);
-      final back = transitionBuyFlow(entry, const BuyBackPressed()).state;
+      final back = entry.next(const BuyBackPressed()).state;
       expect(
         _entryOf(back).amount,
         isA<AmountEditing>().having(
@@ -403,14 +385,13 @@ void main() {
       expect(ordering.request.orderAmount, isA<FiatAmount>());
       expect(ordering.request.journal.type, OrderType.buy);
       expect(
-        transitionBuyFlow(buyEntryState, const BuyContinuePressed()).state,
+        buyEntryState.next(const BuyContinuePressed()).state,
         isA<BuyEntry>(),
       );
     });
 
     test('an unknown create re-reads, never creates again', () {
-      final verifying = transitionBuyFlow(
-        buyOrderingState,
+      final verifying = buyOrderingState.next(
         const BuyOrderChanged(
           OrderCreateAnswered(
             1,
@@ -424,22 +405,25 @@ void main() {
       );
       expect(verifying.effects.single, isA<BuyOrderEffect>());
       expect(
-        transitionBuyFlow(verifying.state, const BuyRetryPressed()).state,
+        verifying.state.next(const BuyRetryPressed()).state,
         same(verifying.state),
       );
     });
 
     test('a refused create goes back to the entry with the draft', () {
-      final failed = transitionBuyFlow(
-        buyOrderingState,
-        const BuyOrderChanged(
-          OrderCreateAnswered(
-            1,
-            GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
-          ),
-        ),
-      ).state;
-      final back = transitionBuyFlow(failed, const BuyBackPressed()).state;
+      final failed = buyOrderingState
+          .next(
+            const BuyOrderChanged(
+              OrderCreateAnswered(
+                1,
+                GateAdmitted(
+                  Err(ExchangeWriteRefusedFailure(ExchangeRefusal())),
+                ),
+              ),
+            ),
+          )
+          .state;
+      final back = failed.next(const BuyBackPressed()).state;
       expect(
         _entryOf(back).amount,
         isA<AmountEditing>().having((s) => s.draft.text, 'text', '10'),
@@ -451,7 +435,7 @@ void main() {
     });
 
     test('Back from the quote stops its timers and releases its payjoin', () {
-      final back = transitionBuyFlow(buyReviewState, const BuyBackPressed());
+      final back = buyReviewState.next(const BuyBackPressed());
       expect(back.state, isA<BuyEntry>());
       expect(back.effects, [
         const BuyOrderEffect(OrderStopTimers('b-1')),
@@ -460,10 +444,7 @@ void main() {
     });
 
     test('Confirm on a lapsed price refreshes it and says so', () {
-      final next = transitionBuyFlow(
-        buyReviewState,
-        BuyConfirmPressed(buyDeadline),
-      );
+      final next = buyReviewState.next(BuyConfirmPressed(buyDeadline));
       expect(
         next.state,
         isA<BuyReview>()
@@ -474,10 +455,7 @@ void main() {
     });
 
     test('Confirm stops the quote timers and sends the confirm', () {
-      final next = transitionBuyFlow(
-        buyReviewState,
-        BuyConfirmPressed(buyBeforeDeadline),
-      );
+      final next = buyReviewState.next(BuyConfirmPressed(buyBeforeDeadline));
       expect(next.effects, [
         const BuyOrderEffect(OrderStopTimers('b-1')),
         BuyConfirmEffect(ConfirmSend(BuyConfirmTarget(buyOrder()), 1)),
@@ -506,10 +484,7 @@ void main() {
         const BuyContinuePressed(),
         BuyOrderChanged(OrderCreateAnswered(1, buyDone(buyOrder()))),
       ]).state;
-      final next = transitionBuyFlow(
-        review,
-        BuyConfirmPressed(buyBeforeDeadline),
-      );
+      final next = review.next(BuyConfirmPressed(buyBeforeDeadline));
       expect(
         (next.state as BuyConfirming).confirm,
         isA<ConfirmVerifying<BuyConfirmTarget, BuyOrder>>(),
@@ -525,10 +500,7 @@ void main() {
         const BuyRetryPressed(),
       ]) {
         expect(
-          identical(
-            transitionBuyFlow(buyConfirmingState, event).state,
-            buyConfirmingState,
-          ),
+          identical(buyConfirmingState.next(event).state, buyConfirmingState),
           isTrue,
         );
       }
@@ -543,8 +515,7 @@ void main() {
     });
 
     test('an unknown confirm verifies; unverified offers only Check again', () {
-      final verifying = transitionBuyFlow(
-        buyConfirmingState,
+      final verifying = buyConfirmingState.next(
         const BuyConfirmChanged(
           ConfirmAnswered(
             1,
@@ -555,28 +526,25 @@ void main() {
       expect(verifying.effects, [
         BuyConfirmEffect(ConfirmVerify(BuyConfirmTarget(buyOrder()), 1)),
       ]);
-      final unverified = transitionBuyFlow(
-        verifying.state,
-        const BuyConfirmChanged(
-          ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),
-        ),
-      ).state;
+      final unverified = verifying.state
+          .next(
+            const BuyConfirmChanged(
+              ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),
+            ),
+          )
+          .state;
       expect(
         (unverified as BuyConfirming).confirm,
         isA<ConfirmUnverified<BuyConfirmTarget, BuyOrder>>(),
       );
-      expect(transitionBuyFlow(unverified, const BuyRetryPressed()).effects, [
+      expect(unverified.next(const BuyRetryPressed()).effects, [
         BuyConfirmEffect(ConfirmVerify(BuyConfirmTarget(buyOrder()), 1)),
       ]);
-      expect(
-        transitionBuyFlow(unverified, const BuyBackPressed()).state,
-        const BuyClosed(),
-      );
+      expect(unverified.next(const BuyBackPressed()).state, const BuyClosed());
     });
 
     test('a refused confirm is the review again, refreshed, with why', () {
-      final next = transitionBuyFlow(
-        buyConfirmingState,
+      final next = buyConfirmingState.next(
         const BuyConfirmChanged(
           ConfirmAnswered(
             1,
@@ -596,8 +564,7 @@ void main() {
     });
 
     test('a busy write gate is the review again, nothing sent', () {
-      final next = transitionBuyFlow(
-        buyConfirmingState,
+      final next = buyConfirmingState.next(
         const BuyConfirmChanged(
           ConfirmAnswered(
             1,
@@ -609,17 +576,17 @@ void main() {
     });
 
     test('a re-read that shows the confirm not applied offers it again', () {
-      final verifying = transitionBuyFlow(
-        buyConfirmingState,
-        const BuyConfirmChanged(
-          ConfirmAnswered(
-            1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-          ),
-        ),
-      ).state;
-      final next = transitionBuyFlow(
-        verifying,
+      final verifying = buyConfirmingState
+          .next(
+            const BuyConfirmChanged(
+              ConfirmAnswered(
+                1,
+                GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+              ),
+            ),
+          )
+          .state;
+      final next = verifying.next(
         BuyConfirmChanged(ConfirmVerified(1, buyConfirmCheck(Ok(buyOrder())))),
       );
       expect(next.state, isA<BuyReview>());
@@ -628,8 +595,7 @@ void main() {
 
   group('done', () {
     test('the payout watch starts with the confirm', () {
-      final next = transitionBuyFlow(
-        buyConfirmingState,
+      final next = buyConfirmingState.next(
         BuyConfirmChanged(
           ConfirmAnswered(1, buyDone(buyOrder(status: OrderStatus.inProgress))),
         ),
@@ -645,8 +611,7 @@ void main() {
         status: OrderStatus.completed,
         payout: OrderPayoutStatus.completed,
       );
-      final next = transitionBuyFlow(
-        buyDoneState,
+      final next = buyDoneState.next(
         BuyWatchChanged(WatchPolled('b-1', 1, Ok(completed))),
       );
       expect(next.effects, [
@@ -660,20 +625,18 @@ void main() {
         status: OrderStatus.completed,
         payout: OrderPayoutStatus.completed,
       );
-      final next = transitionBuyFlow(
-        buyConfirmingState,
+      final next = buyConfirmingState.next(
         BuyConfirmChanged(ConfirmAnswered(1, buyDone(completed))),
       );
       expect(next.effects, [BuyPayoutSettled(completed, 'w-lq')]);
     });
 
     test('hidden pauses the watch; Close stops it', () {
-      final paused = transitionBuyFlow(
-        buyDoneState,
+      final paused = buyDoneState.next(
         const BuyVisibilityChanged(visible: false),
       );
       expect((paused.state as BuyDone).watch, isA<WatchPaused<BuyOrder>>());
-      final closed = transitionBuyFlow(buyDoneState, const BuyDonePressed());
+      final closed = buyDoneState.next(const BuyDonePressed());
       expect(closed.state, const BuyClosed(bought: true));
       expect(closed.effects, [const BuyWatchEffect(WatchStop('b-1'))]);
     });
@@ -689,8 +652,7 @@ void main() {
 
   group('session', () {
     test('a session change on the quote stops it and releases it', () {
-      final next = transitionBuyFlow(
-        buyReviewState,
+      final next = buyReviewState.next(
         const BuySessionChanged(buyOtherSession),
       );
       expect(next.state, const BuySessionEnded());
@@ -703,10 +665,7 @@ void main() {
     test('the same session again is a stay', () {
       expect(
         identical(
-          transitionBuyFlow(
-            buyEntryState,
-            const BuySessionChanged(buySession),
-          ).state,
+          buyEntryState.next(const BuySessionChanged(buySession)).state,
           buyEntryState,
         ),
         isTrue,

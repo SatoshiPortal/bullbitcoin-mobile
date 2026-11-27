@@ -12,7 +12,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionDcaFlow]: applies events one at a time, emits the
+/// Shell of [DcaFlowState.next]: applies events one at a time, emits the
 /// new state and runs each effect through its use case with the flow's
 /// session, each answer tagged with its attempt or ticket.
 class DcaFlowBloc extends Bloc<DcaFlowEvent, DcaFlowState> {
@@ -68,7 +68,7 @@ class DcaFlowBloc extends Bloc<DcaFlowEvent, DcaFlowState> {
 
   void _onEvent(DcaFlowEvent event, Emitter<DcaFlowState> emit) {
     final before = state;
-    final next = transitionDcaFlow(before, event);
+    final next = before.next(event);
     if (identical(next.state, before) && next.effects.isEmpty) return;
     if (!identical(next.state, before)) emit(next.state);
     _run(next.effects);

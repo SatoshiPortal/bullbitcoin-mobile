@@ -82,7 +82,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionDcaFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -100,7 +100,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionDcaFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -121,15 +121,16 @@ void main() {
   });
 
   test('a failed load has a Retry that loads again', () {
-    final failed = transitionDcaFlow(
-      dcaLoadingState,
-      const DcaContextLoaded(
-        1,
-        Err(ExchangeUnreachableFailure('down', isNetwork: true)),
-      ),
-    ).state;
+    final failed = dcaLoadingState
+        .next(
+          const DcaContextLoaded(
+            1,
+            Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+          ),
+        )
+        .state;
     expect((failed as DcaLoading).load, isA<ContextFailed<DcaContext>>());
-    expect(transitionDcaFlow(failed, const DcaRetryPressed()).effects, [
+    expect(failed.next(const DcaRetryPressed()).effects, [
       const DcaLoadContext(2),
     ]);
   });
@@ -159,17 +160,14 @@ void main() {
       DcaContinuePressed(),
     ]).state;
     expect((detour as DcaSetup).amount, isA<AmountFundingDetour>());
-    final reload = transitionDcaFlow(detour, const DcaFundingReturned());
+    final reload = detour.next(const DcaFundingReturned());
     expect(reload.effects, [const DcaReloadForDetour()]);
     final rich = dcaContextWith(
       summary: buySummaryWith(
         balances: const [UserBalance(amount: 1000, currencyCode: 'CAD')],
       ),
     );
-    final back = transitionDcaFlow(
-      reload.state,
-      DcaDetourLoaded(Ok(rich)),
-    ).state;
+    final back = reload.state.next(DcaDetourLoaded(Ok(rich))).state;
     expect(
       (back as DcaSetup).amount,
       isA<AmountEditing>().having((s) => s.draft.text, 'text', '500'),
@@ -189,12 +187,9 @@ void main() {
       const DcaContinuePressed(),
     ]).state;
     expect((detour as DcaSetup).amount, isA<AmountKycDetour>());
-    final reload = transitionDcaFlow(detour, const DcaKycReturned());
+    final reload = detour.next(const DcaKycReturned());
     expect(reload.effects, [const DcaReloadForDetour()]);
-    final back = transitionDcaFlow(
-      reload.state,
-      DcaDetourLoaded(Ok(dcaContext)),
-    ).state;
+    final back = reload.state.next(DcaDetourLoaded(Ok(dcaContext))).state;
     expect(
       (back as DcaSetup).amount,
       isA<AmountEditing>().having((s) => s.draft.text, 'text', '10'),
@@ -204,12 +199,9 @@ void main() {
 
   test('no funded balance has no market; funding reloads', () {
     final empty = dcaContextWith(summary: buySummaryWith(balances: const []));
-    final setup = transitionDcaFlow(
-      dcaLoadingState,
-      DcaContextLoaded(1, Ok(empty)),
-    ).state;
+    final setup = dcaLoadingState.next(DcaContextLoaded(1, Ok(empty))).state;
     expect((setup as DcaSetup).amount, isA<AmountNoMarket>());
-    expect(transitionDcaFlow(setup, const DcaFundingReturned()).effects, [
+    expect(setup.next(const DcaFundingReturned()).effects, [
       const DcaReloadForDetour(),
     ]);
   });
@@ -221,24 +213,20 @@ void main() {
       DcaDefaultWalletsReturned(),
     ]);
     expect(asked.effects, [const DcaLoadDefaultWallets(2)]);
-    final stale = transitionDcaFlow(
-      asked.state,
+    final stale = asked.state.next(
       const DcaDefaultWalletsLoaded(1, Ok(DefaultWallets())),
     );
     expect(identical(stale.state, asked.state), isTrue);
     final fresh =
-        transitionDcaFlow(
-              asked.state,
-              const DcaDefaultWalletsLoaded(2, Ok(DefaultWallets())),
-            ).state
+        asked.state
+                .next(const DcaDefaultWalletsLoaded(2, Ok(DefaultWallets())))
+                .state
             as DcaPayoutPick;
     expect(fresh.open.context.defaultAddressOf(BtcNetwork.bitcoin), isNull);
   });
 
   test('Back from the payout keeps the draft and the frequency', () {
-    final back =
-        transitionDcaFlow(dcaPayoutState, const DcaBackPressed()).state
-            as DcaSetup;
+    final back = dcaPayoutState.next(const DcaBackPressed()).state as DcaSetup;
     expect(back.frequency, DcaBuyFrequency.weekly);
     expect(
       back.amount,
@@ -247,16 +235,12 @@ void main() {
   });
 
   test('Confirm sends the create once; pressed again it is a stay', () {
-    expect(
-      transitionDcaFlow(dcaReviewState, const DcaConfirmPressed()).effects,
-      [DcaConfirmEffect(ConfirmSend(dcaPlan, 1))],
-    );
+    expect(dcaReviewState.next(const DcaConfirmPressed()).effects, [
+      DcaConfirmEffect(ConfirmSend(dcaPlan, 1)),
+    ]);
     for (final event in const [DcaConfirmPressed(), DcaRetryPressed()]) {
       expect(
-        identical(
-          transitionDcaFlow(dcaConfirmingState, event).state,
-          dcaConfirmingState,
-        ),
+        identical(dcaConfirmingState.next(event).state, dcaConfirmingState),
         isTrue,
       );
     }
@@ -275,9 +259,7 @@ void main() {
       dcaPlan,
     );
     expect(
-      (transitionDcaFlow(review, const DcaConfirmPressed()).state
-              as DcaConfirming)
-          .confirm,
+      (review.next(const DcaConfirmPressed()).state as DcaConfirming).confirm,
       isA<ConfirmVerifying<DcaPlan, DcaPlan>>(),
     );
   });
@@ -292,23 +274,18 @@ void main() {
       ),
     ]);
     expect(verifying.effects, [DcaConfirmEffect(ConfirmVerify(dcaPlan, 1))]);
-    final unverified = transitionDcaFlow(
-      verifying.state,
-      const DcaConfirmChanged(
-        ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),
-      ),
-    ).state;
+    final unverified = verifying.state
+        .next(
+          const DcaConfirmChanged(
+            ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),
+          ),
+        )
+        .state;
     expect(
-      identical(
-        transitionDcaFlow(unverified, const DcaConfirmPressed()).state,
-        unverified,
-      ),
+      identical(unverified.next(const DcaConfirmPressed()).state, unverified),
       isTrue,
     );
-    expect(
-      transitionDcaFlow(unverified, const DcaBackPressed()).state,
-      const DcaClosed(),
-    );
+    expect(unverified.next(const DcaBackPressed()).state, const DcaClosed());
   });
 
   test('the re-read: active at the plan address is applied', () {
@@ -327,10 +304,11 @@ void main() {
 
   test('done turns the DCA preference on', () {
     expect(
-      transitionDcaFlow(
-        dcaConfirmingState,
-        DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
-      ).effects,
+      dcaConfirmingState
+          .next(
+            DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
+          )
+          .effects,
       [const DcaActivated()],
     );
   });
@@ -344,9 +322,6 @@ void main() {
         ),
       ),
     ]).state;
-    expect(
-      transitionDcaFlow(failed, const DcaBackPressed()).state,
-      isA<DcaReview>(),
-    );
+    expect(failed.next(const DcaBackPressed()).state, isA<DcaReview>());
   });
 }

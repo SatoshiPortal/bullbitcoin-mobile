@@ -26,6 +26,26 @@ sealed class BuyFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  BuyFlowNext next(BuyFlowEvent event) {
+    final state = this;
+    if (event case BuySessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? BuyFlowNext(const BuySessionEnded(), _stopsOf(state))
+          : BuyFlowNext.stay(state);
+    }
+    return switch (state) {
+      BuyLoading() => _loading(state, event),
+      BuyEntry() => _entry(state, event),
+      BuyOrdering() => _ordering(state, event),
+      BuyReview() => _review(state, event),
+      BuyConfirming() => _confirming(state, event),
+      BuyDone() => _done(state, event),
+      BuySessionEnded() => _sessionEnded(state, event),
+      BuyClosed() => BuyFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -805,25 +825,6 @@ BuyFlowNext buyFlowStart(ExchangeSession? session) => switch (session) {
   ]),
   null => _ended,
 };
-
-BuyFlowNext transitionBuyFlow(BuyFlowState state, BuyFlowEvent event) {
-  if (event case BuySessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? BuyFlowNext(const BuySessionEnded(), _stopsOf(state))
-        : BuyFlowNext.stay(state);
-  }
-  return switch (state) {
-    BuyLoading() => _loading(state, event),
-    BuyEntry() => _entry(state, event),
-    BuyOrdering() => _ordering(state, event),
-    BuyReview() => _review(state, event),
-    BuyConfirming() => _confirming(state, event),
-    BuyDone() => _done(state, event),
-    BuySessionEnded() => _sessionEnded(state, event),
-    BuyClosed() => BuyFlowNext.stay(state),
-  };
-}
 
 ExchangeSession? _sessionOf(BuyFlowState state) => switch (state) {
   BuyLoading(:final session) => session,

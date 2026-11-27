@@ -34,7 +34,7 @@ const dcaPayout = DcaPayout(BtcNetwork.bitcoin, 'bc1qdefault', isDefault: true);
 DcaFlowNext applyDca(DcaFlowState state, List<DcaFlowEvent> events) {
   var next = DcaFlowNext.stay(state);
   for (final event in events) {
-    next = transitionDcaFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next;
 }

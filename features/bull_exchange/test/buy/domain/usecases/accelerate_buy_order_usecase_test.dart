@@ -12,8 +12,7 @@ import '../../buy_test_ports.dart';
 /// The accelerate the flow sends for b-1 once its quote loaded.
 ConfirmSend<AccelerateTarget> _send() {
   var next = accelerateFlowStart(buySession, 'b-1');
-  next = transitionAccelerateFlow(
-    next.state,
+  next = next.state.next(
     AccelerateLoaded(
       1,
       Ok(
@@ -25,7 +24,7 @@ ConfirmSend<AccelerateTarget> _send() {
       ),
     ),
   );
-  next = transitionAccelerateFlow(next.state, const AccelerateConfirmPressed());
+  next = next.state.next(const AccelerateConfirmPressed());
   return next.effects.whereType<AccelerateConfirmEffect>().single.effect
       as ConfirmSend<AccelerateTarget>;
 }

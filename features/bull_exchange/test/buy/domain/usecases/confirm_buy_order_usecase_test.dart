@@ -11,10 +11,7 @@ import '../../buy_fixtures.dart';
 import '../../buy_test_ports.dart';
 
 ConfirmSend<BuyConfirmTarget> _send() {
-  final next = transitionBuyFlow(
-    buyReviewState,
-    BuyConfirmPressed(buyBeforeDeadline),
-  );
+  final next = buyReviewState.next(BuyConfirmPressed(buyBeforeDeadline));
   return next.effects.whereType<BuyConfirmEffect>().single.effect
       as ConfirmSend<BuyConfirmTarget>;
 }

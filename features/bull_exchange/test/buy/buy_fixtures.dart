@@ -108,7 +108,7 @@ GateAdmitted<Result<T, ExchangeWriteFailure>> buyDone<T>(T value) =>
 BuyFlowNext applyBuy(BuyFlowState state, List<BuyFlowEvent> events) {
   var next = BuyFlowNext.stay(state);
   for (final event in events) {
-    next = transitionBuyFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next;
 }

@@ -9,7 +9,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionAccelerateFlow]: applies events one at a time, emits
+/// Shell of [AccelerateFlowState.next]: applies events one at a time, emits
 /// the new state and runs each effect through its use case with the flow's
 /// session, each answer tagged with its attempt.
 class AccelerateFlowBloc
@@ -54,7 +54,7 @@ class AccelerateFlowBloc
   late final StreamSubscription<ExchangeAccess> _access;
 
   void _onEvent(AccelerateFlowEvent event, Emitter<AccelerateFlowState> emit) {
-    final next = transitionAccelerateFlow(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

@@ -25,6 +25,49 @@ sealed class DcaFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  DcaFlowNext next(DcaFlowEvent event) {
+    final state = this;
+    if (event case DcaSessionChanged(:final session)) {
+      final current = switch (state) {
+        DcaLoading(:final session) => session,
+        DcaSetup(:final open) ||
+        DcaPayoutPick(:final open) ||
+        DcaReview(:final open) ||
+        DcaConfirming(:final open) ||
+        DcaDone(:final open) => open.session,
+        DcaSessionEnded() || DcaClosed() => null,
+      };
+      return current != null && current != session
+          ? _ended
+          : DcaFlowNext.stay(state);
+    }
+    return switch (state) {
+      DcaLoading() => _loading(state, event),
+      DcaSetup() => _setup(state, event),
+      DcaPayoutPick() => _payout(state, event),
+      DcaReview() => _review(state, event),
+      DcaConfirming() => _confirming(state, event),
+      DcaDone() || DcaSessionEnded() => switch (event) {
+        DcaBackPressed() || DcaDonePressed() => _closed,
+        DcaContextLoaded() ||
+        DcaRetryPressed() ||
+        DcaAmountChanged() ||
+        DcaFrequencyPicked() ||
+        DcaContinuePressed() ||
+        DcaFundingReturned() ||
+        DcaKycReturned() ||
+        DcaDetourLoaded() ||
+        DcaPayoutChosen() ||
+        DcaDefaultWalletsReturned() ||
+        DcaDefaultWalletsLoaded() ||
+        DcaConfirmPressed() ||
+        DcaConfirmChanged() ||
+        DcaSessionChanged() => DcaFlowNext.stay(state),
+      },
+      DcaClosed() => DcaFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -489,48 +532,6 @@ DcaFlowNext dcaFlowStart(ExchangeSession? session) => switch (session) {
   ]),
   null => _ended,
 };
-
-DcaFlowNext transitionDcaFlow(DcaFlowState state, DcaFlowEvent event) {
-  if (event case DcaSessionChanged(:final session)) {
-    final current = switch (state) {
-      DcaLoading(:final session) => session,
-      DcaSetup(:final open) ||
-      DcaPayoutPick(:final open) ||
-      DcaReview(:final open) ||
-      DcaConfirming(:final open) ||
-      DcaDone(:final open) => open.session,
-      DcaSessionEnded() || DcaClosed() => null,
-    };
-    return current != null && current != session
-        ? _ended
-        : DcaFlowNext.stay(state);
-  }
-  return switch (state) {
-    DcaLoading() => _loading(state, event),
-    DcaSetup() => _setup(state, event),
-    DcaPayoutPick() => _payout(state, event),
-    DcaReview() => _review(state, event),
-    DcaConfirming() => _confirming(state, event),
-    DcaDone() || DcaSessionEnded() => switch (event) {
-      DcaBackPressed() || DcaDonePressed() => _closed,
-      DcaContextLoaded() ||
-      DcaRetryPressed() ||
-      DcaAmountChanged() ||
-      DcaFrequencyPicked() ||
-      DcaContinuePressed() ||
-      DcaFundingReturned() ||
-      DcaKycReturned() ||
-      DcaDetourLoaded() ||
-      DcaPayoutChosen() ||
-      DcaDefaultWalletsReturned() ||
-      DcaDefaultWalletsLoaded() ||
-      DcaConfirmPressed() ||
-      DcaConfirmChanged() ||
-      DcaSessionChanged() => DcaFlowNext.stay(state),
-    },
-    DcaClosed() => DcaFlowNext.stay(state),
-  };
-}
 
 DcaFlowNext _loading(DcaLoading state, DcaFlowEvent event) {
   final ContextLoadEvent<DcaContext> loadEvent;

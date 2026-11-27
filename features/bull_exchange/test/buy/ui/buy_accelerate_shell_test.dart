@@ -42,10 +42,7 @@ void main() {
     _fee,
     const [],
   );
-  final ready = transitionAccelerateFlow(
-    loading,
-    AccelerateLoaded(1, Ok(quote)),
-  ).state;
+  final ready = loading.next(AccelerateLoaded(1, Ok(quote))).state;
 
   // The accelerate route is often opened with nothing under it (from an
   // order's details): its back is the flow's event, never implied.

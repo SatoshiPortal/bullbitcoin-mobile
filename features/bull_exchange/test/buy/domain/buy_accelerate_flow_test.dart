@@ -17,7 +17,7 @@ AccelerateFlowNext _apply(
 ) {
   var next = AccelerateFlowNext.stay(state);
   for (final event in events) {
-    next = transitionAccelerateFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next;
 }
@@ -85,7 +85,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionAccelerateFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -105,7 +105,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionAccelerateFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -139,26 +139,19 @@ void main() {
       (failed as AccelerateLoading).load,
       isA<ContextFailed<AccelerateQuote>>(),
     );
-    expect(
-      transitionAccelerateFlow(failed, const AccelerateRetryPressed()).effects,
-      [const AccelerateLoad('b-1', 2)],
-    );
+    expect(failed.next(const AccelerateRetryPressed()).effects, [
+      const AccelerateLoad('b-1', 2),
+    ]);
   });
 
   test('Confirm express sends the accelerate once', () {
-    final next = transitionAccelerateFlow(
-      _ready,
-      const AccelerateConfirmPressed(),
-    );
+    final next = _ready.next(const AccelerateConfirmPressed());
     expect(next.effects, [
       const AccelerateConfirmEffect(ConfirmSend(AccelerateTarget('b-1'), 1)),
     ]);
     expect(
       identical(
-        transitionAccelerateFlow(
-          _confirming,
-          const AccelerateConfirmPressed(),
-        ).state,
+        _confirming.next(const AccelerateConfirmPressed()).state,
         _confirming,
       ),
       isTrue,
@@ -178,9 +171,7 @@ void main() {
       AccelerateLoaded(1, Ok(AccelerateQuote(_order, _fee, [entry]))),
     ]).state;
     expect(
-      _confirmOf(
-        transitionAccelerateFlow(ready, const AccelerateConfirmPressed()).state,
-      ),
+      _confirmOf(ready.next(const AccelerateConfirmPressed()).state),
       isA<ConfirmVerifying<AccelerateTarget, BuyOrder>>(),
     );
   });
@@ -204,17 +195,11 @@ void main() {
       isA<ConfirmUnverified<AccelerateTarget, BuyOrder>>(),
     );
     expect(
-      identical(
-        transitionAccelerateFlow(
-          pending,
-          const AccelerateConfirmPressed(),
-        ).state,
-        pending,
-      ),
+      identical(pending.next(const AccelerateConfirmPressed()).state, pending),
       isTrue,
     );
     expect(
-      transitionAccelerateFlow(pending, const AccelerateBackPressed()).state,
+      pending.next(const AccelerateBackPressed()).state,
       const AccelerateClosed(),
     );
   });
@@ -241,15 +226,11 @@ void main() {
       isA<ConfirmFailed<AccelerateTarget, BuyOrder>>(),
     );
     expect(
-      transitionAccelerateFlow(failed, const AccelerateBackPressed()).state,
+      failed.next(const AccelerateBackPressed()).state,
       isA<AccelerateReady>(),
     );
-    expect(
-      transitionAccelerateFlow(
-        failed,
-        const AccelerateConfirmPressed(),
-      ).effects,
-      [const AccelerateConfirmEffect(ConfirmSend(AccelerateTarget('b-1'), 2))],
-    );
+    expect(failed.next(const AccelerateConfirmPressed()).effects, [
+      const AccelerateConfirmEffect(ConfirmSend(AccelerateTarget('b-1'), 2)),
+    ]);
   });
 }

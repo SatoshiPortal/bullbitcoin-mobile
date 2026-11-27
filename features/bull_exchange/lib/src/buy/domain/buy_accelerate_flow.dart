@@ -24,6 +24,36 @@ sealed class AccelerateFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  AccelerateFlowNext next(AccelerateFlowEvent event) {
+    final state = this;
+    if (event case AccelerateSessionChanged(:final session)) {
+      final current = switch (state) {
+        AccelerateLoading(:final session) ||
+        AccelerateReady(:final session) ||
+        AccelerateConfirming(:final session) ||
+        AccelerateDone(:final session) => session,
+        AccelerateSessionEnded() || AccelerateClosed() => null,
+      };
+      return current != null && current != session
+          ? _ended
+          : AccelerateFlowNext.stay(state);
+    }
+    return switch (state) {
+      AccelerateLoading() => _loading(state, event),
+      AccelerateReady() => _ready(state, event),
+      AccelerateConfirming() => _confirming(state, event),
+      AccelerateDone() || AccelerateSessionEnded() => switch (event) {
+        AccelerateBackPressed() || AccelerateDonePressed() => _closed,
+        AccelerateLoaded() ||
+        AccelerateRetryPressed() ||
+        AccelerateConfirmPressed() ||
+        AccelerateConfirmChanged() ||
+        AccelerateSessionChanged() => AccelerateFlowNext.stay(state),
+      },
+      AccelerateClosed() => AccelerateFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -283,38 +313,6 @@ AccelerateFlowNext accelerateFlowStart(
   ),
   null => _ended,
 };
-
-AccelerateFlowNext transitionAccelerateFlow(
-  AccelerateFlowState state,
-  AccelerateFlowEvent event,
-) {
-  if (event case AccelerateSessionChanged(:final session)) {
-    final current = switch (state) {
-      AccelerateLoading(:final session) ||
-      AccelerateReady(:final session) ||
-      AccelerateConfirming(:final session) ||
-      AccelerateDone(:final session) => session,
-      AccelerateSessionEnded() || AccelerateClosed() => null,
-    };
-    return current != null && current != session
-        ? _ended
-        : AccelerateFlowNext.stay(state);
-  }
-  return switch (state) {
-    AccelerateLoading() => _loading(state, event),
-    AccelerateReady() => _ready(state, event),
-    AccelerateConfirming() => _confirming(state, event),
-    AccelerateDone() || AccelerateSessionEnded() => switch (event) {
-      AccelerateBackPressed() || AccelerateDonePressed() => _closed,
-      AccelerateLoaded() ||
-      AccelerateRetryPressed() ||
-      AccelerateConfirmPressed() ||
-      AccelerateConfirmChanged() ||
-      AccelerateSessionChanged() => AccelerateFlowNext.stay(state),
-    },
-    AccelerateClosed() => AccelerateFlowNext.stay(state),
-  };
-}
 
 AccelerateFlowNext _loading(
   AccelerateLoading state,

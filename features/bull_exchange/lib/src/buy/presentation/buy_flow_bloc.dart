@@ -20,7 +20,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionBuyFlow]: applies events one at a time, emits the
+/// Shell of [BuyFlowState.next]: applies events one at a time, emits the
 /// new state and runs each effect through its use case with the flow's
 /// session. Every answer carries the attempt, order
 /// id, option, text or ticket that asked for it; the machine drops stale
@@ -121,7 +121,7 @@ class BuyFlowBloc extends Bloc<BuyFlowEvent, BuyFlowState> {
 
   void _onEvent(BuyFlowEvent event, Emitter<BuyFlowState> emit) {
     final before = state;
-    final next = transitionBuyFlow(before, event);
+    final next = before.next(event);
     if (identical(next.state, before) && next.effects.isEmpty) return;
     if (!identical(next.state, before)) emit(next.state);
     _run(next.effects, before);
