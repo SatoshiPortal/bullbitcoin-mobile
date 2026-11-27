@@ -1,6 +1,4 @@
 analyzer:
   exclude:
     - build/**
-    - android/**
-    - ios/**
 include: package:lints/recommended.yaml

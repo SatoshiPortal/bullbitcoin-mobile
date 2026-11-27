@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:bull_logger/bull_logger.dart' show ReportCategory, log;
@@ -18,7 +17,6 @@ class Report {
   static const _consentKey = 'error_reporting_consent';
   static const _lastVersionKey = 'last_seen_app_version';
   static const _installUuidKey = 'install_uuid';
-  static const _nativeChannel = MethodChannel('bullbitcoin/bull_reporting');
   static bool _started = false;
 
   static String? fromVersion;
@@ -109,23 +107,7 @@ class Report {
     return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
 
-  static bool get _hasNativeSdk =>
-      !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android ||
-          defaultTargetPlatform == TargetPlatform.iOS);
-
-  static Future<void> _closeSentry() async {
-    try {
-      await Sentry.close();
-    } finally {
-      if (_hasNativeSdk) await _nativeChannel.invokeMethod<void>('close');
-    }
-  }
-
   static Future<void> _initSentry(String dsn) async {
-    if (_hasNativeSdk) {
-      await _nativeChannel.invokeMethod<void>('start', dsn);
-    }
     await SentryFlutter.init(
       (options) => configureSentryOptions(options, dsn: dsn),
     );
@@ -144,7 +126,8 @@ class Report {
     required String dsn,
   }) {
     options.dsn = dsn;
-    options.autoInitializeNativeSdk = false;
+    // Let the Flutter plugin start its bundled native crash SDKs.
+    options.autoInitializeNativeSdk = true;
     options.compressPayload = true;
     options.debug = false;
 
@@ -161,7 +144,7 @@ class Report {
     options.replay.sessionSampleRate = 0.0;
     options.replay.onErrorSampleRate = 0.0;
 
-    // ── Logs and prints ───────────────────────────────────────────
+    // These callbacks cover the Dart SDK's logs and metrics.
     options.beforeSendLog = (log, hint) => null;
     options.beforeSendMetric = (metric, hint) => null;
     options.enablePrintBreadcrumbs = false;
@@ -280,7 +263,7 @@ class Report {
   static Future<void> _stopReporting() async {
     if (!_started) return;
     try {
-      await _closeSentry();
+      await Sentry.close();
       _started = false;
     } catch (_) {
       debugPrint('Could not stop the crash reporting SDK.');
