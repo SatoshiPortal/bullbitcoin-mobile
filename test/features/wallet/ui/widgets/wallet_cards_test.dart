@@ -1,5 +1,8 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:bull_exchange/testing.dart' show PayinSourcePage;
 import 'package:bull_ui/app_theme.dart';
+import 'package:exchange/exchange.dart' show BtcNetwork;
+import 'package:exchange/steps.dart' show PayinFromAppWallet, PayinSource;
 import 'package:overview/overview.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
@@ -67,12 +70,27 @@ Widget _buildCardsRouter({
   required _MockWalletBloc walletBloc,
   required _MockSettingsCubit settingsCubit,
   Widget cards = const WalletCards(),
+  Widget? picker,
 }) {
   final navigatorKey = GlobalKey<NavigatorState>();
   final router = GoRouter(
     navigatorKey: navigatorKey,
     initialLocation: '/',
     routes: [
+      GoRoute(
+        path: '/pick',
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider<WalletBloc>.value(value: walletBloc),
+            BlocProvider<SettingsCubit>.value(value: settingsCubit),
+            BitcoinPriceFixture.prices(),
+          ],
+          child: Settings.amountScope(
+            navigatorKey: navigatorKey,
+            child: picker ?? const SizedBox.shrink(),
+          ),
+        ),
+      ),
       GoRoute(
         path: '/',
         builder: (context, state) => MultiBlocProvider(
@@ -141,7 +159,7 @@ void main() {
       internalPublicDescriptor: '',
       signer: SignerEntity.local,
       signerDevice: null,
-      balanceSat: BigInt.from(1000),
+      balanceSat: BigInt.zero,
     );
     final unavailable = local.copyWith(
       origin: 'liquid',
@@ -177,16 +195,57 @@ void main() {
       settingsState: _settingsState(isSuperuser: true),
     );
     final selected = <({WalletKey key, String? label, bool isDefault})>[];
+    final payin = <PayinSource>[];
+    await tester.pumpWidget(
+      _buildCards(walletBloc: walletBloc, settingsCubit: settingsCubit),
+    );
+    final homeRows = tester
+        .widget<WalletCardList>(find.byType(WalletCardList))
+        .rows;
+    expect(homeRows.map((row) => row.title), [
+      'Remote',
+      AppLocalizations.of(tester.element(find.byType(WalletCards)))
+          .globalDefaultBitcoinWalletLabel,
+      'Watch-only',
+      'Savings',
+    ]);
+    expect(homeRows[1].balanceSat, 0);
+    expect(homeRows[3].balanceSat, isNull);
+
     await tester.pumpWidget(
       _buildCardsRouter(
         walletBloc: walletBloc,
         settingsCubit: settingsCubit,
         cards: Builder(
-          builder: (context) =>
-              WalletCards.pickLocalSigner(context, selected.add),
+          builder: (context) => TextButton(
+            onPressed: () => context.push('/pick'),
+            child: const Text('Open picker'),
+          ),
+        ),
+        picker: Builder(
+          builder: (context) => PayinSourcePage(
+            title: 'Pay or Sell source',
+            ui: (
+              walletCards: (context, onSelected) =>
+                  WalletCards.pickLocalSigner(context, (wallet) {
+                    selected.add(wallet);
+                    onSelected?.call(wallet);
+                  }),
+              openWalletHome: (_) {},
+              brandAsset: '',
+              successAsset: '',
+            ),
+            onPicked: payin.add,
+            onBack: () => context.pop(),
+          ),
         ),
       ),
     );
+    await tester.tap(find.text('Open picker'));
+    // The selected wallet has an indeterminate sync animation.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(PayinSourcePage), findsOneWidget);
     final context = tester.element(find.byType(WalletCards));
     final l10n = AppLocalizations.of(context);
     final bitcoin = find.text(l10n.globalDefaultBitcoinWalletLabel);
@@ -216,10 +275,24 @@ void main() {
         isDefault: false,
       ),
     ]);
+    expect(payin, [
+      const PayinFromAppWallet(
+        'bitcoin:regtest',
+        BtcNetwork.bitcoin,
+        isDefault: true,
+      ),
+      const PayinFromAppWallet(
+        'liquid:regtest',
+        BtcNetwork.liquid,
+        label: 'Savings',
+      ),
+    ]);
     await tester.tap(find.text('Silent Payments'));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('SP Detail'), findsOneWidget);
     expect(selected, hasLength(2));
+    expect(payin, hasLength(2));
   });
 
   Future<void> pumpCards(

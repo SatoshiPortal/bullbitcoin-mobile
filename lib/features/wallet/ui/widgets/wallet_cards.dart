@@ -6,7 +6,6 @@ import 'package:overview/overview.dart';
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_type_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSizes, Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sync/sync.dart' show WalletKey;
@@ -78,49 +77,31 @@ class WalletCards extends StatelessWidget {
       (WalletBloc bloc) => bloc.state.isSpWalletLoading,
     );
 
-    return Padding(
-      padding:
-          padding ??
-          const EdgeInsets.fromLTRB(
-            13,
-            BullSizes.homeCardGap,
-            13,
-            BullSizes.homeCardGap,
+    return WalletCardList(
+      padding: padding,
+      unavailableLabel: context.loc.walletLoadFailed,
+      rows: [
+        for (final wallet in wallets)
+          (
+            tagColor: cardDetails(context, wallet),
+            title: wallet.displayLabel(context),
+            description: wallet.typeLabel(context),
+            balanceSat: wallet.balanceSat?.toInt(),
+            // The existing producer reports progress by ID, not WalletKey.
+            isSyncing: syncStatus[wallet.id] ?? false,
+            onTap: () => onTap?.call(wallet),
           ),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          for (final (index, w) in wallets.indexed) ...[
-            if (index > 0) const Gap(BullSizes.homeCardGap),
-            if (w.balanceSat case final balance?)
-              WalletCard(
-                tagColor: cardDetails(context, w),
-                title: w.displayLabel(context),
-                description: w.typeLabel(context),
-                balanceSat: balance.toInt(),
-                isSyncing: syncStatus[w.id] ?? false,
-                onTap: () => onTap?.call(w),
-              )
-            else
-              ListTile(
-                title: Text(w.displayLabel(context)),
-                subtitle: Text(context.loc.walletLoadFailed),
-                onTap: () => onTap?.call(w),
-              ),
-          ],
-          if (showSpWallet) ...[
-            if (wallets.isNotEmpty) const Gap(BullSizes.homeCardGap),
-            WalletCard(
+      ],
+      silent: showSpWallet
+          ? (
               tagColor: context.appColors.tertiary,
               title: context.loc.walletSpTitle,
               description: context.loc.walletSpExperimental,
               balanceSat: spBalanceSat,
               isSyncing: isSpWalletLoading,
               onTap: () => SilentNavigation.openWallet(context),
-            ),
-          ],
-        ],
-      ),
+            )
+          : null,
     );
   }
 }
