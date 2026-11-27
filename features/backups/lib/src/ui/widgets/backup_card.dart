@@ -26,8 +26,8 @@ class BackupCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: colors.scrim,
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                blurRadius: 3,
+                offset: const Offset(0, 1),
               ),
             ],
           ),
@@ -44,6 +44,7 @@ class BackupCard extends StatelessWidget {
                       context.loc.backupCardTitle,
                       role: BullTextRole.body,
                       color: colors.surface,
+                      fontWeight: FontWeight.w700,
                     ),
                     BullText(
                       context.loc.backupCardSubtitle,

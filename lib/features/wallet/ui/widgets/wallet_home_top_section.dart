@@ -1,14 +1,19 @@
 import 'package:settings/settings.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:transactions/routes.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullAmount, BullQuickActionBar, BullShapesX, Gap, BullTypographyX;
+    show
+        BullAmount,
+        BullHeaderBackground,
+        BullQuickActionBar,
+        BullShapesX,
+        BullTypographyX,
+        Gap;
 import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
@@ -16,15 +21,17 @@ class WalletHomeTopSection extends StatelessWidget {
 
   final Widget actions;
 
-  /// Minimum height of the dark area behind the balance (and the price chart, when it
-  /// is toggled on).
-  static const double _balanceAreaHeight = 224;
+  /// Minimum height of the dark area behind the balance.
+  static const double _balanceAreaHeight = 208;
+
+  /// Height of the price chart when it replaces the balance.
+  static const double _chartHeight = 224;
 
   /// Distance from the top of the dark area down to the balance.
-  static const double _balanceTopSpacing = 96;
+  static const double _balanceTopSpacing = 112;
 
   /// Backdrop kept visible between the balance and the quick actions card.
-  static const double _actionsTopSpacing = 32;
+  static const double _actionsTopSpacing = 25;
 
   /// How far the quick actions card hangs below the background: half of it
   /// straddles the bottom edge, while the balance above is never covered.
@@ -45,10 +52,8 @@ class WalletHomeTopSection extends StatelessWidget {
           left: 0,
           right: 0,
           bottom: _actionsOverhang(context),
-          child: Image.asset(
-            Assets.backgrounds.bgRed.path,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
+          child: BullHeaderBackground(
+            AssetImage(Assets.backgrounds.bgRed.path),
           ),
         ),
         Column(
@@ -95,7 +100,7 @@ class _UI extends StatelessWidget {
       child: showChart
           ? const SizedBox(
               key: ValueKey('chart'),
-              height: WalletHomeTopSection._balanceAreaHeight,
+              height: WalletHomeTopSection._chartHeight,
               child: _ChartView(),
             )
           : const _Amounts(key: ValueKey('amounts')),
@@ -113,10 +118,8 @@ class _Amounts extends StatelessWidget {
       children: [
         Gap(WalletHomeTopSection._balanceTopSpacing),
         _BtcTotalAmt(),
-        Gap(12),
+        Gap(6),
         _FiatAmt(),
-        Gap(8),
-        _UnconfirmedIncomingBalance(),
       ],
     );
   }
@@ -211,53 +214,6 @@ class _ChartView extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _UnconfirmedIncomingBalance extends StatelessWidget {
-  const _UnconfirmedIncomingBalance();
-
-  @override
-  Widget build(BuildContext context) {
-    final unconfirmed = context.select(
-      (WalletBloc bloc) => bloc.state.unconfirmedIncomingBalance,
-    );
-    if (unconfirmed == 0) return const SizedBox.shrink();
-    final color = context.appColors.onPrimary;
-    return GestureDetector(
-      onTap: () {
-        TransactionsNavigation.openHistory(context);
-      },
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.arrow_downward, color: color, size: 20),
-                BullAmount.signedSats(
-                  unconfirmed,
-                  interactive: true,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  color: color,
-                ),
-              ],
-            ),
-            Align(
-              child: Text(
-                context.loc.walletBalanceUnconfirmedIncoming,
-                style: context.bullType.body
-                    .copyWith(fontWeight: FontWeight.w500)
-                    .copyWith(color: color),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

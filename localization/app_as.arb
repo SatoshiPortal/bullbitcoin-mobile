@@ -317,7 +317,6 @@
   "transactionDetailLabelTransferFee": "Swap ফী",
   "globalDefaultBitcoinWalletLabel": "সুৰক্ষিত Bitcoin",
   "globalDefaultLiquidWalletLabel": "তাৎক্ষণিক পৰিশোধ",
-  "walletBalanceUnconfirmedIncoming": "চলি আছে",
   "walletButtonReceive": "গ্ৰহণ কৰক",
   "walletButtonSend": "প্ৰেৰণ কৰক",
   "fundExchangeMethodInstantSepa": "তাৎক্ষণিক আৰু নিয়মীয়া SEPA ট্ৰান্সফাৰ",

@@ -4001,10 +4001,6 @@
   "@confirmButton": {
     "description": "Button label to confirm action"
   },
-  "walletBalanceUnconfirmedIncoming": "Zpracovávám",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "pinProtectionDescription": "PIN chrání přístup k Tvé peněžence a nastavením. Zapamatuj si ho.",
   "@pinProtectionDescription": {
     "description": "Informational text explaining PIN purpose"

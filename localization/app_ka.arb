@@ -64,10 +64,6 @@
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "walletBalanceUnconfirmedIncoming": "მიმდინარეობს",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "autoswapSaveButton": "შენახვა",
   "@autoswapSaveButton": {
     "description": "Save button label at bottom of settings sheet"

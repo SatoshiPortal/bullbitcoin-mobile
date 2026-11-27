@@ -1307,7 +1307,6 @@
   "okButton": "OK",
   "autoswapWarningOkButton": "OK",
   "passwordLabel": "Passwort",
-  "walletBalanceUnconfirmedIncoming": "In Bearbeitung",
   "anErrorOccurred": "Es ist ein Fehler aufgetreten.",
   "autoswapSave": "Speichern",
   "cancelButton": "Abbrechen",

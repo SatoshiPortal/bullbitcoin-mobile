@@ -952,10 +952,6 @@
   "@testBackupAllWordsSelected": {
     "description": "Message shown when user has selected all 12 words"
   },
-  "walletBalanceUnconfirmedIncoming": "Em progresso",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "durationSeconds": "{seconds} segundos",
   "@durationSeconds": {
     "description": "Duration format for seconds",

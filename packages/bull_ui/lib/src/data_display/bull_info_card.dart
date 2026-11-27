@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:bull_ui/src/theme/bull_typography.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:bull_ui/src/theme/bull_shapes.dart';
@@ -59,40 +61,23 @@ class BullInfoCard extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.info_outline_rounded, size: 24, color: tagColor),
-                    const Gap(12),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (title != null && title.isNotEmpty) ...[
-                            Text(
-                              title,
-                              style: context.bullType.body.copyWith(
-                                color: tagColor,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const Gap(4),
-                          ],
-                          Text(
-                            description,
-                            style: context.bullType.body.copyWith(
-                              color: colors.onSurfaceVariant,
-                              fontWeight: boldDescription
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: _IconAndText(
+                    iconColor: tagColor,
+                    title: title != null && title.isNotEmpty ? title : null,
+                    titleStyle: context.bullType.body.copyWith(
+                      color: tagColor,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
+                    description: description,
+                    descriptionStyle: context.bullType.body.copyWith(
+                      color: colors.onSurfaceVariant,
+                      fontWeight: boldDescription
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -111,5 +96,70 @@ class BullInfoCard extends StatelessWidget {
             excludeSemantics: true,
             child: InkWell(onTap: onTap, child: card),
           );
+  }
+}
+
+/// The icon sits on the first line of text, the title when there is one,
+/// whatever the card's height or the text scale.
+class _IconAndText extends StatelessWidget {
+  const _IconAndText({
+    required this.iconColor,
+    required this.title,
+    required this.titleStyle,
+    required this.description,
+    required this.descriptionStyle,
+  });
+
+  static const double _iconSize = 24;
+
+  final Color iconColor;
+  final String? title;
+  final TextStyle titleStyle;
+  final String description;
+  final TextStyle descriptionStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = this.title;
+    final firstStyle = title == null ? descriptionStyle : titleStyle;
+    final lineHeight = (TextPainter(
+      text: TextSpan(text: 'A', style: firstStyle),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout()).height;
+    final rowHeight = math.max(lineHeight, _iconSize);
+    final textInset = (rowHeight - lineHeight) / 2;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: rowHeight,
+          child: Center(
+            child: Icon(
+              Icons.info_outline_rounded,
+              size: _iconSize,
+              color: iconColor,
+            ),
+          ),
+        ),
+        const Gap(12),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(top: textInset),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (title != null) ...[
+                  Text(title, style: titleStyle),
+                  const Gap(4),
+                ],
+                Text(description, style: descriptionStyle),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
