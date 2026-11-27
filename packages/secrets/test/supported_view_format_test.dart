@@ -2,8 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/ark_renewal.dart';
 import 'package:secrets/storage.dart';
+import 'package:secrets/testing.dart' show overrideMultiViewForTests;
 import 'package:secrets/secrets.dart'
-    show DatabaseFileUnavailable, DatabaseOpenFailure, DatabaseViewsUnsupported;
+    show
+        DatabaseFileUnavailable,
+        DatabaseOpenFailure,
+        DatabaseViewsUnsupported,
+        SecretFailure,
+        ViewsUnsupportedFailure;
 
 import 'support/view_fixture.dart';
 
@@ -13,29 +19,29 @@ void main() {
   late ViewFixture fixture;
 
   setUp(() async => fixture = await ViewFixture.create());
-  tearDown(() async => fixture.close());
+  tearDown(() async {
+    overrideMultiViewForTests(null);
+    await fixture.close();
+  });
 
   Future<List<Object?>> open({required bool multiView}) async {
+    overrideMultiViewForTests(multiView);
     final inventory = await SecretsInventory.open(
       file: fixture.file,
       admission: fixture.admission,
       authority: SessionAuthority(),
-      multiView: multiView,
     );
     final descriptors = await BackgroundWalletDescriptors.open(
       file: fixture.file,
       admission: fixture.admission,
-      multiView: multiView,
     );
     final notify = await ArkBackgroundAccess.open(
       file: fixture.file,
       admission: fixture.admission,
-      multiView: multiView,
     );
     final renewal = await ArkRenewalSecrets.open(
       file: fixture.file,
       admission: fixture.admission,
-      multiView: multiView,
     );
     final results = [inventory, descriptors, notify, renewal];
     if (inventory case Ok(:final value)) await value.close();
@@ -112,11 +118,32 @@ void main() {
       file: fixture.file,
       admission: fixture.admission,
       authority: SessionAuthority(),
-      multiView: false,
     );
     final failure =
         (result as Err<SecretsInventory, DatabaseOpenFailure>).failure;
     expect(failure, isNot(isA<DatabaseFileUnavailable>()));
     expect(failure, isA<DatabaseViewsUnsupported>());
+  });
+
+  test('a closed build refuses to create a second view and leaves the file '
+      'readable by every opener', () async {
+    // Production parameters: no override, so the build's own gate decides.
+    final inventory = (await SecretsInventory.open(
+      file: fixture.file,
+      admission: fixture.admission,
+      authority: SessionAuthority(),
+    ) as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+    final opened = inventory.openedViews;
+    expect(opened, isNotNull);
+    final created = await opened!.administration.create(name: 'Second');
+    expect(
+      (created as Err<ViewSummary, SecretFailure>).failure,
+      isA<ViewsUnsupportedFailure>(),
+    );
+    expect(opened.views.map((v) => v.name), ['All']);
+    await inventory.close();
+    for (final result in await open(multiView: false)) {
+      expect(result, isA<Ok>());
+    }
   });
 }

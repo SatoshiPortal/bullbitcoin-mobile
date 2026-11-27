@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
+import 'package:secrets/testing.dart' show overrideMultiViewForTests;
 
 import 'support/view_fixture.dart';
 
@@ -19,6 +20,7 @@ void main() {
       opened.views.map((view) => view.name).toList();
 
   setUp(() async {
+    overrideMultiViewForTests(true);
     fixture = await ViewFixture.create();
     authority = SessionAuthority();
     inventory = ok(
@@ -26,7 +28,6 @@ void main() {
         file: fixture.file,
         admission: fixture.admission,
         authority: authority,
-        multiView: true,
       ),
     );
     secrets = Secrets(
@@ -45,6 +46,7 @@ void main() {
   });
 
   tearDown(() async {
+    overrideMultiViewForTests(null);
     await inventory.close();
     await fixture.close();
   });

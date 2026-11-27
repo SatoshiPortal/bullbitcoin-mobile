@@ -103,6 +103,7 @@ void main() {
       'WalletAlreadyRegisteredFailure',
       'SecretOwnedByAnotherViewFailure',
       'SharedWithOtherViewFailure',
+      'ViewsUnsupportedFailure',
     };
     final offenders = <String>[];
     for (final file in sources) {
@@ -380,6 +381,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'ViewHoldsSecretsFailure',
       'LastViewFailure',
       'InvalidViewNameFailure',
+      'ViewsUnsupportedFailure',
       'SharedWithOtherViewFailure',
       // the failure family
       'SecretFailure',

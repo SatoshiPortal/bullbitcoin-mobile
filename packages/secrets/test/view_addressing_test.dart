@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/storage.dart';
+import 'package:secrets/testing.dart' show overrideMultiViewForTests;
 
 import 'support/view_fixture.dart';
 
@@ -24,6 +25,7 @@ void main() {
   );
 
   setUp(() async {
+    overrideMultiViewForTests(true);
     fixture = await ViewFixture.create();
     await fixture.sql([
       "INSERT INTO views (id, name, background_enabled) VALUES ('b', 'B', 1)",
@@ -34,7 +36,6 @@ void main() {
         file: fixture.file,
         admission: fixture.admission,
         authority: authority,
-        multiView: true,
       ),
     );
     authority.grant('all');
@@ -46,6 +47,7 @@ void main() {
   });
 
   tearDown(() async {
+    overrideMultiViewForTests(null);
     await inventory.close();
     await fixture.close();
   });
@@ -98,7 +100,6 @@ void main() {
       await BackgroundWalletDescriptors.open(
         file: fixture.file,
         admission: fixture.admission,
-        multiView: true,
       ),
     );
     try {
