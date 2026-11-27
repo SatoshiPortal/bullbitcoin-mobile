@@ -55,14 +55,32 @@ void main() {
       expect(native, greaterThan(saved));
     });
 
-    test('legacy cancellation starts after application setup', () {
+    test('legacy cancellation starts after the first successful app frame', () {
+      final bootstrap = File('lib/bootstrap.dart').readAsStringSync();
       final initialization = File('lib/init.dart').readAsStringSync();
-      final setup = initialization.indexOf('await AppLocator.setup(');
-      final cancellation = initialization.indexOf(
+      expect(
+        bootstrap,
+        matches(
+          RegExp(
+            r'await Bull\.init\([\s\S]*?runApp\(const BullBitcoinWalletApp\(\)\);'
+            r'\s*WidgetsBinding\.instance\.addPostFrameCallback\(\(_\)\s*\{'
+            r'\s*unawaited\(Bull\.startBackgroundWork\(\)\);',
+          ),
+        ),
+      );
+      final postFrame = initialization.split(
+        'static Future<void> startBackgroundWork()',
+      );
+      expect(postFrame, hasLength(2));
+      expect(postFrame.first, isNot(contains('BackgroundSchedule>().apply()')));
+      final preparation = postFrame.last.indexOf(
+        'await prepareBackgroundWalletStores(',
+      );
+      final cancellation = postFrame.last.indexOf(
         'await locator<BackgroundSchedule>().apply();',
       );
-      expect(setup, greaterThanOrEqualTo(0));
-      expect(cancellation, greaterThan(setup));
+      expect(preparation, greaterThanOrEqualTo(0));
+      expect(cancellation, greaterThan(preparation));
     });
   });
 }
