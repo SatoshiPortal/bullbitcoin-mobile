@@ -10,16 +10,37 @@ import '../domain/wallet_key.dart';
 
 /// Maps the authorized Secrets projection at Sync's existing catalog port.
 final class SecretsWalletCatalog implements WalletCatalogPort {
-  final Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
-  Function()
-  _read;
-
+  final SecretsInventory? _inventory;
+  final SessionToken? _token;
+  final BackgroundWalletDescriptors? _background;
   int _invalidCount = 0;
 
-  SecretsWalletCatalog._(this._read);
+  SecretsWalletCatalog._foreground(SecretsInventory inventory, [this._token])
+    : _inventory = inventory,
+      _background = null;
+
+  SecretsWalletCatalog._background(BackgroundWalletDescriptors background)
+    : _inventory = null,
+      _token = null,
+      _background = background;
 
   factory SecretsWalletCatalog.foreground(SecretsInventory inventory) =>
-      SecretsWalletCatalog._(inventory.listDescriptors);
+      SecretsWalletCatalog._foreground(inventory);
+
+  /// The read-only session of an unbound foreground catalog.
+  ForegroundSession? get foregroundSession =>
+      _token == null ? _inventory?.foregroundSession : null;
+
+  /// Binds catalog reads to [token], without following any later grant.
+  WalletCatalogPort? captureForeground(SessionToken token) {
+    final inventory = _inventory;
+    if (inventory == null ||
+        (_token != null && !identical(_token, token)) ||
+        !inventory.foregroundSession.isCurrent(token)) {
+      return null;
+    }
+    return SecretsWalletCatalog._foreground(inventory, token);
+  }
 
   /// Removes the catalog entry of a deletion the native writer finishes
   /// after an interruption.
@@ -32,17 +53,38 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
 
   factory SecretsWalletCatalog.background(
     BackgroundWalletDescriptors catalog,
-  ) => SecretsWalletCatalog._(catalog.list);
+  ) => SecretsWalletCatalog._background(catalog);
+
+  Future<Result<T, SyncFailure>> _readCatalog<T>(
+    Result<T, SyncFailure> Function(List<RegisteredWalletDescriptor>) project,
+  ) async {
+    final inventory = _inventory;
+    final Result<List<RegisteredWalletDescriptor>, SecretFailure> rows;
+    if (inventory != null) {
+      final session = inventory.foregroundSession;
+      final token = _token ?? session.capture();
+      if (token == null || !session.isCurrent(token)) {
+        return const Err(SyncClosedFailure());
+      }
+      rows = await inventory.listDescriptorsFor(token);
+      if (!session.isCurrent(token)) return const Err(SyncClosedFailure());
+    } else if (_background case final background?) {
+      rows = await background.list();
+    } else {
+      return const Err(SyncClosedFailure());
+    }
+    return switch (rows) {
+      Err() => const Err(SyncStorageFailure()),
+      Ok(:final value) => project(value),
+    };
+  }
 
   @override
-  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async {
-    switch (await _read()) {
-      case Err():
-        return const Err(SyncStorageFailure());
-      case Ok(:final value):
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() =>
+      _readCatalog((rows) {
         final descriptors = <PublicWalletDescriptor>[];
         var invalid = 0;
-        for (final row in value) {
+        for (final row in rows) {
           final descriptor = _descriptor(row);
           if (descriptor == null) {
             invalid++;
@@ -55,18 +97,12 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
           log.warning('Wallet catalog validation invalid_count=$invalid');
         }
         return Ok(List.unmodifiable(descriptors));
-    }
-  }
+      });
 
   @override
-  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
-    WalletKey key,
-  ) async {
-    switch (await _read()) {
-      case Err():
-        return const Err(SyncStorageFailure());
-      case Ok(:final value):
-        for (final row in value) {
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(WalletKey key) =>
+      _readCatalog((rows) {
+        for (final row in rows) {
           if (row.id != key.id) continue;
           final descriptor = _descriptor(row);
           if (descriptor == null) return const Err(SyncInvalidCatalogFailure());
@@ -75,8 +111,7 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
               : const Err(SyncNotFoundFailure());
         }
         return const Err(SyncNotFoundFailure());
-    }
-  }
+      });
 
   static final _originPattern = RegExp(
     r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',

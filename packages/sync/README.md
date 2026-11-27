@@ -31,6 +31,8 @@ Address lists can read wallet.addresses.usage() after loading. The result combin
 
 Every `WalletCatalogPort` read must complete, with either a value or a failure. Catalog reads must never call `Sync.close()` because closing waits for in-flight reads to finish.
 
+`package:sync/inventory.dart` adapts the Secrets inventory to this port. A foreground catalog captures its live grant before each read and discards the result if that grant expires; `captureForeground` binds a read-only port to one explicit grant for callers that must retain that identity across several reads. A background catalog reads only the persisted background grants and does not follow foreground view changes or locking.
+
 ## Transactions
 
 `transactions.dart` publishes wallet-independent Bitcoin and Liquid transaction values used by signed-transaction review. These provide review projections, while the history types in `sync.dart` describe a wallet’s view of its activity. Import the library for the view you need; neither exposes native handles.

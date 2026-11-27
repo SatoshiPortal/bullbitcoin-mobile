@@ -6,7 +6,12 @@ import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
 import 'package:secrets/storage.dart'
-    show RegisteredWallet, SecretsInventory, multiViewSupported;
+    show
+        RegisteredWallet,
+        SecretsInventory,
+        SessionAuthority,
+        SessionToken,
+        multiViewSupported;
 import 'package:secrets/src/data/inventory_store.dart';
 import 'package:secrets/testing.dart';
 
@@ -150,3 +155,7 @@ T present<T extends Object>(T? value) {
   if (value case final found?) return found;
   fail('expected a value, found null');
 }
+
+/// Replaces a grant synchronously without advancing the inventory's own epoch.
+SessionToken replaceGrant(SessionAuthority authority, String view) =>
+    authority.grant(view);

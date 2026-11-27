@@ -446,8 +446,28 @@ final class SecretsInventory implements WalletInventory {
 
   @useResult
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
-  listDescriptors() =>
-      _inSession((_, view) => _wallets.descriptors(foregroundView: view));
+  listDescriptors() {
+    final token = _authority.current;
+    return token == null
+        ? Future.value(const Err(inventoryLockedFailure))
+        : listDescriptorsFor(token);
+  }
+
+  /// Read-only access to this inventory's foreground grant.
+  ForegroundSession get foregroundSession => _authority.foreground;
+
+  /// Reads descriptors only while [token] is this inventory's live grant.
+  @useResult
+  Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
+  listDescriptorsFor(SessionToken token) async {
+    final result = await _inSession(
+      (_, view) => _wallets.descriptors(foregroundView: view),
+      expect: token,
+    );
+    return _authority.isCurrent(token)
+        ? result
+        : const Err(inventorySessionChangedFailure);
+  }
 
   @useResult
   Future<Result<RegisteredWallet?, SecretFailure>> findWallet(String id) =>

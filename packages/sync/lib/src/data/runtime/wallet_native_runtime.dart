@@ -3,13 +3,18 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
 
+import '../../../inventory.dart';
 import '../../../sync.dart' hide Wallet;
 import '../../../sync.dart' as sync show Wallet;
 import '../../../write.dart';
 import '../freeze_authority.dart';
 import '../input_reservations.dart';
+import 'foreground_lifetime.dart';
+
+typedef _RevisionMount = ({Sync sync, WalletCatalogPort catalog});
 
 /// Coordinates provisioning and recovery of native stores. Catalog entries are
 /// supplied through [WalletCatalogPort]; their deletion remains with the owner.
@@ -43,6 +48,9 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final FreezeStorePort _freezes;
   final WalletConnectionPort _connections;
   final BroadcastObservationFollowUp? _broadcastObservation;
+  ForegroundLifetime<_RevisionMount>? _revisionLifetime;
+  Future<void> Function()? _afterRevisionRead;
+  Future<Result<void, SyncFailure>>? _revisionClosing;
 
   WalletNativeRuntime.open({
     required this._catalog,
@@ -57,6 +65,67 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     this._broadcastObservation,
     @visibleForTesting this._onStoresOpened,
   });
+
+  /// Opt-in proof of the first scoped slice, not an app composition path.
+  /// The tracked owner can also serve as the eventual locator disposer.
+  @visibleForTesting
+  static ({WalletNativeRuntime runtime, LifecycleHandle owner})
+  foregroundRevisionProof({
+    required RuntimeAdmission admission,
+    required SecretsWalletCatalog catalog,
+    required ReservedAddressPort reserved,
+    required InputReservationPort inputReservations,
+    required ElectrumSync sync,
+    required Future<String> Function() documentsDirectory,
+    required FreezeStorePort freezes,
+    required WalletConnectionPort connections,
+    void Function(ForegroundStores)? onStoresOpened,
+    Future<void> Function()? afterRevisionRead,
+    Future<Result<void, SyncFailure>> Function()? afterStoresClosed,
+  }) {
+    final session = catalog.foregroundSession;
+    if (session == null) throw ArgumentError('Expected a foreground catalog');
+    final runtime = WalletNativeRuntime.open(
+      catalog: const _ClosedCatalog(),
+      reserved: reserved,
+      inputReservations: inputReservations,
+      deleteCatalogEntry: (_) async => const Err(SyncClosedFailure()),
+      sync: sync,
+      documentsDirectory: documentsDirectory,
+      freezes: freezes,
+      connections: connections,
+    );
+    final owner = admission.track(() async {
+      if (await runtime.close() case Err()) {
+        throw const LifecycleException('native_runtime_close_unconfirmed');
+      }
+    });
+    runtime._afterRevisionRead = afterRevisionRead;
+    late final ForegroundLifetime<_RevisionMount> lifetime;
+    lifetime = ForegroundLifetime(
+      session,
+      open: (grant) async {
+        final bound = catalog.captureForeground(grant);
+        if (bound == null) return const Err(SyncClosedFailure());
+        final directory = await runtime._documentsDirectory();
+        if (!lifetime.isCurrent(grant)) return const Err(SyncClosedFailure());
+        final mounted = runtime._openSync(directory, bound);
+        try {
+          onStoresOpened?.call(mounted.stores);
+        } catch (_) {
+          await mounted.close();
+          rethrow;
+        }
+        return Ok((sync: mounted, catalog: bound));
+      },
+      close: (mounted) async {
+        await mounted.sync.close();
+        return afterStoresClosed == null ? const Ok(null) : afterStoresClosed();
+      },
+    );
+    runtime._revisionLifetime = lifetime;
+    return (runtime: runtime, owner: owner);
+  }
 
   Future<Result<T, SyncFailure>> _result<T>(
     Future<T> Function() operation,
@@ -134,7 +203,18 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<Result<void, SyncFailure>> refreshAll() => _result(_refreshAll);
   Future<Result<void, SyncFailure>> repair(WalletKey key) =>
       _result(() => _repair(key));
-  Future<Result<void, SyncFailure>> close() => _result(_close);
+  Future<Result<void, SyncFailure>> close() => switch (_revisionLifetime) {
+    final lifetime? => _revisionClosing ??= _closeRevisionProof(lifetime),
+    null => _result(_close),
+  };
+
+  Future<Result<void, SyncFailure>> _closeRevisionProof(
+    ForegroundLifetime<_RevisionMount> lifetime,
+  ) async {
+    final closed = await lifetime.stop();
+    await _changes.close();
+    return closed;
+  }
 
   Stream<WalletRevisionState> get changes => _changes.stream;
 
@@ -145,6 +225,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   Future<Result<void, SyncFailure>> checkUnreservedInputs(
     Set<Outpoint> selected,
   ) async {
+    if (_revisionLifetime != null) return const Err(SyncClosedFailure());
     final inputs = Set.of(selected);
     final reservations = CombinedInputReservations(
       _inputReservations,
@@ -261,28 +342,48 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     WalletKey key,
   ) async {
     try {
+      if (_revisionLifetime case final lifetime?) {
+        final grant = lifetime.capture();
+        if (grant == null) return const Err(SyncClosedFailure());
+        return await lifetime.run(grant, (mounted) async {
+          if (await mounted.catalog.find(key) case Err(:final failure)) {
+            return Err(failure);
+          }
+          if (!lifetime.isCurrent(grant)) return const Err(SyncClosedFailure());
+          final state = await mounted.sync.stores.revisions.read(key);
+          await _afterRevisionRead?.call();
+          return state;
+        });
+      }
       return await (await _services).stores.revisions.read(key);
     } on Exception {
       return const Err(SyncStorageFailure());
     }
   }
 
-  Future<_NativeServices> get _services =>
-      _opening ??= _open().catchError((Object error, StackTrace trace) {
-        _opening = null;
-        Error.throwWithStackTrace(error, trace);
-      });
+  Future<_NativeServices> get _services {
+    if (_revisionLifetime != null) {
+      throw const WalletSnapshotException(SyncClosedFailure());
+    }
+    return _opening ??= _open().catchError((Object error, StackTrace trace) {
+      _opening = null;
+      Error.throwWithStackTrace(error, trace);
+    });
+  }
+
+  Sync _openSync(String directory, WalletCatalogPort catalog) =>
+      Sync.foreground(
+        documentsDirectory: directory,
+        catalog: catalog,
+        reservedAddresses: _reserved,
+        freezes: _freezes,
+        inputReservations: _inputReservations,
+        fundingReservations: _fundingReservations,
+        connections: _connections,
+      );
 
   Future<_NativeServices> _open() async {
-    final sync = Sync.foreground(
-      documentsDirectory: await _documentsDirectory(),
-      catalog: _catalog,
-      reservedAddresses: _reserved,
-      freezes: _freezes,
-      inputReservations: _inputReservations,
-      fundingReservations: _fundingReservations,
-      connections: _connections,
-    );
+    final sync = _openSync(await _documentsDirectory(), _catalog);
     StreamSubscription<WalletRevisionState>? subscription;
     try {
       subscription = sync.changes.watch().listen(_changes.add);
@@ -633,6 +734,19 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     Ok(:final value) => value,
     Err(:final failure) => throw WalletSnapshotException(failure),
   };
+}
+
+final class _ClosedCatalog implements WalletCatalogPort {
+  const _ClosedCatalog();
+
+  @override
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      const Err(SyncClosedFailure());
+
+  @override
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
+    WalletKey key,
+  ) async => const Err(SyncClosedFailure());
 }
 
 final class _NativeServices {
