@@ -9,7 +9,7 @@ class ReconcileUnknownWritesUsecase {
 
   const ReconcileUnknownWritesUsecase(this._exchange);
 
-  Future<Result<UnknownWriteReconciliation, Failure>> execute(
+  Future<Result<UnknownWriteReconciliation, ExchangeFailure>> execute(
     ExchangeSession session,
   ) => _exchange.reconcileUnknownWrites(session);
 }

@@ -1043,7 +1043,7 @@ final class Exchange {
   /// journal. For a session that is no longer the current one the journal
   /// is not read ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<List<UnknownWrite>, Failure>> openUnknownWrites(
+  Future<Result<List<UnknownWrite>, ExchangeFailure>> openUnknownWrites(
     ExchangeSession session,
   ) async {
     final journal = _unknownWrites;
@@ -1060,9 +1060,8 @@ final class Exchange {
   /// longer the current one reconciles nothing
   /// ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<UnknownWriteReconciliation, Failure>> reconcileUnknownWrites(
-    ExchangeSession session,
-  ) async {
+  Future<Result<UnknownWriteReconciliation, ExchangeFailure>>
+  reconcileUnknownWrites(ExchangeSession session) async {
     final journal = _unknownWrites;
     if (journal == null) {
       return const Ok(UnknownWriteReconciliation(settled: 0, open: 0));

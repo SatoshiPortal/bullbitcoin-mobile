@@ -74,8 +74,9 @@ final class ReconcileUnknownWritesUsecase {
   static const recipientPageSize = 50;
 
   @useResult
-  Future<Result<UnknownWriteReconciliation, UnknownWriteJournalFailure>>
-  execute(ExchangeEnvironment environment) async {
+  Future<Result<UnknownWriteReconciliation, ExchangeJournalFailure>> execute(
+    ExchangeEnvironment environment,
+  ) async {
     final List<UnknownWrite> entries;
     switch (await _journal.open(environment)) {
       case Err(:final failure):

@@ -70,18 +70,18 @@ void main() {
 
 final class _UnreadableJournal implements UnknownWriteJournal {
   @override
-  Future<Result<UnknownWrite, UnknownWriteJournalFailure>> record(
+  Future<Result<UnknownWrite, ExchangeJournalFailure>> record(
     UnknownWriteDraft draft,
-  ) async => const Err(UnknownWriteJournalFailure('unreadable'));
+  ) async => const Err(ExchangeJournalFailure('unreadable'));
 
   @override
-  Future<Result<List<UnknownWrite>, UnknownWriteJournalFailure>> open(
+  Future<Result<List<UnknownWrite>, ExchangeJournalFailure>> open(
     ExchangeEnvironment environment,
-  ) async => const Err(UnknownWriteJournalFailure('unreadable'));
+  ) async => const Err(ExchangeJournalFailure('unreadable'));
 
   @override
-  Future<Result<void, UnknownWriteJournalFailure>> settle(
+  Future<Result<void, ExchangeJournalFailure>> settle(
     String id,
     UnknownWriteSettlement settlement,
-  ) async => const Err(UnknownWriteJournalFailure('unreadable'));
+  ) async => const Err(ExchangeJournalFailure('unreadable'));
 }

@@ -19,7 +19,7 @@ final class FakeGetAnnouncementsUsecase implements GetAnnouncementsUsecase {
 
 final class FakeReconcileUnknownWritesUsecase
     implements ReconcileUnknownWritesUsecase {
-  final Future<Result<UnknownWriteReconciliation, Failure>> Function(
+  final Future<Result<UnknownWriteReconciliation, ExchangeFailure>> Function(
     ExchangeSession session,
   )
   answer;
@@ -27,7 +27,7 @@ final class FakeReconcileUnknownWritesUsecase
   FakeReconcileUnknownWritesUsecase(this.answer);
 
   @override
-  Future<Result<UnknownWriteReconciliation, Failure>> execute(
+  Future<Result<UnknownWriteReconciliation, ExchangeFailure>> execute(
     ExchangeSession session,
   ) => answer(session);
 }

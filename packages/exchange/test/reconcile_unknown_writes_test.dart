@@ -213,12 +213,11 @@ void main() {
       expect(orders.reads, ['o-1']);
       expect(
         result,
-        isA<Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>>()
-            .having(
-              (r) => r.value,
-              'value',
-              const UnknownWriteReconciliation(settled: 1, open: 0),
-            ),
+        isA<Ok<UnknownWriteReconciliation, ExchangeJournalFailure>>().having(
+          (r) => r.value,
+          'value',
+          const UnknownWriteReconciliation(settled: 1, open: 0),
+        ),
       );
     });
 
@@ -240,7 +239,7 @@ void main() {
       final open = await journal.open(ExchangeEnvironment.mainnet);
       expect(
         open,
-        isA<Ok<List<UnknownWrite>, UnknownWriteJournalFailure>>().having(
+        isA<Ok<List<UnknownWrite>, ExchangeJournalFailure>>().having(
           (r) => r.value.single,
           'entry',
           isA<UnknownWrite>()
@@ -752,12 +751,11 @@ void main() {
 
       expect(
         result,
-        isA<Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>>()
-            .having(
-              (r) => r.value,
-              'value',
-              const UnknownWriteReconciliation(settled: 3, open: 2),
-            ),
+        isA<Ok<UnknownWriteReconciliation, ExchangeJournalFailure>>().having(
+          (r) => r.value,
+          'value',
+          const UnknownWriteReconciliation(settled: 3, open: 2),
+        ),
       );
       expect(orders.reads, ['confirmed', 'unreadable', 'odd']);
       expect(
@@ -803,7 +801,7 @@ void main() {
         final result = await reconcile(orders)
             .execute(ExchangeEnvironment.testnet);
         return (result
-                as Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>)
+                as Ok<UnknownWriteReconciliation, ExchangeJournalFailure>)
             .value;
       });
 
@@ -1014,12 +1012,11 @@ void main() {
 
       expect(
         result,
-        isA<Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>>()
-            .having(
-              (r) => r.value,
-              'value',
-              const UnknownWriteReconciliation(settled: 0, open: 1),
-            ),
+        isA<Ok<UnknownWriteReconciliation, ExchangeJournalFailure>>().having(
+          (r) => r.value,
+          'value',
+          const UnknownWriteReconciliation(settled: 0, open: 1),
+        ),
       );
     });
   });

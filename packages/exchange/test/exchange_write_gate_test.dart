@@ -19,17 +19,17 @@ const _test = ExchangeSession(
 
 final class _BrokenJournal implements UnknownWriteJournal {
   @override
-  Future<Result<List<UnknownWrite>, UnknownWriteJournalFailure>> open(
+  Future<Result<List<UnknownWrite>, ExchangeJournalFailure>> open(
     ExchangeEnvironment environment,
-  ) async => const Err(UnknownWriteJournalFailure('read failed'));
+  ) async => const Err(ExchangeJournalFailure('read failed'));
 
   @override
-  Future<Result<UnknownWrite, UnknownWriteJournalFailure>> record(
+  Future<Result<UnknownWrite, ExchangeJournalFailure>> record(
     UnknownWriteDraft draft,
   ) => throw StateError('Unexpected record');
 
   @override
-  Future<Result<void, UnknownWriteJournalFailure>> settle(
+  Future<Result<void, ExchangeJournalFailure>> settle(
     String id,
     UnknownWriteSettlement settlement,
   ) => throw StateError('Unexpected settle');
@@ -48,7 +48,7 @@ Future<UnknownWrite> _record(
       orderId: 'o-1',
     ),
   );
-  return (recorded as Ok<UnknownWrite, UnknownWriteJournalFailure>).value;
+  return (recorded as Ok<UnknownWrite, ExchangeJournalFailure>).value;
 }
 
 void main() {
