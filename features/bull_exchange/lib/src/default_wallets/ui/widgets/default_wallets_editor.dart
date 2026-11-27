@@ -14,7 +14,8 @@ import '../../presentation/default_wallets_bloc.dart';
 
 import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 
-import '../../domain/default_wallets_machine.dart';
+import '../../domain/default_wallets_state.dart';
+import '../../domain/default_wallets_event.dart';
 
 typedef DefaultWalletsFooterBuilder = Widget Function(
   BuildContext context,

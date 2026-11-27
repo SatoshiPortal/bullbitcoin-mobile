@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/payin/payin_coin_selection.dart';
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullAdvancedOptionsLink,

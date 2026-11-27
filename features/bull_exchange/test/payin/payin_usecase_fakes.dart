@@ -8,7 +8,7 @@ import 'package:bull_exchange/src/payin/domain/usecases/retry_payjoin_proposal_u
 import 'package:bull_exchange/src/payin/domain/usecases/send_payin_usecase.dart';
 import 'package:bull_exchange/src/payin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
 import 'package:bull_exchange/src/payin/spend_options_runner.dart';
 import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';

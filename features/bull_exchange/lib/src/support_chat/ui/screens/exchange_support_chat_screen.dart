@@ -27,7 +27,8 @@ import '../../domain/usecases/watch_support_chat_pushes_usecase.dart';
 import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 
 import '../../presentation/support_chat_bloc.dart';
-import '../../domain/support_chat_machine.dart';
+import '../../domain/support_chat_state.dart';
+import '../../domain/support_chat_event.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({

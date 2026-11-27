@@ -1,4 +1,6 @@
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
+import 'package:bull_exchange/src/payin/spend_options_effect.dart';
 import 'package:bull_exchange/src/payin/spend_options_runner.dart';
 import 'package:exchange/exchange.dart';
 import 'package:fake_async/fake_async.dart';

@@ -1,4 +1,5 @@
-import 'package:bull_exchange/src/support_chat/domain/support_unread_machine.dart';
+import 'package:bull_exchange/src/support_chat/domain/support_unread_state.dart';
+import 'package:bull_exchange/src/support_chat/domain/support_unread_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

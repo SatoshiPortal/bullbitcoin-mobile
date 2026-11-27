@@ -6,6 +6,9 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Outpoint;
 import 'package:sync/sync.dart' show Coin;
 
+import 'spend_options_effect.dart';
+import 'spend_options_event.dart';
+
 /// How a sell or pay payin from an app wallet is built, chosen on the
 /// review before the payin's Building state: the fee (a preset or a custom
 /// rate / amount, priced by previews), replace-by-fee, the coins picked by
@@ -268,158 +271,6 @@ final class SpendOptionsReady extends SpendOptionsState {
   ];
 }
 
-@immutable
-sealed class SpendOptionsEvent {
-  const SpendOptionsEvent();
-}
-
-final class SpendFeesLoaded extends SpendOptionsEvent {
-  final int attempt;
-  final FeeOptions fees;
-
-  const SpendFeesLoaded(this.attempt, this.fees);
-}
-
-final class SpendFeesFailed extends SpendOptionsEvent {
-  final int attempt;
-
-  const SpendFeesFailed(this.attempt);
-}
-
-final class SpendRetryPressed extends SpendOptionsEvent {
-  const SpendRetryPressed();
-}
-
-/// The quote the previews price changed (a new order or a refresh).
-final class SpendTargetSet extends SpendOptionsEvent {
-  final SpendPreviewTarget target;
-
-  const SpendTargetSet(this.target);
-}
-
-/// The fee sheet opened: price every preset.
-final class SpendPresetPreviewsRequested extends SpendOptionsEvent {
-  const SpendPresetPreviewsRequested();
-}
-
-/// The custom-fee field settled on [fee]: price it.
-final class SpendCustomPreviewRequested extends SpendOptionsEvent {
-  final NetworkFee fee;
-
-  const SpendCustomPreviewRequested(this.fee);
-}
-
-final class SpendPresetsPreviewed extends SpendOptionsEvent {
-  final int epoch;
-  final Map<FeeSelection, BitcoinFeePreviewSlot> slots;
-
-  const SpendPresetsPreviewed(this.epoch, this.slots);
-}
-
-final class SpendCustomPreviewed extends SpendOptionsEvent {
-  final int epoch;
-  final NetworkFee fee;
-  final BitcoinFeePreviewSlot slot;
-
-  const SpendCustomPreviewed(this.epoch, this.fee, this.slot);
-}
-
-/// A preset tile was picked.
-final class SpendFeePicked extends SpendOptionsEvent {
-  final FeeSelection selection;
-
-  const SpendFeePicked(this.selection);
-}
-
-/// The custom-fee field holds [fee]: custom is selected, the previous
-/// choice kept until the sheet closes.
-final class SpendCustomFeeArmed extends SpendOptionsEvent {
-  final NetworkFee fee;
-
-  const SpendCustomFeeArmed(this.fee);
-}
-
-/// The custom-fee field was cleared.
-final class SpendCustomFeeDisarmed extends SpendOptionsEvent {
-  const SpendCustomFeeDisarmed();
-}
-
-/// The fee sheet closed without a preset: keep the typed fee when it clears
-/// the relay floor, else go back to the previous choice.
-final class SpendCustomFeeFinalized extends SpendOptionsEvent {
-  const SpendCustomFeeFinalized();
-}
-
-final class SpendRbfChanged extends SpendOptionsEvent {
-  final bool enabled;
-
-  const SpendRbfChanged({required this.enabled});
-}
-
-final class SpendPayjoinChanged extends SpendOptionsEvent {
-  final bool enabled;
-
-  const SpendPayjoinChanged({required this.enabled});
-}
-
-/// The coin selection opened: read the wallet's coins.
-final class SpendCoinsRequested extends SpendOptionsEvent {
-  const SpendCoinsRequested();
-}
-
-final class SpendCoinsRead extends SpendOptionsEvent {
-  /// Null when the wallet could not list them.
-  final List<Coin>? coins;
-
-  const SpendCoinsRead(this.coins);
-}
-
-/// The coins the user picked; empty lets the wallet choose.
-final class SpendCoinsPicked extends SpendOptionsEvent {
-  final List<Coin> coins;
-
-  const SpendCoinsPicked(this.coins);
-}
-
-@immutable
-sealed class SpendOptionsEffect {
-  const SpendOptionsEffect();
-
-  List<Object?> get _props;
-
-  @override
-  bool operator ==(Object other) =>
-      other is SpendOptionsEffect &&
-      other.runtimeType == runtimeType &&
-      spendPropsEqual(other._props, _props);
-
-  @override
-  int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));
-
-  @override
-  String toString() => '$runtimeType(${_props.join(', ')})';
-}
-
-/// Read the fee estimates; answer [SpendFeesLoaded] / [SpendFeesFailed].
-final class SpendLoadFees extends SpendOptionsEffect {
-  final int attempt;
-
-  const SpendLoadFees(this.attempt);
-
-  @override
-  List<Object?> get _props => [attempt];
-}
-
-/// List [walletId]'s coins; answer [SpendCoinsRead].
-final class SpendLoadCoins extends SpendOptionsEffect {
-  final String walletId;
-
-  const SpendLoadCoins(this.walletId);
-
-  @override
-  List<Object?> get _props => [walletId];
-}
-
 /// What a preview builds (unsigned, never sent).
 @immutable
 final class SpendPreviewShape {
@@ -446,30 +297,6 @@ final class SpendPreviewShape {
 
   @override
   int get hashCode => Object.hash(walletId, target, replaceByFee, coins.length);
-}
-
-/// Price the presets; answer [SpendPresetsPreviewed] for [epoch].
-final class SpendPreviewPresets extends SpendOptionsEffect {
-  final int epoch;
-  final FeeOptions fees;
-  final SpendPreviewShape shape;
-
-  const SpendPreviewPresets(this.epoch, this.fees, this.shape);
-
-  @override
-  List<Object?> get _props => [epoch, fees, shape];
-}
-
-/// Price [fee]; answer [SpendCustomPreviewed] for [epoch].
-final class SpendPreviewCustom extends SpendOptionsEffect {
-  final int epoch;
-  final NetworkFee fee;
-  final SpendPreviewShape shape;
-
-  const SpendPreviewCustom(this.epoch, this.fee, this.shape);
-
-  @override
-  List<Object?> get _props => [epoch, fee, shape];
 }
 
 typedef SpendOptionsNext = StepNext<SpendOptionsState, SpendOptionsEffect>;

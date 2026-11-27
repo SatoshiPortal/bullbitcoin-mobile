@@ -4,7 +4,9 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../domain/support_chat_machine.dart';
+import '../domain/support_chat_state.dart';
+import '../domain/support_chat_event.dart';
+import '../domain/support_chat_effect.dart';
 import '../domain/usecases/create_log_attachment_usecase.dart';
 import '../domain/usecases/get_support_chat_messages_usecase.dart';
 import '../domain/usecases/open_support_chat_attachment_usecase.dart';

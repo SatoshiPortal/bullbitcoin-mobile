@@ -5,7 +5,8 @@ import 'package:bull_exchange/src/payin/domain/usecases/get_wallet_coins_usecase
 import 'package:bull_exchange/src/payin/domain/usecases/preview_custom_fee_usecase.dart';
 import 'package:bull_exchange/src/payin/domain/usecases/preview_fee_presets_usecase.dart';
 import 'package:bull_exchange/src/payin/payin_spend_calls.dart';
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
+import 'package:bull_exchange/src/payin/spend_options_effect.dart';
 import 'package:exchange/exchange.dart';
 
 /// The use cases of the spend options (sell and pay): the fee estimates,

@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_state.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/unset_default_wallet_usecase.dart';

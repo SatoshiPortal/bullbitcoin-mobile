@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_state.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/validate_default_wallet_destination_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';

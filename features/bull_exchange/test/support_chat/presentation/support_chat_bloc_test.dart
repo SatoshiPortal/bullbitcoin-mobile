@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/support_chat/domain/support_chat_machine.dart';
+import 'package:bull_exchange/src/support_chat/domain/support_chat_state.dart';
+import 'package:bull_exchange/src/support_chat/domain/support_chat_event.dart';
 import 'package:bull_exchange/src/support_chat/presentation/support_chat_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';

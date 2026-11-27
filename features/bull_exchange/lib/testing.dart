@@ -12,13 +12,16 @@ import 'src/default_wallets/domain/usecases/unset_default_wallet_usecase.dart';
 import 'src/default_wallets/domain/usecases/validate_default_wallet_destination_usecase.dart';
 import 'src/default_wallets/domain/usecases/verify_default_wallets_usecase.dart';
 import 'src/default_wallets/presentation/default_wallets_bloc.dart';
-import 'src/default_wallets/domain/default_wallets_machine.dart';
+import 'src/default_wallets/domain/default_wallets_event.dart';
+import 'src/default_wallets/domain/default_wallets_effect.dart';
 
 import 'package:primitives/primitives.dart';
 
 export 'src/default_wallets/presentation/default_wallets_bloc.dart'
     show DefaultWalletsBloc;
-export 'src/default_wallets/domain/default_wallets_machine.dart';
+export 'src/default_wallets/domain/default_wallets_state.dart';
+export 'src/default_wallets/domain/default_wallets_event.dart';
+export 'src/default_wallets/domain/default_wallets_effect.dart';
 export 'src/pay/domain/pay_state.dart';
 export 'src/pay/domain/pay_event.dart';
 export 'src/pay/domain/pay_effect.dart';
@@ -55,8 +58,10 @@ export 'src/limit_orders/domain/entities/limit_order_amount_limits.dart';
 export 'src/ui/exchange_route_guard.dart';
 export 'src/support_chat/presentation/support_unread_bloc.dart'
     show SupportUnreadBloc;
-export 'src/support_chat/domain/support_unread_machine.dart'
-    show SupportUnreadEvent, SupportUnreadState, UnreadSignedOut;
+export 'src/support_chat/domain/support_unread_state.dart'
+    show SupportUnreadState, UnreadSignedOut;
+export 'src/support_chat/domain/support_unread_event.dart'
+    show SupportUnreadEvent;
 
 /// The AutoBuy flow's account load for [session].
 Future<Result<AutoBuyContext, ExchangeReadFailure>> autoBuyContextForTesting(

@@ -4,7 +4,8 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../domain/support_unread_machine.dart';
+import '../domain/support_unread_state.dart';
+import '../domain/support_unread_event.dart';
 import '../domain/usecases/get_unread_support_count_usecase.dart';
 import '../domain/usecases/mark_support_messages_read_usecase.dart';
 

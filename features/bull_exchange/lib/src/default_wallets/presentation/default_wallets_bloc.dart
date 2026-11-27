@@ -4,7 +4,9 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../domain/default_wallets_machine.dart';
+import '../domain/default_wallets_state.dart';
+import '../domain/default_wallets_event.dart';
+import '../domain/default_wallets_effect.dart';
 import '../domain/usecases/get_default_wallets_usecase.dart';
 import '../domain/usecases/save_default_wallet_usecase.dart';
 import '../domain/usecases/unset_default_wallet_usecase.dart';

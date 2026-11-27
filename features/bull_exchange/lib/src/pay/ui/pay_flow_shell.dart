@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:transactions/routes.dart';
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
 import 'package:bull_exchange/src/payin/ui/review_details.dart';
 import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';

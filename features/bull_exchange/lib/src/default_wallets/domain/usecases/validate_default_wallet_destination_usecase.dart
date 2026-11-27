@@ -1,7 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
 
-import '../default_wallets_machine.dart';
+import '../default_wallets_state.dart';
 
 /// Checks what the user typed as a default wallet of a network: a valid
 /// destination is normalised, anything else is [WalletAddressInvalid]. A

@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/payin/domain/usecases/preview_fee_presets_usecase.dart';
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
 import 'package:fees/fees.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
+import 'package:bull_exchange/src/payin/spend_options_effect.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:fees/fees.dart';

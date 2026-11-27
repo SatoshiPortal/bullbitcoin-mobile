@@ -1,4 +1,6 @@
-import 'package:bull_exchange/src/funding/domain/fund_flow.dart';
+import 'package:bull_exchange/src/funding/domain/fund_state.dart';
+import 'package:bull_exchange/src/funding/domain/fund_event.dart';
+import 'package:bull_exchange/src/funding/domain/fund_effect.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_funding_instructions_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';

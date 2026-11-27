@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_state.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_event.dart';
 import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';

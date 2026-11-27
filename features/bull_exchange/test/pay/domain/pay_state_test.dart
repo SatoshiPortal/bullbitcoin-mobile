@@ -1,4 +1,5 @@
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
 import 'package:fees/fees.dart';
 import 'package:bull_exchange/src/pay/domain/pay_state.dart';
 import 'package:bull_exchange/src/pay/domain/pay_event.dart';

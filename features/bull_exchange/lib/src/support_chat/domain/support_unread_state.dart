@@ -2,6 +2,8 @@ import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'support_unread_event.dart';
+
 /// Why the unread count could not be read. Never shown as zero.
 enum UnreadProblem { missing, unreachable, malformed, sessionRejected }
 
@@ -246,44 +248,6 @@ final class UnreadMarking extends UnreadSession {
 
   @override
   int get hashCode => Object.hash(UnreadMarking, session, attempt);
-}
-
-@immutable
-sealed class SupportUnreadEvent {
-  const SupportUnreadEvent();
-}
-
-final class UnreadAccessChanged extends SupportUnreadEvent {
-  final ExchangeAccess access;
-
-  const UnreadAccessChanged(this.access);
-}
-
-/// A new support message was pushed, the app came back, or the user
-/// refreshed: the count may have changed.
-final class UnreadRecheckRequested extends SupportUnreadEvent {
-  const UnreadRecheckRequested();
-}
-
-/// The support chat showed its newest messages to the user.
-final class UnreadChatShown extends SupportUnreadEvent {
-  const UnreadChatShown();
-}
-
-final class UnreadCountAnswered extends SupportUnreadEvent {
-  final ExchangeSession session;
-  final int attempt;
-  final Result<int, ExchangeReadFailure> read;
-
-  const UnreadCountAnswered(this.session, this.attempt, this.read);
-}
-
-final class UnreadMarkAnswered extends SupportUnreadEvent {
-  final ExchangeSession session;
-  final int attempt;
-  final Result<void, ExchangeWriteFailure> write;
-
-  const UnreadMarkAnswered(this.session, this.attempt, this.write);
 }
 
 SupportUnreadState _answered(

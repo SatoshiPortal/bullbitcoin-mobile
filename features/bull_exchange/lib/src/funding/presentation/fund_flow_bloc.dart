@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_exchange/src/funding/domain/fund_flow.dart';
+import 'package:bull_exchange/src/funding/domain/fund_state.dart';
+import 'package:bull_exchange/src/funding/domain/fund_event.dart';
+import 'package:bull_exchange/src/funding/domain/fund_effect.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_cop_funding_institutions_usecase.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_funding_account_usecase.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/get_funding_consent_usecase.dart';

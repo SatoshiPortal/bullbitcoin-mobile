@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/payin/payin_runner.dart';
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';

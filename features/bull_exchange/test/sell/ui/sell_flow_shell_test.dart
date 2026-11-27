@@ -1,5 +1,6 @@
 import 'package:address_view/address_view.dart' show AddressViewer;
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';

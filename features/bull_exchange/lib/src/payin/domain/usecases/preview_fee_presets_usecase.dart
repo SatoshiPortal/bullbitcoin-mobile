@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
 import 'package:fees/fees.dart';
 import 'package:primitives/primitives.dart';
 import 'package:spend/fee_preview.dart';
