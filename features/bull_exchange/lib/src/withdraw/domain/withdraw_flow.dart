@@ -25,6 +25,28 @@ sealed class WithdrawFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  WithdrawFlowNext next(WithdrawFlowEvent event) {
+    final state = this;
+    if (event case WithdrawSessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? _ended
+          : WithdrawFlowNext.stay(state);
+    }
+    return switch (state) {
+      WithdrawLoading() => _loading(state, event),
+      WithdrawAmount() => _amount(state, event),
+      WithdrawRecipient() => _recipient(state, event),
+      WithdrawRequirements() => _requirements(state, event),
+      WithdrawOrdering() => _ordering(state, event),
+      WithdrawReview() => _review(state, event),
+      WithdrawConfirming() => _confirming(state, event),
+      WithdrawDone() => _done(state, event),
+      WithdrawSessionEnded() => _sessionEnded(state, event),
+      WithdrawClosed() => WithdrawFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -518,30 +540,6 @@ ConfirmCheck<WithdrawOrder> withdrawConfirmCheck(
     failure: ExchangeMalformedFailure(),
   ) => ConfirmCheckFailed(ReadProblem.of(read)!),
 };
-
-WithdrawFlowNext transitionWithdrawFlow(
-  WithdrawFlowState state,
-  WithdrawFlowEvent event,
-) {
-  if (event case WithdrawSessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? _ended
-        : WithdrawFlowNext.stay(state);
-  }
-  return switch (state) {
-    WithdrawLoading() => _loading(state, event),
-    WithdrawAmount() => _amount(state, event),
-    WithdrawRecipient() => _recipient(state, event),
-    WithdrawRequirements() => _requirements(state, event),
-    WithdrawOrdering() => _ordering(state, event),
-    WithdrawReview() => _review(state, event),
-    WithdrawConfirming() => _confirming(state, event),
-    WithdrawDone() => _done(state, event),
-    WithdrawSessionEnded() => _sessionEnded(state, event),
-    WithdrawClosed() => WithdrawFlowNext.stay(state),
-  };
-}
 
 ExchangeSession? _sessionOf(WithdrawFlowState state) => switch (state) {
   WithdrawLoading(:final session) => session,

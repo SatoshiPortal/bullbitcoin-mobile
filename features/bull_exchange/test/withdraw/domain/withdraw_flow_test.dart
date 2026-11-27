@@ -81,7 +81,7 @@ WithdrawFlowNext _apply(
 ) {
   var next = WithdrawFlowNext.stay(state);
   for (final event in events) {
-    next = transitionWithdrawFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next;
 }
@@ -198,7 +198,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionWithdrawFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -217,7 +217,7 @@ void main() {
     for (final state in frontier) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionWithdrawFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -243,8 +243,7 @@ void main() {
     });
 
     test('a failed load has a Retry that loads again', () {
-      final failed = transitionWithdrawFlow(
-        _loading,
+      final failed = _loading.next(
         const WithdrawContextLoaded(
           1,
           Err(ExchangeUnreachableFailure('down', isNetwork: true)),
@@ -254,32 +253,29 @@ void main() {
         (failed.state as WithdrawLoading).load,
         isA<ContextFailed<WithdrawContext>>(),
       );
-      final retried = transitionWithdrawFlow(
-        failed.state,
-        const WithdrawRetryPressed(),
-      );
+      final retried = failed.state.next(const WithdrawRetryPressed());
       expect(retried.effects, [const WithdrawLoadContext(2)]);
     });
 
     test('the amount step fetches the rate of the preferred market', () {
-      final next = transitionWithdrawFlow(
-        _loading,
-        WithdrawContextLoaded(1, Ok(_ctx)),
-      );
+      final next = _loading.next(WithdrawContextLoaded(1, Ok(_ctx)));
       expect(next.effects, [const WithdrawFetchRate(ExchangeCatalog.cad)]);
     });
 
     test('an expired session on the load ends the flow', () {
       expect(
-        transitionWithdrawFlow(
-          _loading,
-          const WithdrawContextLoaded(
-            1,
-            Err(
-              ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
-            ),
-          ),
-        ).state,
+        _loading
+            .next(
+              const WithdrawContextLoaded(
+                1,
+                Err(
+                  ExchangeSessionRejectedFailure(
+                    ExchangeSessionRejection.server,
+                  ),
+                ),
+              ),
+            )
+            .state,
         isA<WithdrawSessionEnded>(),
       );
     });
@@ -287,10 +283,7 @@ void main() {
 
   group('recipient', () {
     test('a recipient the filter refuses stays on the pick, named', () {
-      final next = transitionWithdrawFlow(
-        _recipient,
-        WithdrawRecipientPicked(_thirdParty),
-      );
+      final next = _recipient.next(WithdrawRecipientPicked(_thirdParty));
       expect(
         next.state,
         isA<WithdrawRecipient>().having(
@@ -346,10 +339,7 @@ void main() {
         RecipientType.confidentialSepaEur,
         isOwner: true,
       ).recipient;
-      final next = transitionWithdrawFlow(
-        recipient,
-        WithdrawRecipientPicked(sepa),
-      );
+      final next = recipient.next(WithdrawRecipientPicked(sepa));
       expect(
         (next.state as WithdrawRequirements).requirements.current,
         isA<VirtualIbanStep>(),
@@ -364,7 +354,7 @@ void main() {
       );
       // The CAD flow's filter does not admit a EUR recipient.
       expect(
-        transitionWithdrawFlow(_recipient, WithdrawRecipientPicked(sepa)).state,
+        _recipient.next(WithdrawRecipientPicked(sepa)).state,
         isA<WithdrawRecipient>().having((s) => s.refused, 'refused', sepa),
       );
     });
@@ -372,8 +362,7 @@ void main() {
 
   group('order create', () {
     test('an unknown create re-reads, never creates again', () {
-      final unknown = transitionWithdrawFlow(
-        _ordering,
+      final unknown = _ordering.next(
         const WithdrawOrderChanged(
           OrderCreateAnswered(
             1,
@@ -392,8 +381,7 @@ void main() {
       // The re-read found no such order: that cannot prove the create did not
       // apply, so the step stays unverified and Retry re-reads, never creates
       // again.
-      final missing = transitionWithdrawFlow(
-        unknown.state,
+      final missing = unknown.state.next(
         const WithdrawOrderChanged(
           OrderFindAnswered(1, Err(ExchangeMissingFailure())),
         ),
@@ -406,19 +394,13 @@ void main() {
           isA<ReadProblemMissing>(),
         ),
       );
-      final retried = transitionWithdrawFlow(
-        missing.state,
-        const WithdrawRetryPressed(),
-      );
+      final retried = missing.state.next(const WithdrawRetryPressed());
       expect(
         (retried.effects.single as WithdrawOrderEffect).effect,
         isA<OrderFindCreated<WithdrawRequest>>(),
       );
       expect(
-        transitionWithdrawFlow(
-          missing.state,
-          const WithdrawBackPressed(),
-        ).state,
+        missing.state.next(const WithdrawBackPressed()).state,
         isA<WithdrawRecipient>(),
       );
     });
@@ -426,8 +408,7 @@ void main() {
     // An amount refusal goes back to the amount instead (see 'an order
     // limit refusal goes back to the amount with the limit').
     test('a refused create shows the refusal; Retry sends again', () {
-      final refused = transitionWithdrawFlow(
-        _ordering,
+      final refused = _ordering.next(
         const WithdrawOrderChanged(
           OrderCreateAnswered(
             1,
@@ -443,10 +424,7 @@ void main() {
         (refused.state as WithdrawOrdering).order,
         isA<OrderCreateFailed<WithdrawRequest, WithdrawOrder>>(),
       );
-      final retried = transitionWithdrawFlow(
-        refused.state,
-        const WithdrawRetryPressed(),
-      );
+      final retried = refused.state.next(const WithdrawRetryPressed());
       expect(
         (retried.effects.single as WithdrawOrderEffect).effect,
         isA<OrderSendCreate<WithdrawRequest>>().having(
@@ -474,26 +452,19 @@ void main() {
 
   group('server confirm (WD-1, WD-2, WD-3)', () {
     test('Confirm sends once; a second press while confirming is a stay', () {
-      final next = transitionWithdrawFlow(
-        _review,
-        const WithdrawConfirmPressed(),
-      );
+      final next = _review.next(const WithdrawConfirmPressed());
       expect(
         (next.effects.single as WithdrawConfirmEffect).effect,
         isA<ConfirmSend<WithdrawConfirmTarget>>(),
       );
-      final again = transitionWithdrawFlow(
-        next.state,
-        const WithdrawConfirmPressed(),
-      );
+      final again = next.state.next(const WithdrawConfirmPressed());
       expect(identical(again.state, next.state), isTrue);
       expect(again.effects, isEmpty);
     });
 
     test('an unknown confirm re-reads the order; not applied offers Retry; '
         'Back then leaves the flow', () {
-      final unknown = transitionWithdrawFlow(
-        _confirming,
+      final unknown = _confirming.next(
         const WithdrawConfirmChanged(
           ConfirmAnswered(
             1,
@@ -506,14 +477,10 @@ void main() {
         isA<ConfirmVerify<WithdrawConfirmTarget>>(),
       );
       expect(
-        transitionWithdrawFlow(
-          unknown.state,
-          const WithdrawBackPressed(),
-        ).state,
+        unknown.state.next(const WithdrawBackPressed()).state,
         same(unknown.state),
       );
-      final notApplied = transitionWithdrawFlow(
-        unknown.state,
+      final notApplied = unknown.state.next(
         WithdrawConfirmChanged(
           ConfirmVerified(1, withdrawConfirmCheck(Ok(_order()))),
         ),
@@ -523,34 +490,35 @@ void main() {
         isA<ConfirmFailed<WithdrawConfirmTarget, WithdrawOrder>>(),
       );
       expect(
-        transitionWithdrawFlow(
-          notApplied.state,
-          const WithdrawBackPressed(),
-        ).state,
+        notApplied.state.next(const WithdrawBackPressed()).state,
         isA<WithdrawClosed>(),
       );
     });
 
     test('a re-read that finds it confirmed is done', () {
-      final verifying = transitionWithdrawFlow(
-        _confirming,
-        const WithdrawConfirmChanged(
-          ConfirmAnswered(
-            1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-          ),
-        ),
-      ).state;
-      expect(
-        transitionWithdrawFlow(
-          verifying,
-          WithdrawConfirmChanged(
-            ConfirmVerified(
-              1,
-              withdrawConfirmCheck(Ok(_order(status: OrderStatus.completed))),
+      final verifying = _confirming
+          .next(
+            const WithdrawConfirmChanged(
+              ConfirmAnswered(
+                1,
+                GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+              ),
             ),
-          ),
-        ).state,
+          )
+          .state;
+      expect(
+        verifying
+            .next(
+              WithdrawConfirmChanged(
+                ConfirmVerified(
+                  1,
+                  withdrawConfirmCheck(
+                    Ok(_order(status: OrderStatus.completed)),
+                  ),
+                ),
+              ),
+            )
+            .state,
         isA<WithdrawDone>(),
       );
     });
@@ -571,10 +539,7 @@ void main() {
         review.recipient,
         review.order,
       );
-      final next = transitionWithdrawFlow(
-        withEntry,
-        const WithdrawConfirmPressed(),
-      );
+      final next = withEntry.next(const WithdrawConfirmPressed());
       expect(
         (next.state as WithdrawConfirming).confirm,
         isA<ConfirmVerifying<WithdrawConfirmTarget, WithdrawOrder>>(),

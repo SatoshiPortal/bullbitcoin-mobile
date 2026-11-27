@@ -80,7 +80,7 @@ final payInteracRecipient = recipientFixture(
 PayFlowState applyPay(PayFlowState state, List<PayFlowEvent> events) {
   var current = state;
   for (final event in events) {
-    current = transitionPayFlow(current, event).state;
+    current = current.next(event).state;
   }
   return current;
 }

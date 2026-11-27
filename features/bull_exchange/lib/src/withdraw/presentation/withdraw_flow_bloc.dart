@@ -14,7 +14,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionWithdrawFlow]: applies events one at a time, emits the
+/// Shell of [WithdrawFlowState.next]: applies events one at a time, emits the
 /// new state and runs each effect through its use case with the flow's
 /// session. Every answer carries the attempt, ticket or market that asked
 /// for it; the machine drops stale ones.
@@ -84,7 +84,7 @@ class WithdrawFlowBloc extends Bloc<WithdrawFlowEvent, WithdrawFlowState> {
   final Map<int, DateTime> _sentAt = {};
 
   void _onEvent(WithdrawFlowEvent event, Emitter<WithdrawFlowState> emit) {
-    final next = transitionWithdrawFlow(state, event);
+    final next = state.next(event);
     if (identical(next.state, state)) return;
     emit(next.state);
     _run(next.effects);

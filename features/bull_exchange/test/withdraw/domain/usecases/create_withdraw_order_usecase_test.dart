@@ -52,8 +52,7 @@ final class _Orders extends Fake implements OrdersRepository {
 
 /// The create the flow sends for 10 CAD to the bank recipient.
 OrderSendCreate<WithdrawRequest> _send() {
-  final next = transitionWithdrawFlow(
-    withdrawRecipientState,
+  final next = withdrawRecipientState.next(
     WithdrawRecipientPicked(withdrawBankRecipient),
   );
   final effect = next.effects.single as WithdrawOrderEffect;

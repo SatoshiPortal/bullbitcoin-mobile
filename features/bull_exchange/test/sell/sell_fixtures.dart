@@ -82,7 +82,7 @@ final sellThirdPartyRecipient = recipientFixture(
 SellFlowState applySell(SellFlowState state, List<SellFlowEvent> events) {
   var current = state;
   for (final event in events) {
-    current = transitionSellFlow(current, event).state;
+    current = current.next(event).state;
   }
   return current;
 }

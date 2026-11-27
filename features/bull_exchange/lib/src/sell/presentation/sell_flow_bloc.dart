@@ -15,7 +15,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionSellFlow]: applies events one at a time, emits the
+/// Shell of [SellFlowState.next]: applies events one at a time, emits the
 /// new state and runs each effect through its use case with the flow's
 /// session. Every answer carries the attempt, order id or ticket that asked
 /// for it; the machine drops stale ones.
@@ -93,7 +93,7 @@ class SellFlowBloc extends Bloc<SellFlowEvent, SellFlowState> {
   final Map<String, Timer> _quoteTimers = {};
 
   void _onEvent(SellFlowEvent event, Emitter<SellFlowState> emit) {
-    final next = transitionSellFlow(state, event);
+    final next = state.next(event);
     if (identical(next.state, state) && next.effects.isEmpty) return;
     if (!identical(next.state, state)) emit(next.state);
     _run(next.effects);

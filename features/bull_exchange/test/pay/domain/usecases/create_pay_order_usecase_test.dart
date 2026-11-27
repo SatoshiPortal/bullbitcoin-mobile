@@ -68,7 +68,7 @@ OrderSendCreate<PayRequest> _send({String description = ''}) {
     const PayAmountChanged(AmountTyped('10')),
     const PayAmountChanged(AmountContinuePressed()),
   ]);
-  final next = transitionPayFlow(source, const PaySourcePicked(payAppWallet));
+  final next = source.next(const PaySourcePicked(payAppWallet));
   final effect = next.effects.whereType<PayOrderEffect>().single;
   return effect.effect as OrderSendCreate<PayRequest>;
 }

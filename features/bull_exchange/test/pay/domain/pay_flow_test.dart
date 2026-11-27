@@ -138,7 +138,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionPayFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -156,7 +156,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionPayFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -194,8 +194,7 @@ void main() {
   });
 
   test('an unknown create re-reads; Retry never resends', () {
-    final next = transitionPayFlow(
-      payOrderingState,
+    final next = payOrderingState.next(
       const PayOrderChanged(
         OrderCreateAnswered(
           1,
@@ -207,7 +206,7 @@ void main() {
       (next.state as PayOrdering).order,
       isA<OrderVerifying<PayRequest, Order>>(),
     );
-    final again = transitionPayFlow(next.state, const PayRetryPressed());
+    final again = next.state.next(const PayRetryPressed());
     expect(identical(again.state, next.state), isTrue);
   });
 
@@ -226,8 +225,7 @@ void main() {
       ),
       paying.spend,
     );
-    final next = transitionPayFlow(
-      watching,
+    final next = watching.next(
       PayPayinChanged(
         PayinWatchEvent(
           WatchPolled(
@@ -248,7 +246,7 @@ void main() {
   });
 
   test('the receipt watch ends when the payout completes', () {
-    final next = transitionPayFlow(payReceiptState, _events['receipt']!);
+    final next = payReceiptState.next(_events['receipt']!);
     expect((next.state as PayDone).receipt, isA<WatchDone<Order>>());
     expect(
       (next.state as PayDone).latest.payoutStatus,
@@ -265,7 +263,7 @@ void main() {
         review.order,
         const SpendFeesUnavailable('w-1', 1),
       );
-      final next = transitionPayFlow(waiting, PayConfirmPressed(payNow));
+      final next = waiting.next(PayConfirmPressed(payNow));
       expect(identical(next.state, waiting), isTrue);
       expect(next.effects, isEmpty);
     });
@@ -275,7 +273,7 @@ void main() {
         PaySpendChanged(SpendFeePicked(FeeSelection.slow)),
         PaySpendChanged(SpendRbfChanged(enabled: false)),
       ]);
-      final next = transitionPayFlow(changed, PayConfirmPressed(payNow));
+      final next = changed.next(PayConfirmPressed(payNow));
       final build =
           (next.state as PayPaying).payin as PayinBuilding<PayinSpend>;
       expect(build.spend.options.fee, const PayinFeeRate(500));
@@ -283,8 +281,7 @@ void main() {
     });
 
     test('once paying, options can no longer change', () {
-      final next = transitionPayFlow(
-        payPayingState,
+      final next = payPayingState.next(
         const PaySpendChanged(SpendPayjoinChanged(enabled: false)),
       );
       expect(identical(next.state, payPayingState), isTrue);

@@ -81,7 +81,7 @@ ConfirmSend<WithdrawConfirmTarget> _confirmFor(
     ),
   ];
   final review = applyWithdraw(withdrawRecipientState, events);
-  final next = transitionWithdrawFlow(review, const WithdrawConfirmPressed());
+  final next = review.next(const WithdrawConfirmPressed());
   final effect = next.effects.single as WithdrawConfirmEffect;
   return effect.effect as ConfirmSend<WithdrawConfirmTarget>;
 }

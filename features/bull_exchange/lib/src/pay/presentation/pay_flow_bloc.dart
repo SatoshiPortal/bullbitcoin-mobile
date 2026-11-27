@@ -17,7 +17,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Shell of [transitionPayFlow]: applies events one at a time, emits the
+/// Shell of [PayFlowState.next]: applies events one at a time, emits the
 /// new state and runs each effect through its use case with the flow's
 /// session. Every answer carries the attempt, order id or ticket that asked
 /// for it; the machine drops stale ones.
@@ -105,7 +105,7 @@ class PayFlowBloc extends Bloc<PayFlowEvent, PayFlowState> {
   final Map<String, Timer> _quoteTimers = {};
 
   void _onEvent(PayFlowEvent event, Emitter<PayFlowState> emit) {
-    final next = transitionPayFlow(state, event);
+    final next = state.next(event);
     if (identical(next.state, state) && next.effects.isEmpty) return;
     if (!identical(next.state, state)) emit(next.state);
     _run(next.effects);

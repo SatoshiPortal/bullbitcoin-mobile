@@ -138,7 +138,7 @@ void main() {
       for (final MapEntry(key: eventName, value: event) in _events.entries) {
         final expected = _moves[(stateName, eventName)];
         test('$stateName + $eventName', () {
-          final next = transitionSellFlow(state, event);
+          final next = state.next(event);
           if (expected == null) {
             expect(identical(next.state, state), isTrue, reason: '$next');
             expect(next.effects, isEmpty);
@@ -156,7 +156,7 @@ void main() {
     for (final state in _states.values) {
       reached.add(state.runtimeType);
       for (final event in _events.values) {
-        reached.add(transitionSellFlow(state, event).state.runtimeType);
+        reached.add(state.next(event).state.runtimeType);
       }
     }
     expect(reached, {
@@ -176,15 +176,14 @@ void main() {
 
   group('order and quote', () {
     test('a created order is quoted with its lock timer', () {
-      final next = transitionSellFlow(sellOrderingState, _events['order']!);
+      final next = sellOrderingState.next(_events['order']!);
       expect(next.effects, [
         const SellOrderEffect(OrderStartLockTimer<SellRequest>('s-1')),
       ]);
     });
 
     test('an unknown create re-reads; it never sends again', () {
-      final next = transitionSellFlow(
-        sellOrderingState,
+      final next = sellOrderingState.next(
         const SellOrderChanged(
           OrderCreateAnswered(
             1,
@@ -197,15 +196,12 @@ void main() {
         isA<OrderVerifying<SellRequest, Order>>(),
       );
       expect(next.effects.single, isA<SellOrderEffect>());
-      final again = transitionSellFlow(next.state, const SellRetryPressed());
+      final again = next.state.next(const SellRetryPressed());
       expect(identical(again.state, next.state), isTrue);
     });
 
     test('Confirm stops the quote timers and builds the payin', () {
-      final next = transitionSellFlow(
-        sellReviewState,
-        SellConfirmPressed(sellNow),
-      );
+      final next = sellReviewState.next(SellConfirmPressed(sellNow));
       expect(
         next.effects.first,
         const SellOrderEffect(OrderStopTimers<SellRequest>('s-1')),
@@ -231,7 +227,7 @@ void main() {
         ),
         review.spend,
       );
-      final next = transitionSellFlow(refreshing, SellConfirmPressed(sellNow));
+      final next = refreshing.next(SellConfirmPressed(sellNow));
       expect(identical(next.state, refreshing), isTrue);
     });
 
@@ -243,8 +239,7 @@ void main() {
     });
 
     test('a recipient the filter refuses stays with the refusal', () {
-      final next = transitionSellFlow(
-        sellRecipientState,
+      final next = sellRecipientState.next(
         SellRecipientPicked(sellThirdPartyRecipient),
       );
       expect((next.state as SellRecipient).refused, sellThirdPartyRecipient);
@@ -253,8 +248,7 @@ void main() {
 
   group('spend options', () {
     test('a new order reads the fee estimates beside the create', () {
-      final next = transitionSellFlow(
-        sellPayoutState,
+      final next = sellPayoutState.next(
         const SellPayoutPicked(SellPayoutChoice.balance),
       );
       expect(
@@ -284,7 +278,7 @@ void main() {
           review.order,
           spend,
         );
-        final next = transitionSellFlow(waiting, SellConfirmPressed(sellNow));
+        final next = waiting.next(SellConfirmPressed(sellNow));
         expect(identical(next.state, waiting), isTrue);
         expect(next.effects, isEmpty);
       }
@@ -296,7 +290,7 @@ void main() {
         SellSpendChanged(SpendRbfChanged(enabled: false)),
         SellSpendChanged(SpendPayjoinChanged(enabled: false)),
       ]);
-      final next = transitionSellFlow(changed, SellConfirmPressed(sellNow));
+      final next = changed.next(SellConfirmPressed(sellNow));
       final build =
           (next.state as SellPaying).payin as PayinBuilding<PayinSpend>;
       expect(
@@ -311,8 +305,7 @@ void main() {
     });
 
     test('once the payin started, options can no longer change', () {
-      final next = transitionSellFlow(
-        sellPayingState,
+      final next = sellPayingState.next(
         const SellSpendChanged(SpendFeePicked(FeeSelection.slow)),
       );
       expect(identical(next.state, sellPayingState), isTrue);
@@ -324,7 +317,7 @@ void main() {
         SellConfirmPressed(sellNow),
       ]);
       expect(changed, isA<SellPaying>());
-      final back = transitionSellFlow(changed, const SellBackPressed()).state;
+      final back = changed.next(const SellBackPressed()).state;
       expect(
         ((back as SellOrdering).spend as SpendOptionsReady).selection,
         FeeSelection.slow,
@@ -347,10 +340,12 @@ void main() {
         review.open.session,
         SellContext(review.open.context.summary, [entry]),
       );
-      final next = transitionSellFlow(
-        SellOrdering(open, review.request, review.order, review.spend),
-        SellConfirmPressed(sellNow),
-      );
+      final next = SellOrdering(
+        open,
+        review.request,
+        review.order,
+        review.spend,
+      ).next(SellConfirmPressed(sellNow));
       expect(
         (next.state as SellPaying).payin,
         isA<PayinVerifying<PayinSpend>>(),
@@ -358,8 +353,7 @@ void main() {
     });
 
     test('a lapsed quote before the send refreshes; Confirm waits', () {
-      final next = transitionSellFlow(
-        sellReviewState,
+      final next = sellReviewState.next(
         SellConfirmPressed(sellNow.add(const Duration(hours: 2))),
       );
       expect(
@@ -385,8 +379,7 @@ void main() {
           WatchWatching<Order>(sellOrder(), 0, 0, 1),
         ),
       );
-      final next = transitionSellFlow(
-        watching,
+      final next = watching.next(
         SellPayinChanged(
           PayinWatchEvent(
             WatchPolled(
@@ -406,21 +399,15 @@ void main() {
       final refused = _paying(
         PayinRefusedByExchange<PayinSpend>(sellOrder(), 'tx-1'),
       );
+      expect(refused.next(const SellBackPressed()).state, isA<SellClosed>());
       expect(
-        transitionSellFlow(refused, const SellBackPressed()).state,
-        isA<SellClosed>(),
-      );
-      expect(
-        identical(
-          transitionSellFlow(refused, const SellRetryPressed()).state,
-          refused,
-        ),
+        identical(refused.next(const SellRetryPressed()).state, refused),
         isTrue,
       );
     });
 
     test('a session change stops the payin watch', () {
-      final next = transitionSellFlow(sellPayingState, _events['session']!);
+      final next = sellPayingState.next(_events['session']!);
       expect(next.state, isA<SellSessionEnded>());
       expect(next.effects, [
         const SellPayinEffect(PayinWatchEffect(WatchStop('s-1'))),

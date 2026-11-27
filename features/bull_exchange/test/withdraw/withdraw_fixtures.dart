@@ -60,7 +60,7 @@ WithdrawFlowState applyWithdraw(
 ) {
   var current = state;
   for (final event in events) {
-    current = transitionWithdrawFlow(current, event).state;
+    current = current.next(event).state;
   }
   return current;
 }

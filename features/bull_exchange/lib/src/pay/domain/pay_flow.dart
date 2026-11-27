@@ -27,6 +27,28 @@ sealed class PayFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  PayFlowNext next(PayFlowEvent event) {
+    final state = this;
+    if (event case PaySessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? PayFlowNext(const PaySessionEnded(), _stopAll(state))
+          : PayFlowNext.stay(state);
+    }
+    return switch (state) {
+      PayLoading() => _loading(state, event),
+      PayRecipient() => _recipient(state, event),
+      PayRequirements() => _requirements(state, event),
+      PayAmount() => _amount(state, event),
+      PaySource() => _source(state, event),
+      PayOrdering() => _ordering(state, event),
+      PayPaying() => _paying(state, event),
+      PayDone() => _done(state, event),
+      PaySessionEnded() => _terminal(state, event),
+      PayClosed() => PayFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -517,27 +539,6 @@ PayFlowNext payFlowStart(ExchangeSession? session) => switch (session) {
   ]),
   null => _ended,
 };
-
-PayFlowNext transitionPayFlow(PayFlowState state, PayFlowEvent event) {
-  if (event case PaySessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? PayFlowNext(const PaySessionEnded(), _stopAll(state))
-        : PayFlowNext.stay(state);
-  }
-  return switch (state) {
-    PayLoading() => _loading(state, event),
-    PayRecipient() => _recipient(state, event),
-    PayRequirements() => _requirements(state, event),
-    PayAmount() => _amount(state, event),
-    PaySource() => _source(state, event),
-    PayOrdering() => _ordering(state, event),
-    PayPaying() => _paying(state, event),
-    PayDone() => _done(state, event),
-    PaySessionEnded() => _terminal(state, event),
-    PayClosed() => PayFlowNext.stay(state),
-  };
-}
 
 ExchangeSession? _sessionOf(PayFlowState state) => switch (state) {
   PayLoading(:final session) => session,

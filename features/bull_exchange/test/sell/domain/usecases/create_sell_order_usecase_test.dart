@@ -83,7 +83,7 @@ OrderSendCreate<SellRequest> _sendFrom(
   SellFlowState state,
   SellFlowEvent event,
 ) {
-  final next = transitionSellFlow(state, event);
+  final next = state.next(event);
   final effect = next.effects.whereType<SellOrderEffect>().single;
   return effect.effect as OrderSendCreate<SellRequest>;
 }

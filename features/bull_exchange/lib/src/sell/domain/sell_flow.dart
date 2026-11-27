@@ -27,6 +27,29 @@ sealed class SellFlowState {
 
   @override
   String toString() => '$runtimeType';
+
+  SellFlowNext next(SellFlowEvent event) {
+    final state = this;
+    if (event case SellSessionChanged(:final session)) {
+      final current = _sessionOf(state);
+      return current != null && current != session
+          ? SellFlowNext(const SellSessionEnded(), _stopAll(state))
+          : SellFlowNext.stay(state);
+    }
+    return switch (state) {
+      SellLoading() => _loading(state, event),
+      SellAmount() => _amount(state, event),
+      SellSource() => _source(state, event),
+      SellPayoutPick() => _payout(state, event),
+      SellRecipient() => _recipient(state, event),
+      SellRequirements() => _requirements(state, event),
+      SellOrdering() => _ordering(state, event),
+      SellPaying() => _paying(state, event),
+      SellDone() => _terminal(state, event),
+      SellSessionEnded() => _terminal(state, event),
+      SellClosed() => SellFlowNext.stay(state),
+    };
+  }
 }
 
 bool _listEquals(List<Object?> a, List<Object?> b) {
@@ -566,28 +589,6 @@ SellFlowNext sellFlowStart(ExchangeSession? session) => switch (session) {
   ),
   null => _ended,
 };
-
-SellFlowNext transitionSellFlow(SellFlowState state, SellFlowEvent event) {
-  if (event case SellSessionChanged(:final session)) {
-    final current = _sessionOf(state);
-    return current != null && current != session
-        ? SellFlowNext(const SellSessionEnded(), _stopAll(state))
-        : SellFlowNext.stay(state);
-  }
-  return switch (state) {
-    SellLoading() => _loading(state, event),
-    SellAmount() => _amount(state, event),
-    SellSource() => _source(state, event),
-    SellPayoutPick() => _payout(state, event),
-    SellRecipient() => _recipient(state, event),
-    SellRequirements() => _requirements(state, event),
-    SellOrdering() => _ordering(state, event),
-    SellPaying() => _paying(state, event),
-    SellDone() => _terminal(state, event),
-    SellSessionEnded() => _terminal(state, event),
-    SellClosed() => SellFlowNext.stay(state),
-  };
-}
 
 ExchangeSession? _sessionOf(SellFlowState state) => switch (state) {
   SellLoading(:final session) => session,
