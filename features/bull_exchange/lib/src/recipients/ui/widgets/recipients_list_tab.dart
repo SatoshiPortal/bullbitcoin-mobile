@@ -3,6 +3,8 @@ import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart' show MaterialLocalizations;
 import 'package:bull_exchange/src/recipients/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipients_list_tile.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
 import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';

@@ -7,6 +7,8 @@ import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/ui/payin_source_page.dart';
 import 'package:bull_exchange/src/payin/ui/payin_view.dart';
 import 'package:bull_exchange/src/payin/ui/quote_review_page.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_pick_screen.dart';

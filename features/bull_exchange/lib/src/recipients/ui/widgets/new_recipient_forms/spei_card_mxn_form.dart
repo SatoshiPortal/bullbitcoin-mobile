@@ -2,6 +2,7 @@ import 'package:bull_exchange/src/recipients/ui/widgets/recipient_server_field_e
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/presentation/spei_problem_l10n.dart';
@@ -49,7 +50,9 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      context.read<RecipientsBloc>().add(
+        RecipientsEvent.added(formData.toInput()),
+      );
     }
   }
 

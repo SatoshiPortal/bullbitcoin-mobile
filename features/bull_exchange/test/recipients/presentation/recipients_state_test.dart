@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,7 +56,10 @@ void main() {
       allowedRecipientFilters: RecipientFilterCriteria(),
     );
     expect(state.selectableRecipients, isNull);
-    expect(state.copyWith(recipients: []).selectableRecipients, isEmpty);
+    expect(
+      state.copyWith(recipients: <RecipientViewModel>[]).selectableRecipients,
+      isEmpty,
+    );
   });
 
   test('Confidential SEPA eligibility still controls the selectable types', () {

@@ -2,8 +2,9 @@ import 'package:bull_ui/testing.dart';
 import 'package:bull_exchange/src/recipients/domain/entities/account_owner_name.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/sepa_eur_form.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
-import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bloc_test/bloc_test.dart';
@@ -16,13 +17,7 @@ class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
 
 void main() {
-  setUpAll(
-    () => registerFallbackValue(
-      const RecipientsEvent.added(
-        SepaEurFormDataModel(iban: '', isCorporate: false, isOwner: true),
-      ),
-    ),
-  );
+  setUpAll(() => registerFallbackValue(const RecipientsEvent.refreshed()));
 
   Future<(_MockRecipientsBloc, ExchangeLocalizations)> pumpForm(
     WidgetTester tester, {
@@ -84,8 +79,8 @@ void main() {
 
     final event =
         verify(() => bloc.add(captureAny())).captured.last as RecipientsAdded;
-    final data = event.recipient as SepaEurFormDataModel;
-    expect(data.type, RecipientType.confidentialSepaEur);
+    final data = event.recipient;
+    expect(data.recipientType, RecipientType.confidentialSepaEur);
     expect(data.isOwner, isTrue);
     expect(data.firstname, 'Mary Ann');
     expect(data.lastname, 'Smith');

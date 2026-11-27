@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/cad_biller_view_model.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
@@ -48,7 +50,9 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
       // after a successful biller search.
       if (state.isSearchingCadBillers == false) {
         setState(() {
-          _cadBillers = state.cadBillers;
+          _cadBillers = state.cadBillers
+              ?.map(CadBillerViewModel.fromSummary)
+              .toList();
         });
         stateStreamSubscription?.cancel();
         completer.complete();
@@ -69,7 +73,9 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      context.read<RecipientsBloc>().add(
+        RecipientsEvent.added(formData.toInput()),
+      );
     }
   }
 

@@ -10,6 +10,7 @@ import 'package:bull_exchange/src/recipients/domain/usecases/get_preferred_juris
 import 'package:bull_exchange/src/recipients/domain/usecases/get_recipients_usecase.dart';
 import 'package:bull_exchange/src/recipients/domain/usecases/list_cad_billers_usecase.dart';
 import 'package:exchange/exchange.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
@@ -346,7 +347,7 @@ void main() {
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
-    bloc.add(RecipientsAdded(_formData()));
+    bloc.add(RecipientsAdded(_formData().toInput()));
     await pumpEventQueue();
 
     expect(
@@ -368,9 +369,9 @@ void main() {
       await pumpEventQueue();
       clearInteractions(getRecipients);
 
-      bloc.add(RecipientsAdded(_formData()));
+      bloc.add(RecipientsAdded(_formData().toInput()));
       await pumpEventQueue();
-      bloc.add(RecipientsAdded(_formData()));
+      bloc.add(RecipientsAdded(_formData().toInput()));
       await pumpEventQueue();
 
       expect(
@@ -438,7 +439,7 @@ void main() {
         final bloc = buildBloc();
         addTearDown(bloc.close);
 
-        bloc.add(RecipientsEvent.added(_formData()));
+        bloc.add(RecipientsEvent.added(_formData().toInput()));
         await pumpEventQueue();
         expect(bloc.state.failedToAddRecipient, same(failure));
 
@@ -481,7 +482,7 @@ void main() {
       );
       addTearDown(bloc.close);
 
-      bloc.add(RecipientsAdded(_formData()));
+      bloc.add(RecipientsAdded(_formData().toInput()));
       await pumpEventQueue();
 
       // Not ExchangeRecipientsSaveFailure: the recipient IS saved, and a message
