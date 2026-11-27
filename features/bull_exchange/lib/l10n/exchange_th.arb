@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "ไม่สามารถบันทึกผู้รับรายนี้ได้ โปรดตรวจสอบข้อมูลแล้วลองอีกครั้ง",
   "recipientsErrorSinpeLookupFailed": "เราไม่สามารถยืนยันหมายเลขโทรศัพท์นี้ได้ โปรดตรวจสอบแล้วลองอีกครั้ง",
   "recipientsErrorBillerSearchFailed": "ไม่สามารถค้นหาผู้เรียกเก็บเงินได้ โปรดลองอีกครั้ง",
-  "recipientsErrorNetwork": "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง",
   "recipientsListPullToRetry": "ดึงลงเพื่อลองอีกครั้ง",
   "recipientsErrorSavedButNotSelected": "บันทึกผู้รับรายนี้แล้ว แต่เราไม่สามารถดำเนินการต่อได้ ค้นหาในรายการของคุณเพื่อดำเนินการต่อ",
   "recipientsTypeConfidentialSepa": "SEPA แบบเป็นความลับ",

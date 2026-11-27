@@ -87,7 +87,7 @@ void main() {
     when(() => getPreferredJurisdiction.execute())
         .thenAnswer((_) async => const Ok(Jurisdiction.canada));
     when(() => getRecipients.execute(any()))
-        .thenAnswer((_) async => const Err(RecipientsLoadFailure()));
+        .thenAnswer((_) async => const Err(ExchangeRecipientsLoadFailure()));
     when(() => getAccountOwnerName.execute()).thenAnswer(
       (_) async =>
           const Ok(AccountOwnerName(firstName: 'Mary Ann', lastName: 'Smith')),
@@ -145,7 +145,7 @@ void main() {
     test('keeps a failed check distinct from account ineligibility and '
         'recovers on retry', () async {
       final availability =
-          Completer<Result<ConfidentialSepaAvailability, RecipientsFailure>>();
+          Completer<Result<ConfidentialSepaAvailability, ExchangeFailure>>();
       when(() => getConfidentialSepaAvailability.execute())
           .thenAnswer((_) => availability.future);
       final bloc = buildBloc(filters: sepaFilters);
@@ -157,19 +157,19 @@ void main() {
       expect(bloc.state.isLoadingConfidentialSepaAvailability, isTrue);
       expect(bloc.state.confidentialSepaAvailability, isNull);
 
-      availability.complete(const Err(RecipientsNetworkFailure()));
+      availability.complete(const Err(ExchangeNetworkFailure()));
       await pumpEventQueue();
 
       expect(bloc.state.isLoadingConfidentialSepaAvailability, isFalse);
       expect(bloc.state.confidentialSepaAvailability, isNull);
       expect(
         bloc.state.failedToLoadConfidentialSepaAvailability,
-        isA<RecipientsNetworkFailure>(),
+        isA<ExchangeNetworkFailure>(),
       );
       verifyNever(() => getAccountOwnerName.execute());
 
       final retry =
-          Completer<Result<ConfidentialSepaAvailability, RecipientsFailure>>();
+          Completer<Result<ConfidentialSepaAvailability, ExchangeFailure>>();
       when(() => getConfidentialSepaAvailability.execute())
           .thenAnswer((_) => retry.future);
       bloc.add(const RecipientsEvent.confidentialSepaAvailabilityRetried());
@@ -192,7 +192,7 @@ void main() {
 
     test('refresh retries a failed availability check', () async {
       when(() => getConfidentialSepaAvailability.execute())
-          .thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
+          .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
       final bloc = buildBloc(filters: sepaFilters);
       addTearDown(bloc.close);
       bloc.add(const RecipientsEvent.started());
@@ -212,12 +212,12 @@ void main() {
 
     test('an account name failure is visible and can be retried', () async {
       when(() => getAccountOwnerName.execute())
-          .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+          .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
       final bloc = await startWith(ConfidentialSepaAvailability.ready);
 
       expect(
         bloc.state.failedToLoadConfidentialSepaAvailability,
-        isA<RecipientsUnexpectedFailure>(),
+        isA<ExchangeUnexpectedFailure>(),
       );
       expect(bloc.state.accountOwnerName, isNull);
       expect(bloc.state.isLoadingConfidentialSepaAvailability, isFalse);
@@ -319,7 +319,10 @@ void main() {
     bloc.add(const RecipientsStarted());
     await pumpEventQueue();
 
-    expect(bloc.state.failedToLoadRecipients, isA<RecipientsLoadFailure>());
+    expect(
+      bloc.state.failedToLoadRecipients,
+      isA<ExchangeRecipientsLoadFailure>(),
+    );
     // Message-free by construction, so nothing can be rendered from it.
     expect(bloc.state.failedToLoadRecipients?.logMessage, isNull);
   });
@@ -327,26 +330,29 @@ void main() {
   test('a connectivity failure survives as its own variant, so the UI can '
       'give advice the generic one cannot', () async {
     when(() => getRecipients.execute(any()))
-        .thenAnswer((_) async => const Err(RecipientsNetworkFailure()));
+        .thenAnswer((_) async => const Err(ExchangeNetworkFailure()));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
     bloc.add(const RecipientsStarted());
     await pumpEventQueue();
 
-    expect(bloc.state.failedToLoadRecipients, isA<RecipientsNetworkFailure>());
+    expect(bloc.state.failedToLoadRecipients, isA<ExchangeNetworkFailure>());
   });
 
   test('a save failure reaches state as the typed failure', () async {
     when(() => addRecipient.execute(any()))
-        .thenAnswer((_) async => const Err(RecipientsSaveFailure()));
+        .thenAnswer((_) async => const Err(ExchangeRecipientsSaveFailure()));
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
     bloc.add(RecipientsAdded(_formData()));
     await pumpEventQueue();
 
-    expect(bloc.state.failedToAddRecipient, isA<RecipientsSaveFailure>());
+    expect(
+      bloc.state.failedToAddRecipient,
+      isA<ExchangeRecipientsSaveFailure>(),
+    );
     expect(bloc.state.isAddingRecipient, isFalse);
   });
 
@@ -354,7 +360,7 @@ void main() {
     'an unknown save outcome re-reads the list and never saves again',
     () async {
       when(() => addRecipient.execute(any())).thenAnswer(
-        (_) async => const Err(RecipientsSaveOutcomeUnknownFailure()),
+        (_) async => const Err(ExchangeRecipientsSaveOutcomeUnknownFailure()),
       );
       final bloc = buildBloc();
       addTearDown(bloc.close);
@@ -369,7 +375,7 @@ void main() {
 
       expect(
         bloc.state.failedToAddRecipient,
-        isA<RecipientsSaveOutcomeUnknownFailure>(),
+        isA<ExchangeRecipientsSaveOutcomeUnknownFailure>(),
       );
       verify(() => addRecipient.execute(any())).called(1);
       verify(() => getRecipients.execute(any())).called(1);
@@ -381,23 +387,28 @@ void main() {
   // under the phone field, the biller one under the search field — and these
   // pin the state they read.
   test('a SINPE lookup failure reaches state', () async {
-    when(() => checkSinpe.execute(any()))
-        .thenAnswer((_) async => const Err(RecipientsSinpeLookupFailure()));
+    when(() => checkSinpe.execute(any())).thenAnswer(
+      (_) async => const Err(ExchangeRecipientsSinpeLookupFailure()),
+    );
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
     bloc.add(const RecipientsSinpeChecked('88888888'));
     await pumpEventQueue();
 
-    expect(bloc.state.failedToCheckSinpe, isA<RecipientsSinpeLookupFailure>());
+    expect(
+      bloc.state.failedToCheckSinpe,
+      isA<ExchangeRecipientsSinpeLookupFailure>(),
+    );
     // The spinner must stop too, or the field looks like it is still working.
     expect(bloc.state.isCheckingSinpe, isFalse);
     expect(bloc.state.sinpeOwnerName, isEmpty);
   });
 
   test('a biller search failure reaches state', () async {
-    when(() => listCadBillers.execute(any()))
-        .thenAnswer((_) async => const Err(RecipientsCadBillerSearchFailure()));
+    when(() => listCadBillers.execute(any())).thenAnswer(
+      (_) async => const Err(ExchangeRecipientsCadBillerSearchFailure()),
+    );
     final bloc = buildBloc();
     addTearDown(bloc.close);
 
@@ -406,7 +417,7 @@ void main() {
 
     expect(
       bloc.state.failedToSearchCadBillers,
-      isA<RecipientsCadBillerSearchFailure>(),
+      isA<ExchangeRecipientsCadBillerSearchFailure>(),
     );
     expect(bloc.state.isSearchingCadBillers, isFalse);
   });
@@ -414,10 +425,10 @@ void main() {
   // _runSelectionHook is the only catch left in this bloc, and the code it
   // guards belongs to another feature.
   group('switching the new-recipient form', () {
-    for (final failure in <RecipientsFailure>[
-      const RecipientsSaveFailure(),
-      const RecipientsSaveOutcomeUnknownFailure(),
-      RecipientsInvalidFieldsFailure.fromFieldErrors(const {
+    for (final failure in <ExchangeFailure>[
+      const ExchangeRecipientsSaveFailure(),
+      const ExchangeRecipientsSaveOutcomeUnknownFailure(),
+      ExchangeRecipientsInvalidFieldsFailure.fromFieldErrors(const {
         'clabe': 'ERR_VALIDATION_FORMAT',
       })!,
     ]) {
@@ -453,7 +464,7 @@ void main() {
 
       expect(
         bloc.state.failedToSelectRecipient,
-        isA<RecipientsSelectionFailure>(),
+        isA<ExchangeRecipientsSelectionFailure>(),
       );
       // The other feature's reason is logged, never carried.
       expect(bloc.state.failedToSelectRecipient?.logMessage, isNull);
@@ -473,11 +484,11 @@ void main() {
       bloc.add(RecipientsAdded(_formData()));
       await pumpEventQueue();
 
-      // Not RecipientsSaveFailure: the recipient IS saved, and a message
+      // Not ExchangeRecipientsSaveFailure: the recipient IS saved, and a message
       // implying otherwise makes the user press Continue again.
       expect(
         bloc.state.failedToAddRecipient,
-        isA<RecipientsSavedButNotSelectedFailure>(),
+        isA<ExchangeRecipientsSavedButNotSelectedFailure>(),
       );
       expect(bloc.state.isAddingRecipient, isFalse);
     });

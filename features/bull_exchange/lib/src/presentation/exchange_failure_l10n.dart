@@ -96,39 +96,34 @@ extension ExchangeFailureL10n on ExchangeFailure {
     // Recipients. Their reasons are JSON-RPC error objects and parse errors
     // over recipient payloads, carrying server internals and the user's own
     // banking details, so none is ever shown.
-    RecipientsUnsupportedNetworkFailure() =>
-      context.loc.networkFeatureUnavailable,
-    RecipientsNotAuthenticatedFailure() => context.loc.exchangeAuthErrorMessage,
-    RecipientsLoadFailure() => context.loc.recipientsErrorLoadFailed,
-    RecipientsSaveFailure() => context.loc.recipientsErrorSaveFailed,
-    final RecipientsInvalidFieldsFailure refused =>
+    ExchangeRecipientsLoadFailure() => context.loc.recipientsErrorLoadFailed,
+    ExchangeRecipientsSaveFailure() => context.loc.recipientsErrorSaveFailed,
+    final ExchangeRecipientsInvalidFieldsFailure refused =>
       context.loc.recipientsErrorFieldsRefused(
         refused.refusedFieldNames(except: const {}).join(', '),
       ),
-    RecipientsSaveOutcomeUnknownFailure() =>
+    ExchangeRecipientsSaveOutcomeUnknownFailure() =>
       context.loc.recipientsErrorSaveOutcomeUnknown,
-    RecipientsSinpeLookupFailure() =>
+    ExchangeRecipientsSinpeLookupFailure() =>
       context.loc.recipientsErrorSinpeLookupFailed,
-    RecipientsCadBillerSearchFailure() =>
+    ExchangeRecipientsCadBillerSearchFailure() =>
       context.loc.recipientsErrorBillerSearchFailed,
-    RecipientsNetworkFailure() => context.loc.recipientsErrorNetwork,
-    RecipientsVirtualIbanNotAvailableFailure() =>
+    ExchangeVirtualIbanNotAvailableFailure() =>
       context.loc.recipientsErrorVirtualIbanNotAvailable,
-    RecipientsEuResidencyRequiredFailure() =>
+    ExchangeEuResidencyRequiredFailure() =>
       context.loc.recipientsErrorEuResidencyRequired,
     // Deliberately does NOT say the save failed: it succeeded, and a message
     // that implies otherwise invites a retry and a duplicate recipient.
-    RecipientsSavedButNotSelectedFailure() =>
+    ExchangeRecipientsSavedButNotSelectedFailure() =>
       context.loc.recipientsErrorSavedButNotSelected,
     // The catch-all variants and the failures no screen words on its own: the
     // generic message, never `logMessage` (the legacy `BullException` chain
     // interpolated the raw `'$e'` into it, so it can carry anything).
-    // RecipientsSelectionFailure's cause belongs to the feature that supplied
+    // ExchangeRecipientsSelectionFailure's cause belongs to the feature that supplied
     // the hook; InvalidSecurityDetails only comes back from the Interac
     // update withdraw drives after validating those fields itself.
-    RecipientsSelectionFailure() ||
-    RecipientsInvalidSecurityDetailsFailure() ||
-    RecipientsUnexpectedFailure() ||
+    ExchangeRecipientsSelectionFailure() ||
+    ExchangeRecipientsInvalidSecurityDetailsFailure() ||
     ExchangeUnexpectedFailure() ||
     ExchangeJournalFailure() ||
     ExchangeDestinationUnavailableFailure() ||
@@ -146,8 +141,6 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeConsentRegistrationFailure() ||
     ExchangeLimitOrderFailure() ||
     ExchangeFundingFailure() ||
-    ExchangeVirtualIbanNotAvailableFailure() ||
-    ExchangeEuResidencyRequiredFailure() ||
     ExchangeOrderInventoryUnavailableFailure() ||
     ExchangeOperationStaleFailure() ||
     ExchangeUnreachableFailure(isNetwork: false) ||
@@ -160,7 +153,8 @@ extension ExchangeFailureL10n on ExchangeFailure {
 }
 
 /// The refused fields a recipient form names under each field, and the rest.
-extension RecipientsInvalidFieldsFailureL10n on RecipientsInvalidFieldsFailure {
+extension ExchangeRecipientsInvalidFieldsFailureL10n
+    on ExchangeRecipientsInvalidFieldsFailure {
   /// The API names of the refused fields, leaving out the fields in [except]
   /// (the ones the form marks under the field itself).
   List<String> refusedFieldNames({required Set<RecipientField> except}) => [

@@ -25,7 +25,7 @@ class CheckSinpeUsecase {
   });
 
   @useResult
-  Future<Result<CheckSinpeResult, RecipientsFailure>> execute(
+  Future<Result<CheckSinpeResult, ExchangeFailure>> execute(
     CheckSinpeParams params,
   ) async {
     final bool isTestnet;

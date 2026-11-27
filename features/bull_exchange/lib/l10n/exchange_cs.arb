@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Tohoto příjemce se nepodařilo uložit. Zkontrolujte údaje a zkuste to znovu.",
   "recipientsErrorSinpeLookupFailed": "Toto telefonní číslo se nepodařilo ověřit. Zkontrolujte je a zkuste to znovu.",
   "recipientsErrorBillerSearchFailed": "Vyhledávání inkasních subjektů se nezdařilo. Zkuste to prosím znovu.",
-  "recipientsErrorNetwork": "Zkontrolujte připojení k internetu a zkuste to znovu.",
   "recipientsListPullToRetry": "Zkuste to znovu přetažením dolů.",
   "recipientsErrorSavedButNotSelected": "Tento příjemce byl uložen, ale nepodařilo se pokračovat. Najděte jej ve svém seznamu.",
   "recipientsTypeConfidentialSepa": "Důvěrný SEPA",

@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Не удалось сохранить этого получателя. Проверьте данные и попробуйте ещё раз.",
   "recipientsErrorSinpeLookupFailed": "Не удалось проверить этот номер телефона. Проверьте его и попробуйте ещё раз.",
   "recipientsErrorBillerSearchFailed": "Не удалось выполнить поиск получателей платежей. Попробуйте ещё раз.",
-  "recipientsErrorNetwork": "Проверьте подключение к интернету и попробуйте ещё раз.",
   "recipientsListPullToRetry": "Потяните вниз, чтобы повторить.",
   "recipientsErrorSavedButNotSelected": "Получатель сохранён, но продолжить не удалось. Найдите его в списке, чтобы продолжить.",
   "recipientsTypeConfidentialSepa": "Конфиденциальный SEPA",

@@ -9,6 +9,6 @@ abstract class VirtualIbanOnboardingState with _$VirtualIbanOnboardingState {
     String? accountOwnerName,
     ActiveVirtualIban? virtualIban,
     @Default(false) bool isCreating,
-    RecipientsFailure? failure,
+    ExchangeFailure? failure,
   }) = _VirtualIbanOnboardingState;
 }

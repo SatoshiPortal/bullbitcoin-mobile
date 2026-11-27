@@ -274,12 +274,12 @@ Map<String, Object?> _canonical(Recipient r) => {
     'virtualPayeeStatus': sepa.virtualPayeeStatus.name,
 };
 
-T _valueOf<T>(Result<T, RecipientsFailure> result) => switch (result) {
+T _valueOf<T>(Result<T, ExchangeFailure> result) => switch (result) {
   Ok(:final value) => value,
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
-RecipientsFailure _failureOf<T>(Result<T, RecipientsFailure> result) =>
+ExchangeFailure _failureOf<T>(Result<T, ExchangeFailure> result) =>
     switch (result) {
       Ok() => fail('expected an Err, got Ok'),
       Err(:final failure) => failure,
@@ -465,7 +465,7 @@ void main() {
           final http = FakeBbxHttp(body: const {'result': {}});
           final result = await _repository(http)
               .saveRecipient(stored, isTestnet: false);
-          expect(result, isA<Err<Recipient, RecipientsFailure>>());
+          expect(result, isA<Err<Recipient, ExchangeFailure>>());
           expect(http.requests, isEmpty);
         },
       );
@@ -663,7 +663,10 @@ void main() {
         ),
       ).saveRecipient(_newRecipients.first, isTestnet: true);
 
-      expect(_failureOf(result), isA<RecipientsSaveOutcomeUnknownFailure>());
+      expect(
+        _failureOf(result),
+        isA<ExchangeRecipientsSaveOutcomeUnknownFailure>(),
+      );
     });
 
     test('a timeout after sending the save is an unknown outcome', () async {
@@ -671,7 +674,10 @@ void main() {
         FakeBbxHttp(error: DioExceptionType.receiveTimeout),
       ).saveRecipient(_newRecipients.first, isTestnet: true);
 
-      expect(_failureOf(result), isA<RecipientsSaveOutcomeUnknownFailure>());
+      expect(
+        _failureOf(result),
+        isA<ExchangeRecipientsSaveOutcomeUnknownFailure>(),
+      );
     });
 
     test('checkSinpe returns the owner name', () async {
@@ -838,7 +844,7 @@ void main() {
     final operations =
         <
           String,
-          Future<Result<Object?, RecipientsFailure>> Function(
+          Future<Result<Object?, ExchangeFailure>> Function(
             BbxApiRecipientsDatasource,
           )
         >{
@@ -858,11 +864,11 @@ void main() {
               r.listCadBillers(searchTerm: 'hy', isTestnet: true),
         };
     final apiFailures = <String, Matcher>{
-      'saveRecipient': isA<RecipientsSaveFailure>(),
-      'updateInteracSecurityDetails': isA<RecipientsUnexpectedFailure>(),
-      'listRecipients': isA<RecipientsLoadFailure>(),
-      'checkSinpe': isA<RecipientsSinpeLookupFailure>(),
-      'listCadBillers': isA<RecipientsCadBillerSearchFailure>(),
+      'saveRecipient': isA<ExchangeRecipientsSaveFailure>(),
+      'updateInteracSecurityDetails': isA<ExchangeUnexpectedFailure>(),
+      'listRecipients': isA<ExchangeRecipientsLoadFailure>(),
+      'checkSinpe': isA<ExchangeRecipientsSinpeLookupFailure>(),
+      'listCadBillers': isA<ExchangeRecipientsCadBillerSearchFailure>(),
     };
 
     for (final MapEntry(key: name, value: call) in operations.entries) {
@@ -871,7 +877,7 @@ void main() {
           fail('Missing recipient failure matcher for $name');
       // A write's answer that can't be read may follow a save that happened.
       final unreadableAnswer = name == 'saveRecipient'
-          ? isA<RecipientsSaveOutcomeUnknownFailure>()
+          ? isA<ExchangeRecipientsSaveOutcomeUnknownFailure>()
           : apiFailure;
 
       test('$name: a JSON-RPC error is the operation failure', () async {
@@ -899,7 +905,7 @@ void main() {
 
           // The old update did not read its result either.
           if (name == 'updateInteracSecurityDetails') {
-            expect(result, isA<Ok<Object?, RecipientsFailure>>());
+            expect(result, isA<Ok<Object?, ExchangeFailure>>());
           } else {
             expect(_failureOf(result), unreadableAnswer);
           }
@@ -915,7 +921,7 @@ void main() {
               ),
             ),
           ),
-          isA<RecipientsNetworkFailure>(),
+          isA<ExchangeNetworkFailure>(),
         );
       });
 
@@ -938,7 +944,7 @@ void main() {
 
         expect(
           _failureOf(await call(repository)),
-          isA<RecipientsNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         );
         expect(http.requests, isEmpty);
       });
@@ -976,7 +982,7 @@ void main() {
         ),
       ).listRecipients(isTestnet: true);
 
-      expect(_failureOf(result), isA<RecipientsLoadFailure>());
+      expect(_failureOf(result), isA<ExchangeRecipientsLoadFailure>());
     });
 
     test('a save refused for named fields says which fields', () async {
@@ -1014,7 +1020,8 @@ void main() {
         isTestnet: false,
       );
 
-      final failure = _failureOf(result) as RecipientsInvalidFieldsFailure;
+      final failure =
+          _failureOf(result) as ExchangeRecipientsInvalidFieldsFailure;
       expect(failure.fields, {
         RecipientField.email: RecipientFieldProblem.missing,
         RecipientField.documentType: RecipientFieldProblem.invalid,
@@ -1026,7 +1033,7 @@ void main() {
       final result = await _repository(FakeBbxHttp(body: _errorBody))
           .saveRecipient(_newRecipients.first, isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsSaveFailure>());
+      expect(_failureOf(result), isA<ExchangeRecipientsSaveFailure>());
     });
 
     test('refusal logs omit the payload', () async {

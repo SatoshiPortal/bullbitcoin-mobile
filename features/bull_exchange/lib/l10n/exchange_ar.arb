@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "تعذّر حفظ هذا المستفيد. تحقق من البيانات وحاول مرة أخرى.",
   "recipientsErrorSinpeLookupFailed": "لم نتمكن من التحقق من رقم الهاتف هذا. تحقق منه وحاول مرة أخرى.",
   "recipientsErrorBillerSearchFailed": "تعذّر البحث عن جهات الفوترة. حاول مرة أخرى.",
-  "recipientsErrorNetwork": "تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
   "recipientsListPullToRetry": "اسحب للأسفل لإعادة المحاولة.",
   "recipientsErrorSavedButNotSelected": "تم حفظ هذا المستفيد، لكن لم نتمكن من المتابعة. ابحث عنه في قائمتك للمتابعة.",
   "recipientsTypeConfidentialSepa": "SEPA السري",

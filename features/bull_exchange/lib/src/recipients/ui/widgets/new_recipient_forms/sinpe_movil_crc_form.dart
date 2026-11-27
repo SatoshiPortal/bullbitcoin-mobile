@@ -135,7 +135,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
           // A failed lookup used to just stop the spinner, leaving the owner
           //  field blank with no explanation. Shown under the phone field
           //  because that is what the message asks the user to check.
-          BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
+          BlocSelector<RecipientsBloc, RecipientsState, ExchangeFailure?>(
             selector: (state) => state.failedToCheckSinpe,
             builder: (context, failure) {
               if (failure == null) return const SizedBox.shrink();

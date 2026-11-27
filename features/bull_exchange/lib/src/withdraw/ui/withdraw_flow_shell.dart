@@ -208,7 +208,9 @@ List<Page<void>> withdrawPagesFor(
           onBack: () => onEvent(const WithdrawBackPressed()),
           problem: refused == null
               ? null
-              : const RecipientsSelectionFailure().toTranslated(context),
+              : const ExchangeRecipientsSelectionFailure().toTranslated(
+                  context,
+                ),
         ),
       ),
     ),

@@ -126,7 +126,7 @@ void main() {
     expect(events, hasLength(1));
     expect(
       (events.single as Err).failure,
-      isA<RecipientsEuResidencyRequiredFailure>(),
+      isA<ExchangeEuResidencyRequiredFailure>(),
     );
   });
 
@@ -140,7 +140,7 @@ void main() {
         .toList();
 
     expect(events, hasLength(2));
-    expect((events.last as Err).failure, isA<RecipientsNetworkFailure>());
+    expect((events.last as Err).failure, isA<ExchangeNetworkFailure>());
   });
 
   test(
@@ -156,7 +156,7 @@ void main() {
         pollInterval: const Duration(minutes: 10),
       ).execute(createIfAbsent: false);
 
-      final collected = <Result<VirtualIban?, RecipientsFailure>>[];
+      final collected = <Result<VirtualIban?, ExchangeFailure>>[];
       final done = Completer<void>();
       final sub = events.listen(collected.add, onDone: done.complete);
 
@@ -182,7 +182,7 @@ void main() {
 
   test('an unreadable environment is reported', () async {
     when(() => environment.execute())
-        .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+        .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
     final repository = _FakeVirtualIbanRepository(findResults: []);
 
     final events = await usecase(repository)

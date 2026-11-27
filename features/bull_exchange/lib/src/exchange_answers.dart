@@ -15,8 +15,7 @@ Result<T, ExchangeReadFailure> readOfExchangeFailure<T>(
   ExchangeFailure failure,
 ) => switch (failure) {
   final ExchangeReadFailure read => Err(read),
-  ExchangeNotAuthenticatedFailure() ||
-  RecipientsNotAuthenticatedFailure() => const Err(
+  ExchangeNotAuthenticatedFailure() => const Err(
     ExchangeSessionRejectedFailure(ExchangeSessionRejection.signedOut),
   ),
   ExchangeCredentialReadFailure() => const Err(
@@ -24,7 +23,7 @@ Result<T, ExchangeReadFailure> readOfExchangeFailure<T>(
       ExchangeSessionRejection.credentialUnavailable,
     ),
   ),
-  ExchangeNetworkFailure() || RecipientsNetworkFailure() => Err(
+  ExchangeNetworkFailure() => Err(
     ExchangeUnreachableFailure(failure.runtimeType.toString(), isNetwork: true),
   ),
   _ => Err(
@@ -47,8 +46,9 @@ Result<T, ExchangeWriteFailure> writeOfResult<T>(
   Ok(:final value) => Ok(value),
   Err(:final failure) => switch (failure) {
     final ExchangeWriteFailure write => Err(write),
-    ExchangeNotAuthenticatedFailure() || RecipientsNotAuthenticatedFailure() =>
-      const Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.signedOut)),
+    ExchangeNotAuthenticatedFailure() => const Err(
+      ExchangeWriteNotSentFailure(ExchangeNotSentReason.signedOut),
+    ),
     ExchangeCredentialReadFailure() => const Err(
       ExchangeWriteNotSentFailure(ExchangeNotSentReason.credentialUnavailable),
     ),
@@ -62,8 +62,8 @@ Result<T, ExchangeWriteFailure> writeOfResult<T>(
     ),
     ExchangeVirtualIbanNotAvailableFailure() ||
     ExchangeEuResidencyRequiredFailure() ||
-    RecipientsVirtualIbanNotAvailableFailure() ||
-    RecipientsEuResidencyRequiredFailure() => const Err(
+    ExchangeVirtualIbanNotAvailableFailure() ||
+    ExchangeEuResidencyRequiredFailure() => const Err(
       ExchangeWriteRefusedFailure(ExchangeRefusal()),
     ),
     _ => Err(

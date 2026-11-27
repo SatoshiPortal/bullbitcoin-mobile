@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "이 수취인을 저장할 수 없습니다. 정보를 확인한 후 다시 시도해 주세요.",
   "recipientsErrorSinpeLookupFailed": "이 전화번호를 확인할 수 없습니다. 번호를 확인한 후 다시 시도해 주세요.",
   "recipientsErrorBillerSearchFailed": "청구 기관을 검색할 수 없습니다. 다시 시도해 주세요.",
-  "recipientsErrorNetwork": "인터넷 연결을 확인한 후 다시 시도해 주세요.",
   "recipientsListPullToRetry": "아래로 당겨 다시 시도하세요.",
   "recipientsErrorSavedButNotSelected": "이 수취인은 저장되었지만 계속할 수 없습니다. 목록에서 찾아 계속하세요.",
   "recipientsTypeConfidentialSepa": "기밀 SEPA",

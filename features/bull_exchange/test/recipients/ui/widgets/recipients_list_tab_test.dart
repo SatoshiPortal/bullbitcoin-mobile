@@ -40,7 +40,7 @@ final _recipient = recipientFixture(
 void main() {
   late _MockRecipientsBloc bloc;
   late RecipientsServices services;
-  late StreamController<Result<VirtualIban?, RecipientsFailure>> events;
+  late StreamController<Result<VirtualIban?, ExchangeFailure>> events;
 
   setUp(() {
     bloc = _MockRecipientsBloc();
@@ -362,7 +362,7 @@ void main() {
         ),
         jurisdictionFilter: Jurisdiction.europe,
         failedToLoadConfidentialSepaAvailability:
-            const RecipientsNetworkFailure(),
+            const ExchangeNetworkFailure(),
         recipients: [_recipient],
       ),
     );
@@ -394,7 +394,7 @@ void main() {
         jurisdictionFilter: Jurisdiction.europe,
         confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
         failedToLoadConfidentialSepaAvailability:
-            const RecipientsNetworkFailure(),
+            const ExchangeNetworkFailure(),
         recipients: [confidential],
       ),
     );

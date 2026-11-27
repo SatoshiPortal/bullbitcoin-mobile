@@ -14,7 +14,7 @@ void main() {
       final exchange = testExchange(http, isTestnet: isTestnet);
       addTearDown(exchange.close);
 
-      Future<Result<void, RecipientsFailure>> update(bool testnet) =>
+      Future<Result<void, ExchangeFailure>> update(bool testnet) =>
           exchange.recipients.updateInteracSecurityDetails(
             recipientId: 'recipient-1',
             email: 'person@example.invalid',
@@ -23,14 +23,14 @@ void main() {
             isTestnet: testnet,
           );
 
-      expect(await update(!isTestnet), isA<Err<void, RecipientsFailure>>());
+      expect(await update(!isTestnet), isA<Err<void, ExchangeFailure>>());
       expect(http.requests, isEmpty);
 
       switch (await update(isTestnet)) {
         case Ok():
           fail('a failed transport must not be reported as an update');
         case Err(:final failure):
-          expect(failure, isA<RecipientsNetworkFailure>());
+          expect(failure, isA<ExchangeNetworkFailure>());
       }
       final options = http.requests.single;
       expect(
@@ -56,10 +56,10 @@ void main() {
         securityAnswer: null,
         isTestnet: false,
       ),
-      isA<Err<void, RecipientsFailure>>().having(
+      isA<Err<void, ExchangeFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<RecipientsUnsupportedNetworkFailure>(),
+        isA<ExchangeUnsupportedNetworkFailure>(),
       ),
     );
     expect(http.requests, isEmpty);
@@ -91,10 +91,10 @@ void main() {
 
     expect(
       result,
-      isA<Err<void, RecipientsFailure>>().having(
+      isA<Err<void, ExchangeFailure>>().having(
         (result) => result.failure,
         'failure',
-        isA<RecipientsUnexpectedFailure>(),
+        isA<ExchangeUnexpectedFailure>(),
       ),
     );
     expect(http.requests, hasLength(1));

@@ -28,7 +28,7 @@ class AddRecipientUsecase {
   });
 
   @useResult
-  Future<Result<AddRecipientResult, RecipientsFailure>> execute(
+  Future<Result<AddRecipientResult, ExchangeFailure>> execute(
     AddRecipientParams params,
   ) async {
     final bool isTestnet;
@@ -56,7 +56,7 @@ class AddRecipientUsecase {
         error: e,
         trace: st,
       );
-      return const Err(RecipientsSaveFailure());
+      return const Err(ExchangeRecipientsSaveFailure());
     }
 
     final Recipient recipient;

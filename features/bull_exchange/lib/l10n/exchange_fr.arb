@@ -482,7 +482,6 @@
   "recipientsErrorSaveFailed": "Ce bénéficiaire n’a pas pu être enregistré. Vérifiez les informations et réessayez.",
   "recipientsErrorSinpeLookupFailed": "Nous n’avons pas pu vérifier ce numéro de téléphone. Vérifiez-le et réessayez.",
   "recipientsErrorBillerSearchFailed": "La recherche de facturiers a échoué. Veuillez réessayer.",
-  "recipientsErrorNetwork": "Vérifiez votre connexion Internet et réessayez.",
   "recipientsListPullToRetry": "Tirez vers le bas pour réessayer.",
   "recipientsErrorSavedButNotSelected": "Ce bénéficiaire a été enregistré, mais nous n’avons pas pu continuer. Retrouvez-le dans votre liste pour poursuivre.",
   "recipientsTypeConfidentialSepa": "SEPA Confidentiel",

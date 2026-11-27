@@ -22,7 +22,7 @@ class WatchSepaVirtualPayeeActivationUsecase {
     this._pollInterval = const Duration(seconds: 5),
   });
 
-  Stream<Result<SepaVirtualPayeeStatus, RecipientsFailure>> execute({
+  Stream<Result<SepaVirtualPayeeStatus, ExchangeFailure>> execute({
     required String recipientId,
   }) async* {
     final bool isTestnet;
@@ -76,7 +76,7 @@ class WatchSepaVirtualPayeeActivationUsecase {
     }
   }
 
-  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> _findStatus(
+  Future<Result<SepaVirtualPayeeStatus, ExchangeFailure>> _findStatus(
     String recipientId,
     bool isTestnet,
   ) async {
@@ -87,7 +87,7 @@ class WatchSepaVirtualPayeeActivationUsecase {
     return switch (result) {
       Ok(value: final SepaVirtualPayeeStatus status) => Ok(status),
       Ok(value: null) => const Err(
-        RecipientsUnexpectedFailure('The SEPA recipient was not found'),
+        ExchangeUnexpectedFailure('The SEPA recipient was not found'),
       ),
       Err(:final failure) => Err(failure),
     };

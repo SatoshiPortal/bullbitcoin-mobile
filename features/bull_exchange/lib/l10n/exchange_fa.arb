@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "این گیرنده ذخیره نشد. اطلاعات را بررسی کنید و دوباره تلاش کنید.",
   "recipientsErrorSinpeLookupFailed": "نتوانستیم این شماره تلفن را تأیید کنیم. آن را بررسی کنید و دوباره تلاش کنید.",
   "recipientsErrorBillerSearchFailed": "جست‌وجوی صادرکنندگان صورت‌حساب انجام نشد. لطفاً دوباره تلاش کنید.",
-  "recipientsErrorNetwork": "اتصال اینترنت خود را بررسی کنید و دوباره تلاش کنید.",
   "recipientsListPullToRetry": "برای تلاش دوباره به پایین بکشید.",
   "recipientsErrorSavedButNotSelected": "این گیرنده ذخیره شد، اما نتوانستیم ادامه دهیم. برای ادامه او را در فهرست خود پیدا کنید.",
   "recipientsTypeConfidentialSepa": "SEPA محرمانه",

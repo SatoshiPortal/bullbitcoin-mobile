@@ -11,13 +11,13 @@ const _testnet = ExchangeSession(
 );
 
 final class _Recipients extends Fake implements RecipientsRepository {
-  final Result<SepaVirtualPayeeStatus?, RecipientsFailure> status;
+  final Result<SepaVirtualPayeeStatus?, ExchangeFailure> status;
   final asked = <(String, bool)>[];
 
   _Recipients({this.status = const Ok(SepaVirtualPayeeStatus.pending)});
 
   @override
-  Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
+  Future<Result<SepaVirtualPayeeStatus?, ExchangeFailure>> findStatus({
     required String recipientId,
     required bool isTestnet,
   }) async {
@@ -62,7 +62,7 @@ void main() {
   test('a failed read is unreachable', () async {
     final read = await GetVirtualPayeeStatusUsecase(
       exchangeForTesting(
-        recipients: _Recipients(status: const Err(RecipientsNetworkFailure())),
+        recipients: _Recipients(status: const Err(ExchangeNetworkFailure())),
       ),
     ).execute(_testnet, 'r-1');
     expect(

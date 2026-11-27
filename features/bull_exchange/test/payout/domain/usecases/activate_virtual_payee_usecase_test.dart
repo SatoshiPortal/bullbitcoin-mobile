@@ -11,13 +11,13 @@ const _mainnet = ExchangeSession(
 );
 
 final class _Recipients extends Fake implements RecipientsRepository {
-  final Result<SepaVirtualPayeeStatus, RecipientsFailure> activation;
+  final Result<SepaVirtualPayeeStatus, ExchangeFailure> activation;
   final asked = <(String, bool)>[];
 
   _Recipients({this.activation = const Ok(SepaVirtualPayeeStatus.pending)});
 
   @override
-  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activate({
+  Future<Result<SepaVirtualPayeeStatus, ExchangeFailure>> activate({
     required String recipientId,
     required bool isTestnet,
   }) async {
@@ -47,7 +47,7 @@ void main() {
     final write = await ActivateVirtualPayeeUsecase(
       exchangeForTesting(
         recipients: _Recipients(
-          activation: const Err(RecipientsNetworkFailure()),
+          activation: const Err(ExchangeNetworkFailure()),
         ),
       ),
     ).execute(_mainnet, 'r-1');

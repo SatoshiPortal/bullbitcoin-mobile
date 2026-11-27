@@ -125,7 +125,7 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
           ),
           // A failed search used to leave an empty dropdown that reads as
           //  "no such biller" rather than "the search did not run".
-          BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
+          BlocSelector<RecipientsBloc, RecipientsState, ExchangeFailure?>(
             selector: (state) => state.failedToSearchCadBillers,
             builder: (context, failure) {
               if (failure == null) return const SizedBox.shrink();

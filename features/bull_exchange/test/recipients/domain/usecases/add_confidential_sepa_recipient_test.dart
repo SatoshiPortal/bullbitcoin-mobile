@@ -66,9 +66,7 @@ void main() {
     final result = await usecase.execute(
       AddRecipientParams(recipientDetails: _sepaForm(type)),
     );
-    return (result as Ok<AddRecipientResult, RecipientsFailure>)
-        .value
-        .recipient;
+    return (result as Ok<AddRecipientResult, ExchangeFailure>).value.recipient;
   }
 
   test(
@@ -100,7 +98,7 @@ void main() {
         recipientId: any(named: 'recipientId'),
         isTestnet: any(named: 'isTestnet'),
       ),
-    ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+    ).thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
 
     final recipient = await add(RecipientType.confidentialSepaEur);
 

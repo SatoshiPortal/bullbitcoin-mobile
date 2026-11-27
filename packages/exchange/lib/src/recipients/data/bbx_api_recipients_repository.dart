@@ -14,7 +14,7 @@ import 'package:primitives/primitives.dart';
 
 typedef RunRecipientOperation = Future<Result<T, ExchangeFailure>> Function<T>(
   ExchangeEnvironment,
-  Future<Result<T, RecipientsFailure>> Function(bbx.Bbx),
+  Future<Result<T, ExchangeFailure>> Function(bbx.Bbx),
 );
 
 /// [RecipientsRepository] on the `bbx_api` package: each call runs on a
@@ -25,24 +25,97 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
 
   const BbxApiRecipientsRepository({required this._read, required this._write});
 
-  Future<Result<T, RecipientsFailure>> _execute<T>(
+  Future<Result<T, ExchangeFailure>> _execute<T>(
     RunRecipientOperation run,
     ExchangeEnvironment environment,
-    Future<Result<T, RecipientsFailure>> Function(bbx.Bbx) operation,
+    Future<Result<T, ExchangeFailure>> Function(bbx.Bbx) operation,
   ) async => (await run<T>(environment, operation)).mapErr((failure) {
     return switch (failure) {
-      RecipientsFailure() => failure,
-      ExchangeNotAuthenticatedFailure() =>
-        const RecipientsNotAuthenticatedFailure(),
-      ExchangeUnsupportedNetworkFailure() =>
-        const RecipientsUnsupportedNetworkFailure(),
-      ExchangeNetworkFailure() => const RecipientsNetworkFailure(),
-      _ => RecipientsUnexpectedFailure(failure.runtimeType.toString()),
+      // What the recipient calls answer themselves.
+      ExchangeRecipientsLoadFailure() ||
+      ExchangeRecipientsSaveFailure() ||
+      ExchangeRecipientsInvalidFieldsFailure() ||
+      ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+      ExchangeRecipientsSinpeLookupFailure() ||
+      ExchangeRecipientsCadBillerSearchFailure() ||
+      ExchangeRecipientsSelectionFailure() ||
+      ExchangeRecipientsSavedButNotSelectedFailure() ||
+      ExchangeRecipientsInvalidSecurityDetailsFailure() ||
+      ExchangeNotAuthenticatedFailure() ||
+      ExchangeUnsupportedNetworkFailure() ||
+      ExchangeNetworkFailure() ||
+      ExchangeUnexpectedFailure() ||
+      ExchangeVirtualIbanNotAvailableFailure() ||
+      ExchangeEuResidencyRequiredFailure() => failure,
+      // A failure of the session around the call: none of the recipient
+      // screens words it, so it is reported as unexpected.
+      ExchangeAccountUnavailableFailure() ||
+      ExchangeAuthenticationDeferredFailure() ||
+      ExchangeAuthenticationFailure() ||
+      ExchangeApiKeyStorageFailure() ||
+      ExchangeSessionClearFailure() ||
+      ExchangePlatformNotAllowedFailure() ||
+      ExchangePreferencesSaveFailure() ||
+      ExchangePreferencesSaveOutcomeUnknownFailure() ||
+      ExchangeNotificationsUnavailableFailure() ||
+      ExchangeAnnouncementsUnavailableFailure() ||
+      ExchangeAccountDeletionRequestFailure() ||
+      ExchangeOperationStaleFailure() ||
+      ExchangeOrderInventoryUnavailableFailure() ||
+      ExchangeCredentialReadFailure() ||
+      ExchangeCredentialsUnavailableFailure() ||
+      ExchangeBasicAuthSaveFailure() ||
+      ExchangeApiKeyInvalidFailure() ||
+      ExchangeApiKeySaveFailure() ||
+      ExchangeApiKeyDeleteFailure() ||
+      ExchangeOrderLimitFailure() ||
+      ExchangeConfidentialSepaInactiveFailure() ||
+      ExchangeOrderLoadFailure() ||
+      ExchangeOrderRejectedFailure() ||
+      ExchangeStatisticsUnavailableFailure() ||
+      ExchangeDocumentUploadFailure() ||
+      ExchangeAccountDetailsUnavailableFailure() ||
+      ExchangeUploadStatusUnavailableFailure() ||
+      ExchangeDocumentAlreadySubmittedFailure() ||
+      ExchangeDocumentEmptyFailure() ||
+      ExchangeDocumentTooLargeFailure() ||
+      ExchangeDocumentTypeNotAllowedFailure() ||
+      ExchangeDocumentUnreadableFailure() ||
+      ExchangeWriteBusyFailure() ||
+      ExchangePaymentLinkUnavailableFailure() ||
+      ExchangeDefaultWalletAddressEmptyFailure() ||
+      ExchangeDefaultWalletAddressInvalidFailure() ||
+      ExchangeDefaultWalletSaveFailure() ||
+      ExchangeDefaultWalletDeleteFailure() ||
+      ExchangeConsentRegistrationFailure() ||
+      ExchangeChatLoadMessagesFailure() ||
+      ExchangeChatSendMessageFailure() ||
+      ExchangeChatLoadAttachmentFailure() ||
+      ExchangeChatNotAuthenticatedFailure() ||
+      ExchangeChatMessageEmptyFailure() ||
+      ExchangeChatAttachmentEmptyFailure() ||
+      ExchangeChatPickImagesFailure() ||
+      ExchangeChatAttachLogsFailure() ||
+      ExchangeLimitOrderFailure() ||
+      ExchangeFundingFailure() ||
+      ExchangeJournalFailure() ||
+      ExchangeDestinationUnavailableFailure() ||
+      ExchangeDestinationInvalidFailure() ||
+      ExchangeMissingFailure() ||
+      ExchangeUnreachableFailure() ||
+      ExchangeMalformedFailure() ||
+      ExchangeSessionRejectedFailure() ||
+      ExchangeWriteRefusedFailure() ||
+      ExchangeWriteOutcomeUnknownFailure() ||
+      ExchangeWriteNotSentFailure() ||
+      ExchangePayinBuildFailure() => ExchangeUnexpectedFailure(
+        failure.runtimeType.toString(),
+      ),
     };
   });
 
   @override
-  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+  Future<Result<Recipient, ExchangeFailure>> saveRecipient(
     RecipientDetails details, {
     bool isFiatRecipient = true,
     required bool isTestnet,
@@ -57,7 +130,7 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
   );
 
   @override
-  Future<Result<RecipientPage, RecipientsFailure>> listRecipients({
+  Future<Result<RecipientPage, ExchangeFailure>> listRecipients({
     required bool isTestnet,
     bool fiatOnly = true,
     int page = 1,
@@ -80,7 +153,7 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
   );
 
   @override
-  Future<Result<String, RecipientsFailure>> checkSinpe({
+  Future<Result<String, ExchangeFailure>> checkSinpe({
     required String phoneNumber,
     required bool isTestnet,
   }) => _execute(
@@ -92,7 +165,7 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
   );
 
   @override
-  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
+  Future<Result<List<CadBiller>, ExchangeFailure>> listCadBillers({
     required String searchTerm,
     required bool isTestnet,
   }) => _execute(
@@ -104,7 +177,7 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
   );
 
   @override
-  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
+  Future<Result<void, ExchangeFailure>> updateInteracSecurityDetails({
     required String recipientId,
     required String email,
     required String? securityQuestion,
@@ -137,7 +210,7 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
   }
 
   @override
-  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activate({
+  Future<Result<SepaVirtualPayeeStatus, ExchangeFailure>> activate({
     required String recipientId,
     required bool isTestnet,
   }) => _execute(
@@ -150,7 +223,7 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
   );
 
   @override
-  Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
+  Future<Result<SepaVirtualPayeeStatus?, ExchangeFailure>> findStatus({
     required String recipientId,
     required bool isTestnet,
   }) => _execute(

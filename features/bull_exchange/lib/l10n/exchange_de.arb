@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Dieser Empfänger konnte nicht gespeichert werden. Bitte überprüfen Sie die Angaben und versuchen Sie es erneut.",
   "recipientsErrorSinpeLookupFailed": "Wir konnten diese Telefonnummer nicht überprüfen. Bitte prüfen Sie sie und versuchen Sie es erneut.",
   "recipientsErrorBillerSearchFailed": "Die Suche nach Zahlungsempfängern ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
-  "recipientsErrorNetwork": "Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
   "recipientsListPullToRetry": "Zum Wiederholen nach unten ziehen.",
   "recipientsErrorSavedButNotSelected": "Dieser Empfänger wurde gespeichert, aber wir konnten nicht fortfahren. Sie finden ihn in Ihrer Liste.",
   "recipientsTypeConfidentialSepa": "Vertrauliches SEPA",

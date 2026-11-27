@@ -74,7 +74,7 @@ void main() {
           isOwner: any(named: 'isOwner'),
           search: any(named: 'search'),
         ),
-      ).thenAnswer((_) async => const Err(RecipientsLoadFailure()));
+      ).thenAnswer((_) async => const Err(ExchangeRecipientsLoadFailure()));
 
       final result = await GetRecipientsUsecase(
         recipientsRepository: repository,
@@ -85,7 +85,7 @@ void main() {
         case Ok():
           fail('a repository failure must not be reported as recipients');
         case Err(:final failure):
-          expect(failure, isA<RecipientsLoadFailure>());
+          expect(failure, isA<ExchangeRecipientsLoadFailure>());
           expect(failure.logMessage, isNull);
       }
     });
@@ -94,7 +94,7 @@ void main() {
       when(
         () =>
             repository.saveRecipient(any(), isTestnet: any(named: 'isTestnet')),
-      ).thenAnswer((_) async => const Err(RecipientsSaveFailure()));
+      ).thenAnswer((_) async => const Err(ExchangeRecipientsSaveFailure()));
 
       final result =
           await AddRecipientUsecase(
@@ -116,7 +116,7 @@ void main() {
             'a repository failure must not be reported as a saved recipient',
           );
         case Err(:final failure):
-          expect(failure, isA<RecipientsSaveFailure>());
+          expect(failure, isA<ExchangeRecipientsSaveFailure>());
           expect(failure.logMessage, isNull);
       }
     });
@@ -127,7 +127,9 @@ void main() {
           phoneNumber: any(named: 'phoneNumber'),
           isTestnet: any(named: 'isTestnet'),
         ),
-      ).thenAnswer((_) async => const Err(RecipientsSinpeLookupFailure()));
+      ).thenAnswer(
+        (_) async => const Err(ExchangeRecipientsSinpeLookupFailure()),
+      );
 
       final result = await CheckSinpeUsecase(
         recipientsRepository: repository,
@@ -138,7 +140,7 @@ void main() {
         case Ok():
           fail('a repository failure must not be reported as an owner name');
         case Err(:final failure):
-          expect(failure, isA<RecipientsSinpeLookupFailure>());
+          expect(failure, isA<ExchangeRecipientsSinpeLookupFailure>());
           expect(failure.logMessage, isNull);
       }
     });
@@ -149,7 +151,9 @@ void main() {
           searchTerm: any(named: 'searchTerm'),
           isTestnet: any(named: 'isTestnet'),
         ),
-      ).thenAnswer((_) async => const Err(RecipientsCadBillerSearchFailure()));
+      ).thenAnswer(
+        (_) async => const Err(ExchangeRecipientsCadBillerSearchFailure()),
+      );
 
       final result = await ListCadBillersUsecase(
         recipientsRepository: repository,
@@ -160,7 +164,7 @@ void main() {
         case Ok():
           fail('a repository failure must not be reported as a biller list');
         case Err(:final failure):
-          expect(failure, isA<RecipientsCadBillerSearchFailure>());
+          expect(failure, isA<ExchangeRecipientsCadBillerSearchFailure>());
           expect(failure.logMessage, isNull);
       }
     });
@@ -169,14 +173,14 @@ void main() {
   test('a failed environment read is returned, not thrown: these use-cases '
       'promise a Result and the bloc has no catch left to stop a throw', () async {
     when(() => environment.execute())
-        .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+        .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
 
     final result = await GetRecipientsUsecase(
       recipientsRepository: repository,
       getRecipientsEnvironmentUsecase: environment,
     ).execute(GetRecipientsParams());
 
-    expect(result, isA<Err<GetRecipientsResult, RecipientsFailure>>());
+    expect(result, isA<Err<GetRecipientsResult, ExchangeFailure>>());
     // The repository is never reached without an environment to scope the call.
     verifyNever(
       () => repository.listRecipients(isTestnet: any(named: 'isTestnet')),
@@ -206,7 +210,7 @@ void main() {
       case Ok():
         fail('an invalid recipient must not be reported as saved');
       case Err(:final failure):
-        expect(failure, isA<RecipientsSaveFailure>());
+        expect(failure, isA<ExchangeRecipientsSaveFailure>());
         expect(failure.logMessage, isNull);
     }
     // The repository is never called with details the domain rejected.
@@ -226,7 +230,7 @@ void main() {
         case Ok():
           fail('a thrown settings read must not be reported as an environment');
         case Err(:final failure):
-          expect(failure, isA<RecipientsUnexpectedFailure>());
+          expect(failure, isA<ExchangeUnexpectedFailure>());
           expect(failure.logMessage, isNull);
       }
     });
@@ -246,7 +250,7 @@ void main() {
       final result = await GetRecipientsEnvironmentUsecase(settings).execute();
 
       expect(
-        (result as Ok<Environment, RecipientsFailure>).value,
+        (result as Ok<Environment, ExchangeFailure>).value,
         Environment.testnet,
       );
     });
@@ -266,7 +270,7 @@ void main() {
       ).execute();
 
       expect(
-        (result as Ok<Jurisdiction?, RecipientsFailure>).value,
+        (result as Ok<Jurisdiction?, ExchangeFailure>).value,
         Jurisdiction.costaRica,
       );
     });
@@ -280,7 +284,7 @@ void main() {
       ).execute();
 
       expect(
-        (result as Ok<Jurisdiction?, RecipientsFailure>).value,
+        (result as Ok<Jurisdiction?, ExchangeFailure>).value,
         Jurisdiction.costaRica,
       );
     });
@@ -295,7 +299,7 @@ void main() {
           exchangeForTesting(getUserSummary: (_) => summary.execute()),
         ).execute();
 
-        expect((result as Ok<Jurisdiction?, RecipientsFailure>).value, isNull);
+        expect((result as Ok<Jurisdiction?, ExchangeFailure>).value, isNull);
       },
     );
 
@@ -313,7 +317,7 @@ void main() {
         case Ok():
           fail('a failed read must not be reported as a jurisdiction');
         case Err(:final failure):
-          expect(failure, isA<RecipientsUnexpectedFailure>());
+          expect(failure, isA<ExchangeUnexpectedFailure>());
           expect(failure.logMessage, isNull);
       }
     });

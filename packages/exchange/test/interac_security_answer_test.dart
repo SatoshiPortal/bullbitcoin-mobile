@@ -43,7 +43,7 @@ void main() {
         securityQuestion: 'Favourite city?',
         securityAnswer: 'New York',
       ),
-      isA<Err<InteracSecurityDetails, RecipientsFailure>>(),
+      isA<Err<InteracSecurityDetails, ExchangeFailure>>(),
     );
     expect(
       InteracSecurityDetails.create(
@@ -52,7 +52,7 @@ void main() {
         securityQuestion: 'Pet?',
         securityAnswer: 'rex',
       ),
-      isA<Ok<InteracSecurityDetails, RecipientsFailure>>(),
+      isA<Ok<InteracSecurityDetails, ExchangeFailure>>(),
     );
   });
 }

@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Δεν ήταν δυνατή η αποθήκευση αυτού του παραλήπτη. Ελέγξτε τα στοιχεία και δοκιμάστε ξανά.",
   "recipientsErrorSinpeLookupFailed": "Δεν μπορέσαμε να επαληθεύσουμε αυτόν τον αριθμό τηλεφώνου. Ελέγξτε τον και δοκιμάστε ξανά.",
   "recipientsErrorBillerSearchFailed": "Δεν ήταν δυνατή η αναζήτηση φορέων πληρωμών. Δοκιμάστε ξανά.",
-  "recipientsErrorNetwork": "Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
   "recipientsListPullToRetry": "Τραβήξτε προς τα κάτω για επανάληψη.",
   "recipientsErrorSavedButNotSelected": "Αυτός ο παραλήπτης αποθηκεύτηκε, αλλά δεν μπορέσαμε να συνεχίσουμε. Βρείτε τον στη λίστα σας.",
   "recipientsTypeConfidentialSepa": "Εμπιστευτικό SEPA",

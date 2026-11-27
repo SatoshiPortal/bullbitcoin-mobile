@@ -33,7 +33,7 @@ void main() {
   Future<(_MockRecipientsBloc, ExchangeLocalizations)> pumpForm(
     WidgetTester tester,
     Widget form, {
-    RecipientsFailure? failedToAddRecipient,
+    ExchangeFailure? failedToAddRecipient,
   }) async {
     final bloc = _MockRecipientsBloc();
     whenListen(
@@ -185,13 +185,12 @@ void main() {
     final (_, loc) = await pumpForm(
       tester,
       const NequiCopForm(),
-      failedToAddRecipient: RecipientsInvalidFieldsFailure.fromFieldErrors(
-        const {
-          'email': 'ERR_VALIDATION_EMAIL',
-          'lastname': 'ERR_VALIDATION_REQUIRED',
-          'bankCode': 'ERR_VALIDATION_REQUIRED',
-        },
-      ),
+      failedToAddRecipient:
+          ExchangeRecipientsInvalidFieldsFailure.fromFieldErrors(const {
+            'email': 'ERR_VALIDATION_EMAIL',
+            'lastname': 'ERR_VALIDATION_REQUIRED',
+            'bankCode': 'ERR_VALIDATION_REQUIRED',
+          }),
     );
 
     expect(

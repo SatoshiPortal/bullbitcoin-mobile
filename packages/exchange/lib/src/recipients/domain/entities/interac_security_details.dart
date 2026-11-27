@@ -16,7 +16,7 @@ final class InteracSecurityDetails {
   final String? securityAnswer;
 
   @useResult
-  static Result<InteracSecurityDetails, RecipientsFailure> create({
+  static Result<InteracSecurityDetails, ExchangeFailure> create({
     required String recipientId,
     required String email,
     required String? securityQuestion,
@@ -24,7 +24,7 @@ final class InteracSecurityDetails {
   }) {
     if (recipientId.trim().isEmpty || email.trim().isEmpty) {
       return const Err(
-        RecipientsInvalidSecurityDetailsFailure(
+        ExchangeRecipientsInvalidSecurityDetailsFailure(
           'Invalid Interac recipient details',
         ),
       );
@@ -43,7 +43,7 @@ final class InteracSecurityDetails {
     }
     if (InteracSecurityAnswer.check(question, answer) != null) {
       return const Err(
-        RecipientsInvalidSecurityDetailsFailure(
+        ExchangeRecipientsInvalidSecurityDetailsFailure(
           'Invalid Interac security details',
         ),
       );

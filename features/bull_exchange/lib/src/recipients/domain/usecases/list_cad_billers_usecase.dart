@@ -26,7 +26,7 @@ class ListCadBillersUsecase {
   });
 
   @useResult
-  Future<Result<ListCadBillersResult, RecipientsFailure>> execute(
+  Future<Result<ListCadBillersResult, ExchangeFailure>> execute(
     ListCadBillersParams params,
   ) async {
     final bool isTestnet;

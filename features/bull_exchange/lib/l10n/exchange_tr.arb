@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Bu alıcı kaydedilemedi. Bilgileri kontrol edip tekrar deneyin.",
   "recipientsErrorSinpeLookupFailed": "Bu telefon numarasını doğrulayamadık. Numarayı kontrol edip tekrar deneyin.",
   "recipientsErrorBillerSearchFailed": "Fatura kurumları aranamadı. Lütfen tekrar deneyin.",
-  "recipientsErrorNetwork": "İnternet bağlantınızı kontrol edip tekrar deneyin.",
   "recipientsListPullToRetry": "Yeniden denemek için aşağı çekin.",
   "recipientsErrorSavedButNotSelected": "Bu alıcı kaydedildi, ancak devam edemedik. Devam etmek için listenizde bulun.",
   "recipientsTypeConfidentialSepa": "Gizli SEPA",

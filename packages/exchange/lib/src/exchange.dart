@@ -322,7 +322,7 @@ final class Exchange {
                 (result is Ok<T, ExchangeFailure> ||
                     (result is Err<T, ExchangeFailure> &&
                         result.failure
-                            is RecipientsSaveOutcomeUnknownFailure))) {
+                            is ExchangeRecipientsSaveOutcomeUnknownFailure))) {
               return result;
             }
             if (stale) return const Err(ExchangeOperationStaleFailure());

@@ -13,7 +13,7 @@ extension RecipientServerFieldError on BuildContext {
       (RecipientsBloc bloc) => bloc.state.failedToAddRecipient,
     );
     return switch (failure) {
-      RecipientsInvalidFieldsFailure(:final fields) =>
+      ExchangeRecipientsInvalidFieldsFailure(:final fields) =>
         fields[field]?.toTranslated(this),
       _ => null,
     };

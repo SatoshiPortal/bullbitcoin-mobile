@@ -62,13 +62,13 @@ final class _Orders extends Fake implements OrdersRepository {
 }
 
 final class _Recipients extends Fake implements RecipientsRepository {
-  final Result<Recipient, RecipientsFailure> answer;
+  final Result<Recipient, ExchangeFailure> answer;
   final saved = <RecipientDetails>[];
 
   _Recipients(this.answer);
 
   @override
-  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+  Future<Result<Recipient, ExchangeFailure>> saveRecipient(
     RecipientDetails details, {
     bool isFiatRecipient = true,
     required bool isTestnet,
@@ -233,7 +233,7 @@ void main() {
     test('an unknown outcome is journaled with the identity sent', () async {
       final journal = InMemoryUnknownWriteJournal();
       final inner = _Recipients(
-        const Err(RecipientsSaveOutcomeUnknownFailure('504')),
+        const Err(ExchangeRecipientsSaveOutcomeUnknownFailure('504')),
       );
 
       final result = await journaling(
@@ -243,10 +243,10 @@ void main() {
 
       expect(
         result,
-        isA<Err<Recipient, RecipientsFailure>>().having(
+        isA<Err<Recipient, ExchangeFailure>>().having(
           (r) => r.failure,
           'failure',
-          isA<RecipientsSaveOutcomeUnknownFailure>(),
+          isA<ExchangeRecipientsSaveOutcomeUnknownFailure>(),
         ),
       );
       expect(inner.saved, [details]);
@@ -264,10 +264,10 @@ void main() {
       expect(values, isNot(contains('colour')));
     });
 
-    for (final answer in <Result<Recipient, RecipientsFailure>>[
-      const Err(RecipientsSaveFailure()),
-      const Err(RecipientsNetworkFailure()),
-      const Err(RecipientsNotAuthenticatedFailure()),
+    for (final answer in <Result<Recipient, ExchangeFailure>>[
+      const Err(ExchangeRecipientsSaveFailure()),
+      const Err(ExchangeNetworkFailure()),
+      const Err(ExchangeNotAuthenticatedFailure()),
     ]) {
       test('${answer.runtimeType} is not journaled', () async {
         final journal = InMemoryUnknownWriteJournal();
@@ -287,7 +287,7 @@ void main() {
         final journal = InMemoryUnknownWriteJournal();
         final exchange = exchangeForTesting(
           recipients: _Recipients(
-            const Err(RecipientsSaveOutcomeUnknownFailure('timeout')),
+            const Err(ExchangeRecipientsSaveOutcomeUnknownFailure('timeout')),
           ),
           unknownWrites: journal,
           readSessionPoint: () async =>

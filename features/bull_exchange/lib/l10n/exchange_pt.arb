@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Não foi possível guardar este destinatário. Verifique os dados e tente novamente.",
   "recipientsErrorSinpeLookupFailed": "Não foi possível verificar este número de telefone. Verifique-o e tente novamente.",
   "recipientsErrorBillerSearchFailed": "Não foi possível pesquisar entidades de pagamento. Tente novamente.",
-  "recipientsErrorNetwork": "Verifique a sua ligação à Internet e tente novamente.",
   "recipientsListPullToRetry": "Puxe para baixo para tentar novamente.",
   "recipientsErrorSavedButNotSelected": "Este destinatário foi guardado, mas não foi possível continuar. Encontre-o na sua lista para prosseguir.",
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",

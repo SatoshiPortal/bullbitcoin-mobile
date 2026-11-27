@@ -28,7 +28,7 @@ class WatchVirtualIbanUsecase {
 
   static const _activatedEvent = 'VIRTUAL_IBAN_ACTIVATED';
 
-  Stream<Result<VirtualIban?, RecipientsFailure>> execute({
+  Stream<Result<VirtualIban?, ExchangeFailure>> execute({
     required bool createIfAbsent,
   }) async* {
     final ExchangeEnvironment environment;
@@ -89,9 +89,7 @@ class WatchVirtualIbanUsecase {
             yield Ok(value);
           case Ok(value: null):
             yield const Err(
-              RecipientsUnexpectedFailure(
-                'The pending virtual IBAN disappeared',
-              ),
+              ExchangeUnexpectedFailure('The pending virtual IBAN disappeared'),
             );
             return;
           case Err(:final failure):

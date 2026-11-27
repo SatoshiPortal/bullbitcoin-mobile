@@ -13,7 +13,7 @@ part 'virtual_iban_onboarding_state.dart';
 class VirtualIbanOnboardingCubit extends Cubit<VirtualIbanOnboardingState> {
   final WatchVirtualIbanUsecase _watchVirtualIbanUsecase;
   final GetAccountOwnerNameUsecase _getAccountOwnerNameUsecase;
-  StreamSubscription<Result<VirtualIban?, RecipientsFailure>>? _subscription;
+  StreamSubscription<Result<VirtualIban?, ExchangeFailure>>? _subscription;
 
   VirtualIbanOnboardingCubit({
     required this._watchVirtualIbanUsecase,
@@ -47,7 +47,7 @@ class VirtualIbanOnboardingCubit extends Cubit<VirtualIbanOnboardingState> {
         .listen(_onResult);
   }
 
-  void _onResult(Result<VirtualIban?, RecipientsFailure> result) {
+  void _onResult(Result<VirtualIban?, ExchangeFailure> result) {
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):

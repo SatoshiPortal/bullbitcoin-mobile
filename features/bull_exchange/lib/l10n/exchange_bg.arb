@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Този получател не можа да бъде запазен. Проверете данните и опитайте отново.",
   "recipientsErrorSinpeLookupFailed": "Не успяхме да проверим този телефонен номер. Проверете го и опитайте отново.",
   "recipientsErrorBillerSearchFailed": "Търсенето на получатели на плащания не бе успешно. Опитайте отново.",
-  "recipientsErrorNetwork": "Проверете интернет връзката си и опитайте отново.",
   "recipientsListPullToRetry": "Плъзнете надолу, за да опитате отново.",
   "recipientsErrorSavedButNotSelected": "Този получател е запазен, но не успяхме да продължим. Намерете го в списъка си, за да продължите.",
   "recipientsTypeConfidentialSepa": "Поверителен SEPA",

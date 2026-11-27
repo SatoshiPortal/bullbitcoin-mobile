@@ -14,7 +14,7 @@ class GetPreferredJurisdictionUsecase {
   const GetPreferredJurisdictionUsecase(this._exchange);
 
   @useResult
-  Future<Result<Jurisdiction?, RecipientsFailure>> execute() async {
+  Future<Result<Jurisdiction?, ExchangeFailure>> execute() async {
     switch (await _exchange.getUserSummary()) {
       case Ok(value: final summary):
         final currency = summary.currency;
@@ -28,7 +28,7 @@ class GetPreferredJurisdictionUsecase {
           'Could not read the exchange summary for a preferred jurisdiction',
           error: failure.runtimeType,
         );
-        return const Err(RecipientsUnexpectedFailure());
+        return const Err(ExchangeUnexpectedFailure());
     }
   }
 }

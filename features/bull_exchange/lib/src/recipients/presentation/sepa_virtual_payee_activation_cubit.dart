@@ -14,7 +14,7 @@ class SepaVirtualPayeeActivationCubit
   final WatchSepaVirtualPayeeActivationUsecase
   _watchSepaVirtualPayeeActivationUsecase;
   final String _recipientId;
-  StreamSubscription<Result<SepaVirtualPayeeStatus, RecipientsFailure>>?
+  StreamSubscription<Result<SepaVirtualPayeeStatus, ExchangeFailure>>?
   _subscription;
 
   SepaVirtualPayeeActivationCubit({
@@ -36,7 +36,7 @@ class SepaVirtualPayeeActivationCubit
     start();
   }
 
-  void _onResult(Result<SepaVirtualPayeeStatus, RecipientsFailure> result) {
+  void _onResult(Result<SepaVirtualPayeeStatus, ExchangeFailure> result) {
     if (isClosed) return;
     switch (result) {
       case Ok(:final value):

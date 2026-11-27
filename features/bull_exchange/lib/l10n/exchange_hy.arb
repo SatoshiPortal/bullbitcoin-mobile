@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Այս ստացողը չհաջողվեց պահել։ Ստուգեք տվյալները և փորձեք կրկին։",
   "recipientsErrorSinpeLookupFailed": "Չհաջողվեց հաստատել այս հեռախոսահամարը։ Ստուգեք այն և փորձեք կրկին։",
   "recipientsErrorBillerSearchFailed": "Չհաջողվեց որոնել վճարման կազմակերպությունները։ Փորձեք կրկին։",
-  "recipientsErrorNetwork": "Ստուգեք ինտերնետ կապը և փորձեք կրկին։",
   "recipientsListPullToRetry": "Կրկին փորձելու համար քաշեք ներքև։",
   "recipientsErrorSavedButNotSelected": "Այս ստացողը պահվեց, բայց չհաջողվեց շարունակել։ Գտեք նրան ձեր ցանկում՝ շարունակելու համար։",
   "recipientsTypeConfidentialSepa": "Գաղտնի SEPA",

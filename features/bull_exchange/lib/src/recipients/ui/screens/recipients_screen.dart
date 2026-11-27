@@ -148,8 +148,9 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
                     return const SizedBox.shrink();
                   }
                   return Text(
-                    const RecipientsVirtualIbanNotAvailableFailure()
-                        .toTranslated(context),
+                    const ExchangeVirtualIbanNotAvailableFailure().toTranslated(
+                      context,
+                    ),
                     style: context.bullType.body,
                   );
                 },

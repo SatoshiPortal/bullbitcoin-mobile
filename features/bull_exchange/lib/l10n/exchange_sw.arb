@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Mpokeaji huyu hakuweza kuhifadhiwa. Angalia maelezo na ujaribu tena.",
   "recipientsErrorSinpeLookupFailed": "Hatukuweza kuthibitisha nambari hii ya simu. Iangalie na ujaribu tena.",
   "recipientsErrorBillerSearchFailed": "Haikuwezekana kutafuta watoza bili. Tafadhali jaribu tena.",
-  "recipientsErrorNetwork": "Angalia muunganisho wako wa intaneti na ujaribu tena.",
   "recipientsListPullToRetry": "Vuta chini ili ujaribu tena.",
   "recipientsErrorSavedButNotSelected": "Mpokeaji huyu amehifadhiwa, lakini hatukuweza kuendelea. Mtafute kwenye orodha yako ili kuendelea.",
   "recipientsTypeConfidentialSepa": "SEPA ya Siri",

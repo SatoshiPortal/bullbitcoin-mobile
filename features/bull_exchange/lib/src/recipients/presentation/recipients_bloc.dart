@@ -304,7 +304,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   ///
   /// Making the hook return a Result instead would remove this catch, but the
   /// signature belongs to the calling features and changing it is their PR.
-  Future<RecipientsFailure?> _runSelectionHook(
+  Future<ExchangeFailure?> _runSelectionHook(
     RecipientViewModel recipient, {
     required bool isNew,
   }) async {
@@ -315,7 +315,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       return null;
     } on Object catch (e, st) {
       log.warning('Recipient selection hook failed', error: e, trace: st);
-      return const RecipientsSelectionFailure();
+      return const ExchangeRecipientsSelectionFailure();
     }
   }
 
@@ -331,7 +331,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   ) async {
     // The last save may have created the recipient: never send another
     // from this form.
-    if (state.failedToAddRecipient is RecipientsSaveOutcomeUnknownFailure) {
+    if (state.failedToAddRecipient
+        is ExchangeRecipientsSaveOutcomeUnknownFailure) {
       return;
     }
     emit(state.copyWith(isAddingRecipient: true, failedToAddRecipient: null));
@@ -355,13 +356,13 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
           emit(
             state.copyWith(
               failedToAddRecipient:
-                  const RecipientsSavedButNotSelectedFailure(),
+                  const ExchangeRecipientsSavedButNotSelectedFailure(),
             ),
           );
         }
       case Err(:final failure):
         emit(state.copyWith(failedToAddRecipient: failure));
-        if (failure is RecipientsSaveOutcomeUnknownFailure) {
+        if (failure is ExchangeRecipientsSaveOutcomeUnknownFailure) {
           // The list says whether the recipient was saved.
           add(const RecipientsEvent.refreshed());
         }

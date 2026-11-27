@@ -196,7 +196,9 @@ List<Page<void>> payPagesFor(
           onBack: () => onEvent(const PayBackPressed()),
           problem: refused == null
               ? null
-              : const RecipientsSelectionFailure().toTranslated(context),
+              : const ExchangeRecipientsSelectionFailure().toTranslated(
+                  context,
+                ),
         ),
       ),
     ),

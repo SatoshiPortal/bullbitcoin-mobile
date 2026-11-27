@@ -21,7 +21,7 @@ final class BbxApiSepaVirtualPayeeRepository
   });
 
   @override
-  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activate({
+  Future<Result<SepaVirtualPayeeStatus, ExchangeFailure>> activate({
     required String recipientId,
     required bool isTestnet,
   }) async {
@@ -33,7 +33,7 @@ final class BbxApiSepaVirtualPayeeRepository
             (failure) => _failureFrom(
               failure,
               'activate the virtual payee',
-              RecipientsUnexpectedFailure.new,
+              ExchangeUnexpectedFailure.new,
             ),
           );
     } on Exception catch (e, st) {
@@ -42,14 +42,14 @@ final class BbxApiSepaVirtualPayeeRepository
           e,
           st,
           'activate the virtual payee',
-          RecipientsUnexpectedFailure.new,
+          ExchangeUnexpectedFailure.new,
         ),
       );
     }
   }
 
   @override
-  Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
+  Future<Result<SepaVirtualPayeeStatus?, ExchangeFailure>> findStatus({
     required String recipientId,
     required bool isTestnet,
   }) async {
@@ -66,7 +66,7 @@ final class BbxApiSepaVirtualPayeeRepository
               _failureFrom(
                 failure,
                 'read the virtual payee status',
-                RecipientsLoadFailure.new,
+                ExchangeRecipientsLoadFailure.new,
               ),
             );
           case Ok(:final value):
@@ -85,7 +85,7 @@ final class BbxApiSepaVirtualPayeeRepository
                     _failureFrom(
                       failure,
                       'read the virtual payee status',
-                      RecipientsLoadFailure.new,
+                      ExchangeRecipientsLoadFailure.new,
                     ),
                   ),
                 };
@@ -104,7 +104,7 @@ final class BbxApiSepaVirtualPayeeRepository
           e,
           st,
           'read the virtual payee status',
-          RecipientsLoadFailure.new,
+          ExchangeRecipientsLoadFailure.new,
         ),
       );
     }
@@ -115,14 +115,14 @@ final class BbxApiSepaVirtualPayeeRepository
   static SepaVirtualPayeeStatus _status(bbx.SepaVirtualPayee payee) =>
       sepaVirtualPayeeStatusFromApi(payee.virtualPayeeStatus);
 
-  static RecipientsFailure _failureFrom(
+  static ExchangeFailure _failureFrom(
     bbx.BbxFailure failure,
     String operation,
-    RecipientsFailure Function([String?]) onApiFailure,
+    ExchangeFailure Function([String?]) onApiFailure,
   ) {
     switch (failure) {
       case bbx.BbxMissingCredentialFailure():
-        return const RecipientsNotAuthenticatedFailure();
+        return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
         return onApiFailure('Exchange credential unavailable');
       case bbx.BbxRpcFailure() || bbx.BbxHttpFailure():
@@ -133,10 +133,10 @@ final class BbxApiSepaVirtualPayeeRepository
         log.warning(
           'Could not reach the API to $operation: ${_timeoutName(kind)}',
         );
-        return const RecipientsNetworkFailure();
+        return const ExchangeNetworkFailure();
       case bbx.BbxConnectionFailure():
         log.warning('Could not reach the API to $operation: connectionError');
-        return const RecipientsNetworkFailure();
+        return const ExchangeNetworkFailure();
       case bbx.BbxOrderLimitFailure() ||
           bbx.BbxConfidentialSepaInactiveFailure() ||
           bbx.BbxBadCertificateFailure() ||
@@ -156,11 +156,11 @@ final class BbxApiSepaVirtualPayeeRepository
 
   /// The failure for an exception thrown while mapping a response the API
   /// did send.
-  static RecipientsFailure _unexpected(
+  static ExchangeFailure _unexpected(
     Exception e,
     StackTrace st,
     String operation,
-    RecipientsFailure Function([String?]) onApiFailure,
+    ExchangeFailure Function([String?]) onApiFailure,
   ) {
     log.warning('Failed to $operation', error: e.runtimeType, trace: st);
     return onApiFailure();

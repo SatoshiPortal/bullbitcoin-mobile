@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Yah recipient save nahin ho saka. Kripya jaankari janchein aur phir se prayas karein.",
   "recipientsErrorSinpeLookupFailed": "Hum is phone number ki pushti nahin kar sake. Kripya ise janchein aur phir se prayas karein.",
   "recipientsErrorBillerSearchFailed": "Biller khoje nahin ja sake. Kripya phir se prayas karein.",
-  "recipientsErrorNetwork": "Apna internet connection janchein aur phir se prayas karein.",
   "recipientsListPullToRetry": "Punah prayas ke liye neeche kheenchein.",
   "recipientsErrorSavedButNotSelected": "Yah recipient save ho gaya, lekin hum aage nahin badh sake. Jaari rakhne ke liye ise apni list mein khojein.",
   "recipientsTypeConfidentialSepa": "Confidential SEPA",

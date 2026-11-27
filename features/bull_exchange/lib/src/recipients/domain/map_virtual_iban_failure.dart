@@ -1,16 +1,16 @@
 import 'package:exchange/exchange.dart';
 
-RecipientsFailure mapVirtualIbanFailure(ExchangeFailure failure) =>
+ExchangeFailure mapVirtualIbanFailure(ExchangeFailure failure) =>
     switch (failure) {
       ExchangeNotAuthenticatedFailure() =>
-        const RecipientsNotAuthenticatedFailure(),
-      ExchangeNetworkFailure() => const RecipientsNetworkFailure(),
+        const ExchangeNotAuthenticatedFailure(),
+      ExchangeNetworkFailure() => const ExchangeNetworkFailure(),
       ExchangeVirtualIbanNotAvailableFailure() =>
-        const RecipientsVirtualIbanNotAvailableFailure(),
+        const ExchangeVirtualIbanNotAvailableFailure(),
       ExchangeEuResidencyRequiredFailure() =>
-        const RecipientsEuResidencyRequiredFailure(),
-      ExchangeCredentialReadFailure() => const RecipientsUnexpectedFailure(
+        const ExchangeEuResidencyRequiredFailure(),
+      ExchangeCredentialReadFailure() => const ExchangeUnexpectedFailure(
         'Exchange credential unavailable',
       ),
-      _ => RecipientsUnexpectedFailure(failure.logMessage),
+      _ => ExchangeUnexpectedFailure(failure.logMessage),
     };

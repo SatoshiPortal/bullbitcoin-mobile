@@ -92,13 +92,13 @@ Recipient _recipient(RecipientDetails details, {String id = 'r-1'}) =>
     );
 
 final class _Recipients extends Fake implements RecipientsRepository {
-  final List<Result<RecipientPage, RecipientsFailure>> pages;
+  final List<Result<RecipientPage, ExchangeFailure>> pages;
   final reads = <int>[];
 
   _Recipients(this.pages);
 
   @override
-  Future<Result<RecipientPage, RecipientsFailure>> listRecipients({
+  Future<Result<RecipientPage, ExchangeFailure>> listRecipients({
     required bool isTestnet,
     bool fiatOnly = true,
     int page = 1,
@@ -207,7 +207,7 @@ void main() {
         getUserSummary: (_) async => const Err(ExchangeNetworkFailure()),
         listRecentLimitOrders: () async => const Err(ExchangeNetworkFailure()),
         getDefaultWallets: () async => const Err(ExchangeNetworkFailure()),
-        recipients: _Recipients([const Err(RecipientsNetworkFailure())]),
+        recipients: _Recipients([const Err(ExchangeNetworkFailure())]),
       ).execute(ExchangeEnvironment.testnet);
 
       expect(orders.reads, ['o-1']);
@@ -718,7 +718,7 @@ void main() {
       getDefaultWallets: () async =>
           defaultWallets ?? const Err(ExchangeNetworkFailure()),
       recipients:
-          recipients ?? _Recipients([const Err(RecipientsNetworkFailure())]),
+          recipients ?? _Recipients([const Err(ExchangeNetworkFailure())]),
     );
 
     test('settles what the re-reads decide and keeps the rest open', () async {
@@ -921,7 +921,7 @@ void main() {
         _Orders(const {}),
         recipients: _Recipients([
           Ok((recipients: [other], totalRecipients: 2)),
-          const Err(RecipientsNetworkFailure()),
+          const Err(ExchangeNetworkFailure()),
         ]),
       ).execute(ExchangeEnvironment.testnet);
 

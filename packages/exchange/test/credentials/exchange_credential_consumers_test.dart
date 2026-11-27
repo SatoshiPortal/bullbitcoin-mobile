@@ -220,7 +220,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'recipients',
-          isA<RecipientsNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       expect(
@@ -249,7 +249,7 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'recipients unavailable',
-          isA<RecipientsLoadFailure>(),
+          isA<ExchangeRecipientsLoadFailure>(),
         ),
       );
       expect(

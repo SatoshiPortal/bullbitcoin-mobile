@@ -17,7 +17,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockWatchSepaVirtualPayeeActivationUsecase extends Mock
     implements WatchSepaVirtualPayeeActivationUsecase {}
 
-typedef _Event = Result<SepaVirtualPayeeStatus, RecipientsFailure>;
+typedef _Event = Result<SepaVirtualPayeeStatus, ExchangeFailure>;
 
 void main() {
   late StreamController<_Event> events;
@@ -72,7 +72,7 @@ void main() {
     tester,
   ) async {
     final loc = await pumpView(tester, withReturnHome: true);
-    await emit(tester, const Err(RecipientsNetworkFailure()));
+    await emit(tester, const Err(ExchangeNetworkFailure()));
     final colors = tester.element(find.byType(BullButton).first).bull;
     final fills = [
       for (final element in find.byType(BullButton).evaluate())
@@ -166,9 +166,9 @@ void main() {
     final loc = await pumpView(tester);
     expect(find.text(loc.retry), findsNothing);
 
-    await emit(tester, const Err(RecipientsNetworkFailure()));
+    await emit(tester, const Err(ExchangeNetworkFailure()));
 
     expect(find.text(loc.retry), findsOne);
-    expect(find.text(loc.recipientsErrorNetwork), findsOne);
+    expect(find.text(loc.exchangeErrorNetwork), findsOne);
   });
 }

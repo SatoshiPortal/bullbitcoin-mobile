@@ -260,7 +260,9 @@ List<Page<void>> sellPagesFor(
           onBack: () => onEvent(const SellBackPressed()),
           problem: refused == null
               ? null
-              : const RecipientsSelectionFailure().toTranslated(context),
+              : const ExchangeRecipientsSelectionFailure().toTranslated(
+                  context,
+                ),
         ),
       ),
     ),

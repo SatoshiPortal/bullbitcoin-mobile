@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "এই প্ৰাপকজনক সংৰক্ষণ কৰিব পৰা নগ'ল। তথ্য পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsErrorSinpeLookupFailed": "আমি এই ফোন নম্বৰটো সত্যাপন কৰিব নোৱাৰিলোঁ। ইয়াক পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsErrorBillerSearchFailed": "বিলাৰ বিচাৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
-  "recipientsErrorNetwork": "আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।",
   "recipientsListPullToRetry": "পুনৰ চেষ্টা কৰিবলৈ তললৈ টানক।",
   "recipientsErrorSavedButNotSelected": "এই প্ৰাপকজনক সংৰক্ষণ কৰা হৈছে, কিন্তু আমি আগবাঢ়িব নোৱাৰিলোঁ। আগবাঢ়িবলৈ তালিকাত বিচাৰক।",
   "recipientsTypeConfidentialSepa": "গোপনীয় SEPA",

@@ -26,7 +26,7 @@ final class JournalingRecipientsRepository implements RecipientsRepository {
   });
 
   @override
-  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+  Future<Result<Recipient, ExchangeFailure>> saveRecipient(
     RecipientDetails details, {
     bool isFiatRecipient = true,
     required bool isTestnet,
@@ -36,7 +36,9 @@ final class JournalingRecipientsRepository implements RecipientsRepository {
       isFiatRecipient: isFiatRecipient,
       isTestnet: isTestnet,
     );
-    if (result case Err(failure: RecipientsSaveOutcomeUnknownFailure())) {
+    if (result case Err(
+      failure: ExchangeRecipientsSaveOutcomeUnknownFailure(),
+    )) {
       final environment = isTestnet
           ? ExchangeEnvironment.testnet
           : ExchangeEnvironment.mainnet;
@@ -53,7 +55,7 @@ final class JournalingRecipientsRepository implements RecipientsRepository {
   }
 
   @override
-  Future<Result<RecipientPage, RecipientsFailure>> listRecipients({
+  Future<Result<RecipientPage, ExchangeFailure>> listRecipients({
     required bool isTestnet,
     bool fiatOnly = true,
     int page = 1,
@@ -72,20 +74,20 @@ final class JournalingRecipientsRepository implements RecipientsRepository {
   );
 
   @override
-  Future<Result<String, RecipientsFailure>> checkSinpe({
+  Future<Result<String, ExchangeFailure>> checkSinpe({
     required String phoneNumber,
     required bool isTestnet,
   }) => _recipients.checkSinpe(phoneNumber: phoneNumber, isTestnet: isTestnet);
 
   @override
-  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
+  Future<Result<List<CadBiller>, ExchangeFailure>> listCadBillers({
     required String searchTerm,
     required bool isTestnet,
   }) =>
       _recipients.listCadBillers(searchTerm: searchTerm, isTestnet: isTestnet);
 
   @override
-  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
+  Future<Result<void, ExchangeFailure>> updateInteracSecurityDetails({
     required String recipientId,
     required String email,
     required String? securityQuestion,
@@ -100,13 +102,13 @@ final class JournalingRecipientsRepository implements RecipientsRepository {
   );
 
   @override
-  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activate({
+  Future<Result<SepaVirtualPayeeStatus, ExchangeFailure>> activate({
     required String recipientId,
     required bool isTestnet,
   }) => _recipients.activate(recipientId: recipientId, isTestnet: isTestnet);
 
   @override
-  Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
+  Future<Result<SepaVirtualPayeeStatus?, ExchangeFailure>> findStatus({
     required String recipientId,
     required bool isTestnet,
   }) => _recipients.findStatus(recipientId: recipientId, isTestnet: isTestnet);

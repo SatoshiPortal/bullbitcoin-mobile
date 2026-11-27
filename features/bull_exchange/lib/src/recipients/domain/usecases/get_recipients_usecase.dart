@@ -41,7 +41,7 @@ class GetRecipientsUsecase {
   });
 
   @useResult
-  Future<Result<GetRecipientsResult, RecipientsFailure>> execute(
+  Future<Result<GetRecipientsResult, ExchangeFailure>> execute(
     GetRecipientsParams params,
   ) async {
     final bool isTestnet;

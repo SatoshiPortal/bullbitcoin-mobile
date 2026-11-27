@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Не вдалося зберегти цього одержувача. Перевірте дані та спробуйте ще раз.",
   "recipientsErrorSinpeLookupFailed": "Не вдалося перевірити цей номер телефону. Перевірте його та спробуйте ще раз.",
   "recipientsErrorBillerSearchFailed": "Не вдалося виконати пошук отримувачів платежів. Спробуйте ще раз.",
-  "recipientsErrorNetwork": "Перевірте підключення до Інтернету та спробуйте ще раз.",
   "recipientsListPullToRetry": "Потягніть вниз, щоб повторити.",
   "recipientsErrorSavedButNotSelected": "Одержувача збережено, але продовжити не вдалося. Знайдіть його у списку, щоб продовжити.",
   "recipientsTypeConfidentialSepa": "Конфіденційний SEPA",

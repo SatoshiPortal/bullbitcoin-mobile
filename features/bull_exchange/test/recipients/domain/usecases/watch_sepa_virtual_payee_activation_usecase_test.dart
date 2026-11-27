@@ -11,8 +11,8 @@ class _MockGetRecipientsEnvironmentUsecase extends Mock
 
 class _FakeSepaVirtualPayeeRepository extends Fake
     implements RecipientsRepository {
-  final List<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findResults;
-  final Result<SepaVirtualPayeeStatus, RecipientsFailure> activateResult;
+  final List<Result<SepaVirtualPayeeStatus?, ExchangeFailure>> findResults;
+  final Result<SepaVirtualPayeeStatus, ExchangeFailure> activateResult;
   int finds = 0;
   int activations = 0;
   bool? lastIsTestnet;
@@ -23,7 +23,7 @@ class _FakeSepaVirtualPayeeRepository extends Fake
   });
 
   @override
-  Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
+  Future<Result<SepaVirtualPayeeStatus?, ExchangeFailure>> findStatus({
     required String recipientId,
     required bool isTestnet,
   }) async {
@@ -32,7 +32,7 @@ class _FakeSepaVirtualPayeeRepository extends Fake
   }
 
   @override
-  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activate({
+  Future<Result<SepaVirtualPayeeStatus, ExchangeFailure>> activate({
     required String recipientId,
     required bool isTestnet,
   }) async {
@@ -41,16 +41,16 @@ class _FakeSepaVirtualPayeeRepository extends Fake
   }
 }
 
-const _absent = Ok<SepaVirtualPayeeStatus?, RecipientsFailure>(
+const _absent = Ok<SepaVirtualPayeeStatus?, ExchangeFailure>(
   SepaVirtualPayeeStatus.absent,
 );
-const _pending = Ok<SepaVirtualPayeeStatus?, RecipientsFailure>(
+const _pending = Ok<SepaVirtualPayeeStatus?, ExchangeFailure>(
   SepaVirtualPayeeStatus.pending,
 );
-const _active = Ok<SepaVirtualPayeeStatus?, RecipientsFailure>(
+const _active = Ok<SepaVirtualPayeeStatus?, ExchangeFailure>(
   SepaVirtualPayeeStatus.active,
 );
-const _unknown = Ok<SepaVirtualPayeeStatus?, RecipientsFailure>(
+const _unknown = Ok<SepaVirtualPayeeStatus?, ExchangeFailure>(
   SepaVirtualPayeeStatus.unknown,
 );
 
@@ -63,7 +63,7 @@ void main() {
         .thenAnswer((_) async => const Ok(Environment.testnet));
   });
 
-  Future<List<Result<SepaVirtualPayeeStatus, RecipientsFailure>>> run(
+  Future<List<Result<SepaVirtualPayeeStatus, ExchangeFailure>>> run(
     _FakeSepaVirtualPayeeRepository repository,
   ) => WatchSepaVirtualPayeeActivationUsecase(
     sepaVirtualPayeeRepository: repository,
@@ -73,10 +73,10 @@ void main() {
   ).execute(recipientId: 'r-1').toList();
 
   List<SepaVirtualPayeeStatus> statuses(
-    List<Result<SepaVirtualPayeeStatus, RecipientsFailure>> events,
+    List<Result<SepaVirtualPayeeStatus, ExchangeFailure>> events,
   ) => [
     for (final e in events)
-      (e as Ok<SepaVirtualPayeeStatus, RecipientsFailure>).value,
+      (e as Ok<SepaVirtualPayeeStatus, ExchangeFailure>).value,
   ];
 
   test(
@@ -142,31 +142,31 @@ void main() {
   test('a failed activation is the last event', () async {
     final repository = _FakeSepaVirtualPayeeRepository(
       findResults: [_absent],
-      activateResult: const Err(RecipientsUnexpectedFailure()),
+      activateResult: const Err(ExchangeUnexpectedFailure()),
     );
 
     final events = await run(repository);
 
     expect(events, hasLength(2));
     expect(
-      (events.first as Ok<SepaVirtualPayeeStatus, RecipientsFailure>).value,
+      (events.first as Ok<SepaVirtualPayeeStatus, ExchangeFailure>).value,
       SepaVirtualPayeeStatus.absent,
     );
-    expect(events.last, isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>());
+    expect(events.last, isA<Err<SepaVirtualPayeeStatus, ExchangeFailure>>());
     expect(repository.finds, 1);
   });
 
   test('a failed refresh stops the polling', () async {
     final repository = _FakeSepaVirtualPayeeRepository(
-      findResults: [_pending, const Err(RecipientsNetworkFailure())],
+      findResults: [_pending, const Err(ExchangeNetworkFailure())],
     );
 
     final events = await run(repository);
 
     expect(events, hasLength(2));
     expect(
-      (events.last as Err<SepaVirtualPayeeStatus, RecipientsFailure>).failure,
-      isA<RecipientsNetworkFailure>(),
+      (events.last as Err<SepaVirtualPayeeStatus, ExchangeFailure>).failure,
+      isA<ExchangeNetworkFailure>(),
     );
   });
 
@@ -177,10 +177,7 @@ void main() {
 
     final events = await run(repository);
 
-    expect(
-      events.single,
-      isA<Err<SepaVirtualPayeeStatus, RecipientsFailure>>(),
-    );
+    expect(events.single, isA<Err<SepaVirtualPayeeStatus, ExchangeFailure>>());
     expect(repository.activations, 0);
   });
 }

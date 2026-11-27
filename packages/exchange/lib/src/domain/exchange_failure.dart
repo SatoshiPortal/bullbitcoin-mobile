@@ -332,12 +332,15 @@ final class ExchangeFundingFailure extends ExchangeFailure {
   const ExchangeFundingFailure(this.problem, [super.logMessage]);
 }
 
+/// The user's account cannot get a virtual IBAN: their KYC is insufficient
+/// or Confidential SEPA is not offered to them.
 final class ExchangeVirtualIbanNotAvailableFailure extends ExchangeFailure {
-  const ExchangeVirtualIbanNotAvailableFailure();
+  const ExchangeVirtualIbanNotAvailableFailure([super.logMessage]);
 }
 
+/// A virtual IBAN is only issued to residents of the European Union.
 final class ExchangeEuResidencyRequiredFailure extends ExchangeFailure {
-  const ExchangeEuResidencyRequiredFailure();
+  const ExchangeEuResidencyRequiredFailure([super.logMessage]);
 }
 
 /// The unknown-write journal could not be read or written.

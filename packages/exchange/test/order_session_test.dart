@@ -210,8 +210,8 @@ void main() {
       expect(
         await pending,
         write
-            ? isA<Ok<void, RecipientsFailure>>()
-            : isA<Err<String, RecipientsFailure>>().having(
+            ? isA<Ok<void, ExchangeFailure>>()
+            : isA<Err<String, ExchangeFailure>>().having(
                 (result) => result.failure.logMessage,
                 'failure',
                 'ExchangeOperationStaleFailure',
@@ -258,10 +258,10 @@ void main() {
       );
       expect(
         await pending,
-        isA<Err<Recipient, RecipientsFailure>>().having(
+        isA<Err<Recipient, ExchangeFailure>>().having(
           (result) => result.failure,
           'failure',
-          isA<RecipientsSaveOutcomeUnknownFailure>(),
+          isA<ExchangeRecipientsSaveOutcomeUnknownFailure>(),
         ),
       );
       expect(http.requests, hasLength(1));

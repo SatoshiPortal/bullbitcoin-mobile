@@ -481,7 +481,6 @@
   "recipientsErrorSaveFailed": "No se pudo guardar este destinatario. Revisa los datos e inténtalo de nuevo.",
   "recipientsErrorSinpeLookupFailed": "No pudimos verificar este número de teléfono. Revísalo e inténtalo de nuevo.",
   "recipientsErrorBillerSearchFailed": "No se pudo buscar entre los emisores de facturas. Inténtalo de nuevo.",
-  "recipientsErrorNetwork": "Revisa tu conexión a Internet e inténtalo de nuevo.",
   "recipientsListPullToRetry": "Desliza hacia abajo para reintentar.",
   "recipientsErrorSavedButNotSelected": "Este destinatario se guardó, pero no pudimos continuar. Búscalo en tu lista para seguir.",
   "recipientsTypeConfidentialSepa": "SEPA Confidencial",

@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "Không thể lưu người nhận này. Vui lòng kiểm tra thông tin và thử lại.",
   "recipientsErrorSinpeLookupFailed": "Chúng tôi không thể xác minh số điện thoại này. Vui lòng kiểm tra và thử lại.",
   "recipientsErrorBillerSearchFailed": "Không thể tìm kiếm đơn vị thanh toán. Vui lòng thử lại.",
-  "recipientsErrorNetwork": "Vui lòng kiểm tra kết nối Internet và thử lại.",
   "recipientsListPullToRetry": "Kéo xuống để thử lại.",
   "recipientsErrorSavedButNotSelected": "Người nhận này đã được lưu, nhưng chúng tôi không thể tiếp tục. Hãy tìm trong danh sách của bạn để tiếp tục.",
   "recipientsTypeConfidentialSepa": "SEPA Bảo mật",

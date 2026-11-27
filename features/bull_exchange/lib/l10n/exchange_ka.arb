@@ -457,7 +457,6 @@
   "recipientsErrorSaveFailed": "ამ მიმღების შენახვა ვერ მოხერხდა. შეამოწმეთ მონაცემები და სცადეთ ხელახლა.",
   "recipientsErrorSinpeLookupFailed": "ამ ტელეფონის ნომრის დადასტურება ვერ მოხერხდა. შეამოწმეთ და სცადეთ ხელახლა.",
   "recipientsErrorBillerSearchFailed": "გადამხდელების ძებნა ვერ მოხერხდა. სცადეთ ხელახლა.",
-  "recipientsErrorNetwork": "შეამოწმეთ ინტერნეტკავშირი და სცადეთ ხელახლა.",
   "recipientsListPullToRetry": "თავიდან საცდელად ჩამოწიეთ.",
   "recipientsErrorSavedButNotSelected": "ეს მიმღები შენახულია, მაგრამ ვერ გავაგრძელეთ. იპოვეთ იგი თქვენს სიაში გასაგრძელებლად.",
   "recipientsTypeConfidentialSepa": "კონფიდენციალური SEPA",

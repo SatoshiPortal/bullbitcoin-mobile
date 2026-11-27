@@ -20,8 +20,8 @@ final class BbxApiRecipientsDatasource {
 
   /// A save that may have reached the server without a readable answer, a
   /// reply that can't be mapped included, is
-  /// [RecipientsSaveOutcomeUnknownFailure]: the recipient may exist.
-  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+  /// [ExchangeRecipientsSaveOutcomeUnknownFailure]: the recipient may exist.
+  Future<Result<Recipient, ExchangeFailure>> saveRecipient(
     RecipientDetails recipientDetails, {
     bool isFiatRecipient = true,
     required bool isTestnet,
@@ -31,7 +31,7 @@ final class BbxApiRecipientsDatasource {
       request = _toNewRecipient(recipientDetails);
     } on Exception catch (e) {
       log.warning('Could not build the recipient request: ${e.runtimeType}');
-      return const Err(RecipientsSaveFailure());
+      return const Err(ExchangeRecipientsSaveFailure());
     }
     return switch (await exchangeWrite<bbx.FiatRecipient, Recipient>(
       'create fiat recipient',
@@ -40,8 +40,10 @@ final class BbxApiRecipientsDatasource {
     )) {
       Ok(:final value) => Ok(value),
       Err(failure: ExchangeWriteRefusedFailure(:final reason)) => Err(
-        RecipientsInvalidFieldsFailure.fromFieldErrors(reason.fieldErrors) ??
-            const RecipientsSaveFailure(),
+        ExchangeRecipientsInvalidFieldsFailure.fromFieldErrors(
+              reason.fieldErrors,
+            ) ??
+            const ExchangeRecipientsSaveFailure(),
       ),
       Err(
         failure: ExchangeWriteNotSentFailure(
@@ -50,23 +52,23 @@ final class BbxApiRecipientsDatasource {
       ) ||
       Err(
         failure: ExchangeSessionRejectedFailure(),
-      ) => const Err(RecipientsNotAuthenticatedFailure()),
+      ) => const Err(ExchangeNotAuthenticatedFailure()),
       Err(
         failure: ExchangeWriteNotSentFailure(
           reason: ExchangeNotSentReason.unreachable,
         ),
       ) =>
-        const Err(RecipientsNetworkFailure()),
+        const Err(ExchangeNetworkFailure()),
       Err(failure: ExchangeWriteNotSentFailure(:final reason)) => Err(
-        RecipientsSaveFailure('not sent: ${reason.name}'),
+        ExchangeRecipientsSaveFailure('not sent: ${reason.name}'),
       ),
       Err(failure: ExchangeWriteOutcomeUnknownFailure(:final reason)) => Err(
-        RecipientsSaveOutcomeUnknownFailure(reason),
+        ExchangeRecipientsSaveOutcomeUnknownFailure(reason),
       ),
     };
   }
 
-  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
+  Future<Result<void, ExchangeFailure>> updateInteracSecurityDetails({
     required String recipientId,
     required String email,
     required String? securityQuestion,
@@ -74,7 +76,7 @@ final class BbxApiRecipientsDatasource {
     required bool isTestnet,
   }) => _guard(
     'update Interac security details',
-    RecipientsUnexpectedFailure.new,
+    ExchangeUnexpectedFailure.new,
     () async =>
         (await _api.recipients.updateInteracSecurityDetails(
               recipientId: recipientId,
@@ -87,16 +89,13 @@ final class BbxApiRecipientsDatasource {
               (failure) => _failure(
                 failure,
                 'update Interac security details',
-                RecipientsUnexpectedFailure.new,
+                ExchangeUnexpectedFailure.new,
               ),
             ),
   );
 
   Future<
-    Result<
-      ({List<Recipient> recipients, int totalRecipients}),
-      RecipientsFailure
-    >
+    Result<({List<Recipient> recipients, int totalRecipients}), ExchangeFailure>
   >
   listRecipients({
     bool fiatOnly = true,
@@ -106,54 +105,58 @@ final class BbxApiRecipientsDatasource {
     List<RecipientType>? recipientTypes,
     bool? isOwner,
     String? search,
-  }) => _guard('list fiat recipients', RecipientsLoadFailure.new, () async {
-    final types = recipientTypes == null || recipientTypes.isEmpty
-        ? null
-        : recipientTypes.map((t) => t.value).toSet().toList();
-    final searchFilter = search == null || search.isEmpty ? null : search;
-    final list = fiatOnly
-        ? _api.recipients.listRecipientsFiat
-        : _api.recipients.listRecipients;
-    final result = await list(
-      page: page,
-      pageSize: pageSize,
-      recipientTypeFiat: types,
-      isOwner: isOwner,
-      search: searchFilter,
-    );
-    return result
-        .map((page) => _recipientsPage(page, recipientTypes))
-        .mapErr(
-          (failure) => _failure(
-            failure,
-            'list fiat recipients',
-            RecipientsLoadFailure.new,
-          ),
-        );
-  });
+  }) => _guard(
+    'list fiat recipients',
+    ExchangeRecipientsLoadFailure.new,
+    () async {
+      final types = recipientTypes == null || recipientTypes.isEmpty
+          ? null
+          : recipientTypes.map((t) => t.value).toSet().toList();
+      final searchFilter = search == null || search.isEmpty ? null : search;
+      final list = fiatOnly
+          ? _api.recipients.listRecipientsFiat
+          : _api.recipients.listRecipients;
+      final result = await list(
+        page: page,
+        pageSize: pageSize,
+        recipientTypeFiat: types,
+        isOwner: isOwner,
+        search: searchFilter,
+      );
+      return result
+          .map((page) => _recipientsPage(page, recipientTypes))
+          .mapErr(
+            (failure) => _failure(
+              failure,
+              'list fiat recipients',
+              ExchangeRecipientsLoadFailure.new,
+            ),
+          );
+    },
+  );
 
-  Future<Result<String, RecipientsFailure>> checkSinpe({
+  Future<Result<String, ExchangeFailure>> checkSinpe({
     required String phoneNumber,
     required bool isTestnet,
   }) => _guard(
     'check SINPE',
-    RecipientsSinpeLookupFailure.new,
+    ExchangeRecipientsSinpeLookupFailure.new,
     () async => (await _api.recipients.checkSinpe(phoneNumber: phoneNumber))
         .mapErr(
           (failure) => _failure(
             failure,
             'check SINPE',
-            RecipientsSinpeLookupFailure.new,
+            ExchangeRecipientsSinpeLookupFailure.new,
           ),
         ),
   );
 
-  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
+  Future<Result<List<CadBiller>, ExchangeFailure>> listCadBillers({
     required String searchTerm,
     required bool isTestnet,
   }) => _guard(
     'list CAD billers',
-    RecipientsCadBillerSearchFailure.new,
+    ExchangeRecipientsCadBillerSearchFailure.new,
     () async {
       final result = await _api.recipients.listAplBillers(search: searchTerm);
       return result
@@ -162,7 +165,7 @@ final class BbxApiRecipientsDatasource {
             (failure) => _failure(
               failure,
               'list CAD billers',
-              RecipientsCadBillerSearchFailure.new,
+              ExchangeRecipientsCadBillerSearchFailure.new,
             ),
           );
     },
@@ -444,10 +447,10 @@ final class BbxApiRecipientsDatasource {
   /// Runs [call] and turns a domain-mapping exception into the operation
   /// failure, logging only its type: its message can quote banking details.
   /// An API failure is mapped by [_failure] inside [call].
-  Future<Result<T, RecipientsFailure>> _guard<T>(
+  Future<Result<T, ExchangeFailure>> _guard<T>(
     String operation,
-    RecipientsFailure Function([String?]) onApiFailure,
-    Future<Result<T, RecipientsFailure>> Function() call,
+    ExchangeFailure Function([String?]) onApiFailure,
+    Future<Result<T, ExchangeFailure>> Function() call,
   ) async {
     try {
       return await call();
@@ -460,14 +463,14 @@ final class BbxApiRecipientsDatasource {
   /// The failure for a failed call. A missing credential and an unreadable
   /// one stay distinct, and an unreachable API keeps its own variant;
   /// everything else is the operation's failure.
-  static RecipientsFailure _failure(
+  static ExchangeFailure _failure(
     bbx.BbxFailure failure,
     String operation,
-    RecipientsFailure Function([String?]) onApiFailure,
+    ExchangeFailure Function([String?]) onApiFailure,
   ) {
     switch (failure) {
       case bbx.BbxMissingCredentialFailure():
-        return const RecipientsNotAuthenticatedFailure();
+        return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
         return onApiFailure('Exchange credential unavailable');
       case bbx.BbxHttpFailure() || bbx.BbxRpcFailure():
@@ -477,10 +480,10 @@ final class BbxApiRecipientsDatasource {
         log.warning(
           'Could not reach the API to $operation: ${_timeoutName(kind)}',
         );
-        return const RecipientsNetworkFailure();
+        return const ExchangeNetworkFailure();
       case bbx.BbxConnectionFailure():
         log.warning('Could not reach the API to $operation: connectionError');
-        return const RecipientsNetworkFailure();
+        return const ExchangeNetworkFailure();
       case bbx.BbxOrderLimitFailure() ||
           bbx.BbxConfidentialSepaInactiveFailure() ||
           bbx.BbxBadCertificateFailure() ||

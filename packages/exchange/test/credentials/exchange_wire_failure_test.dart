@@ -135,10 +135,10 @@ void main() {
     );
     expect(
       await repository.checkSinpe(phoneNumber: 'synthetic', isTestnet: true),
-      isA<Err<String, RecipientsFailure>>().having(
+      isA<Err<String, ExchangeFailure>>().having(
         (r) => r.failure,
         'failure',
-        isA<RecipientsSinpeLookupFailure>(),
+        isA<ExchangeRecipientsSinpeLookupFailure>(),
       ),
     );
   });

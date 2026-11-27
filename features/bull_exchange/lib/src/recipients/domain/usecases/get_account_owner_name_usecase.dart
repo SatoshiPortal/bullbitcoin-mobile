@@ -12,7 +12,7 @@ class GetAccountOwnerNameUsecase {
   const GetAccountOwnerNameUsecase(this._exchange);
 
   @useResult
-  Future<Result<AccountOwnerName, RecipientsFailure>> execute() async {
+  Future<Result<AccountOwnerName, ExchangeFailure>> execute() async {
     switch (await _exchange.getUserSummary()) {
       case Ok(value: UserSummary(:final profile)):
         return Ok(
@@ -26,7 +26,7 @@ class GetAccountOwnerNameUsecase {
           'Could not read the exchange summary for the account owner name',
           error: failure.runtimeType,
         );
-        return const Err(RecipientsUnexpectedFailure());
+        return const Err(ExchangeUnexpectedFailure());
     }
   }
 }

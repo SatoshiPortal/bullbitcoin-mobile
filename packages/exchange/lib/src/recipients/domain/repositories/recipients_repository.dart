@@ -14,14 +14,14 @@ typedef RecipientPage = ({List<Recipient> recipients, int totalRecipients});
 /// An explicit environment limits a multi-step journey to that environment.
 abstract interface class RecipientsRepository {
   @useResult
-  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+  Future<Result<Recipient, ExchangeFailure>> saveRecipient(
     RecipientDetails details, {
     bool isFiatRecipient = true,
     required bool isTestnet,
   });
 
   @useResult
-  Future<Result<RecipientPage, RecipientsFailure>> listRecipients({
+  Future<Result<RecipientPage, ExchangeFailure>> listRecipients({
     required bool isTestnet,
     bool fiatOnly = true,
     int page = 1,
@@ -32,19 +32,19 @@ abstract interface class RecipientsRepository {
   });
 
   @useResult
-  Future<Result<String, RecipientsFailure>> checkSinpe({
+  Future<Result<String, ExchangeFailure>> checkSinpe({
     required String phoneNumber,
     required bool isTestnet,
   });
 
   @useResult
-  Future<Result<List<CadBiller>, RecipientsFailure>> listCadBillers({
+  Future<Result<List<CadBiller>, ExchangeFailure>> listCadBillers({
     required String searchTerm,
     required bool isTestnet,
   });
 
   @useResult
-  Future<Result<void, RecipientsFailure>> updateInteracSecurityDetails({
+  Future<Result<void, ExchangeFailure>> updateInteracSecurityDetails({
     required String recipientId,
     required String email,
     required String? securityQuestion,
@@ -53,13 +53,13 @@ abstract interface class RecipientsRepository {
   });
 
   @useResult
-  Future<Result<SepaVirtualPayeeStatus, RecipientsFailure>> activate({
+  Future<Result<SepaVirtualPayeeStatus, ExchangeFailure>> activate({
     required String recipientId,
     required bool isTestnet,
   });
 
   @useResult
-  Future<Result<SepaVirtualPayeeStatus?, RecipientsFailure>> findStatus({
+  Future<Result<SepaVirtualPayeeStatus?, ExchangeFailure>> findStatus({
     required String recipientId,
     required bool isTestnet,
   });
