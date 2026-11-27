@@ -25,6 +25,7 @@ extension LabelFailureL10n on LabelFailure {
     LabelsFileReservedNameFailure() =>
       context.labelLoc.labelsErrorFileReservedName,
     LabelsExportFailure() => context.labelLoc.labelsErrorExportFailed,
+    LabelBackupRevokedFailure() ||
     LabelBackupStalePlanFailure() ||
     LabelUnexpectedFailure() ||
     LabelsStorageNotReadyFailure() => context.labelLoc.oopsSomethingWentWrong,

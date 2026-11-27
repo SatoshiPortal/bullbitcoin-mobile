@@ -25,6 +25,7 @@ import 'ui/screens/backup_settings_screen.dart';
 const _statusRoute = 'backupSettings';
 const _optionsRoute = 'backupOptions';
 const _physicalRoute = 'testPhysicalBackupFlow';
+const _dataBackupRoute = 'dataBackup';
 
 enum _BackupIntent { start, verify }
 
@@ -50,6 +51,9 @@ final class BackupsFeature {
     required void Function(BuildContext) onTestSucceeded,
     required void Function(BuildContext) onExportTransactions,
     Access access = const Access(),
+    Widget Function(BuildContext)? dataBackup,
+    String Function(BuildContext)? dataBackupStatus,
+    Listenable? dataBackupChanges,
   }) {
     return BackupsFeature._(
       GoRoute(
@@ -67,9 +71,20 @@ final class BackupsFeature {
           )..checkBackupStatus(),
           child: BackupSettingsScreen(
             onExportTransactions: () => onExportTransactions(context),
+            onOpenAutomaticBackup: dataBackup == null
+                ? null
+                : () => context.pushNamed(_dataBackupRoute),
+            automaticBackupStatus: dataBackupStatus,
+            automaticBackupChanges: dataBackupChanges,
           ),
         ),
         routes: [
+          if (dataBackup != null)
+            GoRoute(
+              name: _dataBackupRoute,
+              path: 'data-backup',
+              builder: (context, _) => dataBackup(context),
+            ),
           backupOptionsRoute(
             copyOf: _copyOf,
             encryptedIcon: encryptedIcon,

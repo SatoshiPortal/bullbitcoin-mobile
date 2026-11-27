@@ -375,7 +375,7 @@ Widget _view(
       coinsFrozen: 0,
       coinsPending: 3,
       onDone: _noop,
-      onRetryFreezes: _noop,
+      onRetry: _noop,
     ),
     _ => throw ArgumentError.value(scenario),
   };

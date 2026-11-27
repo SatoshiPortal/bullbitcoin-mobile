@@ -15,10 +15,15 @@ String backupDestinationLabel(
 
 class BackupMetadataIntroView extends StatelessWidget {
   final List<BackupDestination> destinations;
-  final BackupDestination selected;
+
+  /// Null until the user picks one: nothing is preselected.
+  final BackupDestination? selected;
   final ValueChanged<BackupDestination> onSelect;
   final VoidCallback onBack;
   final VoidCallback? onContinue;
+
+  /// Restores from an existing backup without turning anything on. Read only.
+  final VoidCallback? onRestore;
 
   const BackupMetadataIntroView({
     super.key,
@@ -27,13 +32,17 @@ class BackupMetadataIntroView extends StatelessWidget {
     required this.onSelect,
     required this.onBack,
     required this.onContinue,
+    this.onRestore,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = BackupMetadataLocalizations.of(context);
     final available = destinations.toSet();
-    final provider = backupDestinationLabel(l10n, selected);
+    final chosen = selected;
+    final provider = chosen == null
+        ? null
+        : backupDestinationLabel(l10n, chosen);
     return BackupPage(
       title: l10n.dataBackup,
       onBack: onBack,
@@ -54,7 +63,7 @@ class BackupMetadataIntroView extends StatelessWidget {
         const Gap(BullSpacing.lg),
         BackupSectionTitle(l10n.whoCanRead),
         Text(
-          selected == BackupDestination.folder
+          provider == null || chosen == BackupDestination.folder
               ? l10n.privacy
               : '${l10n.privacy} ${l10n.privacyProvider(provider)}',
           style: context.bullType.body,
@@ -72,13 +81,28 @@ class BackupMetadataIntroView extends StatelessWidget {
               BackupDestination.iCloud => l10n.iCloudDescription,
               BackupDestination.folder => l10n.folderDescription,
             },
-            selected: available.length > 1 && selected == destination,
-            onTap: available.length > 1 ? () => onSelect(destination) : null,
+            selected: chosen == destination,
+            onTap: () => onSelect(destination),
           ),
       ],
-      footer: BullButton.primary(
-        label: l10n.continueAction,
-        onPressed: available.contains(selected) ? onContinue : null,
+      footer: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BullButton.primary(
+            label: l10n.continueAction,
+            onPressed: chosen != null && available.contains(chosen)
+                ? onContinue
+                : null,
+          ),
+          if (onRestore case final restore?) ...[
+            const Gap(BullSpacing.sm),
+            BullButton.secondary(
+              label: l10n.restoreFromBackup,
+              onPressed: restore,
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -237,6 +261,9 @@ class BackupMetadataStatusView extends StatelessWidget {
   final BackupMetadataStatus status;
   final String detail;
   final int changesWaiting;
+
+  /// Notes left out because they looked like secrets: a count, never text.
+  final int excluded;
   final List<BackupMetadataGroupStatus> groups;
   final int walletTotal;
   final BackupDestination destination;
@@ -263,6 +290,7 @@ class BackupMetadataStatusView extends StatelessWidget {
     required this.onRestore,
     required this.onTurnOff,
     this.changesWaiting = 0,
+    this.excluded = 0,
   });
 
   @override
@@ -309,6 +337,14 @@ class BackupMetadataStatusView extends StatelessWidget {
               ),
             ],
           ),
+        if (excluded > 0) ...[
+          const Gap(BullSpacing.md),
+          BullInfoBar(
+            message: l10n.excludedRecords(excluded),
+            tone: BullInfoTone.warning,
+            icon: BullIcons.warningAmber,
+          ),
+        ],
         const Gap(BullSpacing.lg),
         BackupSectionTitle(l10n.wallets),
         for (final group in groups)

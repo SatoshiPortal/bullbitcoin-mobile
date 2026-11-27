@@ -71,6 +71,12 @@ final class LabelsStorageNotReadyFailure extends LabelFailure {
 }
 
 /// The label inventory changed while the restore preview was open.
+/// The caller withdrew its authorization while a backup operation ran; nothing
+/// of the transaction was kept.
+final class LabelBackupRevokedFailure extends LabelFailure {
+  const LabelBackupRevokedFailure();
+}
+
 final class LabelBackupStalePlanFailure extends LabelFailure {
   const LabelBackupStalePlanFailure();
 }

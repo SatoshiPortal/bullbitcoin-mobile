@@ -77,3 +77,6 @@ const unreadableBip85RecordFailure = FetchSecretFailure(
 const invalidBip85HexLengthFailure = UseSecretFailure(
   'Invalid BIP85 HEX length',
 );
+const incompatibleBip85ArchiveFailure = UseSecretFailure(
+  'Incompatible BIP85 archive',
+);

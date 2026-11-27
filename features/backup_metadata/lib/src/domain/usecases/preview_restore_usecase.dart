@@ -10,7 +10,26 @@ final class PreviewRestoreUsecase {
 
   const PreviewRestoreUsecase(this._labels);
 
+  /// Nothing is shown for a backup of a session that ended, including one whose
+  /// view was reopened since: the plan is checked again after it is computed,
+  /// immediately before it is handed out.
   Future<Result<MergePlan, BackupMetadataFailure>> execute(
     DiscoveredBackup backup,
-  ) => _labels.preview(backup.group, backup.snapshot);
+  ) async {
+    if (backup.group.ambiguous) {
+      return const Err(BackupMetadataIncompatibleFailure());
+    }
+    if (!backup.scope.isCurrent) {
+      return const Err(BackupMetadataScopeChangedFailure());
+    }
+    final plan = await _labels.preview(
+      backup.scope,
+      backup.group,
+      backup.content.labels,
+    );
+    if (!backup.scope.isCurrent) {
+      return const Err(BackupMetadataScopeChangedFailure());
+    }
+    return plan;
+  }
 }
