@@ -1,7 +1,9 @@
 import 'package:meta/meta.dart';
 
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// Loads the typed context [C] a flow needs (composition §4.2). Its output is
 /// the value of [ContextReady]; gates that read the summary take [C], so they
@@ -83,7 +85,7 @@ sealed class ContextLoadEvent<C> {
 /// The load of [attempt] answered [read].
 final class ContextLoaded<C> extends ContextLoadEvent<C> {
   final int attempt;
-  final ExchangeRead<C> read;
+  final Result<C, ExchangeReadFailure> read;
 
   const ContextLoaded(this.attempt, this.read);
 }
@@ -127,11 +129,15 @@ StepNext<ContextLoadState<C>, ContextLoadEffect> transitionContextLoad<C>(
   )
       when answered == attempt =>
     switch (read) {
-      ReadGot(:final value) => StepNext(ContextReady<C>(value)),
-      ReadSessionRejected() => StepNext(ContextSessionRejected<C>()),
-      ReadMissing() || ReadUnreachable() || ReadMalformed() => StepNext(
-        ContextFailed<C>(attempt, ReadProblem.of(read)!),
+      Ok(:final value) => StepNext(ContextReady<C>(value)),
+      Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+        ContextSessionRejected<C>(),
       ),
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(
+        failure: ExchangeMalformedFailure(),
+      ) => StepNext(ContextFailed<C>(attempt, ReadProblem.of(read)!)),
     },
   (ContextLoading(), ContextLoaded() || ContextRetryPressed()) => StepNext.stay(
     state,

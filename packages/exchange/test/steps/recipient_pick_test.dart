@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = StepNext<RecipientPickState, RecipientPickEffect>;
 
@@ -103,14 +104,20 @@ final _states = <RecipientPickState>[
 ];
 
 final _events = <RecipientPickEvent>[
-  RecipientPickPageLoaded(1, ListPage([_ann], next: 2)), // 0
-  const RecipientPickPageLoaded(1, ListUnreachable('down', isNetwork: true)),
+  RecipientPickPageLoaded(1, Ok(ExchangePage([_ann], next: 2))), // 0
   const RecipientPickPageLoaded(
     1,
-    ListSessionRejected(ExchangeSessionRejection.server),
+    Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+  ),
+  const RecipientPickPageLoaded(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
   ), // 2
-  RecipientPickPageLoaded(2, ListPage([_theirs])), // 3
-  const RecipientPickPageLoaded(2, ListUnreachable('down', isNetwork: true)),
+  RecipientPickPageLoaded(2, Ok(ExchangePage([_theirs]))), // 3
+  const RecipientPickPageLoaded(
+    2,
+    Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+  ),
   RecipientPickQueryChanged(_interacOnly), // 5
   const RecipientPickMoreRequested(), // 6
   const RecipientPickRetryPressed(), // 7
@@ -121,13 +128,22 @@ final _events = <RecipientPickEvent>[
   const RecipientPickSubmitted(_input), // 12
   const RecipientPickSubmitted(_badInput), // 13
   const RecipientPickSubmitted(_otherRailInput), // 14
-  RecipientPickSaved(2, WriteDone(_saved)), // 15
-  const RecipientPickSaved(2, WriteRefused(_refusal)), // 16
-  const RecipientPickSaved(2, WriteOutcomeUnknown('timeout')), // 17
-  const RecipientPickSaved(2, WriteSessionRejected()), // 18
-  RecipientPickFound(3, ReadGot(_saved)), // 19
-  const RecipientPickFound(3, ReadMissing()), // 20
-  const RecipientPickFound(3, ReadUnreachable('down', isNetwork: true)), // 21
+  RecipientPickSaved(2, Ok(_saved)), // 15
+  const RecipientPickSaved(2, Err(ExchangeWriteRefusedFailure(_refusal))), // 16
+  const RecipientPickSaved(
+    2,
+    Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+  ), // 17
+  const RecipientPickSaved(
+    2,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ), // 18
+  RecipientPickFound(3, Ok(_saved)), // 19
+  const RecipientPickFound(3, Err(ExchangeMissingFailure())), // 20
+  const RecipientPickFound(
+    3,
+    Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+  ), // 21
   const RecipientPickBackPressed(), // 22
 ];
 
@@ -331,7 +347,7 @@ void main() {
         PayoutRails.confidentialSepa,
         details,
       ),
-      RecipientPickSaved(2, WriteDone(savedSepa)),
+      RecipientPickSaved(2, Ok(savedSepa)),
     );
     final picked = next.state as RecipientPickPicked;
     expect(picked.chosen.rail, PayoutRails.confidentialSepa);
@@ -339,19 +355,25 @@ void main() {
   });
 
   test('a saved recipient the filter refuses is not picked', () {
-    final next = _step(_saving, RecipientPickSaved(2, WriteDone(_theirs)));
+    final next = _step(_saving, RecipientPickSaved(2, Ok(_theirs)));
     expect(next.state, RecipientPickNotAdmitted(_query, 2, _theirs));
   });
 
   test('an unknown save outcome never saves again', () {
     var state = _step(
       _saving,
-      const RecipientPickSaved(2, WriteOutcomeUnknown('timeout')),
+      const RecipientPickSaved(
+        2,
+        Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+      ),
     ).state;
     expect(_step(state, const RecipientPickSubmitted(_input)).state, state);
     state = _step(
       state,
-      const RecipientPickFound(3, ReadUnreachable('down', isNetwork: true)),
+      const RecipientPickFound(
+        3,
+        Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+      ),
     ).state;
     final retry = _step(state, const RecipientPickRetryPressed());
     expect(retry.effects.single, isA<RecipientPickFind>());
@@ -374,16 +396,22 @@ void main() {
           const RecipientPickNewPressed(PayoutRails.interacEmail),
           ..._events,
           for (var a = 1; a < 5; a++) ...[
-            RecipientPickPageLoaded(a, ListPage([_ann, _theirs], next: 2)),
             RecipientPickPageLoaded(
               a,
-              const ListUnreachable('down', isNetwork: true),
+              Ok(ExchangePage([_ann, _theirs], next: 2)),
             ),
-            RecipientPickSaved(a, WriteDone(_theirs)),
-            RecipientPickSaved(a, const WriteOutcomeUnknown('timeout')),
+            RecipientPickPageLoaded(
+              a,
+              const Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+            ),
+            RecipientPickSaved(a, Ok(_theirs)),
+            RecipientPickSaved(
+              a,
+              const Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+            ),
             RecipientPickFound(
               a,
-              const ReadUnreachable('down', isNetwork: true),
+              const Err(ExchangeUnreachableFailure('down', isNetwork: true)),
             ),
           ],
         ]) {

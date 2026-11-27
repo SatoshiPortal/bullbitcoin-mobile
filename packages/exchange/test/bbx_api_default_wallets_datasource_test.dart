@@ -60,8 +60,8 @@ T _value<T>(Result<T, ExchangeFailure> result) => switch (result) {
   Err(:final failure) => fail('Expected success, got ${failure.runtimeType}'),
 };
 
-T _written<T>(ExchangeWrite<T> write) => switch (write) {
-  WriteDone(:final value) => value,
+T _written<T>(Result<T, ExchangeWriteFailure> write) => switch (write) {
+  Ok(:final value) => value,
   _ => fail('Expected a done write, got ${write.runtimeType}'),
 };
 
@@ -275,7 +275,11 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
-        isA<WriteRefused<DefaultWallet>>(),
+        isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteRefusedFailure>(),
+        ),
       );
       expect(
         await repository.deleteDefaultWallet(
@@ -283,7 +287,11 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
-        isA<WriteRefused<void>>(),
+        isA<Err<void, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteRefusedFailure>(),
+        ),
       );
     });
 
@@ -312,10 +320,14 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'bc1q',
         ),
-        isA<WriteNotSent<DefaultWallet>>().having(
-          (w) => w.reason,
-          'reason',
-          ExchangeNotSentReason.credentialUnavailable,
+        isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.credentialUnavailable,
+          ),
         ),
       );
     });
@@ -333,7 +345,11 @@ void main() {
           await _repository(
             http,
           ).saveDefaultWallet(walletType: BtcNetwork.bitcoin, address: 'bc1q'),
-          isA<WriteOutcomeUnknown<DefaultWallet>>(),
+          isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
         );
       });
 
@@ -344,7 +360,11 @@ void main() {
             walletType: BtcNetwork.bitcoin,
             address: 'bc1q',
           ),
-          isA<WriteOutcomeUnknown<void>>(),
+          isA<Err<void, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
         );
       });
     }

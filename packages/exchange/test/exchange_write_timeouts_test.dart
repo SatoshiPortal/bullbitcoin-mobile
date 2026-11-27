@@ -73,7 +73,14 @@ void main() {
         ),
       ]);
       expect(results, everyElement(isA<Err<Object?, Failure>>()));
-      expect(await limitOrder, isA<WriteOutcomeUnknown<LimitOrder>>());
+      expect(
+        await limitOrder,
+        isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
+      );
       expect(
         await exchange.funding.consent(
           ExchangeSession(
@@ -84,7 +91,11 @@ void main() {
             sessionId: 'session',
           ),
         ),
-        isA<WriteOutcomeUnknown<void>>(),
+        isA<Err<void, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
 
       final selected = adapters.remove(environment);

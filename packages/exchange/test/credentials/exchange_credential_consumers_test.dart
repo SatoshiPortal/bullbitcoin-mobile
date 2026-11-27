@@ -90,12 +90,16 @@ void main() {
             paymentProcessor: SepaPaymentProcessor.regular,
             network: BtcNetwork.bitcoin,
           ),
-          isA<WriteNotSent<FiatPaymentOrder>>().having(
-            (r) => r.reason,
-            'reason',
-            storageFailure
-                ? ExchangeNotSentReason.credentialUnavailable
-                : ExchangeNotSentReason.signedOut,
+          isA<Err<FiatPaymentOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteNotSentFailure>().having(
+              (r) => r.reason,
+              'reason',
+              storageFailure
+                  ? ExchangeNotSentReason.credentialUnavailable
+                  : ExchangeNotSentReason.signedOut,
+            ),
           ),
         );
       },
@@ -201,10 +205,14 @@ void main() {
       final limits = user.limitOrders;
       expect(
         await funding.institutions(_session, Jurisdiction.canada),
-        isA<ReadSessionRejected<List<FundingInstitution>>>().having(
-          (r) => r.why,
-          'funding',
-          ExchangeSessionRejection.signedOut,
+        isA<Err<List<FundingInstitution>, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>().having(
+            (r) => r.why,
+            'funding',
+            ExchangeSessionRejection.signedOut,
+          ),
         ),
       );
       expect(
@@ -226,10 +234,14 @@ void main() {
       credential = const Err(ExchangeCredentialReadFailure());
       expect(
         await funding.institutions(_session, Jurisdiction.canada),
-        isA<ReadSessionRejected<List<FundingInstitution>>>().having(
-          (r) => r.why,
-          'funding unavailable',
-          ExchangeSessionRejection.credentialUnavailable,
+        isA<Err<List<FundingInstitution>, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>().having(
+            (r) => r.why,
+            'funding unavailable',
+            ExchangeSessionRejection.credentialUnavailable,
+          ),
         ),
       );
       expect(

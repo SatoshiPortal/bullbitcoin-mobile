@@ -43,7 +43,6 @@ import 'funding/funding_request.dart';
 import 'domain/exchange_availability.dart';
 import 'domain/exchange_basic_auth.dart';
 import 'domain/exchange_account_deletion_outcome.dart';
-import 'domain/exchange_call_result.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_kyc_configuration.dart';
@@ -79,13 +78,13 @@ typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
 });
 typedef _DefaultWalletOperations = ({
   Future<Result<DefaultWallets, ExchangeFailure>> Function() get,
-  Future<ExchangeWrite<DefaultWallet>> Function({
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> Function({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   })
   save,
-  Future<ExchangeWrite<void>> Function({
+  Future<Result<void, ExchangeWriteFailure>> Function({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
@@ -119,8 +118,10 @@ typedef ExchangeChatOperations = ({
     String,
   )
   getAttachment,
-  Future<ExchangeRead<int>> Function(ExchangeSession) getUnreadCount,
-  Future<ExchangeWrite<void>> Function(ExchangeSession) markAllRead,
+  Future<Result<int, ExchangeReadFailure>> Function(ExchangeSession)
+  getUnreadCount,
+  Future<Result<void, ExchangeWriteFailure>> Function(ExchangeSession)
+  markAllRead,
 });
 
 typedef ExchangeNotificationBindings = ({
@@ -454,7 +455,9 @@ final class Exchange {
               required walletType,
               required address,
               existingRecipientId,
-            }) async => switch (await withClient<ExchangeWrite<DefaultWallet>>(
+            }) async => switch (await withClient<
+              Result<DefaultWallet, ExchangeWriteFailure>
+            >(
               (client) async => Ok(
                 await BbxApiDefaultWalletsDatasource(api: client)
                     .saveDefaultWallet(
@@ -473,20 +476,21 @@ final class Exchange {
               required recipientId,
               required walletType,
               required address,
-            }) async => switch (await withClient<ExchangeWrite<void>>(
-              (client) async => Ok(
-                await BbxApiDefaultWalletsDatasource(api: client)
-                    .deleteDefaultWallet(
-                      recipientId: recipientId,
-                      walletType: walletType,
-                      address: address,
-                    ),
-              ),
-              completionCheck: _CompletionCheck.write,
-            )) {
-              Ok(:final value) => value,
-              Err(:final failure) => writeNotRun(failure),
-            },
+            }) async =>
+                switch (await withClient<Result<void, ExchangeWriteFailure>>(
+                  (client) async => Ok(
+                    await BbxApiDefaultWalletsDatasource(api: client)
+                        .deleteDefaultWallet(
+                          recipientId: recipientId,
+                          walletType: walletType,
+                          address: address,
+                        ),
+                  ),
+                  completionCheck: _CompletionCheck.write,
+                )) {
+                  Ok(:final value) => value,
+                  Err(:final failure) => writeNotRun(failure),
+                },
       ),
       (environment) => BbxApiOrdersRepository(
         isTestnet: environment == ExchangeEnvironment.testnet,
@@ -529,7 +533,7 @@ final class Exchange {
           completionCheck: _CompletionCheck.read,
         ),
         getUnreadCount: (session) async =>
-            switch (await withClient<ExchangeRead<int>>(
+            switch (await withClient<Result<int, ExchangeReadFailure>>(
               (client) async => Ok(
                 await BbxApiSupportChatDatasource(
                   users: client.users,
@@ -543,7 +547,7 @@ final class Exchange {
               Err(:final failure) => readNotRun(failure),
             },
         markAllRead: (session) async =>
-            switch (await withClient<ExchangeWrite<void>>(
+            switch (await withClient<Result<void, ExchangeWriteFailure>>(
               (client) async => Ok(
                 await BbxApiSupportChatDatasource(
                   users: client.users,
@@ -1076,11 +1080,11 @@ final class Exchange {
     ).execute(session.environment);
   }
 
-  /// [WriteOutcomeUnknown] means the default wallet may be saved: re-read the
+  /// [ExchangeWriteOutcomeUnknownFailure] means the default wallet may be saved: re-read the
   /// default wallets before saving again.
   /// With a journal, an unknown outcome is recorded before it is returned.
   @useResult
-  Future<ExchangeWrite<DefaultWallet>> saveDefaultWallet({
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> saveDefaultWallet({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
@@ -1091,7 +1095,10 @@ final class Exchange {
       existingRecipientId: existingRecipientId,
     );
     final journal = _unknownWrites;
-    if (journal == null || write is! WriteOutcomeUnknown<DefaultWallet>) {
+    final unknown =
+        write is Err<DefaultWallet, ExchangeWriteFailure> &&
+        write.failure is ExchangeWriteOutcomeUnknownFailure;
+    if (journal == null || !unknown) {
       return write;
     }
     if (await _readSessionPoint() case Ok(:final value)) {
@@ -1111,10 +1118,10 @@ final class Exchange {
     return write;
   }
 
-  /// [WriteOutcomeUnknown] means the default flag may be unset: re-read the
+  /// [ExchangeWriteOutcomeUnknownFailure] means the default flag may be unset: re-read the
   /// default wallets before unsetting again.
   @useResult
-  Future<ExchangeWrite<void>> deleteDefaultWallet({
+  Future<Result<void, ExchangeWriteFailure>> deleteDefaultWallet({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
@@ -1128,14 +1135,16 @@ final class Exchange {
   /// is no longer the current one is never sent
   /// ([ExchangeSessionRejection.sessionChanged]).
   @useResult
-  Future<ExchangeRead<DefaultWallets>> readDefaultWallets(
+  Future<Result<DefaultWallets, ExchangeReadFailure>> readDefaultWallets(
     ExchangeSession session,
   ) async {
     if (_access?.session != session) {
-      return const ReadSessionRejected(ExchangeSessionRejection.sessionChanged);
+      return const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.sessionChanged),
+      );
     }
     return switch (await _defaultWallets.get()) {
-      Ok(:final value) => ReadGot(value),
+      Ok(:final value) => Ok(value),
       Err(:final failure) => readNotRun(failure),
     };
   }
@@ -1144,7 +1153,8 @@ final class Exchange {
   /// ([FinancialWriteKind.defaultWalletSave]), so it never runs next to
   /// another financial write of that account or over an unsettled one.
   @useResult
-  Future<GatedWrite<ExchangeWrite<DefaultWallet>>> saveSessionDefaultWallet(
+  Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>>
+  saveSessionDefaultWallet(
     ExchangeSession session, {
     required BtcNetwork walletType,
     required String address,
@@ -1153,7 +1163,9 @@ final class Exchange {
     session,
     FinancialWriteKind.defaultWalletSave,
     () async => _access?.session != session
-        ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+        ? const Err(
+            ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+          )
         : await saveDefaultWallet(
             walletType: walletType,
             address: address,
@@ -1164,7 +1176,8 @@ final class Exchange {
   /// Unsets a default wallet of [session]'s account through [writeGate]
   /// ([FinancialWriteKind.defaultWalletUnset]).
   @useResult
-  Future<GatedWrite<ExchangeWrite<void>>> unsetSessionDefaultWallet(
+  Future<GatedWrite<Result<void, ExchangeWriteFailure>>>
+  unsetSessionDefaultWallet(
     ExchangeSession session, {
     required String recipientId,
     required BtcNetwork walletType,
@@ -1173,7 +1186,9 @@ final class Exchange {
     session,
     FinancialWriteKind.defaultWalletUnset,
     () async => _access?.session != session
-        ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+        ? const Err(
+            ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+          )
         : await deleteDefaultWallet(
             recipientId: recipientId,
             walletType: walletType,
@@ -1215,19 +1230,25 @@ final class Exchange {
   /// How many support messages [session]'s user has not read. A read for a
   /// session that is no longer the current one is never sent.
   @useResult
-  Future<ExchangeRead<int>> readUnreadSupportCount(
+  Future<Result<int, ExchangeReadFailure>> readUnreadSupportCount(
     ExchangeSession session,
   ) async => _access?.session != session
-      ? const ReadSessionRejected(ExchangeSessionRejection.sessionChanged)
+      ? const Err(
+          ExchangeSessionRejectedFailure(
+            ExchangeSessionRejection.sessionChanged,
+          ),
+        )
       : await _chat.getUnreadCount(session);
 
   /// Marks every support message of [session]'s user as read; never sent
   /// for a session that is no longer the current one.
   @useResult
-  Future<ExchangeWrite<void>> markSupportMessagesRead(
+  Future<Result<void, ExchangeWriteFailure>> markSupportMessagesRead(
     ExchangeSession session,
   ) async => _access?.session != session
-      ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+      ? const Err(
+          ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+        )
       : await _chat.markAllRead(session);
 
   /// Broadcasts messages and recoverable failures from the active socket.
@@ -1296,13 +1317,13 @@ Exchange exchangeForTesting({
   })?
   saveUserPreference,
   Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
-  Future<ExchangeWrite<DefaultWallet>> Function({
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> Function({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   })?
   saveDefaultWallet,
-  Future<ExchangeWrite<void>> Function({
+  Future<Result<void, ExchangeWriteFailure>> Function({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
@@ -1441,7 +1462,7 @@ final class _UnexpectedLimitOrders implements LimitOrdersRepository {
   ) => throw StateError('Unexpected limit order read');
 
   @override
-  Future<ExchangeWrite<LimitOrder>> create(
+  Future<Result<LimitOrder, ExchangeWriteFailure>> create(
     ExchangeSession session,
     LimitOrderDraft draft,
   ) => throw StateError('Unexpected limit order create');
@@ -1469,28 +1490,30 @@ final class _UnexpectedFunding implements FundingRepository {
   const _UnexpectedFunding();
 
   @override
-  Future<ExchangeRead<FundingAccount>> account(ExchangeSession session) =>
-      throw StateError('Unexpected funding account read');
+  Future<Result<FundingAccount, ExchangeReadFailure>> account(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected funding account read');
 
   @override
-  Future<ExchangeRead<FundingAnswer>> instructions(
+  Future<Result<FundingAnswer, ExchangeReadFailure>> instructions(
     ExchangeSession session,
     FundingRequest request,
   ) => throw StateError('Unexpected funding instructions request');
 
   @override
-  Future<ExchangeRead<List<FundingInstitution>>> institutions(
+  Future<Result<List<FundingInstitution>, ExchangeReadFailure>> institutions(
     ExchangeSession session,
     Jurisdiction jurisdiction,
   ) => throw StateError('Unexpected funding institution lookup');
 
   @override
-  Future<ExchangeWrite<void>> consent(ExchangeSession session) =>
+  Future<Result<void, ExchangeWriteFailure>> consent(ExchangeSession session) =>
       throw StateError('Unexpected funding consent');
 
   @override
-  Future<ExchangeRead<bool>> consentOnAccount(ExchangeSession session) =>
-      throw StateError('Unexpected funding consent re-read');
+  Future<Result<bool, ExchangeReadFailure>> consentOnAccount(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected funding consent re-read');
 }
 
 /// [exchangeForTesting]'s virtual IBANs when a test gives none.

@@ -25,8 +25,8 @@ const _wallets = DefaultWallets(
 
 Exchange _exchange({
   Future<Result<DefaultWallets, ExchangeFailure>> Function()? get,
-  Future<ExchangeWrite<DefaultWallet>> Function()? save,
-  Future<ExchangeWrite<void>> Function()? unset,
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> Function()? save,
+  Future<Result<void, ExchangeWriteFailure>> Function()? unset,
   ExchangeWriteGate? gate,
 }) => exchangeForTesting(
   access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
@@ -47,17 +47,21 @@ void main() {
     test('reads the wallets of the current session', () async {
       final read = await _exchange(get: () async => const Ok(_wallets))
           .readDefaultWallets(_session);
-      expect(read, isA<ReadGot<DefaultWallets>>());
+      expect(read, isA<Ok<DefaultWallets, ExchangeReadFailure>>());
     });
 
     test('another session is never read', () async {
       final read = await _exchange().readDefaultWallets(_other);
       expect(
         read,
-        isA<ReadSessionRejected<DefaultWallets>>().having(
-          (r) => r.why,
-          'why',
-          ExchangeSessionRejection.sessionChanged,
+        isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>().having(
+            (r) => r.why,
+            'why',
+            ExchangeSessionRejection.sessionChanged,
+          ),
         ),
       );
     });
@@ -65,30 +69,50 @@ void main() {
     for (final (failure, matcher) in [
       (
         const ExchangeNotAuthenticatedFailure(),
-        isA<ReadSessionRejected<DefaultWallets>>(),
+        isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
       ),
       (
         const ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
-        isA<ReadSessionRejected<DefaultWallets>>(),
+        isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
       ),
       (
         const ExchangeOperationStaleFailure(),
-        isA<ReadSessionRejected<DefaultWallets>>(),
+        isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
       ),
       (
         const ExchangeNetworkFailure(),
-        isA<ReadUnreachable<DefaultWallets>>().having(
-          (r) => r.isNetwork,
-          'isNetwork',
-          true,
+        isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>().having(
+            (r) => r.isNetwork,
+            'isNetwork',
+            true,
+          ),
         ),
       ),
       (
         const ExchangeUnexpectedFailure(),
-        isA<ReadUnreachable<DefaultWallets>>().having(
-          (r) => r.isNetwork,
-          'isNetwork',
-          false,
+        isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>().having(
+            (r) => r.isNetwork,
+            'isNetwork',
+            false,
+          ),
         ),
       ),
     ]) {
@@ -102,19 +126,18 @@ void main() {
 
   group('saveSessionDefaultWallet', () {
     test('runs through the write gate', () async {
-      final read =
-          await _exchange(save: () async => WriteDone(_wallets.bitcoin!))
-              .saveSessionDefaultWallet(
-                _session,
-                walletType: BtcNetwork.bitcoin,
-                address: 'bc1qsaved',
-              );
+      final read = await _exchange(save: () async => Ok(_wallets.bitcoin!))
+          .saveSessionDefaultWallet(
+            _session,
+            walletType: BtcNetwork.bitcoin,
+            address: 'bc1qsaved',
+          );
       expect(
         read,
-        isA<GateAdmitted<ExchangeWrite<DefaultWallet>>>().having(
+        isA<GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>>().having(
           (g) => g.result,
           'result',
-          isA<WriteDone<DefaultWallet>>(),
+          isA<Ok<DefaultWallet, ExchangeWriteFailure>>(),
         ),
       );
     });
@@ -134,7 +157,7 @@ void main() {
       );
       expect(
         write,
-        isA<GateRefused<ExchangeWrite<DefaultWallet>>>().having(
+        isA<GateRefused<Result<DefaultWallet, ExchangeWriteFailure>>>().having(
           (g) => g.refusal,
           'refusal',
           const WriteGateBusy(FinancialWriteKind.orderConfirm),
@@ -152,13 +175,17 @@ void main() {
       );
       expect(
         write,
-        isA<GateAdmitted<ExchangeWrite<DefaultWallet>>>().having(
+        isA<GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>>().having(
           (g) => g.result,
           'result',
-          isA<WriteNotSent<DefaultWallet>>().having(
-            (w) => w.reason,
-            'reason',
-            ExchangeNotSentReason.sessionChanged,
+          isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteNotSentFailure>().having(
+              (w) => w.reason,
+              'reason',
+              ExchangeNotSentReason.sessionChanged,
+            ),
           ),
         ),
       );
@@ -166,10 +193,10 @@ void main() {
   });
 
   group('unsetSessionDefaultWallet', () {
-    for (final answer in <ExchangeWrite<void>>[
-      const WriteDone(null),
-      const WriteOutcomeUnknown('504'),
-      const WriteRefused(ExchangeRefusal(httpStatus: 400)),
+    for (final answer in <Result<void, ExchangeWriteFailure>>[
+      const Ok(null),
+      const Err(ExchangeWriteOutcomeUnknownFailure('504')),
+      const Err(ExchangeWriteRefusedFailure(ExchangeRefusal(httpStatus: 400))),
     ]) {
       test('passes ${answer.runtimeType} through the gate', () async {
         final write = await _exchange(unset: () async => answer)
@@ -181,7 +208,7 @@ void main() {
             );
         expect(
           write,
-          isA<GateAdmitted<ExchangeWrite<void>>>().having(
+          isA<GateAdmitted<Result<void, ExchangeWriteFailure>>>().having(
             (g) => g.result,
             'result',
             same(answer),
@@ -199,10 +226,14 @@ void main() {
       );
       expect(
         write,
-        isA<GateAdmitted<ExchangeWrite<void>>>().having(
+        isA<GateAdmitted<Result<void, ExchangeWriteFailure>>>().having(
           (g) => g.result,
           'result',
-          isA<WriteNotSent<void>>(),
+          isA<Err<void, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteNotSentFailure>(),
+          ),
         ),
       );
     });

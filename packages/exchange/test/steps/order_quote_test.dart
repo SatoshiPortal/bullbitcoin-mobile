@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 final class _Order {
   final String id;
@@ -83,37 +84,61 @@ const _states = <_S>[
 ];
 
 const _events = <_E>[
-  OrderCreateAnswered(1, GateAdmitted(WriteDone(_o1))), // 0
-  OrderCreateAnswered(1, GateAdmitted(WriteRefused(_refusal))), // 1
+  OrderCreateAnswered(1, GateAdmitted(Ok(_o1))), // 0
   OrderCreateAnswered(
     1,
-    GateAdmitted(WriteNotSent(ExchangeNotSentReason.unreachable)),
+    GateAdmitted(Err(ExchangeWriteRefusedFailure(_refusal))),
+  ), // 1
+  OrderCreateAnswered(
+    1,
+    GateAdmitted(
+      Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.unreachable)),
+    ),
   ), // 2
-  OrderCreateAnswered(1, GateAdmitted(WriteOutcomeUnknown('timeout'))), // 3
-  OrderCreateAnswered(1, GateAdmitted(WriteSessionRejected())), // 4
+  OrderCreateAnswered(
+    1,
+    GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('timeout'))),
+  ), // 3
+  OrderCreateAnswered(
+    1,
+    GateAdmitted(
+      Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+    ),
+  ), // 4
   OrderCreateAnswered(1, GateRefused(_busy)), // 5
-  OrderCreateAnswered(2, GateAdmitted(WriteDone(_o1))), // 6
-  OrderFindAnswered(1, ReadGot(_o1)), // 7
-  OrderFindAnswered(1, ReadMissing()), // 8
-  OrderFindAnswered(1, ReadUnreachable('timeout', isNetwork: true)), // 9
-  OrderFindAnswered(1, ReadSessionRejected(ExchangeSessionRejection.server)),
-  OrderFindAnswered(2, ReadGot(_o1)), // 11
+  OrderCreateAnswered(2, GateAdmitted(Ok(_o1))), // 6
+  OrderFindAnswered(1, Ok(_o1)), // 7
+  OrderFindAnswered(1, Err(ExchangeMissingFailure())), // 8
+  OrderFindAnswered(
+    1,
+    Err(ExchangeUnreachableFailure('timeout', isNetwork: true)),
+  ), // 9
+  OrderFindAnswered(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
+  OrderFindAnswered(2, Ok(_o1)), // 11
   OrderLockDue('o1'), // 12
   OrderLockDue('other'), // 13
-  OrderRefreshed('o1', ReadGot(_o1b)), // 14
-  OrderRefreshed('o1', ReadUnreachable('timeout', isNetwork: true)), // 15
+  OrderRefreshed('o1', Ok(_o1b)), // 14
   OrderRefreshed(
     'o1',
-    ReadSessionRejected(ExchangeSessionRejection.server),
+    Err(ExchangeUnreachableFailure('timeout', isNetwork: true)),
+  ), // 15
+  OrderRefreshed(
+    'o1',
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
   ), // 16
-  OrderRefreshed('other', ReadGot(_o1b)), // 17
+  OrderRefreshed('other', Ok(_o1b)), // 17
   OrderRetryDue('o1'), // 18
   OrderRetryPressed(), // 19
   OrderCommitPressed(), // 20
   OrderBackPressed(), // 21
   OrderCreateAnswered(
     1,
-    GateAdmitted(WriteRefused(ExchangeRefusal(orderLimit: _limit))),
+    GateAdmitted(
+      Err(ExchangeWriteRefusedFailure(ExchangeRefusal(orderLimit: _limit))),
+    ),
   ), // 22
 ];
 
@@ -224,7 +249,7 @@ void main() {
   test('refresh failures in a row end in unavailable after the bound', () {
     const failure = OrderRefreshed<String, _Order>(
       'o1',
-      ReadUnreachable('timeout', isNetwork: true),
+      Err(ExchangeUnreachableFailure('timeout', isNetwork: true)),
     );
     final second = transitionOrderStep(
       _policy,
@@ -254,7 +279,7 @@ void main() {
       retry.effects.whereType<OrderSendCreate<String>>(),
       isEmpty,
       reason:
-          'a ReadMissing re-read after an unknown outcome cannot prove '
+          'a missing re-read after an unknown outcome cannot prove '
           'the order was not created',
     );
     expect(read.state, isA<OrderUnverified<String, _Order>>());
@@ -306,7 +331,7 @@ void main() {
         create: (request) async {
           seen = gate.inFlight(ExchangeEnvironment.mainnet);
           expect(request, _req);
-          return const WriteDone(_o1);
+          return const Ok(_o1);
         },
         journalUnknown: (_) async => fail('nothing to journal'),
       );
@@ -339,7 +364,7 @@ void main() {
           effect: const OrderSendCreate(_req, 1),
           create: (_) async {
             sent = true;
-            return const WriteDone(_o1);
+            return const Ok(_o1);
           },
           journalUnknown: (_) async => fail('nothing to journal'),
         );
@@ -365,7 +390,8 @@ void main() {
         gate: ExchangeWriteGate(),
         session: session,
         effect: const OrderSendCreate(_req, 1),
-        create: (_) async => const WriteOutcomeUnknown('timeout'),
+        create: (_) async =>
+            const Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
         journalUnknown: (request) async => journaled.add(request),
       );
       expect(journaled, [_req]);
@@ -375,11 +401,13 @@ void main() {
       );
     });
 
-    for (final write in <ExchangeWrite<_Order>>[
-      const WriteDone(_o1),
-      const WriteRefused(_refusal),
-      const WriteNotSent(ExchangeNotSentReason.unreachable),
-      const WriteSessionRejected(),
+    for (final write in <Result<_Order, ExchangeWriteFailure>>[
+      const Ok(_o1),
+      const Err(ExchangeWriteRefusedFailure(_refusal)),
+      const Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.unreachable)),
+      const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
     ]) {
       test('$write is not journaled', () async {
         var journaled = false;

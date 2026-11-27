@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = StepNext<ContextLoadState<String>, ContextLoadEffect>;
 
@@ -20,12 +21,15 @@ const _states = <ContextLoadState<String>>[
 ];
 
 const _events = <ContextLoadEvent<String>>[
-  ContextLoaded(1, ReadGot('fresh')),
-  ContextLoaded(1, ReadMissing()),
-  ContextLoaded(1, ReadUnreachable('timeout', isNetwork: true)),
-  ContextLoaded(1, ReadMalformed('bad json')),
-  ContextLoaded(1, ReadSessionRejected(ExchangeSessionRejection.server)),
-  ContextLoaded(2, ReadGot('other attempt')),
+  ContextLoaded(1, Ok('fresh')),
+  ContextLoaded(1, Err(ExchangeMissingFailure())),
+  ContextLoaded(1, Err(ExchangeUnreachableFailure('timeout', isNetwork: true))),
+  ContextLoaded(1, Err(ExchangeMalformedFailure('bad json'))),
+  ContextLoaded(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
+  ContextLoaded(2, Ok('other attempt')),
   ContextRetryPressed(),
 ];
 
@@ -90,7 +94,7 @@ void main() {
     ).state;
     final late = transitionContextLoad(
       retried,
-      const ContextLoaded(1, ReadGot('late')),
+      const ContextLoaded(1, Ok('late')),
     );
     expect(identical(late.state, retried), isTrue);
   });
@@ -99,10 +103,7 @@ void main() {
     final reached = <Type>{};
     var frontier = <ContextLoadState<String>>[contextLoadStart<String>().state];
     reached.add(frontier.single.runtimeType);
-    final events = [
-      ..._events,
-      const ContextLoaded<String>(2, ReadGot('second')),
-    ];
+    final events = [..._events, const ContextLoaded<String>(2, Ok('second'))];
     while (frontier.isNotEmpty) {
       final next = <ContextLoadState<String>>[];
       for (final state in frontier) {

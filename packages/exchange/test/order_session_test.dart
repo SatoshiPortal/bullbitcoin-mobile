@@ -151,8 +151,12 @@ void main() {
       // A write keeps the answer of the session that sent it: a write that
       // may have happened is never turned into a stale failure.
       expect(await pending, switch ((write, status)) {
-        (true, 200) => isA<WriteDone<BuyOrder>>(),
-        (true, _) => isA<WriteSessionRejected<BuyOrder>>(),
+        (true, 200) => isA<Ok<BuyOrder, ExchangeWriteFailure>>(),
+        (true, _) => isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
         (false, _) => isA<Err<Order, ExchangeFailure>>().having(
           (result) => result.failure,
           'failure',
@@ -313,7 +317,7 @@ void main() {
         ),
       );
 
-      expect(await pending, isA<WriteDone<WithdrawOrder>>());
+      expect(await pending, isA<Ok<WithdrawOrder, ExchangeWriteFailure>>());
       expect(http.requests.map((request) => (request.data as Map)['method']), [
         'confirmOrderSummary',
         if (!changeSession) 'updateMyRecipient',
@@ -358,7 +362,7 @@ void main() {
           walletType: BtcNetwork.bitcoin,
           address: 'synthetic-address',
         );
-        expect(result, isA<WriteDone<void>>());
+        expect(result, isA<Ok<void, ExchangeWriteFailure>>());
         expect(endpoints.single.host, startsWith(environment.name));
       },
     );

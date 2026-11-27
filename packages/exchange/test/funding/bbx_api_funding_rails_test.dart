@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../bbx_api_test_http.dart';
 
+import 'package:primitives/primitives.dart';
+
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 0,
@@ -59,10 +61,14 @@ Map<String, dynamic> _rpcError(String apiCode) => {
 Map<String, Object?> _sent(FakeBbxHttp http) =>
     http.requests.single.data as Map<String, Object?>;
 
-/// A read that got [answer]. [ReadGot] has no value equality, so the answer
+/// A read that got [answer]. [Ok] has no value equality, so the answer
 /// is compared, not the wrapper.
 Matcher _got(FundingAnswer answer) =>
-    isA<ReadGot<FundingAnswer>>().having((read) => read.value, 'value', answer);
+    isA<Ok<FundingAnswer, ExchangeReadFailure>>().having(
+      (read) => read.value,
+      'value',
+      answer,
+    );
 
 ProcessorCodeRequest _request(ProcessorCodeFundingRail rail) =>
     ProcessorCodeRequest(rail, userNumber: 4242, consent: _consent);
@@ -82,7 +88,8 @@ void main() {
           rail.paymentProcessorCode,
         );
         final instructions =
-            ((read as ReadGot<FundingAnswer>).value as FundingInstructionsGot)
+            ((read as Ok<FundingAnswer, ExchangeReadFailure>).value
+                    as FundingInstructionsGot)
                 .instructions;
         switch (instructions) {
           case FundingInstructionRows(:final rows):
@@ -129,7 +136,14 @@ void main() {
         ),
       ).funding.instructions(_session, _request(const SpeiFundingRail()));
 
-      expect(read, isA<ReadMalformed<FundingAnswer>>());
+      expect(
+        read,
+        isA<Err<FundingAnswer, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeMalformedFailure>(),
+        ),
+      );
     });
 
     test('a field the rail never shows is not required (03 §12.4)', () async {
@@ -148,7 +162,7 @@ void main() {
       final read = await testExchange(FakeBbxHttp(body: answer)).funding
           .instructions(_session, _request(const BankWireFundingRail()));
 
-      expect(read, isA<ReadGot<FundingAnswer>>());
+      expect(read, isA<Ok<FundingAnswer, ExchangeReadFailure>>());
     });
 
     for (final (apiCode, refusal) in [
@@ -174,7 +188,14 @@ void main() {
         FakeBbxHttp(body: _rpcError('ERR_SOMETHING_NEW')),
       ).funding.instructions(_session, _request(const SinpeMovilFundingRail()));
 
-      expect(read, isA<ReadUnreachable<FundingAnswer>>());
+      expect(
+        read,
+        isA<Err<FundingAnswer, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>(),
+        ),
+      );
     });
 
     test('a timeout is unreachable over the network', () async {
@@ -184,10 +205,14 @@ void main() {
 
       expect(
         read,
-        isA<ReadUnreachable<FundingAnswer>>().having(
-          (read) => read.isNetwork,
-          'isNetwork',
-          isTrue,
+        isA<Err<FundingAnswer, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>().having(
+            (read) => read.isNetwork,
+            'isNetwork',
+            isTrue,
+          ),
         ),
       );
     });
@@ -197,7 +222,14 @@ void main() {
         FakeBbxHttp(status: 401, body: {'error': 'unauthorized'}),
       ).funding.instructions(_session, _request(const SinpeMovilFundingRail()));
 
-      expect(read, isA<ReadSessionRejected<FundingAnswer>>());
+      expect(
+        read,
+        isA<Err<FundingAnswer, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
+      );
     });
 
     test(
@@ -248,7 +280,14 @@ void main() {
             ),
           );
 
-      expect(read, isA<ReadMalformed<FundingAnswer>>());
+      expect(
+        read,
+        isA<Err<FundingAnswer, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeMalformedFailure>(),
+        ),
+      );
     });
   });
 
@@ -269,7 +308,7 @@ void main() {
           .institutions(_session, Jurisdiction.colombia);
 
       expect((_sent(http)['params'] as Map)['countryCode'], 'co');
-      expect([for (final bank in (read as ReadGot).value) bank.code], ['BC01']);
+      expect([for (final bank in (read as Ok).value) bank.code], ['BC01']);
     });
 
     test('a failed list is unreachable, never an empty list', () async {
@@ -277,7 +316,14 @@ void main() {
         FakeBbxHttp(error: DioExceptionType.connectionError),
       ).funding.institutions(_session, Jurisdiction.colombia);
 
-      expect(read, isA<ReadUnreachable<List<FundingInstitution>>>());
+      expect(
+        read,
+        isA<Err<List<FundingInstitution>, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>(),
+        ),
+      );
     });
   });
 
@@ -291,7 +337,7 @@ void main() {
             },
           ),
         ).funding.consent(_session),
-        isA<WriteDone<void>>(),
+        isA<Ok<void, ExchangeWriteFailure>>(),
       );
     });
 
@@ -304,7 +350,11 @@ void main() {
             },
           ),
         ).funding.consent(_session),
-        isA<WriteOutcomeUnknown<void>>(),
+        isA<Err<void, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
     });
 
@@ -313,7 +363,11 @@ void main() {
         await testExchange(FakeBbxHttp(error: DioExceptionType.connectionError))
             .funding
             .consent(_session),
-        isA<WriteOutcomeUnknown<void>>(),
+        isA<Err<void, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
     });
   });
@@ -327,6 +381,13 @@ void main() {
     ).funding.instructions(_session, _request(const SpeiFundingRail()));
 
     expect(http.requests, isEmpty);
-    expect(read, isA<ReadUnreachable<FundingAnswer>>());
+    expect(
+      read,
+      isA<Err<FundingAnswer, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

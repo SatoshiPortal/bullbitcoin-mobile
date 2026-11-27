@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = StepNext<VirtualPayeeState, VirtualPayeeEffect>;
 
@@ -43,23 +44,32 @@ const _states = <VirtualPayeeState>[
 ];
 
 const _events = <VirtualPayeeEvent>[
-  PayeeLoaded(1, ReadGot(SepaVirtualPayeeStatus.active)), // 0
-  PayeeLoaded(1, ReadGot(SepaVirtualPayeeStatus.absent)), // 1
-  PayeeLoaded(1, ReadGot(SepaVirtualPayeeStatus.pending)), // 2
-  PayeeLoaded(1, ReadGot(SepaVirtualPayeeStatus.unknown)), // 3
-  PayeeLoaded(1, ReadUnreachable('down', isNetwork: true)), // 4
-  PayeeLoaded(1, ReadSessionRejected(ExchangeSessionRejection.server)), // 5
-  PayeeLoaded(2, ReadGot(SepaVirtualPayeeStatus.active)), // 6
-  PayeeActivated(1, WriteDone(SepaVirtualPayeeStatus.active)), // 7
-  PayeeActivated(1, WriteDone(SepaVirtualPayeeStatus.pending)), // 8
-  PayeeActivated(1, WriteOutcomeUnknown('timeout')), // 9
-  PayeeActivated(1, WriteRefused(_refusal)), // 10
-  PayeeActivated(1, WriteSessionRejected()), // 11
-  PayeePolled(1, ReadGot(SepaVirtualPayeeStatus.pending)), // 12
-  PayeePolled(1, ReadGot(SepaVirtualPayeeStatus.active)), // 13
-  PayeePolled(1, ReadGot(SepaVirtualPayeeStatus.absent)), // 14
-  PayeePolled(1, ReadGot(SepaVirtualPayeeStatus.unknown)), // 15
-  PayeePolled(3, ReadUnreachable('down', isNetwork: true)), // 16
+  PayeeLoaded(1, Ok(SepaVirtualPayeeStatus.active)), // 0
+  PayeeLoaded(1, Ok(SepaVirtualPayeeStatus.absent)), // 1
+  PayeeLoaded(1, Ok(SepaVirtualPayeeStatus.pending)), // 2
+  PayeeLoaded(1, Ok(SepaVirtualPayeeStatus.unknown)), // 3
+  PayeeLoaded(1, Err(ExchangeUnreachableFailure('down', isNetwork: true))), // 4
+  PayeeLoaded(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ), // 5
+  PayeeLoaded(2, Ok(SepaVirtualPayeeStatus.active)), // 6
+  PayeeActivated(1, Ok(SepaVirtualPayeeStatus.active)), // 7
+  PayeeActivated(1, Ok(SepaVirtualPayeeStatus.pending)), // 8
+  PayeeActivated(1, Err(ExchangeWriteOutcomeUnknownFailure('timeout'))), // 9
+  PayeeActivated(1, Err(ExchangeWriteRefusedFailure(_refusal))), // 10
+  PayeeActivated(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ), // 11
+  PayeePolled(1, Ok(SepaVirtualPayeeStatus.pending)), // 12
+  PayeePolled(1, Ok(SepaVirtualPayeeStatus.active)), // 13
+  PayeePolled(1, Ok(SepaVirtualPayeeStatus.absent)), // 14
+  PayeePolled(1, Ok(SepaVirtualPayeeStatus.unknown)), // 15
+  PayeePolled(
+    3,
+    Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+  ), // 16
   PayeeVisibilityChanged(visible: false), // 17
   PayeeVisibilityChanged(visible: true), // 18
   PayeeDeadlinePassed(1), // 19
@@ -187,7 +197,7 @@ void main() {
       final ticket = (state as PayeePending).ticket;
       state = _step(
         state,
-        PayeePolled(ticket, const ReadGot(SepaVirtualPayeeStatus.pending)),
+        PayeePolled(ticket, const Ok(SepaVirtualPayeeStatus.pending)),
       ).state;
     }
     expect(state, isA<PayeeTimedOut>());

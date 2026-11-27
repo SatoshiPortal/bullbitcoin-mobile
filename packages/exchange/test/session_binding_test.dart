@@ -152,10 +152,14 @@ void main() {
             address: 'bc1qaddress',
           ),
         ),
-        isA<WriteNotSent<LimitOrder>>().having(
-          (w) => w.reason,
-          'reason',
-          ExchangeNotSentReason.sessionChanged,
+        isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.sessionChanged,
+          ),
         ),
       );
       expect(opened, isEmpty);

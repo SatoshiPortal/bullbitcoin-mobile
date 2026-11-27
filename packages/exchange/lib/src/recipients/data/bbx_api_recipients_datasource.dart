@@ -5,7 +5,6 @@ import 'package:exchange/src/recipients/domain/entities/recipient_details.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_details_input.dart';
 import 'package:exchange/src/recipients/domain/entities/recipient_type.dart';
 import 'package:exchange/src/data/exchange_call_classifier.dart';
-import 'package:exchange/src/domain/exchange_call_result.dart';
 import 'package:exchange/src/domain/exchange_failure.dart';
 import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:bull_logger/bull_logger.dart';
@@ -39,20 +38,29 @@ final class BbxApiRecipientsDatasource {
       () => _api.recipients.createRecipientFiat(request),
       _toRecipient,
     )) {
-      WriteDone(:final value) => Ok(value),
-      WriteRefused(:final reason) => Err(
+      Ok(:final value) => Ok(value),
+      Err(failure: ExchangeWriteRefusedFailure(:final reason)) => Err(
         RecipientsInvalidFieldsFailure.fromFieldErrors(reason.fieldErrors) ??
             const RecipientsSaveFailure(),
       ),
-      WriteNotSent(reason: ExchangeNotSentReason.signedOut) ||
-      WriteSessionRejected() => const Err(RecipientsNotAuthenticatedFailure()),
-      WriteNotSent(reason: ExchangeNotSentReason.unreachable) => const Err(
-        RecipientsNetworkFailure(),
-      ),
-      WriteNotSent(:final reason) => Err(
+      Err(
+        failure: ExchangeWriteNotSentFailure(
+          reason: ExchangeNotSentReason.signedOut,
+        ),
+      ) ||
+      Err(
+        failure: ExchangeSessionRejectedFailure(),
+      ) => const Err(RecipientsNotAuthenticatedFailure()),
+      Err(
+        failure: ExchangeWriteNotSentFailure(
+          reason: ExchangeNotSentReason.unreachable,
+        ),
+      ) =>
+        const Err(RecipientsNetworkFailure()),
+      Err(failure: ExchangeWriteNotSentFailure(:final reason)) => Err(
         RecipientsSaveFailure('not sent: ${reason.name}'),
       ),
-      WriteOutcomeUnknown(:final reason) => Err(
+      Err(failure: ExchangeWriteOutcomeUnknownFailure(:final reason)) => Err(
         RecipientsSaveOutcomeUnknownFailure(reason),
       ),
     };

@@ -1,8 +1,10 @@
 import 'package:meta/meta.dart';
 
 import '../domain/entities/virtual_iban.dart';
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// What the virtual IBAN step loads first: the user's virtual IBAN, if any,
 /// and the account owner's name the intro shows (the IBAN is issued in it).
@@ -293,7 +295,7 @@ sealed class VirtualIbanEvent {
 
 final class VibanLoaded extends VirtualIbanEvent {
   final int attempt;
-  final ExchangeRead<VirtualIbanContext> read;
+  final Result<VirtualIbanContext, ExchangeReadFailure> read;
 
   const VibanLoaded(this.attempt, this.read);
 }
@@ -304,23 +306,23 @@ final class VibanCreatePressed extends VirtualIbanEvent {
 
 final class VibanCreated extends VirtualIbanEvent {
   final int attempt;
-  final ExchangeWrite<VirtualIban> write;
+  final Result<VirtualIban, ExchangeWriteFailure> write;
 
   const VibanCreated(this.attempt, this.write);
 }
 
-/// The re-read after an unknown create; [ReadGot] of null means there is
+/// The re-read after an unknown create; [Ok] of null means there is
 /// none.
 final class VibanVerified extends VirtualIbanEvent {
   final int attempt;
-  final ExchangeRead<VirtualIban?> read;
+  final Result<VirtualIban?, ExchangeReadFailure> read;
 
   const VibanVerified(this.attempt, this.read);
 }
 
 final class VibanPolled extends VirtualIbanEvent {
   final int ticket;
-  final ExchangeRead<VirtualIban?> read;
+  final Result<VirtualIban?, ExchangeReadFailure> read;
 
   const VibanPolled(this.ticket, this.read);
 }
@@ -469,66 +471,70 @@ VirtualIbanNext _watch(VirtualIbanPolicy policy, String owner, int round) =>
 VirtualIbanNext _loaded(
   VirtualIbanPolicy policy,
   int attempt,
-  ExchangeRead<VirtualIbanContext> read,
+  Result<VirtualIbanContext, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(value: VirtualIbanContext(virtualIban: null, :final ownerName)) =>
+  Ok(value: VirtualIbanContext(virtualIban: null, :final ownerName)) =>
     StepNext(VibanIntro(ownerName)),
-  ReadGot(
+  Ok(
     value: VirtualIbanContext(
       virtualIban: PendingVirtualIban(),
       :final ownerName,
     ),
   ) =>
     _watch(policy, ownerName, 1),
-  ReadGot(
-    value: VirtualIbanContext(virtualIban: final ActiveVirtualIban active),
-  ) =>
+  Ok(value: VirtualIbanContext(virtualIban: final ActiveVirtualIban active)) =>
     StepNext(VibanActive(active)),
-  ReadMissing() ||
-  ReadUnreachable() ||
-  ReadMalformed() => StepNext(VibanLoadFailed(attempt, ReadProblem.of(read)!)),
-  ReadSessionRejected() => const StepNext(VibanSessionEnded()),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => StepNext(VibanLoadFailed(attempt, ReadProblem.of(read)!)),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    VibanSessionEnded(),
+  ),
 };
 
 VirtualIbanNext _created(
   VirtualIbanPolicy policy,
   String owner,
   int attempt,
-  ExchangeWrite<VirtualIban> write,
+  Result<VirtualIban, ExchangeWriteFailure> write,
 ) => switch (write) {
-  WriteDone(value: final ActiveVirtualIban active) => StepNext(
-    VibanActive(active),
-  ),
-  WriteDone(value: PendingVirtualIban()) => _watch(policy, owner, 1),
-  WriteRefused(:final reason) => StepNext(
+  Ok(value: final ActiveVirtualIban active) => StepNext(VibanActive(active)),
+  Ok(value: PendingVirtualIban()) => _watch(policy, owner, 1),
+  Err(failure: ExchangeWriteRefusedFailure(:final reason)) => StepNext(
     VibanCreateFailed(owner, attempt, WriteProblemRefused(reason)),
   ),
-  WriteNotSent(:final reason) => StepNext(
+  Err(failure: ExchangeWriteNotSentFailure(:final reason)) => StepNext(
     VibanCreateFailed(owner, attempt, WriteProblemNotSent(reason)),
   ),
-  WriteOutcomeUnknown() => StepNext(VibanVerifying(owner, attempt), [
-    VibanVerify(attempt),
-  ]),
-  WriteSessionRejected() => const StepNext(VibanSessionEnded()),
+  Err(failure: ExchangeWriteOutcomeUnknownFailure()) => StepNext(
+    VibanVerifying(owner, attempt),
+    [VibanVerify(attempt)],
+  ),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    VibanSessionEnded(),
+  ),
 };
 
 VirtualIbanNext _verified(
   VirtualIbanPolicy policy,
   String owner,
   int attempt,
-  ExchangeRead<VirtualIban?> read,
+  Result<VirtualIban?, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(value: final ActiveVirtualIban active) => StepNext(
-    VibanActive(active),
-  ),
-  ReadGot(value: PendingVirtualIban()) => _watch(policy, owner, 1),
-  ReadGot(value: null) || ReadMissing() => StepNext(
+  Ok(value: final ActiveVirtualIban active) => StepNext(VibanActive(active)),
+  Ok(value: PendingVirtualIban()) => _watch(policy, owner, 1),
+  Ok(value: null) || Err(failure: ExchangeMissingFailure()) => StepNext(
     VibanCreateFailed(owner, attempt, const WriteProblemNotApplied()),
   ),
-  ReadUnreachable() || ReadMalformed() => StepNext(
-    VibanUnverified(owner, attempt, ReadProblem.of(read)!),
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => StepNext(VibanUnverified(owner, attempt, ReadProblem.of(read)!)),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    VibanSessionEnded(),
   ),
-  ReadSessionRejected() => const StepNext(VibanSessionEnded()),
 };
 
 /// A poll answer that leaves it pending (or unreadable): poll again within
@@ -549,19 +555,20 @@ VirtualIbanNext _pollAgain(VirtualIbanPolicy policy, VibanActivating at) {
 VirtualIbanNext _polled(
   VirtualIbanPolicy policy,
   VibanActivating at,
-  ExchangeRead<VirtualIban?> read,
+  Result<VirtualIban?, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(value: final ActiveVirtualIban active) => StepNext(
+  Ok(value: final ActiveVirtualIban active) => StepNext(
     VibanActive(active),
     const [VibanStopWatching()],
   ),
-  ReadGot(value: PendingVirtualIban() || null) ||
-  ReadMissing() ||
-  ReadUnreachable() ||
-  ReadMalformed() => _pollAgain(policy, at),
-  ReadSessionRejected() => const StepNext(VibanSessionEnded(), [
-    VibanStopWatching(),
-  ]),
+  Ok(value: PendingVirtualIban() || null) ||
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(failure: ExchangeMalformedFailure()) => _pollAgain(policy, at),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    VibanSessionEnded(),
+    [VibanStopWatching()],
+  ),
 };
 
 VirtualIbanNext transitionVirtualIban(

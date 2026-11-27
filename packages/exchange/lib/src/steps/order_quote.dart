@@ -1,10 +1,11 @@
 import 'package:meta/meta.dart';
 
 import '../domain/exchange_access.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/exchange_write_gate.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// An order with the id its replies are keyed by.
 @immutable
@@ -311,17 +312,17 @@ sealed class OrderStepEvent<R, O> {
 /// What the write gate and the create of [attempt] answered.
 final class OrderCreateAnswered<R, O> extends OrderStepEvent<R, O> {
   final int attempt;
-  final GatedWrite<ExchangeWrite<O>> answer;
+  final GatedWrite<Result<O, ExchangeWriteFailure>> answer;
 
   const OrderCreateAnswered(this.attempt, this.answer);
 }
 
-/// The re-read after an unknown create of [attempt]: [ReadGot] is the
-/// matching order, [ReadMissing] means no order matched, which cannot prove
+/// The re-read after an unknown create of [attempt]: [Ok] is the
+/// matching order, [ExchangeMissingFailure] means no order matched, which cannot prove
 /// the create did not happen.
 final class OrderFindAnswered<R, O> extends OrderStepEvent<R, O> {
   final int attempt;
-  final ExchangeRead<O> read;
+  final Result<O, ExchangeReadFailure> read;
 
   const OrderFindAnswered(this.attempt, this.read);
 }
@@ -334,7 +335,7 @@ final class OrderLockDue<R, O> extends OrderStepEvent<R, O> {
 
 final class OrderRefreshed<R, O> extends OrderStepEvent<R, O> {
   final String orderId;
-  final ExchangeRead<O> read;
+  final Result<O, ExchangeReadFailure> read;
 
   const OrderRefreshed(this.orderId, this.read);
 }
@@ -506,7 +507,7 @@ Future<OrderCreateAnswered<R, O>> runOrderCreate<R, O>({
   required ExchangeWriteGate gate,
   required ExchangeSession session,
   required OrderSendCreate<R> effect,
-  required Future<ExchangeWrite<O>> Function(R request) create,
+  required Future<Result<O, ExchangeWriteFailure>> Function(R request) create,
   required Future<void> Function(R request) journalUnknown,
 }) async {
   final answer = await gate.run(
@@ -514,7 +515,9 @@ Future<OrderCreateAnswered<R, O>> runOrderCreate<R, O>({
     FinancialWriteKind.orderCreate,
     () => create(effect.request),
   );
-  if (answer case GateAdmitted(result: WriteOutcomeUnknown())) {
+  if (answer case GateAdmitted(
+    result: Err(failure: ExchangeWriteOutcomeUnknownFailure()),
+  )) {
     await journalUnknown(effect.request);
   }
   return OrderCreateAnswered(effect.attempt, answer);
@@ -533,61 +536,76 @@ OrderStepNext<R, O> _created<R, O>(
   OrderPolicy<O> policy,
   R request,
   int attempt,
-  GatedWrite<ExchangeWrite<O>> answer,
+  GatedWrite<Result<O, ExchangeWriteFailure>> answer,
 ) => switch (answer) {
   GateRefused(:final refusal) => StepNext(
     OrderWriteRefused<R, O>(request, attempt, refusal),
   ),
-  GateAdmitted(result: WriteDone(:final value)) => _held(policy, value),
+  GateAdmitted(result: Ok(:final value)) => _held(policy, value),
   GateAdmitted(
-    result: WriteRefused(reason: ExchangeRefusal(orderLimit: final limit?)),
+    result: Err(
+      failure: ExchangeWriteRefusedFailure(
+        reason: ExchangeRefusal(orderLimit: final limit?),
+      ),
+    ),
   ) =>
     StepNext(OrderAmountRefused<R, O>(request, limit)),
-  GateAdmitted(result: WriteRefused(:final reason)) => StepNext(
-    OrderCreateFailed<R, O>(request, attempt, WriteProblemRefused(reason)),
-  ),
-  GateAdmitted(result: WriteNotSent(:final reason)) => StepNext(
-    OrderCreateFailed<R, O>(request, attempt, WriteProblemNotSent(reason)),
-  ),
-  GateAdmitted(result: WriteOutcomeUnknown()) => StepNext(
-    OrderVerifying<R, O>(request, attempt),
-    [OrderFindCreated(request, attempt)],
-  ),
-  GateAdmitted(result: WriteSessionRejected()) => StepNext(
-    OrderSessionEnded<R, O>(),
-  ),
+  GateAdmitted(
+    result: Err(failure: ExchangeWriteRefusedFailure(:final reason)),
+  ) =>
+    StepNext(
+      OrderCreateFailed<R, O>(request, attempt, WriteProblemRefused(reason)),
+    ),
+  GateAdmitted(
+    result: Err(failure: ExchangeWriteNotSentFailure(:final reason)),
+  ) =>
+    StepNext(
+      OrderCreateFailed<R, O>(request, attempt, WriteProblemNotSent(reason)),
+    ),
+  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) =>
+    StepNext(OrderVerifying<R, O>(request, attempt), [
+      OrderFindCreated(request, attempt),
+    ]),
+  GateAdmitted(result: Err(failure: ExchangeSessionRejectedFailure())) =>
+    StepNext(OrderSessionEnded<R, O>()),
 };
 
 OrderStepNext<R, O> _found<R, O>(
   OrderPolicy<O> policy,
   R request,
   int attempt,
-  ExchangeRead<O> read,
+  Result<O, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(:final value) => _held(policy, value),
-  ReadMissing() => StepNext(
+  Ok(:final value) => _held(policy, value),
+  Err(failure: ExchangeMissingFailure()) => StepNext(
     OrderUnverified<R, O>(request, attempt, const ReadProblemMissing()),
   ),
-  ReadUnreachable() || ReadMalformed() => StepNext(
-    OrderUnverified<R, O>(request, attempt, ReadProblem.of(read)!),
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => StepNext(OrderUnverified<R, O>(request, attempt, ReadProblem.of(read)!)),
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+    OrderSessionEnded<R, O>(),
   ),
-  ReadSessionRejected() => StepNext(OrderSessionEnded<R, O>()),
 };
 
 OrderStepNext<R, O> _refreshed<R, O>(
   OrderPolicy<O> policy,
   QuotedOrder<O> quoted,
   int failures,
-  ExchangeRead<O> read,
+  Result<O, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(:final value) => StepNext(
+  Ok(:final value) => StepNext(
     OrderQuoted<R, O>(QuotedOrder(quoted.id, value), const QuoteLive()),
     [OrderStartLockTimer(quoted.id)],
   ),
-  ReadSessionRejected() => StepNext(OrderSessionEnded<R, O>(), [
-    OrderStopTimers(quoted.id),
-  ]),
-  ReadMissing() || ReadUnreachable() || ReadMalformed() =>
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+    OrderSessionEnded<R, O>(),
+    [OrderStopTimers(quoted.id)],
+  ),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(failure: ExchangeMalformedFailure()) =>
     failures + 1 > policy.maxRefreshRetries
         ? StepNext(OrderQuoted<R, O>(quoted, const QuoteUnavailable()))
         : StepNext(OrderQuoted<R, O>(quoted, QuoteRetrying(failures + 1)), [

@@ -1,7 +1,9 @@
 import 'package:meta/meta.dart';
 
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 enum OutcomeVerdict { done, failed, pending }
 
@@ -213,7 +215,7 @@ sealed class OutcomeWatchEvent<O> {
 final class WatchPolled<O> extends OutcomeWatchEvent<O> {
   final String orderId;
   final int ticket;
-  final ExchangeRead<O> read;
+  final Result<O, ExchangeReadFailure> read;
 
   const WatchPolled(this.orderId, this.ticket, this.read);
 }
@@ -359,13 +361,13 @@ OutcomeWatchNext<O> outcomeWatchStart<O>(OutcomePolicy<O> policy, O order) =>
 OutcomeWatchNext<O> _polled<O>(
   OutcomePolicy<O> policy,
   WatchWatching<O> watching,
-  ExchangeRead<O> read,
+  Result<O, ExchangeReadFailure> read,
 ) {
   final id = policy.idOf(watching.order);
   final polls = watching.polls + 1;
   final next = watching.ticket + 1;
   return switch (read) {
-    ReadGot(:final value) => switch (policy.verdictOf(value)) {
+    Ok(:final value) => switch (policy.verdictOf(value)) {
       OutcomeVerdict.done => StepNext(WatchDone<O>(value), [WatchStop(id)]),
       OutcomeVerdict.failed => StepNext(WatchFailed<O>(value), [WatchStop(id)]),
       OutcomeVerdict.pending =>
@@ -375,8 +377,13 @@ OutcomeWatchNext<O> _polled<O>(
                 WatchSchedulePoll(id, next),
               ]),
     },
-    ReadSessionRejected() => StepNext(WatchSessionEnded<O>(), [WatchStop(id)]),
-    ReadMissing() || ReadUnreachable() || ReadMalformed() =>
+    Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+      WatchSessionEnded<O>(),
+      [WatchStop(id)],
+    ),
+    Err(failure: ExchangeMissingFailure()) ||
+    Err(failure: ExchangeUnreachableFailure()) ||
+    Err(failure: ExchangeMalformedFailure()) =>
       watching.unreadable + 1 >= policy.maxUnreadable
           ? StepNext(WatchUnreadable<O>(watching.order, next), [WatchStop(id)])
           : polls >= policy.maxPolls

@@ -1,9 +1,11 @@
 import 'package:meta/meta.dart';
 
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import '../payout/payout_requirement.dart';
 import '../recipients/domain/entities/sepa_virtual_payee_status.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// How the step polls a pending virtual payee: often at first, because
 /// activation usually takes a few seconds, then less often, within bounds
@@ -215,24 +217,24 @@ sealed class VirtualPayeeEvent {
   const VirtualPayeeEvent();
 }
 
-/// [ReadMissing]: the user has no SEPA recipient with this id.
+/// [ExchangeMissingFailure]: the user has no SEPA recipient with this id.
 final class PayeeLoaded extends VirtualPayeeEvent {
   final int attempt;
-  final ExchangeRead<SepaVirtualPayeeStatus> read;
+  final Result<SepaVirtualPayeeStatus, ExchangeReadFailure> read;
 
   const PayeeLoaded(this.attempt, this.read);
 }
 
 final class PayeeActivated extends VirtualPayeeEvent {
   final int attempt;
-  final ExchangeWrite<SepaVirtualPayeeStatus> write;
+  final Result<SepaVirtualPayeeStatus, ExchangeWriteFailure> write;
 
   const PayeeActivated(this.attempt, this.write);
 }
 
 final class PayeePolled extends VirtualPayeeEvent {
   final int ticket;
-  final ExchangeRead<SepaVirtualPayeeStatus> read;
+  final Result<SepaVirtualPayeeStatus, ExchangeReadFailure> read;
 
   const PayeePolled(this.ticket, this.read);
 }
@@ -368,44 +370,46 @@ VirtualPayeeNext _activate(int attempt) =>
 VirtualPayeeNext _loaded(
   VirtualPayeePolicy policy,
   int attempt,
-  ExchangeRead<SepaVirtualPayeeStatus> read,
+  Result<SepaVirtualPayeeStatus, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(value: SepaVirtualPayeeStatus.active) => const StepNext(
-    PayeeActive(),
-  ),
-  ReadGot(value: SepaVirtualPayeeStatus.absent) => _activate(1),
-  ReadGot(value: SepaVirtualPayeeStatus.pending) => _wait(policy, 0, 1),
-  ReadGot(value: SepaVirtualPayeeStatus.unknown) => StepNext(
+  Ok(value: SepaVirtualPayeeStatus.active) => const StepNext(PayeeActive()),
+  Ok(value: SepaVirtualPayeeStatus.absent) => _activate(1),
+  Ok(value: SepaVirtualPayeeStatus.pending) => _wait(policy, 0, 1),
+  Ok(value: SepaVirtualPayeeStatus.unknown) => StepNext(
     PayeeUnknownStatus(attempt),
   ),
-  ReadMissing() ||
-  ReadUnreachable() ||
-  ReadMalformed() => StepNext(PayeeLoadFailed(attempt, ReadProblem.of(read)!)),
-  ReadSessionRejected() => const StepNext(PayeeSessionEnded()),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => StepNext(PayeeLoadFailed(attempt, ReadProblem.of(read)!)),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    PayeeSessionEnded(),
+  ),
 };
 
 VirtualPayeeNext _activated(
   VirtualPayeePolicy policy,
   int attempt,
-  ExchangeWrite<SepaVirtualPayeeStatus> write,
+  Result<SepaVirtualPayeeStatus, ExchangeWriteFailure> write,
 ) => switch (write) {
-  WriteDone(value: SepaVirtualPayeeStatus.active) => const StepNext(
-    PayeeActive(),
-  ),
-  WriteDone(
-    value: SepaVirtualPayeeStatus.pending || SepaVirtualPayeeStatus.absent,
-  ) ||
-  WriteOutcomeUnknown() => _wait(policy, attempt, 1),
-  WriteDone(value: SepaVirtualPayeeStatus.unknown) => StepNext(
+  Ok(value: SepaVirtualPayeeStatus.active) => const StepNext(PayeeActive()),
+  Ok(value: SepaVirtualPayeeStatus.pending || SepaVirtualPayeeStatus.absent) ||
+  Err(
+    failure: ExchangeWriteOutcomeUnknownFailure(),
+  ) => _wait(policy, attempt, 1),
+  Ok(value: SepaVirtualPayeeStatus.unknown) => StepNext(
     PayeeUnknownStatus(attempt),
   ),
-  WriteRefused(:final reason) => StepNext(
+  Err(failure: ExchangeWriteRefusedFailure(:final reason)) => StepNext(
     PayeeActivateFailed(attempt, WriteProblemRefused(reason)),
   ),
-  WriteNotSent(:final reason) => StepNext(
+  Err(failure: ExchangeWriteNotSentFailure(:final reason)) => StepNext(
     PayeeActivateFailed(attempt, WriteProblemNotSent(reason)),
   ),
-  WriteSessionRejected() => const StepNext(PayeeSessionEnded()),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    PayeeSessionEnded(),
+  ),
 };
 
 VirtualPayeeNext _pollAgain(VirtualPayeePolicy policy, PayeePending at) {
@@ -424,31 +428,31 @@ VirtualPayeeNext _pollAgain(VirtualPayeePolicy policy, PayeePending at) {
 VirtualPayeeNext _polled(
   VirtualPayeePolicy policy,
   PayeePending at,
-  ExchangeRead<SepaVirtualPayeeStatus> read,
+  Result<SepaVirtualPayeeStatus, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(value: SepaVirtualPayeeStatus.active) => const StepNext(
-    PayeeActive(),
-    [PayeeStopWatching()],
-  ),
-  ReadGot(value: SepaVirtualPayeeStatus.pending) ||
-  ReadUnreachable() ||
-  ReadMalformed() => _pollAgain(policy, at),
+  Ok(value: SepaVirtualPayeeStatus.active) => const StepNext(PayeeActive(), [
+    PayeeStopWatching(),
+  ]),
+  Ok(value: SepaVirtualPayeeStatus.pending) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(failure: ExchangeMalformedFailure()) => _pollAgain(policy, at),
   // The activation did not take: offer it again.
-  ReadGot(value: SepaVirtualPayeeStatus.absent) => StepNext(
+  Ok(value: SepaVirtualPayeeStatus.absent) => StepNext(
     PayeeActivateFailed(at.attempt, const WriteProblemNotApplied()),
     const [PayeeStopWatching()],
   ),
-  ReadGot(value: SepaVirtualPayeeStatus.unknown) => StepNext(
+  Ok(value: SepaVirtualPayeeStatus.unknown) => StepNext(
     PayeeUnknownStatus(at.attempt),
     const [PayeeStopWatching()],
   ),
-  ReadMissing() => StepNext(
+  Err(failure: ExchangeMissingFailure()) => StepNext(
     PayeeLoadFailed(at.attempt, const ReadProblemMissing()),
     const [PayeeStopWatching()],
   ),
-  ReadSessionRejected() => const StepNext(PayeeSessionEnded(), [
-    PayeeStopWatching(),
-  ]),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    PayeeSessionEnded(),
+    [PayeeStopWatching()],
+  ),
 };
 
 VirtualPayeeNext transitionVirtualPayee(

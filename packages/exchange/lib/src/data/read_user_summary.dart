@@ -2,16 +2,15 @@ import 'package:bbx_api/bbx_api.dart' as bbx;
 import 'package:primitives/primitives.dart';
 
 import '../domain/entities/user_summary.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import 'bbx_api_user_summary_mapper.dart';
 import 'exchange_call_classifier.dart';
 
 /// The one classification of `getUserSummary`, shared by the account and the
-/// user repositories: no account in the answer is [ReadMissing], an answer
-/// that can't be read or mapped is [ReadMalformed], and only a 401 or a
-/// missing or unreadable key is [ReadSessionRejected].
-Future<ExchangeRead<UserSummary>> readUserSummary(bbx.Bbx api) =>
+/// user repositories: no account in the answer is [ExchangeMissingFailure], an answer
+/// that can't be read or mapped is [ExchangeMalformedFailure], and only a 401 or a
+/// missing or unreadable key is [ExchangeSessionRejectedFailure].
+Future<Result<UserSummary, ExchangeReadFailure>> readUserSummary(bbx.Bbx api) =>
     exchangeRead<bbx.UserSummary, UserSummary>(
       'getUserSummary',
       api.users.getUserSummary,
@@ -24,30 +23,43 @@ Future<ExchangeRead<UserSummary>> readUserSummary(bbx.Bbx api) =>
 /// ([ExchangeNotAuthenticatedFailure]) is. [credentialUnavailable] is the
 /// caller's failure for a key that could not be read.
 Result<UserSummary, ExchangeFailure> userSummaryResult(
-  ExchangeRead<UserSummary> read, {
+  Result<UserSummary, ExchangeReadFailure> read, {
   required ExchangeFailure Function() credentialUnavailable,
 }) => switch (read) {
-  ReadGot(:final value) => Ok(value),
-  ReadMissing() => const Err(
+  Ok(:final value) => Ok(value),
+  Err(failure: ExchangeMissingFailure()) => const Err(
     ExchangeAccountUnavailableFailure('getUserSummary: no account'),
   ),
-  ReadSessionRejected(why: ExchangeSessionRejection.server) => const Err(
-    ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
-  ),
-  ReadSessionRejected(why: ExchangeSessionRejection.signedOut) => const Err(
-    ExchangeNotAuthenticatedFailure(),
-  ),
-  ReadSessionRejected(why: ExchangeSessionRejection.credentialUnavailable) =>
+  Err(
+    failure: ExchangeSessionRejectedFailure(
+      why: ExchangeSessionRejection.server,
+    ),
+  ) =>
+    const Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  Err(
+    failure: ExchangeSessionRejectedFailure(
+      why: ExchangeSessionRejection.signedOut,
+    ),
+  ) =>
+    const Err(ExchangeNotAuthenticatedFailure()),
+  Err(
+    failure: ExchangeSessionRejectedFailure(
+      why: ExchangeSessionRejection.credentialUnavailable,
+    ),
+  ) =>
     Err(credentialUnavailable()),
-  ReadSessionRejected(why: ExchangeSessionRejection.sessionChanged) =>
+  Err(
+    failure: ExchangeSessionRejectedFailure(
+      why: ExchangeSessionRejection.sessionChanged,
+    ),
+  ) =>
     const Err(ExchangeOperationStaleFailure()),
-  ReadUnreachable(isNetwork: true, :final reason) => Err(
-    ExchangeNetworkFailure('getUserSummary unreachable: $reason'),
-  ),
-  ReadUnreachable(isNetwork: false) => const Err(
+  Err(failure: ExchangeUnreachableFailure(isNetwork: true, :final reason)) =>
+    Err(ExchangeNetworkFailure('getUserSummary unreachable: $reason')),
+  Err(failure: ExchangeUnreachableFailure(isNetwork: false)) => const Err(
     ExchangeAccountUnavailableFailure(),
   ),
-  ReadMalformed(:final reason) => Err(
+  Err(failure: ExchangeMalformedFailure(:final reason)) => Err(
     ExchangeAccountUnavailableFailure('getUserSummary failed: $reason'),
   ),
 };

@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = StepNext<RequirementsState, RequirementsEffect>;
 
@@ -48,11 +49,11 @@ const _continue = RequirementInteracEvent(InteracContinuePressed());
 final _ibanActive = RequirementVirtualIbanEvent(
   VibanLoaded(
     1,
-    ReadGot(VirtualIbanContext(virtualIban: _active, ownerName: 'Ana')),
+    Ok(VirtualIbanContext(virtualIban: _active, ownerName: 'Ana')),
   ),
 );
 const _payeeActive = RequirementVirtualPayeeEvent(
-  PayeeLoaded(1, ReadGot(SepaVirtualPayeeStatus.active)),
+  PayeeLoaded(1, Ok(SepaVirtualPayeeStatus.active)),
 );
 const _cancel = RequirementsCancelPressed();
 
@@ -155,7 +156,7 @@ void main() {
       const RequirementVirtualIbanEvent(
         VibanLoaded(
           1,
-          ReadGot(VirtualIbanContext(virtualIban: null, ownerName: 'Ana')),
+          Ok(VirtualIbanContext(virtualIban: null, ownerName: 'Ana')),
         ),
       ),
     ).state;
@@ -173,7 +174,10 @@ void main() {
     final next = _step(
       start.state,
       const RequirementVirtualIbanEvent(
-        VibanLoaded(1, ReadSessionRejected(ExchangeSessionRejection.server)),
+        VibanLoaded(
+          1,
+          Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+        ),
       ),
     );
     expect(next.state, const RequirementsSessionEnded());
@@ -184,7 +188,7 @@ void main() {
     final pending = _run(start.state, [
       _ibanActive,
       const RequirementVirtualPayeeEvent(
-        PayeeLoaded(1, ReadGot(SepaVirtualPayeeStatus.pending)),
+        PayeeLoaded(1, Ok(SepaVirtualPayeeStatus.pending)),
       ),
     ]);
     expect((pending as RequirementsRunning).current, isA<VirtualPayeeStep>());
@@ -262,7 +266,11 @@ void main() {
             const RequirementVirtualIbanEvent(
               VibanLoaded(
                 1,
-                ReadSessionRejected(ExchangeSessionRejection.server),
+                Err(
+                  ExchangeSessionRejectedFailure(
+                    ExchangeSessionRejection.server,
+                  ),
+                ),
               ),
             ),
           ).state.runtimeType,

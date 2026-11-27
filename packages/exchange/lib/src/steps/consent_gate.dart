@@ -1,7 +1,9 @@
 import 'package:meta/meta.dart';
 
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// The consent gate's output. Only the gate makes one, so a funding rail
 /// that requires consent and takes it can't be fetched without it.
@@ -148,16 +150,16 @@ final class ConsentDeclinePressed extends ConsentGateEvent {
 
 final class ConsentSubmitted extends ConsentGateEvent {
   final int attempt;
-  final ExchangeWrite<void> write;
+  final Result<void, ExchangeWriteFailure> write;
 
   const ConsentSubmitted(this.attempt, this.write);
 }
 
-/// The re-read of [attempt]: [ReadGot] holds whether consent is on the
+/// The re-read of [attempt]: [Ok] holds whether consent is on the
 /// account.
 final class ConsentVerified extends ConsentGateEvent {
   final int attempt;
-  final ExchangeRead<bool> read;
+  final Result<bool, ExchangeReadFailure> read;
 
   const ConsentVerified(this.attempt, this.read);
 }
@@ -209,32 +211,43 @@ const _given = StepNext<ConsentGateState, ConsentGateEffect>(
 ConsentGateNext consentGateStart({required bool alreadyGiven}) =>
     alreadyGiven ? _given : const StepNext(ConsentRequired());
 
-ConsentGateNext _submitted(int attempt, ExchangeWrite<void> write) =>
-    switch (write) {
-      WriteDone() => _given,
-      WriteRefused(:final reason) => StepNext(
-        ConsentFailed(attempt, WriteProblemRefused(reason)),
-      ),
-      WriteNotSent(:final reason) => StepNext(
-        ConsentFailed(attempt, WriteProblemNotSent(reason)),
-      ),
-      WriteOutcomeUnknown() => StepNext(ConsentVerifying(attempt), [
-        ConsentVerify(attempt),
-      ]),
-      WriteSessionRejected() => const StepNext(ConsentSessionEnded()),
-    };
+ConsentGateNext _submitted(
+  int attempt,
+  Result<void, ExchangeWriteFailure> write,
+) => switch (write) {
+  Ok() => _given,
+  Err(failure: ExchangeWriteRefusedFailure(:final reason)) => StepNext(
+    ConsentFailed(attempt, WriteProblemRefused(reason)),
+  ),
+  Err(failure: ExchangeWriteNotSentFailure(:final reason)) => StepNext(
+    ConsentFailed(attempt, WriteProblemNotSent(reason)),
+  ),
+  Err(failure: ExchangeWriteOutcomeUnknownFailure()) => StepNext(
+    ConsentVerifying(attempt),
+    [ConsentVerify(attempt)],
+  ),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    ConsentSessionEnded(),
+  ),
+};
 
-ConsentGateNext _verified(int attempt, ExchangeRead<bool> read) =>
-    switch (read) {
-      ReadGot(value: true) => _given,
-      ReadGot(value: false) => StepNext(
-        ConsentFailed(attempt, const WriteProblemNotApplied()),
-      ),
-      ReadMissing() || ReadUnreachable() || ReadMalformed() => StepNext(
-        ConsentUnverified(attempt, ReadProblem.of(read)!),
-      ),
-      ReadSessionRejected() => const StepNext(ConsentSessionEnded()),
-    };
+ConsentGateNext _verified(
+  int attempt,
+  Result<bool, ExchangeReadFailure> read,
+) => switch (read) {
+  Ok(value: true) => _given,
+  Ok(value: false) => StepNext(
+    ConsentFailed(attempt, const WriteProblemNotApplied()),
+  ),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => StepNext(ConsentUnverified(attempt, ReadProblem.of(read)!)),
+  Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+    ConsentSessionEnded(),
+  ),
+};
 
 ConsentGateNext transitionConsentGate(
   ConsentGateState state,

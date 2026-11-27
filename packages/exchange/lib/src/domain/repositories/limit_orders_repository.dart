@@ -5,7 +5,6 @@ import '../entities/limit_order.dart';
 import '../entities/limit_order_draft.dart';
 import '../entities/limit_order_rate.dart';
 import '../exchange_access.dart';
-import '../exchange_call_result.dart';
 import '../exchange_failure.dart';
 
 /// Limit-order queries and commands, each for the [ExchangeSession] it names.
@@ -28,10 +27,10 @@ abstract interface class LimitOrdersRepository {
     String id,
   );
 
-  /// [WriteOutcomeUnknown] means the order may exist: re-read the recent
+  /// [ExchangeWriteOutcomeUnknownFailure] means the order may exist: re-read the recent
   /// limit orders ([findCreatedLimitOrder]) before creating again.
   @useResult
-  Future<ExchangeWrite<LimitOrder>> create(
+  Future<Result<LimitOrder, ExchangeWriteFailure>> create(
     ExchangeSession session,
     LimitOrderDraft draft,
   );

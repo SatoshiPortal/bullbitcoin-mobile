@@ -34,6 +34,7 @@ export 'src/domain/exchange_preferences_patch.dart';
 export 'src/domain/exchange_call_result.dart';
 export 'src/domain/exchange_kyc_configuration.dart';
 export 'src/domain/exchange_failure.dart';
+export 'src/domain/exchange_page.dart';
 export 'src/domain/exchange_environment.dart' show ExchangeEnvironment;
 export 'src/exchange.dart' show Exchange;
 export 'src/domain/repositories/limit_orders_repository.dart';

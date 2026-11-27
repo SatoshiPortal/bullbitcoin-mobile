@@ -1,7 +1,8 @@
 import 'package:meta/meta.dart';
 
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// What a step's transition answers: the next [state] and the [effects] the
 /// bloc starts on entering it. A stay returns the same state instance with no
@@ -87,16 +88,17 @@ final class WriteProblemNotApplied extends WriteProblem {
 sealed class ReadProblem {
   const ReadProblem();
 
-  /// The problem of a read that gave no value, or null for [ReadGot] and
-  /// [ReadSessionRejected], which the caller handles.
-  static ReadProblem? of<T>(ExchangeRead<T> read) => switch (read) {
-    ReadGot() || ReadSessionRejected() => null,
-    ReadMissing() => const ReadProblemMissing(),
-    ReadUnreachable(:final isNetwork) => ReadProblemUnreachable(
-      isNetwork: isNetwork,
-    ),
-    ReadMalformed() => const ReadProblemMalformed(),
-  };
+  /// The problem of a read that gave no value, or null for [Ok] and
+  /// [ExchangeSessionRejectedFailure], which the caller handles.
+  static ReadProblem? of<T>(Result<T, ExchangeReadFailure> read) =>
+      switch (read) {
+        Ok() || Err(failure: ExchangeSessionRejectedFailure()) => null,
+        Err(failure: ExchangeMissingFailure()) => const ReadProblemMissing(),
+        Err(failure: ExchangeUnreachableFailure(:final isNetwork)) =>
+          ReadProblemUnreachable(isNetwork: isNetwork),
+        Err(failure: ExchangeMalformedFailure()) =>
+          const ReadProblemMalformed(),
+      };
 }
 
 final class ReadProblemMissing extends ReadProblem {

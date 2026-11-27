@@ -1,12 +1,15 @@
 import 'package:meta/meta.dart';
 
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_page.dart';
+import '../domain/exchange_failure.dart';
 import '../payout/payout_rail.dart';
 import '../payout/recipient_choice.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/entities/recipient_details.dart';
 import '../recipients/domain/entities/recipient_details_input.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// What the recipient list shows: the rails it lists (a subset of the
 /// filter's, e.g. one jurisdiction or one SEPA kind) and the search text.
@@ -405,7 +408,7 @@ sealed class RecipientPickEvent {
 
 final class RecipientPickPageLoaded extends RecipientPickEvent {
   final int attempt;
-  final ExchangeList<Recipient> page;
+  final Result<ExchangePage<Recipient>, ExchangeListFailure> page;
 
   const RecipientPickPageLoaded(this.attempt, this.page);
 }
@@ -445,16 +448,16 @@ final class RecipientPickSubmitted extends RecipientPickEvent {
 
 final class RecipientPickSaved extends RecipientPickEvent {
   final int attempt;
-  final ExchangeWrite<Recipient> write;
+  final Result<Recipient, ExchangeWriteFailure> write;
 
   const RecipientPickSaved(this.attempt, this.write);
 }
 
-/// The re-read after an unknown save: [ReadGot] the recipient with the same
-/// account, [ReadMissing] when there is none.
+/// The re-read after an unknown save: [Ok] the recipient with the same
+/// account, [ExchangeMissingFailure] when there is none.
 final class RecipientPickFound extends RecipientPickEvent {
   final int attempt;
-  final ExchangeRead<Recipient> read;
+  final Result<Recipient, ExchangeReadFailure> read;
 
   const RecipientPickFound(this.attempt, this.read);
 }
@@ -560,15 +563,15 @@ RecipientPickNext _paged(
   RecipientPickState state,
   List<Recipient> before,
   int page,
-  ExchangeList<Recipient> answer,
+  Result<ExchangePage<Recipient>, ExchangeListFailure> answer,
 ) => switch (answer) {
-  ListPage(:final items, :final next) => StepNext(
+  Ok(value: ExchangePage(:final items, :final next)) => StepNext(
     RecipientPickBrowsing(state.query, state.attempt, [
       ...before,
       ...items,
     ], next),
   ),
-  ListUnreachable(:final isNetwork) => StepNext(
+  Err(failure: ExchangeUnreachableFailure(:final isNetwork)) => StepNext(
     page == 1
         ? RecipientPickLoadFailed(
             state.query,
@@ -583,7 +586,7 @@ RecipientPickNext _paged(
             ReadProblemUnreachable(isNetwork: isNetwork),
           ),
   ),
-  ListSessionRejected() => StepNext(
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
     RecipientPickSessionEnded(state.query, state.attempt),
   ),
 };
@@ -673,10 +676,10 @@ RecipientPickNext _submit(
 RecipientPickNext _onSave(
   RecipientFilter filter,
   RecipientPickSaving saving,
-  ExchangeWrite<Recipient> write,
+  Result<Recipient, ExchangeWriteFailure> write,
 ) => switch (write) {
-  WriteDone(value: final saved) => _saved(filter, saving, saving.rail, saved),
-  WriteRefused(:final reason) => StepNext(
+  Ok(value: final saved) => _saved(filter, saving, saving.rail, saved),
+  Err(failure: ExchangeWriteRefusedFailure(:final reason)) => StepNext(
     RecipientPickCreating(
       saving.query,
       saving.attempt,
@@ -684,7 +687,7 @@ RecipientPickNext _onSave(
       RecipientSaveFailed(WriteProblemRefused(reason)),
     ),
   ),
-  WriteNotSent(:final reason) => StepNext(
+  Err(failure: ExchangeWriteNotSentFailure(:final reason)) => StepNext(
     RecipientPickCreating(
       saving.query,
       saving.attempt,
@@ -692,7 +695,7 @@ RecipientPickNext _onSave(
       RecipientSaveFailed(WriteProblemNotSent(reason)),
     ),
   ),
-  WriteOutcomeUnknown() => StepNext(
+  Err(failure: ExchangeWriteOutcomeUnknownFailure()) => StepNext(
     RecipientPickVerifying(
       saving.query,
       saving.attempt + 1,
@@ -701,7 +704,7 @@ RecipientPickNext _onSave(
     ),
     [RecipientPickFind(saving.details, saving.attempt + 1)],
   ),
-  WriteSessionRejected() => StepNext(
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
     RecipientPickSessionEnded(saving.query, saving.attempt),
   ),
 };
@@ -709,15 +712,10 @@ RecipientPickNext _onSave(
 RecipientPickNext _onFound(
   RecipientFilter filter,
   RecipientPickVerifying verifying,
-  ExchangeRead<Recipient> read,
+  Result<Recipient, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(value: final saved) => _saved(
-    filter,
-    verifying,
-    verifying.rail,
-    saved,
-  ),
-  ReadMissing() => StepNext(
+  Ok(value: final saved) => _saved(filter, verifying, verifying.rail, saved),
+  Err(failure: ExchangeMissingFailure()) => StepNext(
     RecipientPickCreating(
       verifying.query,
       verifying.attempt,
@@ -725,7 +723,8 @@ RecipientPickNext _onFound(
       const RecipientSaveFailed(WriteProblemNotApplied()),
     ),
   ),
-  ReadUnreachable() || ReadMalformed() => StepNext(
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(failure: ExchangeMalformedFailure()) => StepNext(
     RecipientPickUnverified(
       verifying.query,
       verifying.attempt,
@@ -734,7 +733,7 @@ RecipientPickNext _onFound(
       ReadProblem.of(read)!,
     ),
   ),
-  ReadSessionRejected() => StepNext(
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
     RecipientPickSessionEnded(verifying.query, verifying.attempt),
   ),
 };

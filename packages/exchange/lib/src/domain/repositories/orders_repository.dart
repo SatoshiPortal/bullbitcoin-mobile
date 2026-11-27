@@ -5,7 +5,6 @@ import '../entities/btc_network.dart';
 import '../entities/dca.dart';
 import '../entities/order.dart';
 import '../entities/sepa_payment_processor.dart';
-import '../exchange_call_result.dart';
 import '../exchange_failure.dart';
 
 /// Orders for the selected backend; requests require the matching session.
@@ -14,10 +13,10 @@ abstract interface class OrdersRepository {
   /// pays through payjoin, extracting the payout address from the URI. The two
   /// are mutually exclusive and cannot be swapped after the order exists.
   ///
-  /// A create that may have reached the server is [WriteOutcomeUnknown] (the
+  /// A create that may have reached the server is [ExchangeWriteOutcomeUnknownFailure] (the
   /// order may exist), never a failure that invites a second create.
   @useResult
-  Future<ExchangeWrite<BuyOrder>> placeBuyOrder({
+  Future<Result<BuyOrder, ExchangeWriteFailure>> placeBuyOrder({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
@@ -29,18 +28,18 @@ abstract interface class OrdersRepository {
   /// [usePayjoin] asks the exchange to receive the payin through payjoin, which
   /// makes it publish a `bip21URI` on the returned order. Bitcoin on-chain only.
   ///
-  /// The buy, sell, pay and withdrawal creates answer [ExchangeWrite]: a create
-  /// that may have reached the server is [WriteOutcomeUnknown] (the order may
+  /// The buy, sell, pay and withdrawal creates answer a write result: a create
+  /// that may have reached the server is [ExchangeWriteOutcomeUnknownFailure] (the order may
   /// exist), never a failure that invites a second create.
   @useResult
-  Future<ExchangeWrite<SellOrder>> placeSellOrder({
+  Future<Result<SellOrder, ExchangeWriteFailure>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
     bool usePayjoin = false,
   });
   @useResult
-  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
+  Future<Result<FiatPaymentOrder, ExchangeWriteFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -51,7 +50,7 @@ abstract interface class OrdersRepository {
     String? securityAnswer,
   });
   @useResult
-  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
@@ -60,14 +59,16 @@ abstract interface class OrdersRepository {
   });
 
   /// A reply of another order type, or one that can't be mapped, is
-  /// [WriteOutcomeUnknown]: the order may be confirmed.
+  /// [ExchangeWriteOutcomeUnknownFailure]: the order may be confirmed.
   @useResult
-  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId);
+  Future<Result<BuyOrder, ExchangeWriteFailure>> confirmBuyOrder(
+    String orderId,
+  );
 
   /// An optional update uses the same session as the confirmation. Its
   /// failure leaves the confirmed withdrawal successful.
   @useResult
-  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -86,7 +87,9 @@ abstract interface class OrdersRepository {
     String orderId,
   );
   @useResult
-  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId);
+  Future<Result<BuyOrder, ExchangeWriteFailure>> accelerateBuyOrder(
+    String orderId,
+  );
   @useResult
   Future<Result<Order, ExchangeFailure>> getOrder(String orderId);
 
@@ -105,9 +108,9 @@ abstract interface class OrdersRepository {
 
   /// A create that may have reached the server without a readable answer,
   /// including a created DCA whose reply can't be mapped, is
-  /// [WriteOutcomeUnknown]: the recurring buy may exist.
+  /// [ExchangeWriteOutcomeUnknownFailure]: the recurring buy may exist.
   @useResult
-  Future<ExchangeWrite<Dca>> createDca({
+  Future<Result<Dca, ExchangeWriteFailure>> createDca({
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,

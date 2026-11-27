@@ -4,6 +4,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:exchange/testing.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _S = ServerConfirmState<String, String>;
 typedef _E = ServerConfirmEvent<String, String>;
@@ -64,18 +65,31 @@ const _states = <_S>[
 ];
 
 final _events = <_E>[
-  const ConfirmAnswered(1, GateAdmitted(WriteDone(_c))), // 0
-  const ConfirmAnswered(1, GateAdmitted(WriteRefused(_refusal))), // 1
+  const ConfirmAnswered(1, GateAdmitted(Ok(_c))), // 0
   const ConfirmAnswered(
     1,
-    GateAdmitted(WriteNotSent(ExchangeNotSentReason.signedOut)),
+    GateAdmitted(Err(ExchangeWriteRefusedFailure(_refusal))),
+  ), // 1
+  const ConfirmAnswered(
+    1,
+    GateAdmitted(
+      Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.signedOut)),
+    ),
   ), // 2
-  const ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('timeout'))), // 3
-  const ConfirmAnswered(1, GateAdmitted(WriteSessionRejected())), // 4
+  const ConfirmAnswered(
+    1,
+    GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('timeout'))),
+  ), // 3
+  const ConfirmAnswered(
+    1,
+    GateAdmitted(
+      Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+    ),
+  ), // 4
   const ConfirmAnswered(1, GateRefused(_busy)), // 5
   ConfirmAnswered(1, GateRefused(WriteGateUnsettled(_ownEntry))), // 6
   ConfirmAnswered(1, GateRefused(WriteGateUnsettled(_otherEntry))), // 7
-  const ConfirmAnswered(2, GateAdmitted(WriteDone(_c))), // 8
+  const ConfirmAnswered(2, GateAdmitted(Ok(_c))), // 8
   const ConfirmVerified(1, ConfirmSeenApplied(_c)), // 9
   const ConfirmVerified(1, ConfirmSeenNotApplied()), // 10
   const ConfirmVerified(
@@ -232,7 +246,7 @@ void main() {
         effect: const ConfirmSend(_t, 2),
         confirm: (target) async {
           seen = gate.inFlight(ExchangeEnvironment.testnet);
-          return WriteDone('confirmed $target');
+          return Ok('confirmed $target');
         },
       );
       expect(seen, FinancialWriteKind.orderConfirm);
@@ -264,7 +278,7 @@ void main() {
         effect: const ConfirmSend(_t, 1),
         confirm: (_) async {
           sent = true;
-          return const WriteDone(_c);
+          return const Ok(_c);
         },
       );
       expect(sent, isFalse);
@@ -287,7 +301,7 @@ void main() {
         session: session,
         policy: _policy,
         effect: const ConfirmSend(_t, 1),
-        confirm: (_) async => const WriteDone(_c),
+        confirm: (_) async => const Ok(_c),
       );
       expect(
         transitionServerConfirm(_policy, _confirming, answered),

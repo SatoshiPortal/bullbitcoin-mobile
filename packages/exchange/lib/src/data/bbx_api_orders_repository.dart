@@ -7,7 +7,6 @@ import '../domain/entities/btc_network.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/order.dart';
 import '../domain/entities/sepa_payment_processor.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/repositories/orders_repository.dart';
 import 'bbx_api_order_mapper.dart';
@@ -49,14 +48,15 @@ final class BbxApiOrdersRepository implements OrdersRepository {
   ) => _read((api) => _readOrder(api.orders.refreshOrderSummary(orderId)));
 
   @override
-  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId) =>
-      _orderWrite<BuyOrder>(
-        'confirmBuyOrder',
-        (api) => api.orders.confirmOrderSummary(orderId),
-      );
+  Future<Result<BuyOrder, ExchangeWriteFailure>> confirmBuyOrder(
+    String orderId,
+  ) => _orderWrite<BuyOrder>(
+    'confirmBuyOrder',
+    (api) => api.orders.confirmOrderSummary(orderId),
+  );
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -85,14 +85,15 @@ final class BbxApiOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId) =>
-      _orderWrite<BuyOrder>(
-        'accelerateBuyOrder',
-        (api) => api.orders.unbatchAndExpressOrder(orderId),
-      );
+  Future<Result<BuyOrder, ExchangeWriteFailure>> accelerateBuyOrder(
+    String orderId,
+  ) => _orderWrite<BuyOrder>(
+    'accelerateBuyOrder',
+    (api) => api.orders.unbatchAndExpressOrder(orderId),
+  );
 
   @override
-  Future<ExchangeWrite<BuyOrder>> placeBuyOrder({
+  Future<Result<BuyOrder, ExchangeWriteFailure>> placeBuyOrder({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
@@ -113,7 +114,7 @@ final class BbxApiOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<SellOrder>> placeSellOrder({
+  Future<Result<SellOrder, ExchangeWriteFailure>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
@@ -130,7 +131,7 @@ final class BbxApiOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
+  Future<Result<FiatPaymentOrder, ExchangeWriteFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -157,7 +158,7 @@ final class BbxApiOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
@@ -216,14 +217,14 @@ final class BbxApiOrdersRepository implements OrdersRepository {
   });
 
   @override
-  Future<ExchangeWrite<Dca>> createDca({
+  Future<Result<Dca, ExchangeWriteFailure>> createDca({
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
     required BtcNetwork network,
     required String address,
   }) async {
-    final result = await _write<ExchangeWrite<Dca>>((api) async {
+    final result = await _write<Result<Dca, ExchangeWriteFailure>>((api) async {
       final write = await exchangeWrite<bbx.Dca, Dca>(
         'createDca',
         () => api.orderTriggers.createDca(
@@ -244,7 +245,7 @@ final class BbxApiOrdersRepository implements OrdersRepository {
   }
 
   /// The created DCA. A field the app can't read throws: the DCA exists, so
-  /// the classification makes it [WriteOutcomeUnknown], never a failure.
+  /// the classification makes it [ExchangeWriteOutcomeUnknownFailure], never a failure.
   static Dca _toDca(bbx.Dca dca) {
     final amount = double.tryParse(dca.amountStr);
     final currency = switch (ExchangeCatalog.parse(dca.currencyCode)) {
@@ -288,7 +289,7 @@ final class BbxApiOrdersRepository implements OrdersRepository {
 
   /// Creates an order through [_orderWrite], logging a refusal by its codes
   /// only (the server's text can quote the request).
-  Future<ExchangeWrite<T>> _orderCreate<T extends Order>(
+  Future<Result<T, ExchangeWriteFailure>> _orderCreate<T extends Order>(
     String operation,
     Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function(bbx.Bbx) call,
   ) => _orderWrite<T>(operation, (api) async {
@@ -319,14 +320,14 @@ final class BbxApiOrdersRepository implements OrdersRepository {
 
   /// Runs the order write [call] in the write session and classifies it. A
   /// reply of another order type, or one that can't be mapped, is
-  /// [WriteOutcomeUnknown]: the server accepted the write. [afterDone] runs in
-  /// the same session after a [WriteDone] and can't change the result.
-  Future<ExchangeWrite<T>> _orderWrite<T extends Order>(
+  /// [ExchangeWriteOutcomeUnknownFailure]: the server accepted the write. [afterDone] runs in
+  /// the same session after a [Ok] and can't change the result.
+  Future<Result<T, ExchangeWriteFailure>> _orderWrite<T extends Order>(
     String operation,
     Future<Result<bbx.OrderSummary, bbx.BbxFailure>> Function(bbx.Bbx) call, {
     Future<void> Function(bbx.Bbx)? afterDone,
   }) async {
-    final result = await _write<ExchangeWrite<T>>((api) async {
+    final result = await _write<Result<T, ExchangeWriteFailure>>((api) async {
       final write = await exchangeWrite<bbx.OrderSummary, T>(
         operation,
         () => call(api),
@@ -335,7 +336,7 @@ final class BbxApiOrdersRepository implements OrdersRepository {
           final other => throw _UnexpectedOrderType(other.runtimeType),
         },
       );
-      if (write is WriteDone<T>) await afterDone?.call(api);
+      if (write is Ok<T, ExchangeWriteFailure>) await afterDone?.call(api);
       return Ok(write);
     });
     return switch (result) {

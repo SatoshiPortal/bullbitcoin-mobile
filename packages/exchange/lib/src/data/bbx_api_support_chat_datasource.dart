@@ -4,7 +4,6 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/entities/support_chat_message.dart';
 import '../domain/entities/support_chat_message_attachment.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import 'exchange_call_classifier.dart';
 
@@ -99,17 +98,18 @@ final class BbxApiSupportChatDatasource {
   }
 
   /// How many support messages the user has not read. A count the server
-  /// can't have meant (below zero) is [ReadMalformed], never shown as zero.
-  Future<ExchangeRead<int>> readUnreadMessageCount() => exchangeRead<int, int>(
-    'getUnreadMessageCount',
-    _commcenter.getUnreadMessageCount,
-    (count) => count < 0
-        ? throw const FormatException('negative unread count')
-        : count,
-  );
+  /// can't have meant (below zero) is [ExchangeMalformedFailure], never shown as zero.
+  Future<Result<int, ExchangeReadFailure>> readUnreadMessageCount() =>
+      exchangeRead<int, int>(
+        'getUnreadMessageCount',
+        _commcenter.getUnreadMessageCount,
+        (count) => count < 0
+            ? throw const FormatException('negative unread count')
+            : count,
+      );
 
   /// Marks every support message of the user as read.
-  Future<ExchangeWrite<void>> markAllMessagesRead() =>
+  Future<Result<void, ExchangeWriteFailure>> markAllMessagesRead() =>
       exchangeWrite<void, void>(
         'setAllMessagesAsRead',
         _commcenter.setAllMessagesAsRead,

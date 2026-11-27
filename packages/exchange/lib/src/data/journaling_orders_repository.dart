@@ -5,7 +5,6 @@ import '../domain/entities/btc_network.dart';
 import '../domain/entities/dca.dart';
 import '../domain/entities/order.dart';
 import '../domain/entities/sepa_payment_processor.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/repositories/orders_repository.dart';
@@ -19,13 +18,16 @@ final class UnknownWriteRecorder {
 
   const UnknownWriteRecorder(this._journal);
 
-  /// Records [draft] when [write] is [WriteOutcomeUnknown], then returns
+  /// Records [draft] when [write] failed with
+  /// [ExchangeWriteOutcomeUnknownFailure], then returns
   /// [write] unchanged.
-  Future<ExchangeWrite<T>> afterWrite<T>(
-    ExchangeWrite<T> write,
+  Future<Result<T, ExchangeWriteFailure>> afterWrite<T>(
+    Result<T, ExchangeWriteFailure> write,
     Future<UnknownWriteDraft> Function() draft,
   ) async {
-    if (write is WriteOutcomeUnknown<T>) await record(await draft());
+    if (write case Err(failure: ExchangeWriteOutcomeUnknownFailure())) {
+      await record(await draft());
+    }
     return write;
   }
 
@@ -72,18 +74,19 @@ final class JournalingOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId) async =>
-      _recorder.afterWrite(
-        await _orders.confirmBuyOrder(orderId),
-        () => _draft(UnknownWriteKind.buyConfirm, {
-          'orderId': orderId,
-        }, orderId: orderId),
-      );
+  Future<Result<BuyOrder, ExchangeWriteFailure>> confirmBuyOrder(
+    String orderId,
+  ) async => _recorder.afterWrite(
+    await _orders.confirmBuyOrder(orderId),
+    () => _draft(UnknownWriteKind.buyConfirm, {
+      'orderId': orderId,
+    }, orderId: orderId),
+  );
 
   /// The Interac answer is a secret: only whether an update was sent is
   /// journaled.
   @override
-  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -101,16 +104,17 @@ final class JournalingOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId) async =>
-      _recorder.afterWrite(
-        await _orders.accelerateBuyOrder(orderId),
-        () => _draft(UnknownWriteKind.accelerate, {
-          'orderId': orderId,
-        }, orderId: orderId),
-      );
+  Future<Result<BuyOrder, ExchangeWriteFailure>> accelerateBuyOrder(
+    String orderId,
+  ) async => _recorder.afterWrite(
+    await _orders.accelerateBuyOrder(orderId),
+    () => _draft(UnknownWriteKind.accelerate, {
+      'orderId': orderId,
+    }, orderId: orderId),
+  );
 
   @override
-  Future<ExchangeWrite<Dca>> createDca({
+  Future<Result<Dca, ExchangeWriteFailure>> createDca({
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
@@ -134,7 +138,7 @@ final class JournalingOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<BuyOrder>> placeBuyOrder({
+  Future<Result<BuyOrder, ExchangeWriteFailure>> placeBuyOrder({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
@@ -151,7 +155,7 @@ final class JournalingOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<SellOrder>> placeSellOrder({
+  Future<Result<SellOrder, ExchangeWriteFailure>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
@@ -164,7 +168,7 @@ final class JournalingOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
+  Future<Result<FiatPaymentOrder, ExchangeWriteFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -185,7 +189,7 @@ final class JournalingOrdersRepository implements OrdersRepository {
   );
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,

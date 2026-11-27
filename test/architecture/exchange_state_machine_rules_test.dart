@@ -289,14 +289,14 @@ List<String> uiImports(Iterable<File> sources) {
 // (d) Screens never write: writes run in blocs, through the write gate.
 
 /// Names of the exchange's write calls: every method of packages/exchange
-/// that answers an `ExchangeWrite`.
+/// that answers a `Result<T, ExchangeWriteFailure>`.
 class _WriteMethods extends RecursiveAstVisitor<void> {
   final names = <String>{};
 
   @override
   void visitMethodDeclaration(MethodDeclaration node) {
     final returns = node.returnType?.toSource() ?? '';
-    if (returns.contains('ExchangeWrite<')) names.add(node.name.lexeme);
+    if (returns.contains('ExchangeWriteFailure>')) names.add(node.name.lexeme);
     super.visitMethodDeclaration(node);
   }
 }

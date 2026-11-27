@@ -105,10 +105,18 @@ Matcher _fails(Matcher matcher) => isA<Err<dynamic, ExchangeFailure>>().having(
 );
 
 Matcher _refused(Matcher reason) =>
-    isA<WriteRefused<dynamic>>().having((w) => w.reason, 'reason', reason);
+    isA<Err<dynamic, ExchangeWriteFailure>>().having(
+      (r) => r.failure,
+      'failure',
+      isA<ExchangeWriteRefusedFailure>().having(
+        (w) => w.reason,
+        'reason',
+        reason,
+      ),
+    );
 
-T _createdOf<T>(ExchangeWrite<T> write) => switch (write) {
-  WriteDone(:final value) => value,
+T _createdOf<T>(Result<T, ExchangeWriteFailure> write) => switch (write) {
+  Ok(:final value) => value,
   _ => fail('expected a created order, got $write'),
 };
 
@@ -662,7 +670,7 @@ void main() {
           isOwner: false,
           payjoinBip21: 'bitcoin:bc1address?pj=https://payjo.in/s',
         ),
-        isA<WriteDone<BuyOrder>>(),
+        isA<Ok<BuyOrder, ExchangeWriteFailure>>(),
       );
       expect(_params(http), {
         'fiatCurrency': 'EUR',
@@ -673,7 +681,7 @@ void main() {
       });
     });
 
-    Future<ExchangeWrite<BuyOrder>> buy(FakeBbxHttp http) =>
+    Future<Result<BuyOrder, ExchangeWriteFailure>> buy(FakeBbxHttp http) =>
         _repository(http).placeBuyOrder(
           toAddress: 'bc1address',
           orderAmount: const FiatAmount(5),
@@ -730,7 +738,11 @@ void main() {
       () async {
         expect(
           await buy(FakeBbxHttp(error: DioExceptionType.connectionError)),
-          isA<WriteOutcomeUnknown<BuyOrder>>(),
+          isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
         );
       },
     );
@@ -857,10 +869,14 @@ void main() {
           network: BtcNetwork.bitcoin,
           isOwner: true,
         ),
-        isA<WriteNotSent<dynamic>>().having(
-          (w) => w.reason,
-          'reason',
-          ExchangeNotSentReason.signedOut,
+        isA<Err<dynamic, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.signedOut,
+          ),
         ),
       );
       expect(http.requests, isEmpty);
@@ -875,17 +891,21 @@ void main() {
           network: BtcNetwork.bitcoin,
           isOwner: true,
         ),
-        isA<WriteNotSent<dynamic>>().having(
-          (w) => w.reason,
-          'reason',
-          ExchangeNotSentReason.credentialUnavailable,
+        isA<Err<dynamic, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.credentialUnavailable,
+          ),
         ),
       );
     });
   });
 
   group('placeSellOrder', () {
-    Future<ExchangeWrite<SellOrder>> sell(
+    Future<Result<SellOrder, ExchangeWriteFailure>> sell(
       FakeBbxHttp http, {
       bool usePayjoin = false,
     }) => _repository(http).placeSellOrder(
@@ -952,13 +972,17 @@ void main() {
     test('another order type is an unknown outcome: an order exists', () async {
       expect(
         await sell(FakeBbxHttp(body: {'result': orderJsonFixture()})),
-        isA<WriteOutcomeUnknown<SellOrder>>(),
+        isA<Err<SellOrder, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
     });
   });
 
   group('placePayOrder', () {
-    Future<ExchangeWrite<FiatPaymentOrder>> pay(
+    Future<Result<FiatPaymentOrder, ExchangeWriteFailure>> pay(
       FakeBbxHttp http, {
       SepaPaymentProcessor? processor,
       String? description,
@@ -1088,7 +1112,7 @@ void main() {
   });
 
   group('placeWithdrawalOrder', () {
-    Future<ExchangeWrite<WithdrawOrder>> withdraw(
+    Future<Result<WithdrawOrder, ExchangeWriteFailure>> withdraw(
       FakeBbxHttp http, {
       SepaPaymentProcessor? processor,
       String? question,
@@ -1188,8 +1212,8 @@ void main() {
   });
 
   group('confirm and accelerate', () {
-    T done<T>(ExchangeWrite<T> write) => switch (write) {
-      WriteDone(:final value) => value,
+    T done<T>(Result<T, ExchangeWriteFailure> write) => switch (write) {
+      Ok(:final value) => value,
       _ => fail('Unexpected write result: $write'),
     };
 
@@ -1232,12 +1256,19 @@ void main() {
       final http = FakeBbxHttp(body: {'result': orderJsonFixture()});
       expect(
         await _repository(http).confirmWithdrawOrder('order-1'),
-        isA<WriteOutcomeUnknown<WithdrawOrder>>(),
+        isA<Err<WithdrawOrder, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
     });
 
     final calls =
-        <String, Future<ExchangeWrite<Order>> Function(OrdersRepository)>{
+        <
+          String,
+          Future<Result<Order, ExchangeWriteFailure>> Function(OrdersRepository)
+        >{
           'confirmBuyOrder': (r) => r.confirmBuyOrder('o'),
           'confirmWithdrawOrder': (r) => r.confirmWithdrawOrder('o'),
           'accelerateBuyOrder': (r) => r.accelerateBuyOrder('o'),
@@ -1247,13 +1278,17 @@ void main() {
       test('$name: a JSON-RPC rejection keeps only its codes', () async {
         expect(
           await call(_repository(FakeBbxHttp(body: _rpcError))),
-          isA<WriteRefused<Order>>()
-              .having((w) => w.reason.rpcCode, 'rpcCode', -1)
-              .having(
-                (w) => w.reason.toString(),
-                'diagnostics',
-                isNot(contains('sat@example.com')),
-              ),
+          isA<Err<Order, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteRefusedFailure>()
+                .having((w) => w.reason.rpcCode, 'rpcCode', -1)
+                .having(
+                  (w) => w.reason.toString(),
+                  'diagnostics',
+                  isNot(contains('sat@example.com')),
+                ),
+          ),
         );
       });
 
@@ -1262,7 +1297,11 @@ void main() {
           await call(
             _repository(FakeBbxHttp(error: DioExceptionType.receiveTimeout)),
           ),
-          isA<WriteOutcomeUnknown<Order>>(),
+          isA<Err<Order, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
         );
       });
 
@@ -1271,10 +1310,14 @@ void main() {
           await call(
             _repository(FakeBbxHttp(error: DioExceptionType.connectionTimeout)),
           ),
-          isA<WriteNotSent<Order>>().having(
-            (w) => w.reason,
-            'reason',
-            ExchangeNotSentReason.unreachable,
+          isA<Err<Order, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteNotSentFailure>().having(
+              (w) => w.reason,
+              'reason',
+              ExchangeNotSentReason.unreachable,
+            ),
           ),
         );
       });
@@ -1282,24 +1325,36 @@ void main() {
       test('$name: an unreadable reply is an unknown outcome', () async {
         expect(
           await call(_repository(FakeBbxHttp(body: {'result': null}))),
-          isA<WriteOutcomeUnknown<Order>>(),
+          isA<Err<Order, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
         );
       });
 
       test('$name: an HTTP 401 is a rejected session', () async {
         expect(
           await call(_repository(FakeBbxHttp(status: 401, body: const {}))),
-          isA<WriteSessionRejected<Order>>(),
+          isA<Err<Order, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeSessionRejectedFailure>(),
+          ),
         );
       });
 
       test('$name: no stored key was not sent', () async {
         expect(
           await call(_signedOut(FakeBbxHttp())),
-          isA<WriteNotSent<Order>>().having(
-            (w) => w.reason,
-            'reason',
-            ExchangeNotSentReason.signedOut,
+          isA<Err<Order, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteNotSentFailure>().having(
+              (w) => w.reason,
+              'reason',
+              ExchangeNotSentReason.signedOut,
+            ),
           ),
         );
       });
@@ -1311,7 +1366,11 @@ void main() {
         expect(
           await _repository(FakeBbxHttp(body: _limits([(20, _min)])))
               .confirmBuyOrder('o'),
-          isA<WriteRefused<BuyOrder>>(),
+          isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteRefusedFailure>(),
+          ),
         );
       },
     );
@@ -1330,7 +1389,7 @@ void main() {
       'address': 'lq1address',
     };
 
-    Future<ExchangeWrite<Dca>> create(
+    Future<Result<Dca, ExchangeWriteFailure>> create(
       FakeBbxHttp http, {
       DcaBuyFrequency frequency = DcaBuyFrequency.weekly,
       BtcNetwork network = BtcNetwork.liquid,
@@ -1431,10 +1490,14 @@ void main() {
             },
           ),
         ),
-        isA<WriteOutcomeUnknown<Dca>>().having(
-          (w) => w.reason,
-          'reason',
-          isNot(contains('YEARLY')),
+        isA<Err<Dca, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>().having(
+            (w) => w.reason,
+            'reason',
+            isNot(contains('YEARLY')),
+          ),
         ),
       );
     });
@@ -1442,17 +1505,25 @@ void main() {
     test('a timeout after sending is an unknown outcome', () async {
       expect(
         await create(FakeBbxHttp(error: DioExceptionType.receiveTimeout)),
-        isA<WriteOutcomeUnknown<Dca>>(),
+        isA<Err<Dca, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
     });
 
     test('a refusal keeps only its codes', () async {
       expect(
         await create(FakeBbxHttp(body: _rpcError)),
-        isA<WriteRefused<Dca>>().having(
-          (w) => w.reason.toString(),
-          'diagnostics',
-          isNot(contains('sat@example.com')),
+        isA<Err<Dca, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteRefusedFailure>().having(
+            (w) => w.reason.toString(),
+            'diagnostics',
+            isNot(contains('sat@example.com')),
+          ),
         ),
       );
     });
@@ -1466,10 +1537,14 @@ void main() {
           network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
-        isA<WriteNotSent<Dca>>().having(
-          (w) => w.reason,
-          'reason',
-          ExchangeNotSentReason.signedOut,
+        isA<Err<Dca, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.signedOut,
+          ),
         ),
       );
     });
@@ -1483,17 +1558,21 @@ void main() {
           network: BtcNetwork.bitcoin,
           address: 'bc1',
         ),
-        isA<WriteNotSent<Dca>>().having(
-          (w) => w.reason,
-          'reason',
-          ExchangeNotSentReason.credentialUnavailable,
+        isA<Err<Dca, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.credentialUnavailable,
+          ),
         ),
       );
     });
   });
 }
 
-T _written<T>(ExchangeWrite<T> write) => switch (write) {
-  WriteDone(:final value) => value,
+T _written<T>(Result<T, ExchangeWriteFailure> write) => switch (write) {
+  Ok(:final value) => value,
   _ => fail('Unexpected write result: $write'),
 };

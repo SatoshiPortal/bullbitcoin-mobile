@@ -2,6 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:exchange/testing.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _S = PayinState<String>;
 typedef _E = PayinEvent<String>;
@@ -152,7 +153,9 @@ final _states = <_S>[
   _sessionEnded, // 22
 ];
 
-const _rejected = ReadSessionRejected<Order>(ExchangeSessionRejection.server);
+const _rejected = Err<Order, ExchangeReadFailure>(
+  ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+);
 
 final _events = <_E>[
   PayinBuildAnswered(1, const PayinBuildOk(_built), _before), // 0
@@ -186,15 +189,19 @@ final _events = <_E>[
   PayinSendAnswered(1, GateRefused(WriteGateUnsettled(_ownEntry))), // 11
   PayinSendAnswered(1, GateRefused(WriteGateUnsettled(_otherEntry))), // 12
   const PayinSendAnswered(2, GateAdmitted(PayinBroadcastAccepted('tx1'))), // 13
-  PayinRechecked(2, ReadGot(_o), _before), // 14
-  PayinRechecked(2, ReadGot(_seen), _before), // 15
-  PayinRechecked(2, ReadGot(_ended), _before), // 16
-  PayinRechecked(2, ReadGot(_moved), _before), // 17
-  PayinRechecked(2, ReadGot(_o), _after), // 18
-  PayinRechecked(2, const ReadUnreachable('down', isNetwork: true), _before),
+  PayinRechecked(2, Ok(_o), _before), // 14
+  PayinRechecked(2, Ok(_seen), _before), // 15
+  PayinRechecked(2, Ok(_ended), _before), // 16
+  PayinRechecked(2, Ok(_moved), _before), // 17
+  PayinRechecked(2, Ok(_o), _after), // 18
+  PayinRechecked(
+    2,
+    const Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+    _before,
+  ),
   // 19
   PayinRechecked(2, _rejected, _before), // 20
-  PayinRechecked(1, ReadGot(_o), _before), // 21
+  PayinRechecked(1, Ok(_o), _before), // 21
   const PayinVerified(1, PayinCheckSeenOnNetwork('tx1')), // 22
   PayinVerified(1, PayinCheckSeenByExchange(_seen)), // 23
   const PayinVerified(1, PayinCheckNotSeen()), // 24
@@ -208,11 +215,11 @@ final _events = <_E>[
   const PayinPayjoinUpdated('s9', PayjoinSent('x')), // 32
   const PayinPayjoinWatchEnded('s1'), // 33
   const PayinPayjoinWatchEnded('s9'), // 34
-  PayinWatchEvent(WatchPolled('o-1', 1, ReadGot(_seen))), // 35
-  PayinWatchEvent(WatchPolled('o-1', 1, ReadGot(_ended))), // 36
+  PayinWatchEvent(WatchPolled('o-1', 1, Ok(_seen))), // 35
+  PayinWatchEvent(WatchPolled('o-1', 1, Ok(_ended))), // 36
   const PayinWatchEvent(WatchVisibilityChanged(visible: false)), // 37
   const PayinWatchEvent(WatchLeavePressed()), // 38
-  PayinWatchEvent(WatchPolled('o-1', 9, ReadGot(_seen))), // 39
+  PayinWatchEvent(WatchPolled('o-1', 9, Ok(_seen))), // 39
   const PayinRetryPressed(), // 40
   const PayinResendPressed(), // 41
   const PayinBackPressed(), // 42
@@ -568,12 +575,14 @@ void main() {
 
   group('payinCheckFrom', () {
     PayinCheck check(
-      ExchangeRead<Order> order,
+      Result<Order, ExchangeReadFailure> order,
       bool? txSeen, {
       String? txid = 'tx1',
     }) => payinCheckFrom(txid: txid, txSeen: txSeen, order: order);
 
-    const down = ReadUnreachable<Order>('down', isNetwork: true);
+    const down = Err<Order, ExchangeReadFailure>(
+      ExchangeUnreachableFailure('down', isNetwork: true),
+    );
 
     test('a 401 ends the session', () {
       expect(check(_rejected, true), isA<PayinCheckSessionRejected>());
@@ -581,13 +590,13 @@ void main() {
 
     test('a payin the exchange shows settles it', () {
       expect(
-        check(ReadGot(_seen), false),
+        check(Ok(_seen), false),
         isA<PayinCheckSeenByExchange>().having((c) => c.order, 'order', _seen),
       );
     });
 
     test('a transaction the network shows settles it, whatever the order', () {
-      for (final read in [ReadGot(_o), down]) {
+      for (final read in <Result<Order, ExchangeReadFailure>>[Ok(_o), down]) {
         expect(
           check(read, true),
           isA<PayinCheckSeenOnNetwork>().having((c) => c.txid, 'txid', 'tx1'),
@@ -604,12 +613,12 @@ void main() {
           _unreachable,
         ),
       );
-      expect(check(ReadGot(_o), null), isA<PayinCheckFailed>());
+      expect(check(Ok(_o), null), isA<PayinCheckFailed>());
     });
 
     test('both reads worked and show nothing: not seen', () {
-      expect(check(ReadGot(_o), false), isA<PayinCheckNotSeen>());
-      expect(check(ReadGot(_o), null, txid: null), isA<PayinCheckNotSeen>());
+      expect(check(Ok(_o), false), isA<PayinCheckNotSeen>());
+      expect(check(Ok(_o), null, txid: null), isA<PayinCheckNotSeen>());
     });
   });
 

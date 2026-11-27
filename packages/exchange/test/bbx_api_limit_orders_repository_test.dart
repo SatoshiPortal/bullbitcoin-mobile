@@ -464,7 +464,11 @@ void main() {
         expect(
           await repository(FakeBbxHttp(error: DioExceptionType.receiveTimeout))
               .create(current, draft),
-          isA<WriteOutcomeUnknown<LimitOrder>>(),
+          isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
         );
       });
 
@@ -479,10 +483,14 @@ void main() {
         ).create(current, draft);
         expect(
           write,
-          isA<WriteOutcomeUnknown<LimitOrder>>().having(
-            (w) => w.reason,
-            'reason',
-            isNot(contains('fixture-sensitive')),
+          isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>().having(
+              (w) => w.reason,
+              'reason',
+              isNot(contains('fixture-sensitive')),
+            ),
           ),
         );
       });
@@ -492,7 +500,11 @@ void main() {
           await repository(
             FakeBbxHttp(error: DioExceptionType.connectionTimeout),
           ).create(current, draft),
-          isA<WriteNotSent<LimitOrder>>(),
+          isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteNotSentFailure>(),
+          ),
         );
       });
 
@@ -500,7 +512,11 @@ void main() {
         expect(
           await repository(FakeBbxHttp(status: 401, body: {}))
               .create(current, draft),
-          isA<WriteSessionRejected<LimitOrder>>(),
+          isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeSessionRejectedFailure>(),
+          ),
         );
       });
 
@@ -508,7 +524,8 @@ void main() {
         Future<LimitOrderRefusal> refusalOf(String code) async =>
             switch (await repository(FakeBbxHttp(body: _refusal(code)))
                 .create(current, draft)) {
-              WriteRefused(:final reason) => limitOrderRefusalOf(reason),
+              Err(failure: ExchangeWriteRefusedFailure(:final reason)) =>
+                limitOrderRefusalOf(reason),
               final other => fail('not a refusal: $other'),
             };
         expect(

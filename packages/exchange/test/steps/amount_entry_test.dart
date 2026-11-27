@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = StepNext<AmountEntryState, AmountEntryEffect>;
 
@@ -79,10 +80,16 @@ const _events = <AmountEntryEvent>[
   AmountMarketChosen(_eur),
   AmountMarketChosen(_cad),
   AmountMarketChosen(ExchangeCatalog.mxn),
-  AmountRateArrived(_cad, ReadGot(50000)),
-  AmountRateArrived(_eur, ReadGot(60000)),
-  AmountRateArrived(_cad, ReadUnreachable('timeout', isNetwork: true)),
-  AmountRateArrived(_cad, ReadSessionRejected(ExchangeSessionRejection.server)),
+  AmountRateArrived(_cad, Ok(50000)),
+  AmountRateArrived(_eur, Ok(60000)),
+  AmountRateArrived(
+    _cad,
+    Err(ExchangeUnreachableFailure('timeout', isNetwork: true)),
+  ),
+  AmountRateArrived(
+    _cad,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
   AmountRateRetryPressed(),
   AmountContinuePressed(),
   AmountDetourReturned(_ctx2),
@@ -628,7 +635,7 @@ void main() {
       transitionAmountEntry(
         _buy,
         _loading,
-        const AmountRateArrived(_cad, ReadGot(0)),
+        const AmountRateArrived(_cad, Ok(0)),
       ),
       _to(_editing(_d, const RateFailed(_cad, ReadProblemMalformed()))),
     );
@@ -696,10 +703,10 @@ void main() {
     const events = <AmountEntryEvent>[
       AmountTyped('250'),
       AmountTyped('5000'),
-      AmountRateArrived(_cad, ReadGot(50000)),
+      AmountRateArrived(_cad, Ok(50000)),
       AmountRateArrived(
         _cad,
-        ReadSessionRejected(ExchangeSessionRejection.server),
+        Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
       ),
       AmountContinuePressed(),
       AmountDetourReturned(noKyc),

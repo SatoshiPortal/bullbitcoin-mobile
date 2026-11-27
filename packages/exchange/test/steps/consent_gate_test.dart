@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = StepNext<ConsentGateState, ConsentGateEffect>;
 
@@ -35,15 +36,24 @@ const _events = <ConsentGateEvent>[
   ConsentStartPressed(), // 0
   ConsentAcceptPressed(), // 1
   ConsentDeclinePressed(), // 2
-  ConsentSubmitted(1, WriteDone(null)), // 3
-  ConsentSubmitted(1, WriteRefused(_refusal)), // 4
-  ConsentSubmitted(1, WriteOutcomeUnknown('timeout')), // 5
-  ConsentSubmitted(1, WriteSessionRejected()), // 6
-  ConsentSubmitted(2, WriteDone(null)), // 7
-  ConsentVerified(1, ReadGot(true)), // 8
-  ConsentVerified(1, ReadGot(false)), // 9
-  ConsentVerified(1, ReadUnreachable('timeout', isNetwork: true)), // 10
-  ConsentVerified(1, ReadSessionRejected(ExchangeSessionRejection.server)),
+  ConsentSubmitted(1, Ok(null)), // 3
+  ConsentSubmitted(1, Err(ExchangeWriteRefusedFailure(_refusal))), // 4
+  ConsentSubmitted(1, Err(ExchangeWriteOutcomeUnknownFailure('timeout'))), // 5
+  ConsentSubmitted(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ), // 6
+  ConsentSubmitted(2, Ok(null)), // 7
+  ConsentVerified(1, Ok(true)), // 8
+  ConsentVerified(1, Ok(false)), // 9
+  ConsentVerified(
+    1,
+    Err(ExchangeUnreachableFailure('timeout', isNetwork: true)),
+  ), // 10
+  ConsentVerified(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
   ConsentRetryPressed(), // 12
 ];
 

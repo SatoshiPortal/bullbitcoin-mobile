@@ -3,7 +3,6 @@ import 'package:primitives/primitives.dart';
 
 import '../domain/entities/btc_network.dart';
 import '../domain/entities/default_wallet.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import 'btc_network_wire.dart';
 import 'exchange_call_classifier.dart';
@@ -56,9 +55,9 @@ final class BbxApiDefaultWalletsDatasource {
   }
 
   /// A save that may have reached the server without a readable answer is
-  /// [WriteOutcomeUnknown]: a new recipient may exist, so the caller re-reads
+  /// [ExchangeWriteOutcomeUnknownFailure]: a new recipient may exist, so the caller re-reads
   /// before saving again (DW-2).
-  Future<ExchangeWrite<DefaultWallet>> saveDefaultWallet({
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> saveDefaultWallet({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
@@ -81,8 +80,8 @@ final class BbxApiDefaultWalletsDatasource {
   );
 
   /// Unsets the default flag of [recipientId]. Like a save, an answer lost
-  /// after sending is [WriteOutcomeUnknown]: re-read before unsetting again.
-  Future<ExchangeWrite<void>> deleteDefaultWallet({
+  /// after sending is [ExchangeWriteOutcomeUnknownFailure]: re-read before unsetting again.
+  Future<Result<void, ExchangeWriteFailure>> deleteDefaultWallet({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,

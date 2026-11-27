@@ -8,7 +8,6 @@ import '../domain/entities/confidential_sepa_availability.dart';
 import '../domain/entities/funding_institution.dart';
 import '../domain/entities/user_summary.dart';
 import '../domain/entities/virtual_iban.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../funding/funding_instructions.dart';
 import '../funding/funding_request.dart';
@@ -17,7 +16,7 @@ import 'exchange_call_classifier.dart';
 import 'read_user_summary.dart';
 
 /// The funding calls on one client, as closed results. A missing field the
-/// rail shows is [ReadMalformed], never a thrown error or an empty value
+/// rail shows is [ExchangeMalformedFailure], never a thrown error or an empty value
 /// (FUND-1).
 final class BbxApiFundingRails {
   final bbx.Bbx _api;
@@ -25,24 +24,22 @@ final class BbxApiFundingRails {
 
   const BbxApiFundingRails(this._api, {required this.paymentReturnUrl});
 
-  Future<ExchangeRead<FundingAccount>> account() async {
+  Future<Result<FundingAccount, ExchangeReadFailure>> account() async {
     final summary = await readUserSummary(_api);
-    if (summary is! ReadGot<UserSummary>) return _same(summary);
+    if (summary is! Ok<UserSummary, ExchangeReadFailure>) return _same(summary);
     final user = summary.value;
-    final ExchangeRead<ConfidentialSepaAvailability> confidentialSepa =
-        user.isEligibleForConfidentialSepa
+    final Result<ConfidentialSepaAvailability, ExchangeReadFailure>
+    confidentialSepa = user.isEligibleForConfidentialSepa
         ? switch (await BbxApiVirtualIbansRepository.findOn(_api)) {
-            Ok(value: ActiveVirtualIban()) => const ReadGot(
+            Ok(value: ActiveVirtualIban()) => const Ok(
               ConfidentialSepaAvailability.ready,
             ),
-            Ok() => const ReadGot(
-              ConfidentialSepaAvailability.needsVirtualIban,
-            ),
+            Ok() => const Ok(ConfidentialSepaAvailability.needsVirtualIban),
             Err(:final failure) => readOfFailure(failure),
           }
-        : const ReadGot(ConfidentialSepaAvailability.unavailable);
+        : const Ok(ConfidentialSepaAvailability.unavailable);
     return switch (confidentialSepa) {
-      ReadGot(value: final availability) => ReadGot(
+      Ok(value: final availability) => Ok(
         FundingAccount(
           userNumber: user.userNumber,
           firstName: user.profile.firstName,
@@ -60,27 +57,31 @@ final class BbxApiFundingRails {
     };
   }
 
-  Future<ExchangeRead<bool>> consentOnAccount() async =>
+  Future<Result<bool, ExchangeReadFailure>> consentOnAccount() async =>
       switch (await readUserSummary(_api)) {
-        ReadGot(:final value) => ReadGot(value.hasConsentedScamWarning),
+        Ok(:final value) => Ok(value.hasConsentedScamWarning),
         final other => _same(other),
       };
 
   /// Only `success: true` is a consent; any other answer may or may not
   /// have recorded it, so the gate re-reads.
-  Future<ExchangeWrite<void>> consent() async {
+  Future<Result<void, ExchangeWriteFailure>> consent() async {
     switch (await _api.users.registerResponsibilityConsent()) {
       case Ok(value: true):
-        return const WriteDone(null);
+        return const Ok(null);
       case Ok():
         log.warning('registerResponsibilityConsent answered without success');
-        return const WriteOutcomeUnknown('consent answered without success');
+        return const Err(
+          ExchangeWriteOutcomeUnknownFailure(
+            'consent answered without success',
+          ),
+        );
       case Err(:final failure):
         return writeOf(failure);
     }
   }
 
-  Future<ExchangeRead<List<FundingInstitution>>> institutions(
+  Future<Result<List<FundingInstitution>, ExchangeReadFailure>> institutions(
     Jurisdiction jurisdiction,
   ) => exchangeRead<bbx.InstitutionList, List<FundingInstitution>>(
     'listInstitutionCodes',
@@ -100,13 +101,14 @@ final class BbxApiFundingRails {
     },
   );
 
-  Future<ExchangeRead<FundingAnswer>> instructions(FundingRequest request) =>
-      switch (request) {
-        ProcessorCodeRequest() => _processorCode(request),
-        CopPaymentRequest() => _copLink(request),
-      };
+  Future<Result<FundingAnswer, ExchangeReadFailure>> instructions(
+    FundingRequest request,
+  ) => switch (request) {
+    ProcessorCodeRequest() => _processorCode(request),
+    CopPaymentRequest() => _copLink(request),
+  };
 
-  Future<ExchangeRead<FundingAnswer>> _processorCode(
+  Future<Result<FundingAnswer, ExchangeReadFailure>> _processorCode(
     ProcessorCodeRequest request,
   ) async {
     final rail = request.rail;
@@ -114,7 +116,7 @@ final class BbxApiFundingRails {
       rail.paymentProcessorCode,
     );
     if (_refusal(answer) case final refusal?) {
-      return ReadGot(FundingRefused(refusal));
+      return Ok(FundingRefused(refusal));
     }
     final read =
         await exchangeRead<
@@ -125,7 +127,9 @@ final class BbxApiFundingRails {
           () async => answer,
           (details) => details,
         );
-    if (read is! ReadGot<bbx.PaymentProcessorDetails>) return _same(read);
+    if (read is! Ok<bbx.PaymentProcessorDetails, ExchangeReadFailure>) {
+      return _same(read);
+    }
     final rows = <InstructionRow>[];
     for (final field in rail.fields) {
       final value = switch (field) {
@@ -137,14 +141,14 @@ final class BbxApiFundingRails {
           'getUserPaymentProcessorCode: ${rail.name} answer has no '
           '${field.name}',
         );
-        return ReadMalformed('missing ${field.name}');
+        return Err(ExchangeMalformedFailure('missing ${field.name}'));
       }
       rows.add(InstructionRow(field, value));
     }
-    return ReadGot(FundingInstructionsGot(rail.present(rows)));
+    return Ok(FundingInstructionsGot(rail.present(rows)));
   }
 
-  Future<ExchangeRead<FundingAnswer>> _copLink(
+  Future<Result<FundingAnswer, ExchangeReadFailure>> _copLink(
     CopPaymentRequest request,
   ) async {
     final answer = await _api.orders.getCopPaymentLink(
@@ -153,22 +157,24 @@ final class BbxApiFundingRails {
       callbackUrl: paymentReturnUrl.toString(),
     );
     if (_refusal(answer) case final refusal?) {
-      return ReadGot(FundingRefused(refusal));
+      return Ok(FundingRefused(refusal));
     }
     final read = await exchangeRead<String, String>(
       'getCopPaymentLink',
       () async => answer,
       (link) => link,
     );
-    if (read is! ReadGot<String>) return _same(read);
+    if (read is! Ok<String, ExchangeReadFailure>) return _same(read);
     final link = Uri.tryParse(read.value.trim());
     if (link == null ||
         !(link.isScheme('https') || link.isScheme('http')) ||
         link.host.isEmpty) {
       log.warning('getCopPaymentLink answered a link that is not a web page');
-      return const ReadMalformed('payment link is not a web page');
+      return const Err(
+        ExchangeMalformedFailure('payment link is not a web page'),
+      );
     }
-    return ReadGot(FundingInstructionsGot(FundingInstructionLink(link)));
+    return Ok(FundingInstructionsGot(FundingInstructionLink(link)));
   }
 
   static FundingRefusal? _refusal(Result<Object?, bbx.BbxFailure> answer) =>
@@ -229,34 +235,47 @@ final class BbxApiFundingRails {
   }
 }
 
-/// [read] with no value, retyped. Only for reads that are not [ReadGot].
-ExchangeRead<T> _same<T>(ExchangeRead<Object?> read) => switch (read) {
-  ReadGot() => throw StateError('a read with a value is not retyped'),
-  ReadMissing() => ReadMissing<T>(),
-  ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable<T>(
-    reason,
-    isNetwork: isNetwork,
+/// [read] with no value, retyped. Only for reads that are not [Ok].
+Result<T, ExchangeReadFailure> _same<T>(
+  Result<Object?, ExchangeReadFailure> read,
+) => switch (read) {
+  Ok() => throw StateError('a read with a value is not retyped'),
+  Err(failure: ExchangeMissingFailure()) => Err<T, ExchangeReadFailure>(
+    ExchangeMissingFailure(),
   ),
-  ReadSessionRejected(:final why) => ReadSessionRejected<T>(why),
-  ReadMalformed(:final reason) => ReadMalformed<T>(reason),
+  Err(failure: ExchangeUnreachableFailure(:final reason, :final isNetwork)) =>
+    Err<T, ExchangeReadFailure>(
+      ExchangeUnreachableFailure(reason, isNetwork: isNetwork),
+    ),
+  Err(failure: ExchangeSessionRejectedFailure(:final why)) =>
+    Err<T, ExchangeReadFailure>(ExchangeSessionRejectedFailure(why)),
+  Err(failure: ExchangeMalformedFailure(:final reason)) =>
+    Err<T, ExchangeReadFailure>(ExchangeMalformedFailure(reason)),
 };
 
 /// The read result of a call that failed before or around the server: the
 /// session check of `withClient`, or a repository that still answers
 /// [ExchangeFailure].
-ExchangeRead<T> readOfFailure<T>(ExchangeFailure failure) => switch (failure) {
-  ExchangeNotAuthenticatedFailure() => const ReadSessionRejected(
-    ExchangeSessionRejection.signedOut,
-  ),
-  ExchangeCredentialReadFailure() => const ReadSessionRejected(
-    ExchangeSessionRejection.credentialUnavailable,
-  ),
-  ExchangeSessionRejectedFailure() => const ReadSessionRejected(
-    ExchangeSessionRejection.server,
-  ),
-  ExchangeNetworkFailure(:final logMessage) => ReadUnreachable(
-    logMessage ?? 'network',
-    isNetwork: true,
-  ),
-  _ => ReadUnreachable(failure.runtimeType.toString(), isNetwork: false),
-};
+Result<T, ExchangeReadFailure> readOfFailure<T>(ExchangeFailure failure) =>
+    switch (failure) {
+      ExchangeNotAuthenticatedFailure() => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.signedOut),
+      ),
+      ExchangeCredentialReadFailure() => const Err(
+        ExchangeSessionRejectedFailure(
+          ExchangeSessionRejection.credentialUnavailable,
+        ),
+      ),
+      ExchangeSessionRejectedFailure() => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
+      ExchangeNetworkFailure(:final logMessage) => Err(
+        ExchangeUnreachableFailure(logMessage ?? 'network', isNetwork: true),
+      ),
+      _ => Err(
+        ExchangeUnreachableFailure(
+          failure.runtimeType.toString(),
+          isNetwork: false,
+        ),
+      ),
+    };

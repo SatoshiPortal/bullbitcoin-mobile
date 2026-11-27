@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = StepNext<VirtualIbanState, VirtualIbanEffect>;
 
@@ -56,33 +57,54 @@ final _states = <VirtualIbanState>[
 final _events = <VirtualIbanEvent>[
   const VibanLoaded(
     1,
-    ReadGot(VirtualIbanContext(virtualIban: null, ownerName: 'Ana')),
+    Ok(VirtualIbanContext(virtualIban: null, ownerName: 'Ana')),
   ), // 0
   const VibanLoaded(
     1,
-    ReadGot(VirtualIbanContext(virtualIban: _pending, ownerName: 'Ana')),
+    Ok(VirtualIbanContext(virtualIban: _pending, ownerName: 'Ana')),
   ), // 1
   VibanLoaded(
     1,
-    ReadGot(VirtualIbanContext(virtualIban: _active, ownerName: 'Ana')),
+    Ok(VirtualIbanContext(virtualIban: _active, ownerName: 'Ana')),
   ), // 2
-  const VibanLoaded(1, ReadUnreachable('down', isNetwork: true)), // 3
-  const VibanLoaded(1, ReadSessionRejected(ExchangeSessionRejection.server)),
-  const VibanLoaded(2, ReadMalformed('bad')), // 5
+  const VibanLoaded(
+    1,
+    Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+  ), // 3
+  const VibanLoaded(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
+  const VibanLoaded(2, Err(ExchangeMalformedFailure('bad'))), // 5
   const VibanCreatePressed(), // 6
-  VibanCreated(1, WriteDone(_active)), // 7
-  const VibanCreated(1, WriteDone(_pending)), // 8
-  const VibanCreated(1, WriteRefused(_refusal)), // 9
-  const VibanCreated(1, WriteOutcomeUnknown('timeout')), // 10
-  const VibanCreated(1, WriteSessionRejected()), // 11
-  const VibanCreated(2, WriteDone(_pending)), // 12
-  const VibanVerified(1, ReadGot(null)), // 13
-  const VibanVerified(1, ReadGot(_pending)), // 14
-  const VibanVerified(1, ReadUnreachable('down', isNetwork: true)), // 15
-  const VibanPolled(1, ReadGot(_pending)), // 16
-  VibanPolled(1, ReadGot(_active)), // 17
-  const VibanPolled(3, ReadUnreachable('down', isNetwork: true)), // 18
-  const VibanPolled(1, ReadSessionRejected(ExchangeSessionRejection.server)),
+  VibanCreated(1, Ok(_active)), // 7
+  const VibanCreated(1, Ok(_pending)), // 8
+  const VibanCreated(1, Err(ExchangeWriteRefusedFailure(_refusal))), // 9
+  const VibanCreated(
+    1,
+    Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+  ), // 10
+  const VibanCreated(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ), // 11
+  const VibanCreated(2, Ok(_pending)), // 12
+  const VibanVerified(1, Ok(null)), // 13
+  const VibanVerified(1, Ok(_pending)), // 14
+  const VibanVerified(
+    1,
+    Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+  ), // 15
+  const VibanPolled(1, Ok(_pending)), // 16
+  VibanPolled(1, Ok(_active)), // 17
+  const VibanPolled(
+    3,
+    Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+  ), // 18
+  const VibanPolled(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
   const VibanActivatedPushed(), // 20
   const VibanVisibilityChanged(visible: false), // 21
   const VibanVisibilityChanged(visible: true), // 22
@@ -202,13 +224,16 @@ void main() {
   test('an unknown create outcome never offers the create again', () {
     var next = _step(
       _creating,
-      const VibanCreated(1, WriteOutcomeUnknown('timeout')),
+      const VibanCreated(1, Err(ExchangeWriteOutcomeUnknownFailure('timeout'))),
     );
     expect(next.state, _verifying);
     expect(_step(next.state, const VibanCreatePressed()).state, _verifying);
     next = _step(
       next.state,
-      const VibanVerified(1, ReadUnreachable('down', isNetwork: true)),
+      const VibanVerified(
+        1,
+        Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+      ),
     );
     expect(next.effects, isEmpty);
     expect(_step(next.state, const VibanRetryPressed()).effects, const [
@@ -224,10 +249,7 @@ void main() {
     state = _step(state, const VibanVisibilityChanged(visible: true)).state;
     expect(state, const VibanActivating('Ana', 1, 3, 0));
     expect(
-      identical(
-        _step(state, const VibanPolled(1, ReadGot(_pending))).state,
-        state,
-      ),
+      identical(_step(state, const VibanPolled(1, Ok(_pending))).state, state),
       isTrue,
     );
   });
@@ -236,7 +258,7 @@ void main() {
     VirtualIbanState state = _activating;
     for (var i = 0; i < _policy.maxPolls; i++) {
       final ticket = (state as VibanActivating).ticket;
-      state = _step(state, VibanPolled(ticket, const ReadGot(_pending))).state;
+      state = _step(state, VibanPolled(ticket, const Ok(_pending))).state;
     }
     expect(state, isA<VibanTimedOut>());
   });

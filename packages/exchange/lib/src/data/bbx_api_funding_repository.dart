@@ -4,7 +4,6 @@ import 'package:primitives/primitives.dart';
 import '../domain/catalog/jurisdiction.dart';
 import '../domain/entities/funding_institution.dart';
 import '../domain/exchange_access.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/repositories/funding_repository.dart';
 import '../funding/funding_request.dart';
@@ -33,10 +32,10 @@ final class BbxApiFundingRepository implements FundingRepository {
   BbxApiFundingRails _rails(bbx.Bbx client) =>
       BbxApiFundingRails(client, paymentReturnUrl: _paymentReturnUrl);
 
-  Future<ExchangeRead<T>> _fundRead<T>(
+  Future<Result<T, ExchangeReadFailure>> _fundRead<T>(
     ExchangeSession session,
-    Future<ExchangeRead<T>> Function(BbxApiFundingRails) call,
-  ) async => switch (await _read<ExchangeRead<T>>(
+    Future<Result<T, ExchangeReadFailure>> Function(BbxApiFundingRails) call,
+  ) async => switch (await _read<Result<T, ExchangeReadFailure>>(
     session,
     (client) async => Ok(await call(_rails(client))),
   )) {
@@ -45,32 +44,35 @@ final class BbxApiFundingRepository implements FundingRepository {
   };
 
   @override
-  Future<ExchangeRead<FundingAccount>> account(ExchangeSession session) =>
-      _fundRead(session, (rails) => rails.account());
+  Future<Result<FundingAccount, ExchangeReadFailure>> account(
+    ExchangeSession session,
+  ) => _fundRead(session, (rails) => rails.account());
 
   @override
-  Future<ExchangeRead<FundingAnswer>> instructions(
+  Future<Result<FundingAnswer, ExchangeReadFailure>> instructions(
     ExchangeSession session,
     FundingRequest request,
   ) => _fundRead(session, (rails) => rails.instructions(request));
 
   @override
-  Future<ExchangeRead<List<FundingInstitution>>> institutions(
+  Future<Result<List<FundingInstitution>, ExchangeReadFailure>> institutions(
     ExchangeSession session,
     Jurisdiction jurisdiction,
   ) => _fundRead(session, (rails) => rails.institutions(jurisdiction));
 
   @override
-  Future<ExchangeWrite<void>> consent(ExchangeSession session) async =>
-      switch (await _write<ExchangeWrite<void>>(
-        session,
-        (client) async => Ok(await _rails(client).consent()),
-      )) {
-        Ok(:final value) => value,
-        Err(:final failure) => writeNotRun<void>(failure),
-      };
+  Future<Result<void, ExchangeWriteFailure>> consent(
+    ExchangeSession session,
+  ) async => switch (await _write<Result<void, ExchangeWriteFailure>>(
+    session,
+    (client) async => Ok(await _rails(client).consent()),
+  )) {
+    Ok(:final value) => value,
+    Err(:final failure) => writeNotRun<void>(failure),
+  };
 
   @override
-  Future<ExchangeRead<bool>> consentOnAccount(ExchangeSession session) =>
-      _fundRead(session, (rails) => rails.consentOnAccount());
+  Future<Result<bool, ExchangeReadFailure>> consentOnAccount(
+    ExchangeSession session,
+  ) => _fundRead(session, (rails) => rails.consentOnAccount());
 }

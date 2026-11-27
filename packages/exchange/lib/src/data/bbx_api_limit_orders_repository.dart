@@ -8,7 +8,6 @@ import '../domain/entities/limit_order.dart';
 import '../domain/entities/limit_order_draft.dart';
 import '../domain/entities/limit_order_rate.dart';
 import '../domain/exchange_access.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../domain/repositories/limit_orders_repository.dart';
 import 'exchange_call_classifier.dart';
@@ -85,38 +84,39 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
   );
 
   /// A create that may have reached the exchange without a readable answer,
-  /// including a created order the app can't read, is [WriteOutcomeUnknown],
+  /// including a created order the app can't read, is [ExchangeWriteOutcomeUnknownFailure],
   /// never a plain failure the user could retry into a second order. A
   /// refusal keeps its code (see `limitOrderRefusalOf`).
   @override
-  Future<ExchangeWrite<LimitOrder>> create(
+  Future<Result<LimitOrder, ExchangeWriteFailure>> create(
     ExchangeSession session,
     LimitOrderDraft draft,
   ) async {
-    final write = switch (await _write<ExchangeWrite<LimitOrder>>(
-      session,
-      (api) async => Ok(
-        await exchangeWrite<bbx.LimitOrder, LimitOrder>(
-          'create the limit order',
-          () => api.orderTriggers.addLimitOrder(
-            limitPrice: draft.limitPrice.toStringAsFixed(
-              draft.currency.decimals,
+    final write =
+        switch (await _write<Result<LimitOrder, ExchangeWriteFailure>>(
+          session,
+          (api) async => Ok(
+            await exchangeWrite<bbx.LimitOrder, LimitOrder>(
+              'create the limit order',
+              () => api.orderTriggers.addLimitOrder(
+                limitPrice: draft.limitPrice.toStringAsFixed(
+                  draft.currency.decimals,
+                ),
+                fiatAmount: draft.fiatAmount.toStringAsFixed(
+                  draft.currency.decimals,
+                ),
+                currencyCode: draft.currency.code,
+                estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
+                address: draft.address,
+              ),
+              _toLimitOrder,
             ),
-            fiatAmount: draft.fiatAmount.toStringAsFixed(
-              draft.currency.decimals,
-            ),
-            currencyCode: draft.currency.code,
-            estimatedBtcAmount: draft.estimatedBtcAmount.toStringAsFixed(8),
-            address: draft.address,
           ),
-          _toLimitOrder,
-        ),
-      ),
-    )) {
-      Ok(:final value) => value,
-      Err(:final failure) => writeNotRun<LimitOrder>(failure),
-    };
-    if (write is WriteOutcomeUnknown<LimitOrder>) {
+        )) {
+          Ok(:final value) => value,
+          Err(:final failure) => writeNotRun<LimitOrder>(failure),
+        };
+    if (write case Err(failure: ExchangeWriteOutcomeUnknownFailure())) {
       await _journalUnknownCreate(session, draft);
     }
     return write;

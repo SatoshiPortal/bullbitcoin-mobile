@@ -1,10 +1,12 @@
 import 'package:meta/meta.dart';
 
 import '../domain/exchange_access.dart';
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import '../domain/exchange_write_gate.dart';
 import '../domain/unknown_write_journal.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 /// The commit step's output: [ServerConfirmed] from the server confirm,
 /// [PayinSeen] from the payin (sell, pay).
@@ -272,7 +274,7 @@ sealed class ServerConfirmEvent<T, C> {
 /// What the write gate and the write of [attempt] answered.
 final class ConfirmAnswered<T, C> extends ServerConfirmEvent<T, C> {
   final int attempt;
-  final GatedWrite<ExchangeWrite<C>> answer;
+  final GatedWrite<Result<C, ExchangeWriteFailure>> answer;
 
   const ConfirmAnswered(this.attempt, this.answer);
 }
@@ -361,7 +363,7 @@ Future<ConfirmAnswered<T, C>> runServerConfirm<T, C>({
   required ExchangeSession session,
   required ServerConfirmPolicy<T> policy,
   required ConfirmSend<T> effect,
-  required Future<ExchangeWrite<C>> Function(T target) confirm,
+  required Future<Result<C, ExchangeWriteFailure>> Function(T target) confirm,
 }) async => ConfirmAnswered(
   effect.attempt,
   await gate.run(session, policy.writeKind, () => confirm(effect.target)),
@@ -376,7 +378,7 @@ ServerConfirmNext<T, C> _answered<T, C>(
   ServerConfirmPolicy<T> policy,
   T target,
   int attempt,
-  GatedWrite<ExchangeWrite<C>> answer,
+  GatedWrite<Result<C, ExchangeWriteFailure>> answer,
 ) => switch (answer) {
   GateRefused(refusal: WriteGateUnsettled(:final entry))
       when policy.matches(entry, target) =>
@@ -384,19 +386,21 @@ ServerConfirmNext<T, C> _answered<T, C>(
   GateRefused(:final refusal) => StepNext(
     ConfirmWriteRefused<T, C>(target, attempt, refusal),
   ),
-  GateAdmitted(result: WriteDone(:final value)) => StepNext(
+  GateAdmitted(result: Ok(:final value)) => StepNext(
     ConfirmConfirmed<T, C>(value),
   ),
-  GateAdmitted(result: WriteRefused(:final reason)) => StepNext(
-    ConfirmFailed<T, C>(target, attempt, WriteProblemRefused(reason)),
-  ),
-  GateAdmitted(result: WriteNotSent(:final reason)) => StepNext(
-    ConfirmFailed<T, C>(target, attempt, WriteProblemNotSent(reason)),
-  ),
-  GateAdmitted(result: WriteOutcomeUnknown()) => _verifying(target, attempt),
-  GateAdmitted(result: WriteSessionRejected()) => StepNext(
-    ConfirmSessionEnded<T, C>(),
-  ),
+  GateAdmitted(
+    result: Err(failure: ExchangeWriteRefusedFailure(:final reason)),
+  ) =>
+    StepNext(ConfirmFailed<T, C>(target, attempt, WriteProblemRefused(reason))),
+  GateAdmitted(
+    result: Err(failure: ExchangeWriteNotSentFailure(:final reason)),
+  ) =>
+    StepNext(ConfirmFailed<T, C>(target, attempt, WriteProblemNotSent(reason))),
+  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) =>
+    _verifying(target, attempt),
+  GateAdmitted(result: Err(failure: ExchangeSessionRejectedFailure())) =>
+    StepNext(ConfirmSessionEnded<T, C>()),
 };
 
 ServerConfirmNext<T, C> _checked<T, C>(

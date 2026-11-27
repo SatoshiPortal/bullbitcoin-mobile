@@ -498,7 +498,10 @@ void main() {
           'getUnreadMessageCount': {'result': 3},
         }),
       ).readUnreadMessageCount();
-      expect(read, isA<ReadGot<int>>().having((r) => r.value, 'value', 3));
+      expect(
+        read,
+        isA<Ok<int, ExchangeReadFailure>>().having((r) => r.value, 'value', 3),
+      );
     });
 
     test('a negative count is malformed, never zero', () async {
@@ -507,13 +510,27 @@ void main() {
           'getUnreadMessageCount': {'result': -1},
         }),
       ).readUnreadMessageCount();
-      expect(read, isA<ReadMalformed<int>>());
+      expect(
+        read,
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeMalformedFailure>(),
+        ),
+      );
     });
 
     test('a refused read is unreachable, never zero', () async {
       final read = await _new(_ChatHttp({'getUnreadMessageCount': _rpcError}))
           .readUnreadMessageCount();
-      expect(read, isA<ReadUnreachable<int>>());
+      expect(
+        read,
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>(),
+        ),
+      );
     });
 
     test('marking read is a write with a closed answer', () async {
@@ -523,12 +540,16 @@ void main() {
             'setAllMessagesAsRead': {'result': true},
           }),
         ).markAllMessagesRead(),
-        isA<WriteDone<void>>(),
+        isA<Ok<void, ExchangeWriteFailure>>(),
       );
       expect(
         await _new(_ChatHttp({'setAllMessagesAsRead': _rpcError}))
             .markAllMessagesRead(),
-        isA<WriteRefused<void>>(),
+        isA<Err<void, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteRefusedFailure>(),
+        ),
       );
     });
   });

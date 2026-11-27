@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 final class _Order {
   final String id;
@@ -46,7 +47,9 @@ const _o = _Order('o1', 'pending');
 const _o2 = _Order('o1', 'payout sent');
 const _done = _Order('o1', 'done');
 const _failedO = _Order('o1', 'failed');
-const _unreachable = ReadUnreachable<_Order>('timeout', isNetwork: true);
+const _unreachable = Err<_Order, ExchangeReadFailure>(
+  ExchangeUnreachableFailure('timeout', isNetwork: true),
+);
 
 const _watching = WatchWatching<_Order>(_o, 0, 0, 1);
 const _nearBounds = WatchWatching<_Order>(_o, 2, 1, 3);
@@ -73,14 +76,18 @@ const _states = <_S>[
 ];
 
 const _events = <_E>[
-  WatchPolled('o1', 1, ReadGot(_o2)), // 0
-  WatchPolled('o1', 1, ReadGot(_done)), // 1
-  WatchPolled('o1', 1, ReadGot(_failedO)), // 2
+  WatchPolled('o1', 1, Ok(_o2)), // 0
+  WatchPolled('o1', 1, Ok(_done)), // 1
+  WatchPolled('o1', 1, Ok(_failedO)), // 2
   WatchPolled('o1', 1, _unreachable), // 3
-  WatchPolled('o1', 1, ReadSessionRejected(ExchangeSessionRejection.server)),
-  WatchPolled('o1', 3, ReadGot(_o2)), // 5
+  WatchPolled(
+    'o1',
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
+  WatchPolled('o1', 3, Ok(_o2)), // 5
   WatchPolled('o1', 3, _unreachable), // 6
-  WatchPolled('other', 1, ReadGot(_done)), // 7
+  WatchPolled('other', 1, Ok(_done)), // 7
   WatchVisibilityChanged(visible: false), // 8
   WatchVisibilityChanged(visible: true), // 9
   WatchDeadlinePassed('o1'), // 10
@@ -200,7 +207,7 @@ void main() {
     final late = transitionOutcomeWatch(
       _policy,
       resumed,
-      const WatchPolled<_Order>('o1', 1, ReadGot(_done)),
+      const WatchPolled<_Order>('o1', 1, Ok(_done)),
     );
     expect(identical(late.state, resumed), isTrue);
   });
@@ -212,7 +219,7 @@ void main() {
       state = transitionOutcomeWatch(
         _policy,
         state,
-        WatchPolled('o1', ticket, const ReadGot(_o)),
+        WatchPolled('o1', ticket, const Ok(_o)),
       ).state;
     }
     expect(state, const WatchTimedOut(_o, 4));
@@ -231,13 +238,15 @@ void main() {
     }
     final events = <_E>[
       for (var ticket = 1; ticket <= 6; ticket++) ...[
-        WatchPolled('o1', ticket, const ReadGot(_o2)),
-        WatchPolled('o1', ticket, const ReadGot(_done)),
+        WatchPolled('o1', ticket, const Ok(_o2)),
+        WatchPolled('o1', ticket, const Ok(_done)),
         WatchPolled('o1', ticket, _unreachable),
         WatchPolled(
           'o1',
           ticket,
-          const ReadSessionRejected(ExchangeSessionRejection.server),
+          const Err(
+            ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+          ),
         ),
       ],
       ..._events.skip(8),

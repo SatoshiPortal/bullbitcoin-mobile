@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Outpoint;
+import 'package:primitives/primitives.dart' show Err, Ok, Outpoint, Result;
 
 import '../bitcoin/bitcoin_rail.dart';
 import '../domain/entities/btc_network.dart';
 import '../domain/entities/order.dart';
 import '../domain/exchange_access.dart';
-import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import '../domain/exchange_write_gate.dart';
 import '../domain/payin_broadcast.dart';
 import '../domain/unknown_write_journal.dart';
@@ -391,12 +391,12 @@ final class PayinCheckSessionRejected extends PayinCheck {
 PayinCheck payinCheckFrom({
   required String? txid,
   required bool? txSeen,
-  required ExchangeRead<Order> order,
+  required Result<Order, ExchangeReadFailure> order,
 }) {
-  if (order is ReadSessionRejected<Order>) {
+  if (order case Err(failure: ExchangeSessionRejectedFailure())) {
     return const PayinCheckSessionRejected();
   }
-  if (order case ReadGot(value: final read) when !_awaitsPayin(read)) {
+  if (order case Ok(value: final read) when !_awaitsPayin(read)) {
     return PayinCheckSeenByExchange(read);
   }
   if (txSeen == true && txid != null) return PayinCheckSeenOnNetwork(txid);
@@ -781,7 +781,7 @@ final class PayinSendAnswered<P> extends PayinEvent<P> {
 /// The re-read of the order for retry [attempt], read at [at].
 final class PayinRechecked<P> extends PayinEvent<P> {
   final int attempt;
-  final ExchangeRead<Order> read;
+  final Result<Order, ExchangeReadFailure> read;
   final DateTime at;
 
   const PayinRechecked(this.attempt, this.read, this.at);
@@ -1251,12 +1251,12 @@ PayinNext<P> _sent<P>(
 PayinNext<P> _rechecked<P>(
   PayinPolicy policy,
   PayinRechecking<P> state,
-  ExchangeRead<Order> read,
+  Result<Order, ExchangeReadFailure> read,
   DateTime at,
 ) {
   final PayinRechecking(:target, :attempt, :resume) = state;
   switch (read) {
-    case ReadGot(value: final order):
+    case Ok(value: final order):
       if (!_awaitsPayin(order)) return _watching(policy, order, target, null);
       if (order.orderStatus.isTerminal) {
         return StepNext(PayinOrderEnded<P>(order));
@@ -1279,9 +1279,11 @@ PayinNext<P> _rechecked<P>(
           built,
         ),
       };
-    case ReadSessionRejected():
+    case Err(failure: ExchangeSessionRejectedFailure()):
       return StepNext(PayinSessionEnded<P>());
-    case ReadMissing() || ReadUnreachable() || ReadMalformed():
+    case Err(failure: ExchangeMissingFailure()) ||
+        Err(failure: ExchangeUnreachableFailure()) ||
+        Err(failure: ExchangeMalformedFailure()):
       return StepNext(
         PayinRecheckFailed<P>(
           state.order,

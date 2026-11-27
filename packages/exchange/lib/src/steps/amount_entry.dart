@@ -4,9 +4,10 @@ import '../domain/catalog/exchange_catalog.dart';
 import '../domain/catalog/kyc_policy.dart';
 import '../domain/catalog/market.dart';
 import '../domain/entities/order.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import 'step_next.dart';
+
+import 'package:primitives/primitives.dart';
 
 enum AmountUnit { fiat, bitcoin }
 
@@ -733,7 +734,7 @@ final class AmountMarketChosen extends AmountEntryEvent {
 /// The rate read for [market] answered [read] (fiat per bitcoin).
 final class AmountRateArrived extends AmountEntryEvent {
   final Market market;
-  final ExchangeRead<double> read;
+  final Result<double, ExchangeReadFailure> read;
 
   const AmountRateArrived(this.market, this.read);
 }
@@ -893,16 +894,20 @@ AmountEntryNext _onRate(
   if (!awaited) return StepNext.stay(state);
   final read = arrived.read;
   return switch (read) {
-    ReadGot(:final value) when value.isFinite && value > 0 => StepNext(
+    Ok(:final value) when value.isFinite && value > 0 => StepNext(
       withQuote(RateReady(MarketRate(market, value))),
     ),
-    ReadGot() => StepNext(
+    Ok() => StepNext(
       withQuote(RateFailed(market, const ReadProblemMalformed())),
     ),
-    ReadMissing() || ReadUnreachable() || ReadMalformed() => StepNext(
-      withQuote(RateFailed(market, ReadProblem.of(read)!)),
+    Err(failure: ExchangeMissingFailure()) ||
+    Err(failure: ExchangeUnreachableFailure()) ||
+    Err(
+      failure: ExchangeMalformedFailure(),
+    ) => StepNext(withQuote(RateFailed(market, ReadProblem.of(read)!))),
+    Err(failure: ExchangeSessionRejectedFailure()) => const StepNext(
+      AmountSessionRejected(),
     ),
-    ReadSessionRejected() => const StepNext(AmountSessionRejected()),
   };
 }
 
