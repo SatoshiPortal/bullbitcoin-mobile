@@ -4,13 +4,6 @@ import 'dart:io';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:legacy_storage/coordination.dart';
-import 'package:legacy_storage/legacy_storage.dart'
-    show
-        LegacyImportDeferred,
-        LegacyImportFailure,
-        LegacyImportVerificationFailed,
-        LegacyOwnerFailure,
-        LegacyOwnerFailureCause;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart'
@@ -30,6 +23,7 @@ import '../data/inventory_repository.dart';
 import '../data/inventory_session.dart';
 import '../data/inventory_store.dart';
 import '../data/ready_inventory_store.dart';
+export '../data/ready_inventory_store.dart' show inventoryReadinessFailure;
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
@@ -498,60 +492,3 @@ final class BackgroundWalletDescriptors {
 
   Future<void> close() => _store.close();
 }
-
-Future<Result<InventoryStore, DatabaseOpenFailure>> _openReady(
-  File file,
-  RuntimeAdmission admission,
-) async {
-  final result = await InventoryStore.open(file, admission, existing: true);
-  switch (result) {
-    case Err():
-      return result;
-    case Ok(:final value):
-      switch (await readInventoryReadiness(value.database, admitted: true)) {
-        case Ok(value: OwnerReadiness.imported || OwnerReadiness.initialized):
-          return result;
-        case Ok():
-          await value.close();
-          return const Err(DatabaseNotReady());
-        case Err(:final failure):
-          await value.close();
-          return Err(inventoryReadinessFailure(failure));
-      }
-  }
-}
-
-/// What a failed readiness check on an admitted inventory means to the open.
-/// Each cause survives, so a caller can tell damaged data from a locked
-/// keystore, contention, a newer format or a plain access error. Only
-/// [DatabaseFileProblem.unreadable] and a missing key say the data is lost.
-@visibleForTesting
-DatabaseOpenFailure inventoryReadinessFailure(LegacyImportFailure failure) =>
-    switch (failure) {
-      LegacyImportDeferred() => const DatabaseKeyUnavailable(
-        DatabaseKeyProblem.locked,
-      ),
-      LegacyOwnerFailure(:final cause) => switch (cause) {
-        LegacyOwnerFailureCause.keystoreLocked => const DatabaseKeyUnavailable(
-          DatabaseKeyProblem.locked,
-        ),
-        LegacyOwnerFailureCause.keyLost => const DatabaseKeyUnavailable(
-          DatabaseKeyProblem.missing,
-        ),
-        LegacyOwnerFailureCause.contention => const DatabaseFileUnavailable(
-          DatabaseFileProblem.contended,
-        ),
-        LegacyOwnerFailureCause.unsupportedSchema =>
-          const DatabaseFileUnavailable(DatabaseFileProblem.schemaMismatch),
-        LegacyOwnerFailureCause.unreadable => const DatabaseFileUnavailable(
-          DatabaseFileProblem.unreadable,
-        ),
-        LegacyOwnerFailureCause.missingAfterAdmission =>
-          const DatabaseFileUnavailable(DatabaseFileProblem.missing),
-      },
-      // A receipt this build cannot read says nothing about the file.
-      LegacyImportVerificationFailed() => const DatabaseFileUnavailable(
-        DatabaseFileProblem.inconsistent,
-      ),
-      _ => const DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
-    };

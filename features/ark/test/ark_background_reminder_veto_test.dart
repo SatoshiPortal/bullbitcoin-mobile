@@ -32,9 +32,15 @@ class Gateway extends Notifications {
     LocalNotification notification, {
     required int platformId,
     required DateTime at,
+    bool cancelExisting = true,
   }) async {
     actions.add('schedule:$platformId');
-    return super.schedule(notification, platformId: platformId, at: at);
+    return super.schedule(
+      notification,
+      platformId: platformId,
+      at: at,
+      cancelExisting: cancelExisting,
+    );
   }
 
   @override

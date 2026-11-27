@@ -28,7 +28,10 @@ void main() {
         await directory.delete(recursive: true);
       });
       final secure = FakeSecureStoragePlatform().install();
-      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
       final file = File('${directory.path}/labels.sqlite');
       final keys = secrets.databaseKeys(module: 'labels');
       final coordination = Directory('${directory.path}/coordination');

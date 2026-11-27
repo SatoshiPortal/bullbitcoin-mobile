@@ -15,7 +15,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 class _WalletBloc extends Mock implements WalletBloc {}
 

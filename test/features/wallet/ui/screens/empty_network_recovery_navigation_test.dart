@@ -17,7 +17,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:secrets/secrets.dart';
-import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 class _Settings extends Mock implements Preferences {}
 

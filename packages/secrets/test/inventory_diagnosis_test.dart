@@ -191,6 +191,7 @@ void main() {
         final result = await SecretsInventory.open(
           file: file,
           admission: admission,
+          authority: unlockedSessionAuthority(),
         );
         expect(
           result,
@@ -390,7 +391,11 @@ void main() {
         timeout: Duration.zero,
       ) as RuntimeAdmission;
       try {
-        return await SecretsInventory.open(file: file, admission: admission);
+        return await SecretsInventory.open(
+          file: file,
+          admission: admission,
+          authority: unlockedSessionAuthority(),
+        );
       } finally {
         await admission.close();
       }

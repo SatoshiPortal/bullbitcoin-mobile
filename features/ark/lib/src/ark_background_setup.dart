@@ -23,8 +23,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/storage.dart' show ArkBackgroundAccess;
 import 'package:notifications/payment_store.dart';
-import 'package:notifications/notifications.dart'
-    show ScheduledNotificationPort;
 
 import 'data/ark_exit_notification_setup.dart';
 import 'data/ark_exit_notifier.dart';
