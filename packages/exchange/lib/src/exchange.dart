@@ -61,7 +61,9 @@ import 'session/get_exchange_web_settings_usecase.dart';
 import 'session/reconcile_unknown_writes_usecase.dart';
 import 'session/update_exchange_preferences.dart';
 import 'domain/exchange_preferences_patch.dart';
+import 'session/watch_exchange_activation_offer.dart';
 import 'session/watch_exchange_notifications_usecase.dart';
+import 'session/watch_exchange_trading_visibility.dart';
 
 typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
   ExchangeEnvironment environment, {
@@ -722,6 +724,36 @@ final class Exchange {
 
   Stream<ExchangeAccess> watchAccess() =>
       _access?.watch() ?? Stream.value(currentAccess);
+
+  /// Whether a signed-in user can trade on the current platform and network.
+  Stream<bool> watchTradingVisibility({
+    required ExchangePlatform platform,
+    required Stream<bool> superuserChanges,
+  }) => observeExchangeTradingVisibility(
+    platform: platform,
+    superuserChanges: superuserChanges,
+    preferences: _sessionPreferences,
+    currentAccess: () => currentAccess,
+    watchAccess: watchAccess,
+    networkUnavailable: networkUnavailable,
+  );
+
+  /// Whether the Exchange entry is available, or only the activation offer
+  /// when [onlyWhileOff] is true.
+  Stream<bool> watchActivationOffer({
+    required ExchangePlatform platform,
+    required bool Function() currentSuperuser,
+    required Stream<bool> superuserChanges,
+    required bool onlyWhileOff,
+  }) => observeExchangeActivationOffer(
+    platform: platform,
+    currentSuperuser: currentSuperuser,
+    superuserChanges: superuserChanges,
+    onlyWhileOff: onlyWhileOff,
+    currentAccess: () => currentAccess,
+    watchAccess: watchAccess,
+    networkUnavailable: networkUnavailable,
+  );
 
   @useResult
   Future<Result<ExchangeWebPreferences, ExchangeFailure>>

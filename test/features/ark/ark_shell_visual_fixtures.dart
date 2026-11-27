@@ -1,7 +1,6 @@
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bitcoin_price/testing.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart' show exchangeForTesting;
@@ -118,7 +117,7 @@ class ArkShellVisualFixtures {
       initialLocation: '/settings',
       routes: [
         SettingsFeature.mount(
-          menuScope: SettingsRouter.menuScope,
+          exchange: locator.call<Exchange>,
           status: networkStatusForTest(
             () async => const Err(NoDefaultWalletFailure()),
           ),

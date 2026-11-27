@@ -1,11 +1,8 @@
 import 'dart:io';
 
-import 'package:bb_mobile/features/settings/domain/usecases/watch_exchange_activation_offer_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/watch_quick_actions_visibility_usecase.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
-import 'package:preferences/preferences.dart';
 import 'package:settings/settings.dart';
 import 'package:get_it/get_it.dart';
 
@@ -17,18 +14,10 @@ class SettingsLocator {
         defaults: Platform.isIOS
             ? QuickActionsLayout.iosDefaults
             : QuickActionsLayout.defaults,
-        exchangeVisible: WatchQuickActionsVisibilityUsecase(
-          exchange: locator<Exchange>(),
-          networkUnavailable: () => locator<Exchange>().networkUnavailable(),
-          settings: locator<Preferences>(),
-          isIOS: Platform.isIOS,
-          platformChanges: locator<Settings>().watchSuperuser().map(
-            (value) => ExchangeAvailability.platformAllowed(
-              ExchangePlatform.current,
-              isSuperuser: value,
-            ),
-          ),
-        ).execute(),
+        exchangeVisible: locator<Exchange>().watchTradingVisibility(
+          platform: ExchangePlatform.current,
+          superuserChanges: locator<Settings>().watchSuperuser(),
+        ),
         exchangeEntry: _exchangeActivationOffer(locator, onlyWhileOff: false),
       ),
       dispose: (cubit) => cubit.close(),
@@ -45,18 +34,10 @@ class SettingsLocator {
   static Stream<bool> _exchangeActivationOffer(
     GetIt locator, {
     required bool onlyWhileOff,
-  }) => WatchExchangeActivationOfferUsecase(
-    exchange: locator<Exchange>(),
-    platformAllowed: () => ExchangeAvailability.platformAllowed(
-      ExchangePlatform.current,
-      isSuperuser: locator<Settings>().isSuperuser,
-    ),
-    platformChanges: locator<Settings>().watchSuperuser().map(
-      (value) => ExchangeAvailability.platformAllowed(
-        ExchangePlatform.current,
-        isSuperuser: value,
-      ),
-    ),
+  }) => locator<Exchange>().watchActivationOffer(
+    platform: ExchangePlatform.current,
+    currentSuperuser: () => locator<Settings>().isSuperuser,
+    superuserChanges: locator<Settings>().watchSuperuser(),
     onlyWhileOff: onlyWhileOff,
-  ).execute();
+  );
 }

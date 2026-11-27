@@ -3,10 +3,15 @@ import 'package:file_system/file_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:preferences/preferences.dart';
+import 'package:primitives/primitives.dart';
 
 import '../../default_wallets/default_wallets_payout_fields.dart';
 import '../../default_wallets/ui/default_wallets_router.dart';
+import '../../exchange_failure_l10n.dart';
+import '../../exchange_landing_navigation.dart';
 import '../../session/exchange_access_builder.dart';
+import '../../session/exchange_session_scope.dart';
 import '../domain/usecases/get_account_info_usecase.dart';
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/get_exchange_statistics_usecase.dart';
@@ -29,86 +34,106 @@ import 'screens/statistics_screen.dart';
 import 'widgets/exchange_account_actions.dart';
 
 final class ExchangeSettingsHost {
-  final Exchange Function() exchange;
-  final SaveAccountPreferences savePreferences;
-  final Future<void> Function(BuildContext) refreshSession;
+  final NetworkEnv? Function(BuildContext) networkOf;
   final bool Function(BuildContext) isSuperuser;
-
-  /// [ExchangePlatform.websiteOnly] for this device and the current user.
-  bool websiteOnly(BuildContext context) =>
-      ExchangePlatform.current.websiteOnly(isSuperuser: isSuperuser(context));
-  final Uri? Function(BuildContext) securityUrl;
   final String Function(BuildContext) title;
   final String Function(BuildContext) signedOutMessage;
-  final bool Function(BuildContext) hasAccount;
-  final String Function(BuildContext, ExchangeFailure) accountFailureMessage;
   final void Function(BuildContext) onOpenRecipients;
   final void Function(BuildContext) onOpenTransactions;
-  final void Function(BuildContext) onOpenDefaultWallets;
-  final void Function(BuildContext) onOpenExchange;
-  final ExchangeAccessSettingsHost? access;
-  final DefaultWalletsHost? defaultWallets;
+  final String Function(BuildContext)? accessDescription;
+  final bool includeDefaultWallets;
 
   const ExchangeSettingsHost({
-    required this.exchange,
-    required this.savePreferences,
-    required this.refreshSession,
+    required this.networkOf,
     required this.isSuperuser,
-    required this.securityUrl,
     required this.title,
     required this.signedOutMessage,
-    required this.hasAccount,
-    required this.accountFailureMessage,
     required this.onOpenRecipients,
     required this.onOpenTransactions,
-    required this.onOpenDefaultWallets,
-    required this.onOpenExchange,
-    this.access,
-    this.defaultWallets,
+    this.accessDescription,
+    this.includeDefaultWallets = false,
   });
+
+  bool _websiteOnly(BuildContext context) =>
+      ExchangePlatform.current.websiteOnly(isSuperuser: isSuperuser(context));
 }
 
 class ExchangeSettingsRouter {
   static List<RouteBase> routes(
     ExchangeSettingsHost config, {
+    required Exchange Function() exchange,
+    required Preferences Function() preferences,
+    required String homePath,
+    required void Function(BuildContext) onExit,
     required DefaultWalletsPayoutFields payoutFields,
   }) => [
-    if (config.defaultWallets case final host?)
-      defaultWalletsRoute(config.exchange, host, payoutFields),
-    if (config.access case final access?)
+    if (config.includeDefaultWallets)
+      defaultWalletsRoute(exchange, (
+        isAvailable: () async => switch (await preferences().fetch()) {
+          Ok(:final value) => NetworkCapabilities.supports(
+            BitcoinNetwork.fromName(value.environment.name),
+            NetworkCapability.exchange,
+          ),
+          Err() => false,
+        },
+        unavailableRedirectPath: homePath,
+      ), payoutFields),
+    if (config.accessDescription case final description?)
       exchangeAccessSettingsRoute(
-        host: access,
-        websiteOnly: config.websiteOnly,
+        host: (
+          actions: (
+            current: () => exchange().currentAccess,
+            watch: () => exchange().watchAccess(),
+            enable: () => exchange().enableAccess(),
+            signOut: () => exchange().signOut(),
+            resolve: () => exchange().resolveAccess(),
+          ),
+          description: description,
+          onAuthenticate: (context) => context.pushNamed<void>(
+            BullExchangeNavigation.authName,
+            queryParameters: {'from': 'settings'},
+          ),
+          onDisabled: onExit,
+        ),
+        websiteOnly: config._websiteOnly,
         onOpenAccount: ExchangeSettingsRoute.home.open,
       ),
     GoRoute(
       name: ExchangeSettingsRoute.home.name,
       path: ExchangeSettingsRoute.home.path,
       builder: (context, state) => ExchangeSettingsScreen(
-        isLoggedIn: () => exchangeSignedIn(config.exchange().currentAccess),
-        sessionChanges: () =>
-            config.exchange().watchAccess().map(exchangeSignedIn),
-        websiteOnly: config.websiteOnly(context),
+        isLoggedIn: () => exchangeSignedIn(exchange().currentAccess),
+        sessionChanges: () => exchange().watchAccess().map(exchangeSignedIn),
+        websiteOnly: config._websiteOnly(context),
         title: config.title,
         signedOutMessage: config.signedOutMessage,
         buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
           showDeleteAccount: showDeleteAccount,
-          exchange: config.exchange,
-          failureMessage: config.accountFailureMessage,
-          hasAccount: config.hasAccount,
+          exchange: exchange,
+          failureMessage: (context, failure) => failure.toTranslated(context),
+          hasAccount: ExchangeSessionScope.watchHasAccount,
         ),
         onOpenRecipients: () => config.onOpenRecipients(context),
         onOpenTransactions: () => config.onOpenTransactions(context),
-        onOpenDefaultWallets: () => config.onOpenDefaultWallets(context),
-        onOpenExchange: () => config.onOpenExchange(context),
+        onOpenDefaultWallets: () => DefaultWalletsNavigation.open(context),
+        onOpenExchange: () => BullExchangeNavigation.goToDashboard(context),
       ),
     ),
     GoRoute(
       name: ExchangeSettingsRoute.security.name,
       path: ExchangeSettingsRoute.security.path,
       builder: (context, state) => Builder(
-        builder: (context) =>
-            ExchangeSecurityScreen(securityUrl: config.securityUrl(context)),
+        builder: (context) => ExchangeSecurityScreen(
+          securityUrl: switch (config.networkOf(context)) {
+            NetworkEnv.mainnet => Uri.parse(
+              ExchangeDefaults.bbAuthUrl,
+            ).resolve('/settings'),
+            NetworkEnv.testnet => Uri.parse(
+              ExchangeDefaults.bbAuthTestUrl,
+            ).resolve('/settings'),
+            null || NetworkEnv.regtest || NetworkEnv.signet => null,
+          },
+        ),
       ),
     ),
     GoRoute(
@@ -121,9 +146,7 @@ class ExchangeSettingsRouter {
       path: ExchangeSettingsRoute.accountInfo.path,
       builder: (context, state) => BlocProvider(
         create: (_) => AccountInfoCubit(
-          getAccountInfoUsecase: GetAccountInfoUsecase(
-            exchange: config.exchange(),
-          ),
+          getAccountInfoUsecase: GetAccountInfoUsecase(exchange: exchange()),
         ),
         child: const AccountInfoScreen(),
       ),
@@ -133,19 +156,21 @@ class ExchangeSettingsRouter {
       path: ExchangeSettingsRoute.preferences.path,
       builder: (context, state) => BlocProvider(
         create: (_) {
-          final exchange = config.exchange();
+          final owner = exchange();
           return ExchangePreferencesBloc(
             getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
-              exchange: exchange,
+              exchange: owner,
             ),
             updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
-              save: config.savePreferences,
+              save: (patch) => exchange().updateCurrentPreferences(patch),
             ),
-            writeGate: exchange.writeGate,
-            session: exchange.currentSession,
+            writeGate: owner.writeGate,
+            session: owner.currentSession,
           );
         },
-        child: ExchangePreferencesScreen(refreshSession: config.refreshSession),
+        child: ExchangePreferencesScreen(
+          refreshSession: ExchangeSessionScope.refresh,
+        ),
       ),
     ),
     GoRoute(
@@ -154,11 +179,11 @@ class ExchangeSettingsRouter {
       builder: (context, state) => BlocProvider(
         create: (_) => SecureUploadBloc(
           getUploadStatusUsecase: GetSecureFileUploadStatusUsecase(
-            exchange: config.exchange(),
+            exchange: exchange(),
           ),
           uploadDocumentUsecase: UploadExchangeDocumentUsecase(
             fileSystem: const FileSystem.open(),
-            exchange: config.exchange(),
+            exchange: exchange(),
           ),
         ),
         child: const SecureFileUploadScreen(),
@@ -170,7 +195,7 @@ class ExchangeSettingsRouter {
       builder: (context, state) => BlocProvider(
         create: (_) => StatisticsCubit(
           getStatisticsUsecase: GetExchangeStatisticsUsecase(
-            exchange: config.exchange(),
+            exchange: exchange(),
           ),
         ),
         child: const StatisticsScreen(),

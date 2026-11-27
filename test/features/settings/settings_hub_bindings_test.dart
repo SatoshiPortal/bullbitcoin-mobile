@@ -5,7 +5,6 @@ import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart' show exchangeForTesting;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:settings/testing.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:exchange/exchange.dart';
@@ -31,7 +30,7 @@ class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 class _Exchange extends Mock implements ExchangeAccessLifecycle {}
 
 void main() {
-  testWidgets('search follows loading preferences and live exchange access', (
+  testWidgets('hub and search follow preferences and live exchange access', (
     tester,
   ) async {
     final settings = _Settings();
@@ -43,8 +42,8 @@ void main() {
       settingsChanges.stream,
       initialState: const SettingsState(),
     );
-    when(() => exchange.current)
-        .thenReturn(const ExchangeAccessSignedIn(_testSession));
+    ExchangeAccess current = const ExchangeAccessSignedIn(_testSession);
+    when(() => exchange.current).thenAnswer((_) => current);
     when(exchange.watch).thenAnswer((_) => accessChanges.stream);
     locator.pushNewScope();
     locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
@@ -52,18 +51,20 @@ void main() {
     addTearDown(settingsChanges.close);
     addTearDown(accessChanges.close);
 
+    var resolutions = 0;
     final hub = SettingsFeature.mount(
-      menuScope: SettingsRouter.menuScope,
+      exchange: () {
+        resolutions++;
+        return locator<Exchange>();
+      },
       status: networkStatusForTest(
         () async => const Err(NoDefaultWalletFailure()),
       ),
       childRoutes: const [],
     );
-    final router = GoRouter(
-      initialLocation: '/settings/search',
-      routes: [hub.route],
-    );
+    final router = GoRouter(initialLocation: '/settings', routes: [hub.route]);
     addTearDown(router.dispose);
+    expect(resolutions, 0);
     await tester.pumpWidget(
       BlocProvider<SettingsCubit>.value(
         value: settings,
@@ -75,11 +76,6 @@ void main() {
           routerConfig: router,
         ),
       ),
-    );
-    await tester.pumpAndSettle();
-    await tester.enterText(
-      find.byKey(const Key('settings-search-field')),
-      'account settings',
     );
     await tester.pumpAndSettle();
     expect(find.text('Account Settings'), findsNothing);
@@ -96,9 +92,27 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Account Settings'), findsOneWidget);
 
-    accessChanges.add(
-      const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet),
+    current = const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet);
+    accessChanges.add(current);
+    await tester.pumpAndSettle();
+    expect(find.text('Account Settings'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('settings-search-bar')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('settings-search-field')),
+      'account settings',
     );
+    await tester.pumpAndSettle();
+    expect(find.text('Account Settings'), findsNothing);
+
+    current = const ExchangeAccessSignedIn(_testSession);
+    accessChanges.add(current);
+    await tester.pumpAndSettle();
+    expect(find.text('Account Settings'), findsOneWidget);
+
+    current = const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet);
+    accessChanges.add(current);
     await tester.pumpAndSettle();
     expect(find.text('Account Settings'), findsNothing);
     expect(find.text('account settings'), findsOneWidget);

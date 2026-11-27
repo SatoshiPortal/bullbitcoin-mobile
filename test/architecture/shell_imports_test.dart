@@ -5,12 +5,6 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
-// Exact legacy feature imports at 982b98e90 (2026-11-06). Remove entries as their
-// consumers migrate; never extend this list to permit a new shell dependency.
-const _legacyImports = {
-  'lib/features/settings/ui/settings_router.dart -> locator.dart',
-};
-
 void main() {
   test('the Send workspace member does not import the app shell', () {
     final sources = Directory('features/send/lib')
@@ -51,7 +45,6 @@ void main() {
   test('features and packages depend on owners, never on the shell', () {
     final root = Directory.current.path;
     final violations = <String>[];
-    final legacy = <String>{};
     for (final directory in ['lib/features', 'features', 'packages']) {
       for (final file in Directory(
         directory,
@@ -102,17 +95,11 @@ void main() {
               continue;
             }
             if (p.dirname(target) != p.join(root, 'lib')) continue;
-            final edge = '$path -> ${p.basename(target)}';
-            if (_legacyImports.contains(edge)) {
-              legacy.add(edge);
-            } else {
-              violations.add(edge);
-            }
+            violations.add('$path -> ${p.basename(target)}');
           }
         }
       }
     }
     expect(violations, isEmpty);
-    expect(legacy, _legacyImports, reason: 'Remove obsolete debt entries too.');
   });
 }
