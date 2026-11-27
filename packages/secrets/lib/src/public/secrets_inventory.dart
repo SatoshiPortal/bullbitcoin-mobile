@@ -175,6 +175,17 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// True on every lock, false on every unlock, in order.
   Stream<bool> get lockedChanges => _authority.changes.map((t) => t == null);
 
+  /// The view in use, or null while locked.
+  ViewId? get activeView {
+    final view = _authority.current?.activeView;
+    return view == null ? null : ViewId(view);
+  }
+
+  /// The views the live session opened, for a host that composes the view
+  /// screens. Null while locked: there is no session to administer.
+  OpenedViews? get openedViews =>
+      _unlocked ? OpenedViews._(this, _epoch) : null;
+
   /// Presents [candidate] to every credential at once and opens the views it
   /// unlocks. One guess is one attempt, whatever the number of credentials.
   /// The result names the views opened and nothing about the others.
