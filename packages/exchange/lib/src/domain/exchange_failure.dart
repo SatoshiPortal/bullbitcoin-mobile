@@ -1,5 +1,7 @@
 import 'package:primitives/primitives.dart' show Failure;
 
+import 'entities/btc_network.dart';
+
 part 'exchange_call_failure.dart';
 part '../recipients/domain/recipients_failure.dart';
 
@@ -162,12 +164,94 @@ final class ExchangeOrderRejectedFailure extends ExchangeFailure {
   const ExchangeOrderRejectedFailure({this.apiCode, this.rpcCode});
 }
 
+/// The trading statistics could not be retrieved.
 final class ExchangeStatisticsUnavailableFailure extends ExchangeFailure {
   const ExchangeStatisticsUnavailableFailure([super.logMessage]);
 }
 
+/// The document was read but the exchange rejected or dropped the upload.
+///
+/// The API's own sentence arrives in `logMessage` and stays there.
 final class ExchangeDocumentUploadFailure extends ExchangeFailure {
   const ExchangeDocumentUploadFailure([super.logMessage]);
+}
+
+/// The account details of the settings screens could not be retrieved.
+final class ExchangeAccountDetailsUnavailableFailure extends ExchangeFailure {
+  const ExchangeAccountDetailsUnavailableFailure([super.logMessage]);
+}
+
+/// The secure file upload status could not be retrieved.
+final class ExchangeUploadStatusUnavailableFailure extends ExchangeFailure {
+  const ExchangeUploadStatusUnavailableFailure([super.logMessage]);
+}
+
+/// A document has already been submitted, so no further upload is accepted.
+final class ExchangeDocumentAlreadySubmittedFailure extends ExchangeFailure {
+  const ExchangeDocumentAlreadySubmittedFailure([super.logMessage]);
+}
+
+/// The chosen file is empty.
+final class ExchangeDocumentEmptyFailure extends ExchangeFailure {
+  const ExchangeDocumentEmptyFailure([super.logMessage]);
+}
+
+/// The chosen file exceeds the size the exchange accepts.
+final class ExchangeDocumentTooLargeFailure extends ExchangeFailure {
+  const ExchangeDocumentTooLargeFailure([super.logMessage]);
+}
+
+/// The chosen file is not one of the accepted document formats.
+final class ExchangeDocumentTypeNotAllowedFailure extends ExchangeFailure {
+  const ExchangeDocumentTypeNotAllowedFailure([super.logMessage]);
+}
+
+/// The chosen file could not be read off the device.
+final class ExchangeDocumentUnreadableFailure extends ExchangeFailure {
+  const ExchangeDocumentUnreadableFailure([super.logMessage]);
+}
+
+/// Another exchange write of the account is running, or the journal can't
+/// tell whether one is unsettled: nothing was sent.
+final class ExchangeWriteBusyFailure extends ExchangeFailure {
+  const ExchangeWriteBusyFailure();
+}
+
+/// The COP payment link could not be handed to a browser, so the user cannot
+/// reach the payment page from here.
+final class ExchangePaymentLinkUnavailableFailure extends ExchangeFailure {
+  const ExchangePaymentLinkUnavailableFailure([super.logMessage]);
+}
+
+/// The default-wallet address field is empty.
+final class ExchangeDefaultWalletAddressEmptyFailure extends ExchangeFailure {
+  const ExchangeDefaultWalletAddressEmptyFailure();
+}
+
+/// The default-wallet address is not a [network] address.
+final class ExchangeDefaultWalletAddressInvalidFailure extends ExchangeFailure {
+  final BtcNetwork network;
+
+  const ExchangeDefaultWalletAddressInvalidFailure(this.network);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExchangeDefaultWalletAddressInvalidFailure &&
+      other.network == network;
+
+  @override
+  int get hashCode =>
+      Object.hash(ExchangeDefaultWalletAddressInvalidFailure, network);
+}
+
+/// The default wallet could not be saved.
+final class ExchangeDefaultWalletSaveFailure extends ExchangeFailure {
+  const ExchangeDefaultWalletSaveFailure();
+}
+
+/// The default wallet could not be removed.
+final class ExchangeDefaultWalletDeleteFailure extends ExchangeFailure {
+  const ExchangeDefaultWalletDeleteFailure();
 }
 
 final class ExchangeConsentRegistrationFailure extends ExchangeFailure {
@@ -184,6 +268,32 @@ final class ExchangeChatSendMessageFailure extends ExchangeFailure {
 
 final class ExchangeChatLoadAttachmentFailure extends ExchangeFailure {
   const ExchangeChatLoadAttachmentFailure([super.logMessage]);
+}
+
+/// The support chat needs a Bull Bitcoin account: the actionable signal is
+/// "log in", not "retry".
+final class ExchangeChatNotAuthenticatedFailure extends ExchangeFailure {
+  const ExchangeChatNotAuthenticatedFailure([super.logMessage]);
+}
+
+/// The user tried to send an empty chat message.
+final class ExchangeChatMessageEmptyFailure extends ExchangeFailure {
+  const ExchangeChatMessageEmptyFailure();
+}
+
+/// A chat attachment came back without usable file data.
+final class ExchangeChatAttachmentEmptyFailure extends ExchangeFailure {
+  const ExchangeChatAttachmentEmptyFailure([super.logMessage]);
+}
+
+/// Picking images for a chat message failed.
+final class ExchangeChatPickImagesFailure extends ExchangeFailure {
+  const ExchangeChatPickImagesFailure([super.logMessage]);
+}
+
+/// Building or attaching the diagnostic logs failed.
+final class ExchangeChatAttachLogsFailure extends ExchangeFailure {
+  const ExchangeChatAttachLogsFailure([super.logMessage]);
 }
 
 enum ExchangeLimitOrderProblem {
