@@ -9,6 +9,17 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Pre-existing imports of a non-exported file, to fix in their own change.
 const _knownExceptions = <String, Set<String>>{
+  // The renewal client tests assemble the closed client around the real
+  // inventory fixture; the client is deliberately not a public library.
+  'test/features/ark/ark_renewal_client_test.dart': {
+    'package:bull_ark/src/data/ark_renewal_client.dart',
+    'package:bull_ark/src/domain/ark_failure.dart',
+    'package:bull_ark/src/domain/repositories/ark_account_registry_repository.dart',
+  },
+  // Runs the real background sync of a locked view against the fixture.
+  'test/features/sync/public_sync_locked_view_test.dart': {
+    'package:background_tasks/src/data/background_wallet_sync_impl.dart',
+  },
   // ExternalTorPort is not exported by bull_tor's public libraries.
   'test/core_test/recoverbull/ensure_recoverbull_tor_session_usecase_test.dart':
       {'package:bull_tor/src/domain/ports/external_tor_port.dart'},

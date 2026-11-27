@@ -18,7 +18,7 @@ void main() {
       final registry = File(
         'packages/secrets/lib/src/data/derivation_repository.dart',
       ).readAsStringSync();
-      expect(registry, contains('_database.transaction'));
+      expect(registry, contains('guardedTransaction(_database'));
       expect(
         registry.indexOf('UPDATE access_state'),
         lessThan(registry.indexOf('var index = 0')),
