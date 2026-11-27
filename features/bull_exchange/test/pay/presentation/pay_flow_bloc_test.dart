@@ -7,6 +7,7 @@ import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 import '../pay_fixtures.dart';
 
@@ -74,6 +75,43 @@ Future<void> _settle() async {
 }
 
 void main() {
+  test(
+    'a witnessed choice revoked before handling cannot create a Pay order',
+    () => withClock(Clock.fixed(payNow), () async {
+      final calls = _Calls();
+      final bloc = PayFlowBloc(
+        calls: calls.of,
+        session: paySession,
+        accessChanges: const Stream.empty(),
+      );
+      addTearDown(bloc.close);
+      await _settle();
+      bloc.add(PayRecipientPicked(payBankRecipient));
+      await _settle();
+      bloc.add(const PayAmountChanged(AmountTyped('10')));
+      bloc.add(const PayAmountChanged(AmountContinuePressed()));
+      await _settle();
+      expect(bloc.state, isA<PaySource>());
+      var live = true;
+      bloc.add(
+        PaySourcePicked(
+          PayinFromAppWallet.witnessed(
+            PayinWalletWitness(
+              walletId: payAppWallet.walletId,
+              network: BitcoinNetwork.mainnet,
+              generation: 1,
+              currentReceipt: () => live ? true : null,
+            ),
+          ),
+        ),
+      );
+      live = false;
+      await _settle();
+      expect(bloc.state, isA<PaySource>());
+      expect(calls.log.where((call) => call.startsWith('create')), isEmpty);
+    }),
+  );
+
   test(
     'creates once, then Confirm builds the payin from the wallet',
     () => withClock(Clock.fixed(payNow), () async {

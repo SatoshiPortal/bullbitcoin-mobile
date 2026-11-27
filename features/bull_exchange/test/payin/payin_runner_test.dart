@@ -5,6 +5,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -167,4 +168,65 @@ void main() {
       expect(events, isEmpty);
     });
   });
+
+  test(
+    'a handoff that already started remains journaled after revocation',
+    () async {
+      final attempt = PayinWalletAttempt(
+        const PayinWalletWitness(
+          walletId: 'w1',
+          network: BitcoinNetwork.testnet,
+          generation: 1,
+          currentReceipt: _liveReceipt,
+        ),
+      );
+      final effect = PayinSend<PayinSpend>(
+        _order,
+        _target,
+        1,
+        PayinBuilt(
+          PayinWalletSpend('w1', _spend.options, walletAttempt: attempt),
+          'tx1',
+          _built.payload,
+        ),
+      );
+      final entered = Completer<void>();
+      final submitted = Completer<PayinBroadcastOutcome>();
+      final gate = ExchangeWriteGate();
+      Future<PayinSendAnswered<PayinSpend>> send() => runPayinSend(
+        gate: gate,
+        session: _session,
+        effect: effect,
+        now: DateTime.now,
+        send: (_) {
+          entered.complete();
+          return submitted.future;
+        },
+        journalUnknown: (order, _, txid) async => calls.add('$order $txid'),
+      );
+      final first = send();
+      await entered.future;
+      attempt.retire();
+      submitted.complete(const PayinHandedToPayjoin('pj', 'tx1'));
+      expect(
+        (await first).answer,
+        isA<GateAdmitted<PayinBroadcastOutcome>>().having(
+          (value) => value.result,
+          'outcome',
+          const PayinHandedToPayjoin('pj', 'tx1'),
+        ),
+      );
+      expect(
+        (await send()).answer,
+        isA<GateAdmitted<PayinBroadcastOutcome>>().having(
+          (value) => value.result,
+          'outcome',
+          isA<PayinBroadcastNotSent>(),
+        ),
+      );
+      expect(calls, ['o-1 tx1']);
+    },
+  );
 }
+
+Object _liveReceipt() => true;
