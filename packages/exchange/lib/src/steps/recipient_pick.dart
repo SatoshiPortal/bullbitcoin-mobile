@@ -122,16 +122,16 @@ final class RecipientPickLoadFailed extends RecipientPickState {
   String toString() => 'RecipientPickLoadFailed($attempt, $problem)';
 }
 
-/// The loaded pages; [next] is the next page number, or null on the last.
+/// The loaded pages; [nextPage] is the next page number, or null on the last.
 final class RecipientPickBrowsing extends RecipientPickState {
   final List<Recipient> items;
-  final int? next;
+  final int? nextPage;
 
   const RecipientPickBrowsing(
     super.query,
     super.attempt,
     this.items,
-    this.next,
+    this.nextPage,
   );
 
   @override
@@ -139,7 +139,7 @@ final class RecipientPickBrowsing extends RecipientPickState {
       other is RecipientPickBrowsing &&
       other.query == query &&
       other.attempt == attempt &&
-      other.next == next &&
+      other.nextPage == nextPage &&
       _same(other.items, items);
 
   @override
@@ -147,13 +147,13 @@ final class RecipientPickBrowsing extends RecipientPickState {
     RecipientPickBrowsing,
     query,
     attempt,
-    next,
+    nextPage,
     Object.hashAll(items),
   );
 
   @override
   String toString() =>
-      'RecipientPickBrowsing($attempt, ${items.length}, next $next)';
+      'RecipientPickBrowsing($attempt, ${items.length}, next $nextPage)';
 }
 
 final class RecipientPickLoadingMore extends RecipientPickState {
@@ -780,7 +780,7 @@ RecipientPickNext _fromBrowsing(
   RecipientPickBrowsing state,
   RecipientPickEvent event,
 ) => switch (event) {
-  RecipientPickMoreRequested() => switch (state.next) {
+  RecipientPickMoreRequested() => switch (state.nextPage) {
     null => StepNext.stay(state),
     final page => StepNext(
       RecipientPickLoadingMore(
