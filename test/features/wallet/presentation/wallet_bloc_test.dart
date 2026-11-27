@@ -272,6 +272,34 @@ void main() {
     expect(bloc.state.syncStatus, {other.id: true, _syncedWallet.id: false});
   });
 
+  test(
+    'a failed swap read keeps the notices; a confirmed empty read clears them',
+    () async {
+      final swaps = _MockOngoingSwaps();
+      var failed = true;
+      when(swaps.read).thenAnswer(
+        (_) async =>
+            failed ? const Err(OngoingSwapsUnavailableFailure()) : const Ok([]),
+      );
+      final bloc = createBloc(
+        _MockExternalTorStatusUsecase(),
+        getUnconfirmed: swaps,
+      );
+      addTearDown(bloc.close);
+      final held = _swap('held');
+      bloc.emit(WalletState(wallets: [_syncedWallet], ongoingSwaps: [held]));
+      bloc.add(WalletSyncFinished(_syncedWallet));
+      await pumpEventQueue();
+      verify(swaps.read).called(1);
+      expect(bloc.state.ongoingSwaps, [held]);
+      failed = false;
+      bloc.add(WalletSyncFinished(_syncedWallet));
+      await pumpEventQueue();
+      verify(swaps.read).called(1);
+      expect(bloc.state.ongoingSwaps, isEmpty);
+    },
+  );
+
   test('revisions of different wallets both land without reordering', () async {
     final other = _syncedWallet.copyWith(
       origin: 'other',
