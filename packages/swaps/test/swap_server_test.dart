@@ -1,4 +1,4 @@
-import 'package:swaps/swaps.dart' show SwapServer;
+import 'package:swaps/swaps.dart' show SwapServer, SwapServerCredentials;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -70,6 +70,62 @@ void main() {
       'http://10.0.2.2:9001/v2',
     );
     expect(server?.forEnvironment(isTestnet: false).host, '10.0.2.2:9001/v2');
+  });
+
+  test('credentials typed into the address are refused', () {
+    expect(
+      SwapServer.parse('user:secret@boltz.example.com/v2', isTestnet: false),
+      isNull,
+    );
+    expect(
+      SwapServer.parse('https://user@boltz.example.com', isTestnet: false),
+      isNull,
+    );
+  });
+
+  test('two empty fields are no credentials', () {
+    expect(SwapServerCredentials.of(username: '', password: ''), isNull);
+    expect(
+      SwapServerCredentials.of(username: 'user', password: ''),
+      const SwapServerCredentials(username: 'user', password: ''),
+    );
+  });
+
+  test('a username with a colon is not valid for basic authentication', () {
+    expect(
+      const SwapServerCredentials(username: 'a:b', password: 'x').isValid,
+      isFalse,
+    );
+    expect(
+      const SwapServerCredentials(username: 'ab', password: 'x:y').isValid,
+      isTrue,
+    );
+  });
+
+  test('credentials encode as a basic authorization and as user info', () {
+    const credentials = SwapServerCredentials(
+      username: 'bull',
+      password: 'p@ss:w/rd',
+    );
+
+    expect(credentials.authorization, 'Basic YnVsbDpwQHNzOncvcmQ=');
+    expect(credentials.userInfo, 'bull:p%40ss%3Aw%2Frd');
+    expect(credentials.toString(), isNot(contains('p@ss')));
+  });
+
+  test('credentials are part of a server and survive the environment', () {
+    const credentials = SwapServerCredentials(
+      username: 'bull',
+      password: 'secret',
+    );
+    final plain = SwapServer.parse('http://127.0.0.1:9001', isTestnet: true);
+    final server = plain?.withCredentials(credentials);
+
+    expect(server, isNot(plain));
+    expect(server?.host, plain?.host);
+    expect(server.toString(), isNot(contains('secret')));
+    expect(server?.forEnvironment(isTestnet: false).credentials, credentials);
+    expect(server?.withCredentials(null), plain);
   });
 
   test('the defaults never carry a scheme', () {

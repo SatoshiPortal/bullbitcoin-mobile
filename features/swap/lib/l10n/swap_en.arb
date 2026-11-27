@@ -70,9 +70,53 @@
   "@swapServerInvalid": {
     "description": "Error under the swap server input"
   },
+  "swapServerBasicAuthSubtitle": "If the server asks for HTTP basic authentication, enter it here. Leave both empty otherwise.",
+  "@swapServerBasicAuthSubtitle": {
+    "description": "Explains the optional basic authentication fields of the swap server editor"
+  },
+  "swapServerBasicAuthUsernameHint": "Username",
+  "@swapServerBasicAuthUsernameHint": {
+    "description": "Hint of the swap server basic authentication username input"
+  },
+  "swapServerBasicAuthPasswordHint": "Password",
+  "@swapServerBasicAuthPasswordHint": {
+    "description": "Hint of the swap server basic authentication password input"
+  },
   "swapServerChangedNotice": "Swaps now use this server.",
   "@swapServerChangedNotice": {
     "description": "Shown after the swap server changed"
+  },
+  "swapServerTest": "Test connection",
+  "@swapServerTest": {
+    "description": "Button that checks the swap server answers with the stored address and credentials"
+  },
+  "swapServerTesting": "Testing…",
+  "@swapServerTesting": {
+    "description": "Label of the swap server test button while the test runs"
+  },
+  "swapServerTestOkTitle": "Connected",
+  "@swapServerTestOkTitle": {
+    "description": "Title shown when the swap server test succeeded"
+  },
+  "swapServerTestOk": "The swap server accepted the request. Swaps can use it.",
+  "@swapServerTestOk": {
+    "description": "Detail shown when the swap server test succeeded"
+  },
+  "swapServerTestRejectedTitle": "Refused by the server",
+  "@swapServerTestRejectedTitle": {
+    "description": "Title shown when the swap server refused the test request, for example for wrong credentials"
+  },
+  "swapServerTestRejected": "The swap server rejected the request. Check the username and password.",
+  "@swapServerTestRejected": {
+    "description": "Detail shown when the swap server refused the test request"
+  },
+  "swapServerTestUnreachableTitle": "No answer",
+  "@swapServerTestUnreachableTitle": {
+    "description": "Title shown when the swap server test got no usable answer"
+  },
+  "swapServerTestUnreachable": "The swap server could not be reached. Check the address and your connection.",
+  "@swapServerTestUnreachable": {
+    "description": "Detail shown when the swap server test got no usable answer"
   },
   "swapServerBusyError": "Finish your ongoing swaps before changing the swap server.",
   "@swapServerBusyError": {

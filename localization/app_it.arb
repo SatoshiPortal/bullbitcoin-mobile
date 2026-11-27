@@ -353,7 +353,6 @@
   "autoswapRecipientRequired": "#",
   "backupWalletGoogleDrivePermissionWarning": "Google ti chiederà di condividere le informazioni personali con questa app.",
   "testCompletedSuccessMessage": "Sei in grado di recuperare l'accesso a un portafoglio Bitcoin perso",
-  "walletBalanceUnconfirmedIncoming": "In corso",
   "selectAmountTitle": "Seleziona l'importo",
   "routeErrorMessage": "Pagina non trovata",
   "connectHardwareWalletPassport": "Foundation Passport",

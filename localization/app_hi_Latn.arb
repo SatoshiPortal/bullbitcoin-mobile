@@ -872,10 +872,6 @@
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
   },
-  "walletBalanceUnconfirmedIncoming": "Chal Raha Hai",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "walletButtonReceive": "Prapt Karo",
   "@walletButtonReceive": {
     "description": "Button label to receive funds"

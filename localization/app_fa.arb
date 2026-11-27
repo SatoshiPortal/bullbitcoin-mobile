@@ -1140,10 +1140,6 @@
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
   },
-  "walletBalanceUnconfirmedIncoming": "پیشرفت در پیشرفت",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "selectAmountTitle": "انتخاب مقدار",
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"

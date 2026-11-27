@@ -57,7 +57,7 @@ class SwapBalanceRow extends StatelessWidget {
             size: BullButtonSize.small,
             label: context.swapCopyForLocale.swapMaxButton,
             height: 48,
-            width: 51,
+            width: 48,
             textStyle: context.bullType.label,
             onPressed: (maxAmountSat == null || maxAmountSat <= 0)
                 ? null

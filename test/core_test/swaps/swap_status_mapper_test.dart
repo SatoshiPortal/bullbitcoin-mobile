@@ -435,4 +435,23 @@ void main() {
       expect(map(lnSend(), boltz.SwapStatus.invoiceSet), isA<SwapUnchanged>());
     });
   });
+
+  group('a websocket error is not a swap status', () {
+    test('a claimable receive stays claimable', () {
+      expect(
+        map(lnReceive(status: 'claimable'), boltz.SwapStatus.swapError),
+        isA<SwapUnchanged>(),
+      );
+    });
+
+    test('a paid chain swap stays paid', () {
+      expect(
+        map(
+          chain(status: 'paid', sendTxid: 'lockup'),
+          boltz.SwapStatus.swapError,
+        ),
+        isA<SwapUnchanged>(),
+      );
+    });
+  });
 }

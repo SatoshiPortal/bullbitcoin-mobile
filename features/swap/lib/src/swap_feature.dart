@@ -54,6 +54,7 @@ import 'presentation/transfer_bloc.dart';
 import 'ui/swap_router.dart';
 
 import 'domain/usecases/get_swap_route_settings_usecase.dart';
+import 'domain/usecases/check_swap_server_usecase.dart';
 import 'domain/usecases/get_swap_server_usecase.dart';
 import 'domain/usecases/set_swap_exchange_fallback_usecase.dart';
 import 'domain/usecases/set_swap_route_override_usecase.dart';
@@ -203,7 +204,7 @@ abstract interface class SwapFeature implements SwapActivity {
         ),
         pollSettlement: pollSettlement,
       ),
-      swapSettingsRoute(swaps, swaps),
+      swapSettingsRoute(swaps, swaps, swaps.boltz),
     ];
     return _SwapFeature(
       List.unmodifiable(routes),
@@ -388,20 +389,22 @@ abstract final class SwapNavigation {
       context.pushNamed<void>(_settingsRoute);
 }
 
-GoRoute swapSettingsRoute(SwapRouting routing, SwapServerSettings servers) =>
-    GoRoute(
-      name: _settingsRoute,
-      path: '/swap-settings',
-      builder: (_, _) => BlocProvider(
-        create: (_) => SwapSettingsCubit(
-          getSwapRouteSettingsUsecase: GetSwapRouteSettingsUsecase(routing),
-          setSwapExchangeFallbackUsecase: SetSwapExchangeFallbackUsecase(
-            routing,
-          ),
-          setSwapRouteOverrideUsecase: SetSwapRouteOverrideUsecase(routing),
-          getSwapServerUsecase: GetSwapServerUsecase(servers),
-          setSwapServerUsecase: SetSwapServerUsecase(servers),
-        )..load(),
-        child: const SwapSettingsPage(),
-      ),
-    );
+GoRoute swapSettingsRoute(
+  SwapRouting routing,
+  SwapServerSettings servers,
+  BoltzSwaps boltz,
+) => GoRoute(
+  name: _settingsRoute,
+  path: '/swap-settings',
+  builder: (_, _) => BlocProvider(
+    create: (_) => SwapSettingsCubit(
+      getSwapRouteSettingsUsecase: GetSwapRouteSettingsUsecase(routing),
+      setSwapExchangeFallbackUsecase: SetSwapExchangeFallbackUsecase(routing),
+      setSwapRouteOverrideUsecase: SetSwapRouteOverrideUsecase(routing),
+      getSwapServerUsecase: GetSwapServerUsecase(servers),
+      setSwapServerUsecase: SetSwapServerUsecase(servers),
+      checkSwapServerUsecase: CheckSwapServerUsecase(boltz),
+    )..load(),
+    child: const SwapSettingsPage(),
+  ),
+);

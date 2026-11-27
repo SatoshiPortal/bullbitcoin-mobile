@@ -134,21 +134,20 @@ void main() {
     });
   }
 
-  testWidgets('invoice values share the same edge with an inset action slot', (
+  testWidgets('an invoice value ends at its action, or at the row edge', (
     tester,
   ) async {
     await _mount(tester);
     final values = find.byType(BullAmount);
     expect(values, findsNWidgets(3));
-    final right = tester.getTopRight(values.first).dx;
-    expect(tester.getTopRight(values.at(1)).dx, right);
-    expect(tester.getTopRight(values.at(2)).dx, right);
-    expect(tester.getTopRight(find.text('Coffee')).dx, right);
     final actionRight = tester
         .getTopRight(find.byType(BullFieldAction).first)
         .dx;
     expect(actionRight, 366);
-    expect(right, actionRight - 56);
+    expect(tester.getTopRight(values.first).dx, actionRight - 56);
+    expect(tester.getTopRight(values.at(1)).dx, actionRight - 56);
+    expect(tester.getTopRight(values.at(2)).dx, actionRight);
+    expect(tester.getTopRight(find.text('Coffee')).dx, actionRight);
   });
 
   testWidgets('fee details uses the filled field action and opens the sheet', (
@@ -195,7 +194,7 @@ void main() {
       matching: find.byType(BullAmount),
     );
     for (final element in sheetValues.evaluate()) {
-      expect(tester.getTopRight(find.byWidget(element.widget)).dx, 310);
+      expect(tester.getTopRight(find.byWidget(element.widget)).dx, 366);
     }
     expect(tester.getTopRight(find.byTooltip('Copy')).dx, 366);
 

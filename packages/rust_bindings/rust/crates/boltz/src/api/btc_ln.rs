@@ -5,8 +5,8 @@ use super::{
     types::{BtcSwapScriptStr, Chain, ElectrumSettings, Network, PreImage, SwapType},
 };
 use crate::util::{
-    ensure_boltz_url, ensure_http_prefix, force_https, get_electrum_configs, strip_protocol_prefix,
-    HTTP_TIMEOUT,
+    bitcoin_tip_height, ensure_boltz_url, ensure_http_prefix, force_https, get_electrum_configs,
+    strip_protocol_prefix, HTTP_TIMEOUT,
 };
 use boltz_client::util::secrets::{Preimage, SwapMasterKey as BoltzSwapMasterKey};
 use std::str::FromStr;
@@ -144,6 +144,7 @@ impl BtcLnSwap {
         electrum_url: String,
         boltz_url: String,
         referral_id: Option<String>,
+        electrum_settings: Option<ElectrumSettings>,
     ) -> Result<BtcLnSwap, BoltzError> {
         let swap_type = SwapType::Submarine;
         let electrum_url = strip_protocol_prefix(&electrum_url);
@@ -192,6 +193,10 @@ impl BtcLnSwap {
                 ))
             }
         };
+
+        let tip =
+            bitcoin_tip_height(bitcoin_chain.into(), electrum_settings, &electrum_url).await?;
+        create_swap_response.validate_timeout(network.into(), tip)?;
 
         let script_address = swap_script.to_address(bitcoin_chain.into())?.to_string();
 
@@ -260,6 +265,7 @@ impl BtcLnSwap {
         boltz_url: String,
         description: Option<String>,
         referral_id: Option<String>,
+        electrum_settings: Option<ElectrumSettings>,
     ) -> Result<BtcLnSwap, BoltzError> {
         let swap_type = SwapType::Reverse;
         if network != swap_master_key.network.bitcoin() {
@@ -280,6 +286,7 @@ impl BtcLnSwap {
         let boltz_url = ensure_boltz_url(&boltz_url, Network::from(network) != Network::Mainnet)
             .map_err(|e| BoltzError::new("Network".to_string(), e))?;
         let boltz_client = BoltzApiClientV2::new(boltz_url.clone(), Some(HTTP_TIMEOUT));
+        let requested_magic_routing_hint = out_address.is_some();
         let create_reverse_req = if out_address.is_some() {
             let address = out_address.unwrap();
             boltz_client::swaps::boltz::CreateReverseRequest {
@@ -325,6 +332,11 @@ impl BtcLnSwap {
         let create_swap_response = boltz_client.post_reverse_req(create_reverse_req).await?;
         let preimage_boltz: Preimage = preimage.clone().into();
         create_swap_response.validate(&preimage_boltz, &claim_public_key, all_chains.into())?;
+        if requested_magic_routing_hint {
+            create_swap_response.validate_magic_routing_hint(&claim_public_key)?;
+        }
+        let tip = bitcoin_tip_height(bitcoin_chain, electrum_settings, &electrum_url).await?;
+        create_swap_response.validate_timeout(all_chains.into(), tip)?;
         let swap_script =
             BtcSwapScript::reverse_from_swap_resp(&create_swap_response, claim_public_key)?;
         let script_address = swap_script.to_address(bitcoin_chain)?.to_string();
@@ -390,14 +402,8 @@ impl BtcLnSwap {
             Err(e) => return Err(e.into()),
         };
         if script_balance.0 > 0 || script_balance.1 > 0 {
-            let tx = match BtcSwapTx::new_claim(
-                swap_script,
-                out_address,
-                &network_config,
-                &boltz_client,
-                self.id.clone(),
-            )
-            .await
+            let tx = match BtcSwapTx::new_claim_confirmed(swap_script, out_address, &network_config)
+                .await
             {
                 Ok(result) => result,
                 Err(e) => return Err(e.into()),

@@ -14,6 +14,7 @@ import 'package:swaps/src/data/swap_status_mapper.dart';
 import 'package:swaps/src/data/models/boltz_network.dart';
 import 'package:swaps/src/domain/entities/derived_swap_master_key.dart';
 import 'package:swaps/src/domain/entities/swap.dart' as swap_entity;
+import 'package:swaps/src/domain/entities/swap_server.dart';
 import 'package:swaps/src/domain/entities/swap_tx_outspend.dart';
 import 'package:swaps/src/log.dart';
 import 'package:boltz_stream/boltz_stream.dart';
@@ -23,15 +24,54 @@ import 'package:rust_bindings/boltz.dart' as boltz;
 
 typedef BoltzWebSocketFactory = BoltzWebSocket Function(
   String boltzUrl, {
+  Map<String, String>? headers,
   void Function()? onDone,
   void Function(Object error)? onError,
 });
 
 BoltzWebSocket _createBoltzWebSocket(
   String boltzUrl, {
+  Map<String, String>? headers,
   void Function()? onDone,
   void Function(Object error)? onError,
-}) => BoltzWebSocket.create(boltzUrl, onDone: onDone, onError: onError);
+}) => BoltzWebSocket.create(
+  boltzUrl,
+  headers: headers,
+  onDone: onDone,
+  onError: onError,
+);
+
+/// [blob] with its Boltz address replaced by [current] when both name the
+/// same server, credentials aside. A swap keeps the address it was created
+/// with, so without this it would go on using credentials that have since
+/// been changed, or none at all.
+@visibleForTesting
+String swapBlobOnServer(String blob, {required String current}) {
+  final Object? decoded;
+  try {
+    decoded = jsonDecode(blob);
+  } on FormatException {
+    return blob;
+  }
+  if (decoded is! Map<String, dynamic>) return blob;
+  final stored = decoded['boltz_url'];
+  if (stored is! String || stored == current) return blob;
+  if (!_isSameServer(stored, current)) return blob;
+  return jsonEncode({...decoded, 'boltz_url': current});
+}
+
+bool _isSameServer(String a, String b) {
+  Uri? parse(String url) =>
+      Uri.tryParse(url.contains('://') ? url : 'https://$url');
+  final first = parse(a);
+  final second = parse(b);
+  return first != null &&
+      second != null &&
+      first.scheme == second.scheme &&
+      first.host == second.host &&
+      first.port == second.port &&
+      first.path == second.path;
+}
 
 /// Boltz partner referral id — fixed product identity, not a backend choice.
 const boltzReferralId = 'BULL';
@@ -41,12 +81,14 @@ class BoltzDatasource {
   void Function()? effectAdmission;
 
   final String _baseUrl;
+  final SwapServerCredentials? _credentials;
   final NetworkEnv environment;
   final String? _webSocketUrl;
   final String? _bitcoinExplorerUrl;
   final String? _liquidExplorerUrl;
   final BoltzWebSocketFactory webSocketFactory;
   late String _httpsUrl;
+  late final String _plainUrl;
   late final Dio _http;
 
   BoltzWebSocket? _boltzWebSocket;
@@ -82,6 +124,7 @@ class BoltzDatasource {
 
   BoltzDatasource({
     required String url,
+    this._credentials,
     required this.environment,
     String? webSocketUrl,
     this._bitcoinExplorerUrl,
@@ -98,13 +141,18 @@ class BoltzDatasource {
     // an explicit https:// is kept as is; an explicit http:// is a deliberate
     // dev/staging opt-in (SSH tunnel to a local backend) and the websocket
     // follows it as ws://.
-    _httpsUrl =
+    final plainUrl =
         _baseUrl.startsWith('http://') || _baseUrl.startsWith('https://')
         ? _baseUrl
         : 'https://$_baseUrl';
+    _plainUrl = plainUrl;
+    _httpsUrl = _withUserInfo(plainUrl);
+    _boltzStore.blobOnLoad = (blob) =>
+        swapBlobOnServer(blob, current: _httpsUrl);
     _http = Dio(
       BaseOptions(
-        baseUrl: _httpsUrl,
+        baseUrl: plainUrl,
+        headers: _authorizationHeaders,
         connectTimeout: const Duration(seconds: 10),
         sendTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 15),
@@ -112,9 +160,27 @@ class BoltzDatasource {
     );
   }
 
-  /// The API origin every HTTP call and native swap is built on.
+  Map<String, String>? get _authorizationHeaders {
+    final credentials = _credentials;
+    return credentials == null
+        ? null
+        : {'authorization': credentials.authorization};
+  }
+
+  /// The native client takes credentials only inside the address. The
+  /// clients of this file send them as a header, so no error or log line
+  /// that quotes their address can carry them.
+  String _withUserInfo(String url) {
+    final credentials = _credentials;
+    if (credentials == null) return url;
+    final scheme = url.substring(0, url.indexOf('://') + 3);
+    return '$scheme${credentials.userInfo}@${url.substring(scheme.length)}';
+  }
+
+  /// The API origin every HTTP call and native swap is built on, without
+  /// the credentials the native client is given with it.
   @visibleForTesting
-  String get apiBaseUrl => _httpsUrl;
+  String get apiBaseUrl => _plainUrl;
 
   String get _wsBaseUrl =>
       _webSocketUrl ??
@@ -406,7 +472,7 @@ class BoltzDatasource {
     required int index,
     required int outAmount,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
     required String magicRouteHintAddress,
     String? description,
   }) async {
@@ -422,7 +488,8 @@ class BoltzDatasource {
         outAmount: BigInt.from(outAmount),
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: false),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
@@ -432,7 +499,8 @@ class BoltzDatasource {
         invoice: btcLnSwap.invoice,
         onchainAmount: btcLnSwap.expectedOnchainAmount?.toInt(),
         outAmount: outAmount,
-        fees: reverseFees.btcFees,
+        type: swap_entity.SwapType.lightningToBitcoin,
+        fees: () => _reverseFeesAndLimits?.btcFees,
       );
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
       final swapModel = SwapModel.lnReceive(
@@ -493,7 +561,7 @@ class BoltzDatasource {
     required int index,
     required int outAmount,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
     required String magicRouteHintAddress,
     String? description,
   }) async {
@@ -509,7 +577,8 @@ class BoltzDatasource {
         outAmount: BigInt.from(outAmount),
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: true),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         outAddress: magicRouteHintAddress,
         description: description,
@@ -520,7 +589,8 @@ class BoltzDatasource {
         invoice: lbtcLnSwap.invoice,
         onchainAmount: lbtcLnSwap.expectedOnchainAmount?.toInt(),
         outAmount: outAmount,
-        fees: reverseFees.lbtcFees,
+        type: swap_entity.SwapType.lightningToLiquid,
+        fees: () => _reverseFeesAndLimits?.lbtcFees,
       );
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
@@ -632,7 +702,7 @@ class BoltzDatasource {
     required int index,
     required String invoice,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
   }) async {
     try {
       if (_submarineFeesAndLimits == null ||
@@ -647,7 +717,8 @@ class BoltzDatasource {
         invoice: invoice,
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: false),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         referralId: boltzReferralId,
       );
@@ -655,7 +726,8 @@ class BoltzDatasource {
       await _requireSubmarineQuote(
         invoice: invoice,
         expectedAmount: btcLnSwap.outAmount.toInt(),
-        fees: submarineFees.btcFees,
+        type: swap_entity.SwapType.bitcoinToLightning,
+        fees: () => _submarineFeesAndLimits?.btcFees,
       );
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
 
@@ -697,7 +769,7 @@ class BoltzDatasource {
     required int index,
     required String invoice,
     required NetworkEnv environment,
-    required String electrumUrl,
+    required ElectrumConnection electrum,
   }) async {
     try {
       if (_submarineFeesAndLimits == null ||
@@ -712,7 +784,8 @@ class BoltzDatasource {
         invoice: invoice,
         network: BoltzNetwork.fromEnvironment(environment)
             .nativeChain(isLiquid: true),
-        electrumUrl: electrumUrl,
+        electrumUrl: electrum.url,
+        electrumSettings: _electrumOverride(electrum),
         boltzUrl: _httpsUrl,
         referralId: boltzReferralId,
       );
@@ -720,7 +793,8 @@ class BoltzDatasource {
       await _requireSubmarineQuote(
         invoice: invoice,
         expectedAmount: lbtcLnSwap.outAmount.toInt(),
-        fees: submarineFees.lbtcFees,
+        type: swap_entity.SwapType.liquidToLightning,
+        fees: () => _submarineFeesAndLimits?.lbtcFees,
       );
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
@@ -868,8 +942,8 @@ class BoltzDatasource {
     required int index,
     required int amountSat,
     required NetworkEnv environment,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
+    required ElectrumConnection btcElectrum,
+    required ElectrumConnection lbtcElectrum,
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
@@ -886,16 +960,19 @@ class BoltzDatasource {
         direction: ChainSwapDirection.btcToLbtc,
         amount: BigInt.from(amountSat),
         network: BoltzNetwork.fromEnvironment(environment).nativeNetwork,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
+        btcElectrumUrl: btcElectrum.url,
+        btcElectrumSettings: _electrumOverride(btcElectrum),
+        lbtcElectrumUrl: lbtcElectrum.url,
+        lbtcElectrumSettings: _electrumOverride(lbtcElectrum),
         referralId: boltzReferralId,
       );
 
-      _requireChainQuote(
+      await _requireChainQuote(
         lockupAmount: chainSwap.outAmount.toInt(),
         onchainAmount: chainSwap.expectedOnchainAmount?.toInt(),
         amountSat: amountSat,
-        fees: chainFees.btcToLbtcFees,
+        type: swap_entity.SwapType.bitcoinToLiquid,
+        fees: () => _chainFeesAndLimits?.btcToLbtcFees,
       );
       await _boltzStore.storeChainSwap(chainSwap);
       final swapModel = SwapModel.chain(
@@ -935,8 +1012,8 @@ class BoltzDatasource {
     required int index,
     required int amountSat,
     required NetworkEnv environment,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
+    required ElectrumConnection btcElectrum,
+    required ElectrumConnection lbtcElectrum,
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
@@ -954,16 +1031,19 @@ class BoltzDatasource {
         direction: ChainSwapDirection.lbtcToBtc,
         amount: BigInt.from(amountSat),
         network: BoltzNetwork.fromEnvironment(environment).nativeNetwork,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
+        btcElectrumUrl: btcElectrum.url,
+        btcElectrumSettings: _electrumOverride(btcElectrum),
+        lbtcElectrumUrl: lbtcElectrum.url,
+        lbtcElectrumSettings: _electrumOverride(lbtcElectrum),
         referralId: boltzReferralId,
       );
 
-      _requireChainQuote(
+      await _requireChainQuote(
         lockupAmount: chainSwap.outAmount.toInt(),
         onchainAmount: chainSwap.expectedOnchainAmount?.toInt(),
         amountSat: amountSat,
-        fees: chainFees.lbtcToBtcFees,
+        type: swap_entity.SwapType.liquidToBitcoin,
+        fees: () => _chainFeesAndLimits?.lbtcToBtcFees,
       );
       await _boltzStore.storeChainSwap(chainSwap);
 
@@ -1376,6 +1456,7 @@ class BoltzDatasource {
 
     final boltzWebSocket = webSocketFactory(
       _wsBaseUrl,
+      headers: _authorizationHeaders,
       onDone: () {
         swapsLog.warning('[Boltz] websocket closed unexpectedly');
         _scheduleReconnect();
@@ -1668,65 +1749,75 @@ class BoltzDatasource {
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
   }
 
-  // The amounts Boltz answers with must match the quote just fetched; a
-  // mismatch refuses the swap before anything is paid or locked, and drops
-  // the cached fees so a retry quotes afresh.
-  void _requireQuote(String? mismatch, void Function() dropFees) {
-    if (mismatch == null) return;
-    dropFees();
-    throw SwapsException('Boltz $mismatch does not match the quoted fees');
-  }
+  // The amounts Boltz answers with must match its published fees; a mismatch
+  // against the cached quote refetches the fees once, and a mismatch against
+  // fresh fees refuses the swap before anything is paid or locked.
+  Future<void> _requireQuote<F>({
+    required swap_entity.SwapType type,
+    required F? Function() fees,
+    required String? Function(F fees) mismatchFor,
+  }) => requireQuote(
+    fees: fees,
+    refetch: () => updateFees(swapType: type),
+    mismatchFor: mismatchFor,
+  );
 
   Future<void> _requireReverseQuote({
+    required swap_entity.SwapType type,
     required String invoice,
     required int? onchainAmount,
     required int outAmount,
-    required RevSwapFees fees,
+    required RevSwapFees? Function() fees,
   }) async {
     final (invoiceSat, _, _, _) = await decodeInvoice(invoice);
-    _requireQuote(
-      reverseQuoteMismatch(
+    await _requireQuote(
+      type: type,
+      fees: fees,
+      mismatchFor: (fees) => reverseQuoteMismatch(
         invoiceSat: invoiceSat,
         onchainAmount: onchainAmount,
         outAmount: outAmount,
         percentage: fees.percentage,
         lockupFee: fees.minerFees.lockup.toInt(),
       ),
-      () => _reverseFeesFetchedAt = null,
     );
   }
 
   Future<void> _requireSubmarineQuote({
+    required swap_entity.SwapType type,
     required String invoice,
     required int expectedAmount,
-    required SubSwapFees fees,
+    required SubSwapFees? Function() fees,
   }) async {
     final (invoiceSat, _, _, _) = await decodeInvoice(invoice);
-    _requireQuote(
-      submarineQuoteMismatch(
+    await _requireQuote(
+      type: type,
+      fees: fees,
+      mismatchFor: (fees) => submarineQuoteMismatch(
         invoiceSat: invoiceSat,
         expectedAmount: expectedAmount,
         percentage: fees.percentage,
         minerFees: fees.minerFees.toInt(),
       ),
-      () => _submarineFeesFetchedAt = null,
     );
   }
 
-  void _requireChainQuote({
+  Future<void> _requireChainQuote({
+    required swap_entity.SwapType type,
     required int lockupAmount,
     required int? onchainAmount,
     required int amountSat,
-    required ChainSwapFees fees,
+    required ChainSwapFees? Function() fees,
   }) => _requireQuote(
-    chainQuoteMismatch(
+    type: type,
+    fees: fees,
+    mismatchFor: (fees) => chainQuoteMismatch(
       lockupAmount: lockupAmount,
       onchainAmount: onchainAmount,
       amountSat: amountSat,
       percentage: fees.percentage,
       serverFee: fees.server.toInt(),
     ),
-    () => _chainFeesFetchedAt = null,
   );
 
   Future<(int, bool, String?, String?)> decodeInvoice(String invoice) async {
@@ -2043,6 +2134,23 @@ class BoltzDatasource {
 int _percentOf(int amount, double percentage) =>
     (percentage * amount / 100).ceil();
 
+/// Passes when Boltz's amounts match the cached fees, or else the fees
+/// [refetch]ed once; throws otherwise.
+@visibleForTesting
+Future<void> requireQuote<F>({
+  required F? Function() fees,
+  required Future<void> Function() refetch,
+  required String? Function(F fees) mismatchFor,
+}) async {
+  final quoted = fees();
+  if (quoted != null && mismatchFor(quoted) == null) return;
+  await refetch();
+  final fresh = fees();
+  final mismatch = fresh == null ? 'quote' : mismatchFor(fresh);
+  if (mismatch == null) return;
+  throw SwapsException('Boltz $mismatch does not match the quoted fees');
+}
+
 /// The reverse-swap amount Boltz got wrong, or null when its invoice asks for
 /// exactly [outAmount] and its lockup leaves at most the quoted fees off it.
 @visibleForTesting
@@ -2055,7 +2163,7 @@ String? reverseQuoteMismatch({
 }) {
   if (invoiceSat != outAmount) return 'invoice amount';
   final minimum = outAmount - _percentOf(outAmount, percentage) - lockupFee - 1;
-  if (onchainAmount != null && onchainAmount < minimum) return 'lockup amount';
+  if (onchainAmount == null || onchainAmount < minimum) return 'lockup amount';
   return null;
 }
 
@@ -2085,7 +2193,7 @@ String? chainQuoteMismatch({
 }) {
   if (lockupAmount != amountSat) return 'lockup amount';
   final minimum = amountSat - _percentOf(amountSat, percentage) - serverFee - 1;
-  if (onchainAmount != null && onchainAmount < minimum) {
+  if (onchainAmount == null || onchainAmount < minimum) {
     return 'server lockup amount';
   }
   return null;

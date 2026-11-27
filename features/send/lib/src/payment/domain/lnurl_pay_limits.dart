@@ -4,9 +4,17 @@ final class LnurlPayLimits {
   final int minimumSat;
   final int maximumSat;
 
-  const LnurlPayLimits._(this.minimumSat, this.maximumSat);
+  /// The recipient's own text, e.g. "Wallet of Satoshi: ishi". The invoice
+  /// it returns carries only a hash of it.
+  final String? description;
 
-  static LnurlPayLimits? fromMillisatoshis(BigInt min, BigInt max) {
+  const LnurlPayLimits._(this.minimumSat, this.maximumSat, this.description);
+
+  static LnurlPayLimits? fromMillisatoshis(
+    BigInt min,
+    BigInt max, {
+    String? description,
+  }) {
     if (min <= BigInt.zero || max < min) return null;
     final millisatsPerSat = BigInt.from(1000);
     final minimum = (min + millisatsPerSat - BigInt.one) ~/ millisatsPerSat;
@@ -15,7 +23,7 @@ final class LnurlPayLimits {
         ? Sats.maxBitcoinSupply
         : maximum;
     return minimum <= payableMax
-        ? LnurlPayLimits._(minimum.toInt(), payableMax.toInt())
+        ? LnurlPayLimits._(minimum.toInt(), payableMax.toInt(), description)
         : null;
   }
 

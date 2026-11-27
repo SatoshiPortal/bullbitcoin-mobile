@@ -27,11 +27,16 @@ class TransactionListItem extends StatelessWidget {
     Transaction tx, {
     super.key,
     required VoidCallback onDetailsClosed,
+    this.walletScoped = false,
   }) : _tx = tx,
        // ignore: prefer_initializing_formals
        _onDetailsClosed = onDetailsClosed;
 
   final Transaction _tx;
+
+  /// The row is in one wallet's list: a swap shows that wallet's own side,
+  /// its direction and exactly what it sent or received.
+  final bool walletScoped;
 
   /// Called when the details screen this row opened is closed, so the list
   /// can pick up anything edited there, labels in particular.
@@ -58,6 +63,10 @@ class TransactionListItem extends StatelessWidget {
   ) {
     final isLnSwap = transaction.isLnSwap;
     final isChainSwap = transaction.isChainSwap;
+    final walletLeg =
+        walletScoped &&
+        transaction.isSwap &&
+        transaction.walletTransaction != null;
     final isOrderType = transaction.isOrder && transaction.order != null;
     final orderAmountAndCurrency = transaction.order
         ?.amountAndCurrencyToDisplay();
@@ -70,6 +79,8 @@ class TransactionListItem extends StatelessWidget {
     return BullTransactionListItemData(
       icon: isOrderType
           ? Icons.payments
+          : walletLeg
+          ? (transaction.isOutgoing ? Icons.arrow_upward : Icons.arrow_downward)
           : isChainSwap
           ? Icons.swap_vert_rounded
           : isLnSwap
@@ -94,13 +105,17 @@ class TransactionListItem extends StatelessWidget {
           : BullAmount.signedSats(
               isOrderType && orderAmountAndCurrency != null
                   ? orderAmountAndCurrency.$1.toInt()
+                  : walletLeg
+                  ? transaction.walletListAmountSat
                   : transaction.swapListAmountSat,
               interactive: true,
               style: context.bullType.body.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
-      labels: labels.isEmpty ? const [] : [LabelsWidget(labels: labels)],
+      labels: labels.isEmpty
+          ? const []
+          : [LabelsWidget(labels: labels, maxCharacters: 12)],
       networkLabel: isOrderType
           ? transaction.order!.typeLabel(context)
           : isLnSwap
@@ -148,7 +163,11 @@ class TransactionListItem extends StatelessWidget {
     };
     if (target == null) return;
 
-    await TransactionsNavigation.openDetails(context, target);
+    await TransactionsNavigation.openDetails(
+      context,
+      target,
+      view: TransactionDetailsView.details,
+    );
     _onDetailsClosed();
   }
 }

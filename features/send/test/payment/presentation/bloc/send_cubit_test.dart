@@ -112,10 +112,15 @@ class _MockSend extends Mock implements Send {}
 class _MockLnurlPayLimitsRepository extends Mock
     implements LnurlPayLimitsRepository {}
 
-LnurlPayLimits _lnurlLimits(int minimumMsat, int maximumMsat) =>
+LnurlPayLimits _lnurlLimits(
+  int minimumMsat,
+  int maximumMsat, {
+  String? description,
+}) =>
     LnurlPayLimits.fromMillisatoshis(
       BigInt.from(minimumMsat),
       BigInt.from(maximumMsat),
+      description: description,
     ) ??
     (throw StateError('Invalid LNURL limits fixture'));
 
@@ -7280,6 +7285,39 @@ void main() {
         verify(() => lnurlPayLimitsRepository.read(recipient)).called(1);
       },
     );
+
+    for (final (typed, expected) in [
+      ('', 'Wallet of Satoshi: ishi'),
+      ('Rent', 'Rent'),
+    ]) {
+      test(
+        'a Lightning address note is "$expected" when the user typed "$typed"',
+        () async {
+          const recipient = 'ishi@walletofsatoshi.com';
+          const request = PaymentRequest.lnAddress(address: recipient);
+          final cubit = buildCubit(wallet: stubPaymentRequestContinuation());
+          addTearDown(cubit.close);
+
+          when(() => detectBitcoinStringUsecase.execute(data: recipient))
+              .thenAnswer((_) async => request);
+          when(() => lnurlPayLimitsRepository.read(recipient)).thenAnswer(
+            (_) async => Ok(
+              _lnurlLimits(
+                1000,
+                10000000,
+                description: 'Wallet of Satoshi: ishi',
+              ),
+            ),
+          );
+
+          await cubit.onChangedText(recipient);
+          if (typed.isNotEmpty) cubit.noteChanged(typed);
+          await cubit.continueOnAddressConfirmed();
+
+          expect(cubit.state.label, expected);
+        },
+      );
+    }
 
     test(
       'does not request an invoice for an out-of-range LNURL amount',

@@ -11,6 +11,7 @@ import 'package:bull_ui/bull_ui.dart'
     show BullButton, bullUiLocalizationsDelegate;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -55,6 +56,42 @@ void main() {
       expect(button, findsOneWidget, reason: label);
       expect(tester.getSize(button).height, 48);
     }
+    await tester.pumpWidget(const SizedBox.shrink());
+    await bloc.close();
+  });
+
+  testWidgets('Paste puts the clipboard text in the field', (tester) async {
+    const pasted = '1BoatSLRHtKNngkdXEeobR76b53LETtpyT';
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async => call.method == 'Clipboard.getData'
+          ? <String, dynamic>{'text': pasted}
+          : null,
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    final bloc = _Transfer();
+    whenListen(
+      bloc,
+      const Stream<TransferState>.empty(),
+      initialState: const TransferState(),
+    );
+    await _pumpInput(tester, bloc);
+
+    await tester.tap(
+      find.byWidgetPredicate(
+        (widget) => widget is BullButton && widget.label == 'Paste',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('1BoatSLR'), findsWidgets);
+    verify(() => bloc.add(const TransferEvent.externalAddressChanged(pasted)))
+        .called(1);
     await tester.pumpWidget(const SizedBox.shrink());
     await bloc.close();
   });

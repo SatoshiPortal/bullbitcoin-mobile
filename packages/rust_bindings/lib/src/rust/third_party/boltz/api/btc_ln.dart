@@ -153,6 +153,7 @@ class BtcLnSwap {
     required String boltzUrl,
     String? description,
     String? referralId,
+    ElectrumSettings? electrumSettings,
   }) => BullSdk.instance.api.boltzApiBtcLnBtcLnSwapNewReverse(
     swapMasterKey: swapMasterKey,
     index: index,
@@ -163,6 +164,7 @@ class BtcLnSwap {
     boltzUrl: boltzUrl,
     description: description,
     referralId: referralId,
+    electrumSettings: electrumSettings,
   );
 
   /// Used to create the class when starting a submarine swap to pay a lightning invoice with Bitcoin.
@@ -176,6 +178,7 @@ class BtcLnSwap {
     required String electrumUrl,
     required String boltzUrl,
     String? referralId,
+    ElectrumSettings? electrumSettings,
   }) => BullSdk.instance.api.boltzApiBtcLnBtcLnSwapNewSubmarine(
     swapMasterKey: swapMasterKey,
     index: index,
@@ -184,6 +187,7 @@ class BtcLnSwap {
     electrumUrl: electrumUrl,
     boltzUrl: boltzUrl,
     referralId: referralId,
+    electrumSettings: electrumSettings,
   );
 
   /// Used to refund a failed submarine swap.

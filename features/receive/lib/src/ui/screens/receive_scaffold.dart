@@ -1,3 +1,4 @@
+import 'package:bull_ui/app_theme.dart';
 import 'package:receive/src/domain/usecases/poll_receive_wallet_usecase.dart';
 import 'package:receive/src/presentation/bloc/receive_bloc.dart';
 import 'package:receive/src/ui/widgets/receive_polling.dart';
@@ -6,7 +7,8 @@ import 'package:receive/src/ui/receive_localizations.dart';
 import 'package:receive/src/domain/receive_wallet.dart';
 import 'package:receive/src/ui/widgets/receive_network_selection.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:bull_ui/bull_ui.dart' show BullTopBar, BullPaymentNetwork;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, BullTopBar, BullPaymentNetwork;
 import 'package:go_router/go_router.dart';
 import 'package:receive/src/ui/widgets/receive_onchain_transition.dart';
 import 'package:transactions/routes.dart';
@@ -140,6 +142,16 @@ class ReceiveScaffold extends StatelessWidget {
                     flexibleSpace: BullTopBar(
                       title: context.loc.receiveTitle,
                       onBack: onBack,
+                    ),
+                    bottom: PreferredSize(
+                      preferredSize: const Size.fromHeight(3.0),
+                      child: BullFadingLinearProgress(
+                        trigger: context.select(
+                          (ReceiveBloc bloc) => bloc.state.creatingSwap,
+                        ),
+                        backgroundColor: context.appColors.onPrimary,
+                        foregroundColor: context.appColors.primary,
+                      ),
                     ),
                   ),
                   body: Column(

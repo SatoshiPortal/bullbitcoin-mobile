@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart' show NetworkEnv;
-import 'package:swaps/swaps.dart' show SwapRouteOverride, SwapServer;
+import 'package:swaps/swaps.dart'
+    show SwapRouteOverride, SwapServer, SwapsBoltzRejectedFailure;
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -128,6 +129,13 @@ class _SwapSettingsBody extends StatelessWidget {
               ],
             ),
           ),
+        if (state.canEditSwapServer) ...[
+          const Gap(12),
+          _SwapServerTest(
+            key: ValueKey(state.swapServer),
+            server: state.swapServer,
+          ),
+        ],
         if (state.loaded && state.devModeEnabled) ...[
           const Gap(32),
           BullText(
@@ -143,6 +151,140 @@ class _SwapSettingsBody extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+enum _SwapServerTestResult { answered, refused, unreachable }
+
+/// Tests the stored server and keeps the outcome on the page, next to the
+/// server it is about, until the next test.
+class _SwapServerTest extends StatefulWidget {
+  const _SwapServerTest({super.key, required this.server});
+
+  final SwapServer server;
+
+  @override
+  State<_SwapServerTest> createState() => _SwapServerTestState();
+}
+
+class _SwapServerTestState extends State<_SwapServerTest> {
+  bool _testing = false;
+  _SwapServerTestResult? _result;
+
+  Future<void> _test() async {
+    setState(() {
+      _testing = true;
+      _result = null;
+    });
+    final failure = await context.read<SwapSettingsCubit>().checkSwapServer();
+    if (!mounted) return;
+    setState(() {
+      _testing = false;
+      _result = switch (failure) {
+        null => _SwapServerTestResult.answered,
+        SwapsBoltzRejectedFailure() => _SwapServerTestResult.refused,
+        _ => _SwapServerTestResult.unreachable,
+      };
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final copy = context.swapCopyForLocale;
+    final result = _result;
+    return Column(
+      crossAxisAlignment: .stretch,
+      children: [
+        BullButton.secondary(
+          label: _testing ? copy.swapServerTesting : copy.swapServerTest,
+          onPressed: _testing ? null : _test,
+        ),
+        if (_testing) ...[
+          const Gap(16),
+          BullAsyncStatus.progress(
+            label: widget.server.host,
+            color: context.bull.textMuted,
+            textStyle: context.bullType.label,
+          ),
+        ],
+        if (result != null) ...[
+          const Gap(16),
+          _SwapServerTestOutcome(result: result, host: widget.server.host),
+        ],
+      ],
+    );
+  }
+}
+
+class _SwapServerTestOutcome extends StatelessWidget {
+  const _SwapServerTestOutcome({required this.result, required this.host});
+
+  final _SwapServerTestResult result;
+  final String host;
+
+  @override
+  Widget build(BuildContext context) {
+    final copy = context.swapCopyForLocale;
+    final answered = result == _SwapServerTestResult.answered;
+    final color = answered ? context.bull.success : context.bull.error;
+    final (title, detail) = switch (result) {
+      _SwapServerTestResult.answered => (
+        copy.swapServerTestOkTitle,
+        copy.swapServerTestOk,
+      ),
+      _SwapServerTestResult.refused => (
+        copy.swapServerTestRejectedTitle,
+        copy.swapServerTestRejected,
+      ),
+      _SwapServerTestResult.unreachable => (
+        copy.swapServerTestUnreachableTitle,
+        copy.swapServerTestUnreachable,
+      ),
+    };
+    return Semantics(
+      liveRegion: true,
+      child: Row(
+        crossAxisAlignment: .start,
+        children: [
+          BullIcon(
+            answered ? BullIcons.checkCircle : BullIcons.errorOutline,
+            color: color,
+            size: 24,
+          ),
+          const Gap(12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                BullText(
+                  title,
+                  style: context.bullType.body.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                  color: color,
+                ),
+                const Gap(2),
+                BullText(
+                  detail,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
+                  color: context.bull.text,
+                ),
+                const Gap(2),
+                BullText(
+                  host,
+                  style: context.bullType.label.copyWith(
+                    fontWeight: FontWeight.w400,
+                  ),
+                  color: context.bull.textMuted,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -221,14 +363,25 @@ class _SwapServerEditor extends StatefulWidget {
 }
 
 class _SwapServerEditorState extends State<_SwapServerEditor> {
-  late String _input = widget.initial == widget.defaultServer
+  late String _input = widget.initial.host == widget.defaultServer.host
       ? ''
       : widget.initial.host;
+  late String _username = widget.initial.credentials?.username ?? '';
+  late String _password = widget.initial.credentials?.password ?? '';
+  late bool _credentialsAreStored = widget.initial.credentials != null;
   bool _invalid = false;
 
-  Future<void> _save(String input) async {
+  Future<void> _save(
+    String input, {
+    String username = '',
+    String password = '',
+  }) async {
     final cubit = context.read<SwapSettingsCubit>();
-    final invalid = await cubit.setSwapServer(input);
+    final invalid = await cubit.setSwapServer(
+      input,
+      username: username,
+      password: password,
+    );
     if (!mounted) return;
     if (invalid != null) {
       setState(() => _invalid = true);
@@ -272,6 +425,12 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
           onChanged: (value) => setState(() {
             _input = value;
             _invalid = false;
+            // Credentials stored for one server are not sent to another.
+            if (_credentialsAreStored) {
+              _username = '';
+              _password = '';
+              _credentialsAreStored = false;
+            }
           }),
         ),
         if (_invalid) ...[
@@ -282,10 +441,45 @@ class _SwapServerEditorState extends State<_SwapServerEditor> {
             color: context.bull.error,
           ),
         ],
+        const Gap(16),
+        BullText(
+          copy.swapServerBasicAuthSubtitle,
+          style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
+          color: context.bull.textMuted,
+        ),
+        const Gap(8),
+        BullInputText(
+          value: _username,
+          hint: copy.swapServerBasicAuthUsernameHint,
+          semanticLabel: copy.swapServerBasicAuthUsernameHint,
+          autocorrect: false,
+          enableSuggestions: false,
+          onChanged: (value) => setState(() {
+            _username = value;
+            _credentialsAreStored = false;
+            _invalid = false;
+          }),
+        ),
+        const Gap(8),
+        BullInputText(
+          value: _password,
+          hint: copy.swapServerBasicAuthPasswordHint,
+          semanticLabel: copy.swapServerBasicAuthPasswordHint,
+          obscure: true,
+          autocorrect: false,
+          enableSuggestions: false,
+          onChanged: (value) => setState(() {
+            _password = value;
+            _credentialsAreStored = false;
+            _invalid = false;
+          }),
+        ),
         const Gap(24),
         BullButton.primary(
           label: copy.save,
-          onPressed: (saving) ? null : () => _save(_input),
+          onPressed: (saving)
+              ? null
+              : () => _save(_input, username: _username, password: _password),
         ),
         const Gap(8),
         BullButton.secondary(

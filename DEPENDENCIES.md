@@ -308,7 +308,7 @@ Refs are taken from the manifests. Cargo patches are source redirects, not addit
 | `Dart: signers / ur (runtime)` | `https://github.com/bukata-sa/bc-ur-dart.git` | `5738f70d0ec3d50977ac3dd01fed62939600238b` | — |
 | `Dart: swaps / bolt11_decoder (runtime)` | `https://github.com/fusion44/dart_bolt11_decoder` | `f5deec21fb0ac2ee507de1f683344b03f8cc92a3` | — |
 | `Rust: bitbox / bitbox-api (runtime)` | `https://github.com/ben-kaufman/bitbox-api-rs` | `9f20d81686fa8321c11586cbdc967cc11f3ab26a` | — |
-| `Rust: boltz / boltz-client (runtime)` | `https://github.com/SatoshiPortal/boltz-rust` | `6936541d9b2fd223b062ed9b8d3e87e43dff8b95` | — |
+| `Rust: boltz / boltz-client (runtime)` | `https://github.com/SatoshiPortal/boltz-rust` | `8efe99d91defd294fd6cd5526154432c647b5b3b` | — |
 | `Rust: dart_bbqr / bbqr (runtime)` | `https://github.com/SatoshiPortal/bbqr-rust.git` | `b1b3a7f7b9901b1ec320542bfd84411a4860033e` | — |
 | `Rust: dart_bwk / bwk (runtime)` | `https://github.com/SatoshiPortal/bwk` | `b06b78f3c1c7c22cdb4779f6a4eb084e0ab14ee1` | — |
 | `Rust: dart_bwk / bwk-sp (runtime)` | `https://github.com/SatoshiPortal/bwk` | `b06b78f3c1c7c22cdb4779f6a4eb084e0ab14ee1` | — |

@@ -298,6 +298,16 @@ sealed class Swap with _$Swap {
     SwapStatus.canCoop => false,
   };
 
+  /// Nothing has moved for this swap: an invoice nobody paid yet, or a
+  /// submarine or chain swap whose lockup we never sent, which can no longer
+  /// happen. It is not a payment in progress.
+  bool get isUnfunded =>
+      status == SwapStatus.pending &&
+      switch (this) {
+        LnReceiveSwap() => true,
+        LnSendSwap() || ChainSwap() => sendTxId == null && !hasPendingLockup,
+      };
+
   /// Our signed lockup is stored but its broadcast is not yet confirmed.
   bool get hasPendingLockup => switch (this) {
     LnSendSwap(:final sendTxid, :final pendingLockupTx) ||

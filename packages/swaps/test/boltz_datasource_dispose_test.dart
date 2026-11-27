@@ -27,7 +27,7 @@ void main() {
         rows: _MockRowStore(),
         secrets: ReproKeychainBackend().capability,
       ),
-      webSocketFactory: (url, {onDone, onError}) {
+      webSocketFactory: (url, {headers, onDone, onError}) {
         final socket = _MockWebSocket();
         when(() => socket.stream).thenAnswer((_) => const Stream.empty());
         opened.add(socket);

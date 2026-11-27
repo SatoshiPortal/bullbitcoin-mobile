@@ -2711,6 +2711,7 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   ) {
     wireObj.min_sendable_msat = cst_encode_u_64(apiObj.minSendableMsat);
     wireObj.max_sendable_msat = cst_encode_u_64(apiObj.maxSendableMsat);
+    wireObj.description = cst_encode_opt_String(apiObj.description);
   }
 
   @protected
@@ -6534,6 +6535,7 @@ class BullSdkWire implements BaseWire {
     ffi.Pointer<wire_cst_list_prim_u_8_strict> boltz_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> description,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> referral_id,
+    ffi.Pointer<wire_cst_electrum_settings> electrum_settings,
   ) {
     return _wire__boltz__api__btc_ln__btc_ln_swap_new_reverse(
       port_,
@@ -6546,6 +6548,7 @@ class BullSdkWire implements BaseWire {
       boltz_url,
       description,
       referral_id,
+      electrum_settings,
     );
   }
 
@@ -6563,6 +6566,7 @@ class BullSdkWire implements BaseWire {
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Pointer<wire_cst_electrum_settings>,
           )
         >
       >(
@@ -6582,6 +6586,7 @@ class BullSdkWire implements BaseWire {
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              ffi.Pointer<wire_cst_electrum_settings>,
             )
           >();
 
@@ -6594,6 +6599,7 @@ class BullSdkWire implements BaseWire {
     ffi.Pointer<wire_cst_list_prim_u_8_strict> electrum_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> boltz_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> referral_id,
+    ffi.Pointer<wire_cst_electrum_settings> electrum_settings,
   ) {
     return _wire__boltz__api__btc_ln__btc_ln_swap_new_submarine(
       port_,
@@ -6604,6 +6610,7 @@ class BullSdkWire implements BaseWire {
       electrum_url,
       boltz_url,
       referral_id,
+      electrum_settings,
     );
   }
 
@@ -6619,6 +6626,7 @@ class BullSdkWire implements BaseWire {
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Pointer<wire_cst_electrum_settings>,
           )
         >
       >(
@@ -6636,6 +6644,7 @@ class BullSdkWire implements BaseWire {
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              ffi.Pointer<wire_cst_electrum_settings>,
             )
           >();
 
@@ -7083,6 +7092,8 @@ class BullSdkWire implements BaseWire {
     ffi.Pointer<wire_cst_list_prim_u_8_strict> lbtc_electrum_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> boltz_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> referral_id,
+    ffi.Pointer<wire_cst_electrum_settings> btc_electrum_settings,
+    ffi.Pointer<wire_cst_electrum_settings> lbtc_electrum_settings,
   ) {
     return _wire__boltz__api__chain_swap__chain_swap_new_swap(
       port_,
@@ -7095,6 +7106,8 @@ class BullSdkWire implements BaseWire {
       lbtc_electrum_url,
       boltz_url,
       referral_id,
+      btc_electrum_settings,
+      lbtc_electrum_settings,
     );
   }
 
@@ -7112,6 +7125,8 @@ class BullSdkWire implements BaseWire {
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Pointer<wire_cst_electrum_settings>,
+            ffi.Pointer<wire_cst_electrum_settings>,
           )
         >
       >(
@@ -7131,6 +7146,8 @@ class BullSdkWire implements BaseWire {
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              ffi.Pointer<wire_cst_electrum_settings>,
+              ffi.Pointer<wire_cst_electrum_settings>,
             )
           >();
 
@@ -7731,6 +7748,7 @@ class BullSdkWire implements BaseWire {
     ffi.Pointer<wire_cst_list_prim_u_8_strict> boltz_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> description,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> referral_id,
+    ffi.Pointer<wire_cst_electrum_settings> electrum_settings,
   ) {
     return _wire__boltz__api__lbtc_ln__lbtc_ln_swap_new_reverse(
       port_,
@@ -7743,6 +7761,7 @@ class BullSdkWire implements BaseWire {
       boltz_url,
       description,
       referral_id,
+      electrum_settings,
     );
   }
 
@@ -7760,6 +7779,7 @@ class BullSdkWire implements BaseWire {
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Pointer<wire_cst_electrum_settings>,
           )
         >
       >(
@@ -7779,6 +7799,7 @@ class BullSdkWire implements BaseWire {
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              ffi.Pointer<wire_cst_electrum_settings>,
             )
           >();
 
@@ -7791,6 +7812,7 @@ class BullSdkWire implements BaseWire {
     ffi.Pointer<wire_cst_list_prim_u_8_strict> electrum_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> boltz_url,
     ffi.Pointer<wire_cst_list_prim_u_8_strict> referral_id,
+    ffi.Pointer<wire_cst_electrum_settings> electrum_settings,
   ) {
     return _wire__boltz__api__lbtc_ln__lbtc_ln_swap_new_submarine(
       port_,
@@ -7801,6 +7823,7 @@ class BullSdkWire implements BaseWire {
       electrum_url,
       boltz_url,
       referral_id,
+      electrum_settings,
     );
   }
 
@@ -7816,6 +7839,7 @@ class BullSdkWire implements BaseWire {
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
             ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+            ffi.Pointer<wire_cst_electrum_settings>,
           )
         >
       >(
@@ -7833,6 +7857,7 @@ class BullSdkWire implements BaseWire {
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
               ffi.Pointer<wire_cst_list_prim_u_8_strict>,
+              ffi.Pointer<wire_cst_electrum_settings>,
             )
           >();
 
@@ -12872,13 +12897,17 @@ final class wire_cst_lnurl_pay_bounds extends ffi.Struct {
   @ffi.Uint64()
   external int max_sendable_msat;
 
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> description;
+
   static ffi.Pointer<wire_cst_lnurl_pay_bounds> $allocate(
     ffi.Allocator $allocator, {
     required int min_sendable_msat,
     required int max_sendable_msat,
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> description,
   }) => $allocator<wire_cst_lnurl_pay_bounds>()
     ..ref.min_sendable_msat = min_sendable_msat
-    ..ref.max_sendable_msat = max_sendable_msat;
+    ..ref.max_sendable_msat = max_sendable_msat
+    ..ref.description = description;
 }
 
 final class wire_cst_lwk_error extends ffi.Struct {

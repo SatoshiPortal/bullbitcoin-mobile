@@ -3,6 +3,7 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:backups/backups.dart';
 import 'package:network/network.dart';
+import 'package:swap_feature/swap_feature.dart' show SwapNavigation;
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
@@ -20,7 +21,8 @@ class HomeWarnings extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.hasNoBackup() != current.hasNoBackup() ||
           previous.loadFailure != current.loadFailure ||
-          previous.warnings != current.warnings,
+          previous.warnings != current.warnings ||
+          previous.swapServerUnreachable != current.swapServerUnreachable,
       builder: (context, state) {
         // The legacy-storage cohort used to suppress this warning, since
         // they were shown a blocking overlay instead. That cohort and
@@ -55,6 +57,14 @@ class HomeWarnings extends StatelessWidget {
           // well as on a server, and a storage failure is local, so pointing
           // at the electrum settings could not help. A server outage has its
           // own card above, with its remedy.
+          if (state.swapServerUnreachable)
+            BullInfoCard(
+              title: context.loc.walletWarningSwapServerUnreachable,
+              description: context.loc.walletWarningSwapServerAction,
+              tagColor: context.appColors.error,
+              bgColor: context.appColors.errorContainer,
+              onTap: () => SwapNavigation.openSettings(context),
+            ),
           if (loadFailure != null)
             BullInfoCard(
               title: loadFailure.toTranslated(context),
@@ -69,7 +79,11 @@ class HomeWarnings extends StatelessWidget {
         }
 
         return Padding(
-          padding: const EdgeInsets.only(left: 13.0, right: 13, top: 13),
+          padding: const EdgeInsets.only(
+            left: 13.0,
+            right: 13,
+            top: BullSizes.homeCardGap,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -86,7 +100,7 @@ class HomeWarnings extends StatelessWidget {
                   ],
                 ),
               if (showBackupWarning) ...[
-                if (errorCards.isNotEmpty) const Gap(5),
+                if (errorCards.isNotEmpty) const Gap(BullSizes.homeCardGap),
                 BackupCard(
                   icon: AssetImage(Assets.misc.passwordbook.path),
                   onTap: () => BackupsNavigation.start(context),

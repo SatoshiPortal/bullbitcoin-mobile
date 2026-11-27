@@ -1088,10 +1088,6 @@
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
   },
-  "walletBalanceUnconfirmedIncoming": "İlerleme",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "selectAmountTitle": "Sayı miktarı seçin",
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"

@@ -50,7 +50,7 @@ abstract class TransactionsState with _$TransactionsState {
 
     final ongoingList = <Transaction>[];
     for (final tx in txList) {
-      if (tx.isOngoingSwap) {
+      if (tx.isOngoingSwap && !tx.isUnfundedSwap) {
         ongoingList.add(tx);
       }
     }

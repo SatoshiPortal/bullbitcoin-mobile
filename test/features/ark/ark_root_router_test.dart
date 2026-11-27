@@ -119,7 +119,11 @@ class _UnusedSwapServers extends Mock implements SwapServerSettings {}
 class _SwapRoutes extends Fake implements SwapFeature {
   @override
   final List<GoRoute> routes = [
-    swapSettingsRoute(_UnusedSwapRouting(), _UnusedSwapServers()),
+    swapSettingsRoute(
+      _UnusedSwapRouting(),
+      _UnusedSwapServers(),
+      _UnusedSwaps(),
+    ),
   ];
 
   @override

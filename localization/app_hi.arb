@@ -1089,10 +1089,6 @@
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
   },
-  "walletBalanceUnconfirmedIncoming": "प्रगति में",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "selectAmountTitle": "राशि चुनें",
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
