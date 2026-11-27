@@ -1,6 +1,3 @@
-import 'package:secrets/testing.dart';
-import 'package:secrets/secrets.dart' show WalletSigner;
-import 'package:primitives/primitives.dart' show BitcoinNetwork, LiquidNetwork;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'dart:async';
@@ -11,7 +8,6 @@ import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:settings/testing.dart';
-import 'package:swap_feature/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_pricer/bull_pricer.dart';
@@ -25,20 +21,7 @@ import 'package:primitives/primitives.dart' show BitcoinUnit, Sats, ScriptType;
 
 class _Receive extends Mock implements ReceiveBloc {}
 
-class _Transfer extends Mock implements TransferBloc {}
-
 class _Settings extends Mock implements SettingsCubit {}
-
-SwapWallet _swapWallet(bool liquid) => SwapWallet(
-  walletRegistrationForTesting(
-    id: liquid ? 'liquid' : 'bitcoin',
-    network: liquid ? LiquidNetwork.mainnet : BitcoinNetwork.mainnet,
-    isDefault: false,
-    signer: WalletSigner.local,
-  ),
-  BigInt.from(1250000),
-  false,
-);
 
 Wallet _wallet(bool liquid) => Wallet(
   origin: liquid ? 'liquid' : 'bitcoin',
@@ -71,7 +54,7 @@ void main() {
     )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
   });
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
-    for (final name in ['receive-fiat', 'receive-qr', 'swap']) {
+    for (final name in ['receive-fiat', 'receive-qr']) {
       testWidgets('$name ${theme.name}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1;
@@ -79,10 +62,7 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         Device.screen = const Size(390, 844);
         final wallet = _wallet(false);
-        final swapBitcoin = _swapWallet(false);
-        final swapLiquid = _swapWallet(true);
         final receive = _Receive();
-        final transfer = _Transfer();
         final settings = _Settings();
         final fiat = name == 'receive-fiat';
         final receiveWallet = ReceiveWallet(
@@ -115,20 +95,6 @@ void main() {
           ),
         );
         when(() => receive.stream).thenAnswer((_) => const Stream.empty());
-        when(() => transfer.state).thenReturn(
-          TransferState(
-            wallets: [swapBitcoin, swapLiquid],
-            fromWallet: swapLiquid,
-            toWallet: swapBitcoin,
-            bitcoinUnit: BitcoinUnit.sats,
-            amount: '25000',
-            amountQuotes: quotes,
-            fiatCurrencyCode: 'CAD',
-            exchangeRate: 125000,
-            maxAmountSat: 1249580,
-          ),
-        );
-        when(() => transfer.stream).thenAnswer((_) => const Stream.empty());
         when(() => settings.state).thenReturn(
           const SettingsState(
             storedSettings: SettingsEntity(
@@ -142,10 +108,7 @@ void main() {
         when(() => settings.stream).thenAnswer((_) => const Stream.empty());
         final Widget screen = switch (name) {
           'receive-fiat' => const Scaffold(body: ReceiveAmountScreen()),
-          'receive-qr' => const Scaffold(
-            body: Center(child: ReceiveInfoDetails()),
-          ),
-          _ => const SwapPage(),
+          _ => const Scaffold(body: Center(child: ReceiveInfoDetails())),
         };
         await tester.pumpWidget(
           RepaintBoundary(
@@ -161,7 +124,6 @@ void main() {
               home: MultiBlocProvider(
                 providers: [
                   BlocProvider<ReceiveBloc>.value(value: receive),
-                  BlocProvider<TransferBloc>.value(value: transfer),
                   BlocProvider<SettingsCubit>.value(value: settings),
                 ],
                 child: BullAmountScope(
