@@ -196,6 +196,32 @@ void generationTests() {
     ], reason: 'nothing was written by the stale capability');
   });
 
+  test('an OpenedViews kept before a lock gives no administration after the '
+      'next unlock', () async {
+    final seed = ok(await secrets.generate()).id;
+    ok(
+      await inventory.registerWallet(
+        viewWallet('mine', signer: 'local', fingerprint: seed.hex),
+      ),
+    );
+    final parent = inventory.openedViews!;
+    await inventory.lock();
+    expect(await parent.administration.create(name: 'Locked'), isA<Err>());
+    ok(await inventory.authenticate(''));
+    // The new session's generation is live; the parent belongs to the old.
+    final fromParent = parent.administration;
+    expect(await fromParent.create(name: 'Late'), isA<Err>());
+    expect(await fromParent.detach(seed), isA<Err>());
+    expect(await fromParent.rename(const ViewId('all'), 'Late'), isA<Err>());
+    expect(inventory.openedViews!.views.map((v) => v.name), [
+      'All',
+    ], reason: 'nothing was written through the old parent');
+    expect(
+      ok(await inventory.openedViews!.administration.create(name: 'Now')).name,
+      'Now',
+    );
+  });
+
   test(
     'an administration kept before a view switch is refused after it',
     () async {
