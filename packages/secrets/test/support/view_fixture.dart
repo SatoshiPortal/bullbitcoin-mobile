@@ -78,6 +78,24 @@ final class ViewFixture {
     }
   }
 
+  /// Whether the file still has the shape written before `last_view_id`,
+  /// read without adapting it.
+  Future<bool> hasLastViewColumn() async {
+    final opened = await InventoryStore.open(file, admission, existing: true);
+    final store = (opened as Ok<InventoryStore, Failure>).value;
+    try {
+      final rows = await store.database
+          .customSelect(
+            "SELECT 1 FROM pragma_table_info('access_state') "
+            "WHERE name = 'last_view_id'",
+          )
+          .get();
+      return rows.isNotEmpty;
+    } finally {
+      await store.close();
+    }
+  }
+
   Future<void> close() async {
     try {
       await admission.close();
