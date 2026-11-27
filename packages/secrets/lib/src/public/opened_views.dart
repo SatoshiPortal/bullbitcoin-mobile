@@ -46,7 +46,7 @@ final class OpenedViews {
         // Reads and writes still running for the previous view must not
         // publish into this one.
         _inventory._session++;
-        _inventory._startSession(view);
+        await _inventory._startSession(view);
         return Ok(view);
       }
     }

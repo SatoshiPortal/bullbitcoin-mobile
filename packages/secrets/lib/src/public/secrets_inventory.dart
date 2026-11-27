@@ -200,10 +200,16 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
           return Ok(ViewAuthentication._(value.attempt, null));
         }
         final wasLocked = !_unlocked;
+        // The remembered view is read before anything is published, so a
+        // lock that lands meanwhile still wins.
+        final chosen = wasLocked ? await _choose(value.opened) : null;
+        if (current != _session || _pendingDrain != null) {
+          return const Err(inventorySessionChangedFailure);
+        }
         if (wasLocked) _epoch++;
         _mergeOpened(value.opened);
         final opened = OpenedViews._(this, _epoch);
-        if (wasLocked) _startSession(_choose(value.opened));
+        if (chosen != null) await _startSession(chosen);
         return Ok(ViewAuthentication._(value.attempt, opened));
     }
   }
@@ -222,10 +228,24 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     _openedViews = List.unmodifiable(byId.values);
   }
 
-  /// The view a session starts on among [opened] (never empty).
-  ViewSummary _choose(List<ViewSummary> opened) => opened.first;
+  /// The view a session starts on among [opened] (never empty): the one
+  /// opened last when this authentication opened it, otherwise the first by
+  /// name. The memory is read only here, after an authentication, and a view
+  /// this authentication did not open is never chosen.
+  Future<ViewSummary> _choose(List<ViewSummary> opened) async {
+    final remembered = await _access.lastView();
+    return opened.firstWhere(
+      (view) => view.id.value == remembered,
+      orElse: () => opened.first,
+    );
+  }
 
-  void _startSession(ViewSummary view) => _authority.grant(view.id.value);
+  /// Opens the session on [view]: the grant is synchronous, so nothing can
+  /// interleave between the checks that precede it and the token.
+  Future<void> _startSession(ViewSummary view) {
+    _authority.grant(view.id.value);
+    return _access.rememberView(view.id.value);
+  }
 
   Future<Result<void, SecretFailure>> _openWithoutCredential() async {
     final opened = await _access.openWithoutCredential();
@@ -235,11 +255,15 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       case Ok(value: null):
         return const Err(inventoryCredentialRequiredFailure);
       case Ok(:final value?):
-        if (!_unlocked) {
-          _epoch++;
-          _mergeOpened(value);
-          _startSession(_choose(value));
+        if (_unlocked) return const Ok(null);
+        final current = _session;
+        final chosen = await _choose(value);
+        if (current != _session || _pendingDrain != null || _unlocked) {
+          return const Err(inventorySessionChangedFailure);
         }
+        _epoch++;
+        _mergeOpened(value);
+        await _startSession(chosen);
         return const Ok(null);
     }
   }

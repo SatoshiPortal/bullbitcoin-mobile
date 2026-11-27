@@ -117,6 +117,10 @@ final class ViewAdministrationRepository {
         await (_database.delete(
           _database.viewMembers,
         )..where((row) => row.viewId.equals(id))).go();
+        await _database.customStatement(
+          'UPDATE access_state SET last_view_id = NULL WHERE last_view_id = ?',
+          [id],
+        );
         await (_database.delete(
           _database.views,
         )..where((view) => view.id.equals(id))).go();

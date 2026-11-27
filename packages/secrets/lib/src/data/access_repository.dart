@@ -53,6 +53,28 @@ final class AccessRepository {
     return _attempt(state, accepted: false);
   }, orElse: FetchSecretFailure.new);
 
+  /// The view opened last, or null. Callers use it only among opened views.
+  Future<String?> lastView() async {
+    try {
+      return (await _state()).lastViewId;
+    } on Exception {
+      return null;
+    }
+  }
+
+  /// Remembers [id] for the next opening. Best effort: a memory that cannot be
+  /// written changes which view opens first, nothing else.
+  Future<void> rememberView(String id) async {
+    try {
+      await _database.customStatement(
+        'UPDATE access_state SET last_view_id = ? WHERE singleton = 1',
+        [id],
+      );
+    } on Exception {
+      // Not worth failing an opening for.
+    }
+  }
+
   /// The views a session may open when no view requires a credential: all of
   /// them, with no attempt counted. A protected view makes this a refusal.
   Future<Result<List<ViewSummary>?, SecretFailure>> openWithoutCredential() =>

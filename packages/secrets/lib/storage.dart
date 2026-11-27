@@ -16,4 +16,5 @@ export 'src/public/secrets_inventory.dart'
         BackgroundWalletDescriptors,
         OpenedViews,
         SecretsInventory,
+        ViewAdministration,
         ViewAuthentication;
