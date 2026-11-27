@@ -173,6 +173,7 @@ class _PayjoinAdvancedSettingsScreenState
                       value: _minAmountController.text,
                       controller: _minAmountController,
                       focusNode: _minAmountNode,
+                      semanticLabel: context.loc.settingsPayjoinMinAmountTitle,
                       digitsOnly: true,
                       suffixText: context.loc.settingsPayjoinSatsUnit,
                       onChanged: _onMinAmountChanged,
@@ -188,6 +189,7 @@ class _PayjoinAdvancedSettingsScreenState
                       value: _expireController.text,
                       controller: _expireController,
                       focusNode: _expireNode,
+                      semanticLabel: context.loc.settingsPayjoinExpireTitle,
                       digitsOnly: true,
                       suffixText: context.loc.settingsPayjoinMinutesUnit,
                       onChanged: _onExpireChanged,
@@ -243,10 +245,15 @@ class _ThresholdField extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BullText(
-                    title,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
+                  // The field carries the title as its accessible name, so the
+                  // visible copy is decorative here: announcing it again would
+                  // read the label twice.
+                  ExcludeSemantics(
+                    child: BullText(
+                      title,
+                      style: context.bullType.body.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   const Gap(4),

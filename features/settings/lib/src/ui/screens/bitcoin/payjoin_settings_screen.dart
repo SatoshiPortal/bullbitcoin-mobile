@@ -69,21 +69,27 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     final isLoaded = context.select(
       (SettingsCubit cubit) => cubit.state.payjoinPolicy != null,
     );
-    return Row(
-      children: [
-        Expanded(
-          child: BullText(
-            label,
-            style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+    // One semantics node: the caption names the switch and its state follows,
+    // instead of a caption announced beside an unnamed switch.
+    return MergeSemantics(
+      child: Row(
+        children: [
+          Expanded(
+            child: BullText(
+              label,
+              style: context.bullType.body.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
-        ),
-        BullSwitch(
-          value: isEnabled,
-          onChanged: _updating || !isLoaded
-              ? null
-              : (enabled) => _setPayjoinEnabled(action, enabled),
-        ),
-      ],
+          BullSwitch(
+            value: isEnabled,
+            onChanged: _updating || !isLoaded
+                ? null
+                : (enabled) => _setPayjoinEnabled(action, enabled),
+          ),
+        ],
+      ),
     );
   }
 
