@@ -116,13 +116,19 @@ void main() {
 
       final result = repository.getWallets();
       await started.future;
-      inventory.lock();
+      final locking = inventory.lock();
       if (reopen) {
-        expect(await inventory.resumeUnprotected(), isA<Ok>());
+        // The lock is still draining the admitted join: it cannot be reopened
+        // under it.
+        expect(await inventory.resumeUnprotected(), isA<Err>());
       }
       release.complete();
 
       expect(await result, isA<Err<List<dynamic>, WalletFailure>>());
+      await locking;
+      if (reopen) {
+        expect(await inventory.resumeUnprotected(), isA<Ok>());
+      }
     });
   }
 }

@@ -114,6 +114,16 @@ final class _NativeConsumer implements ArkChildConsumer {
 /// and the Bark native opener that consumes it, fixed when this is built. The
 /// worker is given [client], confined to the saved-claim lane and [refresh];
 /// it never holds words, a native session or a callback.
+///
+/// Known limits, accepted with this design:
+/// - Bark's native `Wallet.sync()` is not scoped to a refresh. While the child
+///   is open it may also claim Lightning receptions and advance other rounds of
+///   the same account. It is the user's own wallet and no funds leave it, but
+///   the confinement above bounds what Dart code can ask, not what that native
+///   call does.
+/// - A refresh is not idempotent across a lost server response: resubmitting
+///   after an answer that never arrived may start a second round. Such an
+///   attempt is reported as outcomeUnknown and is not retried blindly.
 final class ArkBackgroundRenewal {
   final ArkClient client;
   final Future<void> Function() _close;
