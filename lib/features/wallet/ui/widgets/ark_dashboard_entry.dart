@@ -96,6 +96,18 @@ class _ArkDashboardCardState extends State<_ArkDashboardCard>
       }
     });
     unawaited(owner.load());
+    unawaited(_readRemembered(owner));
+  }
+
+  Future<void> _readRemembered(ArkHomeCubit owner) async {
+    final value = await widget.host.lastHomeBalance(widget.scope);
+    if (!mounted ||
+        !identical(owner, _owner) ||
+        value == null ||
+        owner.state?.spendable != null) {
+      return;
+    }
+    setState(() => _remembered = value);
   }
 
   @override
@@ -103,11 +115,6 @@ class _ArkDashboardCardState extends State<_ArkDashboardCard>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _listen();
-    unawaited(
-      widget.host.lastHomeBalance(widget.scope).then((value) {
-        if (mounted && value != null) setState(() => _remembered = value);
-      }),
-    );
   }
 
   @override
@@ -117,6 +124,7 @@ class _ArkDashboardCardState extends State<_ArkDashboardCard>
       unawaited(_subscription.cancel());
       unawaited(_changes.cancel());
       unawaited(_owner.close());
+      _remembered = null;
       _listen();
     } else if (oldWidget.refresh != widget.refresh) {
       unawaited(_owner.load(keep: true));
