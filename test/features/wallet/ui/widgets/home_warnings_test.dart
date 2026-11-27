@@ -1,6 +1,6 @@
 import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
+import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/localizations.dart';

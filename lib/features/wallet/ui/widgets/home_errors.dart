@@ -4,7 +4,6 @@ import 'package:backups/backups.dart';
 import 'package:network/network.dart';
 import 'package:overview/overview.dart';
 import 'package:swap_feature/swap_feature.dart' show SwapNavigation;
-import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';

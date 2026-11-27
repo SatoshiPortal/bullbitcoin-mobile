@@ -39,7 +39,6 @@ import 'dart:async';
 import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:network/network.dart'
     show ExternalTorProxyDiagnostic, ExternalTorProxyStatus;
 import 'package:swap_feature/swap_feature.dart'

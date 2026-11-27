@@ -14,7 +14,6 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:network/network.dart'
     show ExternalTorProxyDiagnostic, ExternalTorProxyStatus;
 import 'package:swap_feature/swap_feature.dart'
@@ -43,9 +42,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._syncWalletsUsecase,
     required this._ongoingSwaps,
     required this._readBackupWarning,
-    required this._externalTorProxy,
+    required ExternalTorProxyDiagnostic externalTorProxy,
     required this._silentHome,
-  }) : super(const WalletState()) {
+  }) : _homeNetworkWarnings = HomeNetworkWarnings(() async {
+         final status = await externalTorProxy.check();
+         return status == ExternalTorProxyStatus.unavailable ||
+             status == ExternalTorProxyStatus.unreadable;
+       }),
+       super(const WalletState()) {
     on<_WalletAmountDisplayChanged>((event, emit) {
       emit(state.copyWith(amountDisplay: event.preferences));
     });
@@ -84,7 +88,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final OngoingSwaps _ongoingSwaps;
   final SwapHomeServerCheck? _swapServerCheck;
   final Future<bool?> Function() _readBackupWarning;
-  final ExternalTorProxyDiagnostic _externalTorProxy;
+  final HomeNetworkWarnings _homeNetworkWarnings;
   final SilentHomeObservation _silentHome;
 
   StreamSubscription? _revisionsSubscription;
@@ -101,9 +105,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final Map<String, int> _walletUpdateVersions = {};
   final Map<String, int> _walletReadVersions = {};
 
-  bool? _lastBitcoinSyncSuccess;
-  bool? _lastLiquidSyncSuccess;
-  int _electrumWarningGeneration = 0;
   int _backupStatusGeneration = 0;
 
   /// Lifetime of the legacy catalogue used by the detail action adapter.
@@ -129,6 +130,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   @override
   Future<void> close() async {
     _closing = true;
+    _homeNetworkWarnings.close();
     unawaited(_walletActionChanges.close());
     final amountDisplayClosed = _amountDisplaySubscription?.cancel();
     await _silentHome.close();
@@ -489,41 +491,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     ElectrumSyncResultChanged event,
     Emitter<WalletState> emit,
   ) async {
-    final generation = ++_electrumWarningGeneration;
     final result = event.result;
-
-    if (result.isLiquid) {
-      _lastLiquidSyncSuccess = result.success;
-    } else {
-      _lastBitcoinSyncSuccess = result.success;
-    }
-
-    final bitcoinServerDown = _lastBitcoinSyncSuccess == false;
-    final liquidServerDown = _lastLiquidSyncSuccess == false;
-
-    if (bitcoinServerDown || liquidServerDown) {
-      final reason = switch ((bitcoinServerDown, liquidServerDown)) {
-        (true, true) => ElectrumServerDown.both,
-        (true, false) => ElectrumServerDown.bitcoin,
-        _ => ElectrumServerDown.liquid,
-      };
-      final externalTorStatus = bitcoinServerDown
-          ? await _externalTorProxy.check()
-          : ExternalTorProxyStatus.disabled;
-      if (isClosed || generation != _electrumWarningGeneration) return;
-      final warning = WalletWarning(
-        reason: reason,
-        action:
-            bitcoinServerDown &&
-                (externalTorStatus == ExternalTorProxyStatus.unavailable ||
-                    externalTorStatus == ExternalTorProxyStatus.unreadable)
-            ? WalletWarningAction.torSettings
-            : WalletWarningAction.electrumSettings,
-        type: WarningType.error,
-      );
-      emit(state.copyWith(warnings: [warning]));
-    } else {
-      emit(state.copyWith(warnings: []));
+    final warnings = await _homeNetworkWarnings.update(
+      isLiquid: result.isLiquid,
+      success: result.success,
+    );
+    if (warnings != null && !emit.isDone) {
+      emit(state.copyWith(warnings: warnings));
     }
   }
 
