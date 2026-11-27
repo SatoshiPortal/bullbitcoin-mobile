@@ -22,11 +22,11 @@ class Bip329LabelsCodec {
     List<LabelEntity> labels, {
     List<({String walletId, String txId, int vout})> frozen = const [],
   }) {
-    // ref ("txid:vout") -> freezing walletId. One row per outpoint suffices —
-    // outpoints are globally unique, so any collision is the same coin.
-    final frozenByRef = <String, String>{
-      for (final f in frozen) '${f.txId}:${f.vout}': f.walletId,
-    };
+    // Freeze policy is global, but export must retain every attribution.
+    final frozenByRef = <String, List<String>>{};
+    for (final row in frozen) {
+      (frozenByRef['${row.txId}:${row.vout}'] ??= []).add(row.walletId);
+    }
     final coveredRefs = <String>{};
 
     final bip329Labels = labels.map((label) {
@@ -40,7 +40,7 @@ class Bip329LabelsCodec {
         case LabelType.input:
           return bip329.InputLabel(ref: label.reference, label: label.label);
         case LabelType.output:
-          final frozenWalletId = frozenByRef[label.reference];
+          final frozenWalletId = frozenByRef[label.reference]?.last;
           final isFrozen = frozenWalletId != null;
           if (isFrozen) coveredRefs.add(label.reference);
           return bip329.OutputLabel(
@@ -60,19 +60,23 @@ class Bip329LabelsCodec {
       }
     }).toList();
 
-    // Frozen outpoints with no label: emit a bare freeze-only output record so
-    // the freeze isn't lost. Empty label — the importer treats a blank label as
-    // "freeze only", never as an annotation.
+    // Emit any attributions not already represented by a labelled record.
+    // The importer treats the blank label as "freeze only".
     for (final entry in frozenByRef.entries) {
-      if (coveredRefs.contains(entry.key)) continue;
-      bip329Labels.add(
-        bip329.OutputLabel(
-          ref: entry.key,
-          label: '',
-          spendable: false,
-          origin: bip329OriginFromWalletId(entry.value),
-        ),
-      );
+      final origins = entry.value;
+      final count = coveredRefs.contains(entry.key)
+          ? origins.length - 1
+          : origins.length;
+      for (final origin in origins.take(count)) {
+        bip329Labels.add(
+          bip329.OutputLabel(
+            ref: entry.key,
+            label: '',
+            spendable: false,
+            origin: bip329OriginFromWalletId(origin),
+          ),
+        );
+      }
     }
 
     return bip329.Bip329Label.toJsonLines(bip329Labels);
