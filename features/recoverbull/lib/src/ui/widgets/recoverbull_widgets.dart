@@ -226,6 +226,16 @@ class KeyServerStatusWidget extends StatelessWidget {
   }
 }
 
+/// The flow's back control, named for assistive tech and for the
+/// accessibility tree that agents and widget tests drive by name.
+class RecoverBullBackButton extends StatelessWidget {
+  const RecoverBullBackButton({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      BackButton(onPressed: () => recoverBullBack(context));
+}
+
 /// The app bar shared by the flow's pages, with the key-server indicator.
 class RecoverBullAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -244,10 +254,7 @@ class RecoverBullAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       forceMaterialTransparency: true,
-      leading: IconButton(
-        onPressed: () => recoverBullBack(context),
-        icon: const Icon(Icons.arrow_back),
-      ),
+      leading: const RecoverBullBackButton(),
       title: BullText(
         title,
         style: context.bullType.subtitle.copyWith(fontWeight: FontWeight.w500),

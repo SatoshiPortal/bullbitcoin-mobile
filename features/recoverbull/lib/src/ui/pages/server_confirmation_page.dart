@@ -8,7 +8,7 @@ import '../../domain/usecases/manage_backup_settings_usecase.dart';
 import '../../l10n/context_localizations.dart';
 import '../../presentation/recoverbull_failure_l10n.dart';
 import '../../presentation/vault_flow_cubit.dart';
-import '../recoverbull_flow_navigator.dart';
+import '../widgets/recoverbull_widgets.dart';
 import 'connecting_page.dart';
 import 'vault_key_instead.dart';
 
@@ -45,10 +45,7 @@ class ServerConfirmationPage extends StatelessWidget {
         final isDefault = server == recoverBullDefaultServerUrl;
         return Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              onPressed: () => recoverBullBack(context),
-              icon: const Icon(Icons.arrow_back),
-            ),
+            leading: const RecoverBullBackButton(),
             title: BullText(
               context.loc.recoverbullServerConfirmTitle,
               style: context.bullType.subtitle.copyWith(
