@@ -106,9 +106,25 @@ class BullValueViewer extends StatelessWidget {
     String truncatedAt(int keep) =>
         '${data.substring(0, keep)}$separator'
         '${data.substring(data.length - keep)}';
-    // A wider truncation is never narrower than a shorter one, so the number of
-    // characters kept can be searched instead of shrunk one at a time: ~8
-    // layouts instead of ~170 for a 383-character invoice.
+
+    if (!_isAsciiIdentifier(data)) {
+      // A combining mark or a joined grapheme cluster can make a wider
+      // truncation narrower, so anything but an ASCII identifier keeps the
+      // original one-character-at-a-time scan.
+      for (var keep = maxSide; keep >= minChars; keep--) {
+        if (widthOf(truncatedAt(keep), style) <= maxWidth) {
+          return truncatedAt(keep);
+        }
+      }
+      return truncatedAt(minChars);
+    }
+
+    // For an ASCII identifier a wider truncation is never narrower, so the
+    // number of characters kept can be searched instead of shrunk one at a
+    // time: ~8 layouts instead of ~170 for a 383-character invoice. The
+    // property is checked against the shipped theme font in
+    // `bull_value_viewer_fit_test.dart`, which also compares this search with
+    // the scan above.
     var low = minChars;
     var high = maxSide;
     var widest = 0;
@@ -123,6 +139,23 @@ class BullValueViewer extends StatelessWidget {
     }
 
     return truncatedAt(widest == 0 ? minChars : widest);
+  }
+
+  /// Whether every code unit of [data] is a printable ASCII character other
+  /// than a space.
+  ///
+  /// The bounded search above assumes that width never falls while the kept
+  /// character count grows. That holds for the single-token identifiers this
+  /// viewer renders (invoice, address, public key, txid) and is verified for
+  /// the shipped font, but a text whose graphemes span several code units does
+  /// not have it: appending a zero-width joiner or a combining mark can shrink
+  /// the laid-out line.
+  static bool _isAsciiIdentifier(String data) {
+    for (var i = 0; i < data.length; i++) {
+      final unit = data.codeUnitAt(i);
+      if (unit < 0x21 || unit > 0x7E) return false;
+    }
+    return true;
   }
 
   static double _measure(String text, TextStyle style) {
