@@ -1046,7 +1046,13 @@ void main() {
           request: {'orderId': 'o-1'},
         ),
       );
+      const session = ExchangeSession(
+        environment: ExchangeEnvironment.mainnet,
+        epoch: 1,
+        sessionId: 's',
+      );
       final exchange = exchangeForTesting(
+        access: fixedAccessForTesting(const ExchangeAccessSignedIn(session)),
         unknownWrites: journal,
         readSessionPoint: () async =>
             const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
@@ -1054,7 +1060,7 @@ void main() {
             _Orders({'o-1': Ok(_order(orderStatus: OrderStatus.canceled))}),
       );
 
-      final open = await exchange.openUnknownWrites();
+      final open = await exchange.openUnknownWrites(session);
       final result = await exchange.reconcileUnknownWrites();
 
       expect(

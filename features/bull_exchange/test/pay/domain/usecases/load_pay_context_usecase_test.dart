@@ -26,9 +26,8 @@ void main() {
           asked.add(environment);
           return Ok(paySummary);
         },
+        access: fixedAccessForTesting(ExchangeAccessSignedIn(paySession)),
         unknownWrites: journal,
-        readSessionPoint: () async =>
-            const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
       ),
     ).execute(paySession);
     final context = (read as ReadGot<PayContext>).value;
@@ -37,12 +36,11 @@ void main() {
     expect(asked, [ExchangeEnvironment.mainnet]);
   });
 
-  test('an unreadable journal starts with no entries', () async {
+  test('a session that is no longer current starts with no entries', () async {
     final read = await LoadPayContextUsecase(
       exchangeForTesting(
         getUserSummary: (_) async => Ok(paySummary),
         unknownWrites: InMemoryUnknownWriteJournal(),
-        readSessionPoint: () async => const Err(ExchangeNetworkFailure()),
       ),
     ).execute(paySession);
     expect((read as ReadGot<PayContext>).value.openEntries, isEmpty);

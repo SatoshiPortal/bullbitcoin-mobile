@@ -19,7 +19,7 @@ class LoadDcaContextUsecase {
     final wallets = readOfResult(await _exchange.getDefaultWallets());
     // A journal that can't be read leaves no entry to start from; the
     // write gate then refuses the create itself (JournalUnreadable).
-    final entries = switch (await _exchange.openUnknownWrites()) {
+    final entries = switch (await _exchange.openUnknownWrites(session)) {
       Ok(:final value) => value,
       Err() => const <UnknownWrite>[],
     };

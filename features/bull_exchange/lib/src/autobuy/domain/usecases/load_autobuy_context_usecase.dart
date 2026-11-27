@@ -15,7 +15,7 @@ class LoadAutoBuyContextUsecase {
     // One after the other: a record `.wait` would wrap a programmer error
     // of either read in a ParallelWaitError instead of rethrowing it.
     final read = await _getUserSummary.execute(session);
-    final entries = await _exchange.openUnknownWrites();
+    final entries = await _exchange.openUnknownWrites(session);
     // A journal that can't be read leaves no entry to start from; the
     // write gate then refuses the write itself (JournalUnreadable).
     final open = switch (entries) {

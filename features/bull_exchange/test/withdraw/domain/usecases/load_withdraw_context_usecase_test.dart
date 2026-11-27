@@ -26,9 +26,8 @@ void main() {
           asked.add(environment);
           return Ok(withdrawSummary);
         },
+        access: fixedAccessForTesting(ExchangeAccessSignedIn(withdrawSession)),
         unknownWrites: journal,
-        readSessionPoint: () async =>
-            const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
       ),
     ).execute(withdrawSession);
     final context = (read as ReadGot<WithdrawContext>).value;
@@ -37,12 +36,11 @@ void main() {
     expect(asked, [ExchangeEnvironment.mainnet]);
   });
 
-  test('an unreadable journal starts with no entries', () async {
+  test('a session that is no longer current starts with no entries', () async {
     final read = await LoadWithdrawContextUsecase(
       exchangeForTesting(
         getUserSummary: (_) async => Ok(withdrawSummary),
         unknownWrites: InMemoryUnknownWriteJournal(),
-        readSessionPoint: () async => const Err(ExchangeNetworkFailure()),
       ),
     ).execute(withdrawSession);
     expect((read as ReadGot<WithdrawContext>).value.openEntries, isEmpty);

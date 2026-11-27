@@ -14,7 +14,7 @@ class LoadPayContextUsecase {
     final summary = readOfResult(
       await _exchange.getUserSummary(session.environment),
     );
-    final entries = switch (await _exchange.openUnknownWrites()) {
+    final entries = switch (await _exchange.openUnknownWrites(session)) {
       Ok(:final value) => value,
       Err() => const <UnknownWrite>[],
     };

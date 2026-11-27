@@ -31,7 +31,7 @@ class LoadLimitOrderContextUsecase {
       _exchange.getUserSummary(session.environment),
       _exchange.readDefaultWallets(session),
       _appWallets(session),
-      _exchange.openUnknownWrites(),
+      _exchange.openUnknownWrites(session),
     ).wait;
     final summaryRead = readOfResult(summary);
     // A journal that can't be read leaves no entry to start from; the

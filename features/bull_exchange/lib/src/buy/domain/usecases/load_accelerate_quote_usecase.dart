@@ -55,7 +55,7 @@ class LoadAccelerateQuoteUsecase {
       case Err(:final failure):
         return readOfExchangeFailure<AccelerateQuote>(failure);
     }
-    final entries = switch (await _exchange.openUnknownWrites()) {
+    final entries = switch (await _exchange.openUnknownWrites(session)) {
       Ok(:final value) => value,
       Err() => const <UnknownWrite>[],
     };

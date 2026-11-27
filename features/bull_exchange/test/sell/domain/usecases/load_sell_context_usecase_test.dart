@@ -26,9 +26,8 @@ void main() {
           asked.add(environment);
           return Ok(sellSummary);
         },
+        access: fixedAccessForTesting(ExchangeAccessSignedIn(sellSession)),
         unknownWrites: journal,
-        readSessionPoint: () async =>
-            const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
       ),
     ).execute(sellSession);
     final context = (read as ReadGot<SellContext>).value;
@@ -37,12 +36,11 @@ void main() {
     expect(asked, [ExchangeEnvironment.mainnet]);
   });
 
-  test('an unreadable journal starts with no entries', () async {
+  test('a session that is no longer current starts with no entries', () async {
     final read = await LoadSellContextUsecase(
       exchangeForTesting(
         getUserSummary: (_) async => Ok(sellSummary),
         unknownWrites: InMemoryUnknownWriteJournal(),
-        readSessionPoint: () async => const Err(ExchangeNetworkFailure()),
       ),
     ).execute(sellSession);
     expect((read as ReadGot<SellContext>).value.openEntries, isEmpty);

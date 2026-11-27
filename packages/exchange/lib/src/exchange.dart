@@ -1021,17 +1021,20 @@ final class Exchange {
   Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() =>
       _defaultWallets.get();
 
-  /// The open journal entries of the current session's environment: writes
-  /// that may have reached the exchange and are not settled yet. Empty
-  /// without a journal.
+  /// The open journal entries of [session]'s environment: writes that may
+  /// have reached the exchange and are not settled yet. Empty without a
+  /// journal. For a session that is no longer the current one the journal
+  /// is not read ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<List<UnknownWrite>, Failure>> openUnknownWrites() async {
+  Future<Result<List<UnknownWrite>, Failure>> openUnknownWrites(
+    ExchangeSession session,
+  ) async {
     final journal = _unknownWrites;
     if (journal == null) return const Ok([]);
-    return switch (await _readSessionPoint()) {
-      Ok(:final value) => await journal.open(value.environment),
-      Err(:final failure) => Err(failure),
-    };
+    if (_access?.session != session) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    return journal.open(session.environment);
   }
 
   /// Re-reads what each open journal entry of the current environment would
