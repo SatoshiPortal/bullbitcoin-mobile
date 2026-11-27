@@ -26,8 +26,14 @@ final class OpenedViews {
   /// Administration of the views this session opened, bound to the session
   /// generation it is taken in: after a lock or a switch of view, take it
   /// again.
-  ViewAdministration get administration =>
-      ViewAdministration._(_inventory, this, _inventory._authority.current);
+  ///
+  /// A parent kept across a lock gives an administration that refuses every
+  /// command: only the session generation of this opening is accepted.
+  ViewAdministration get administration => ViewAdministration._(
+    _inventory,
+    this,
+    _inventory._epoch == _epoch ? _inventory._authority.current : null,
+  );
 
   /// The views opened so far, by name. Empty once the session is over.
   List<ViewSummary> get views =>
@@ -65,6 +71,15 @@ final class ViewAdministration {
 
   const ViewAdministration._(this._inventory, this._views, this._token);
 
+  /// A command needs the live token it was taken with, in the epoch of the
+  /// opening that produced it.
+  bool get _stale {
+    final token = _token;
+    return token == null ||
+        _views._inventory._epoch != _views._epoch ||
+        !_inventory._authority.isCurrent(token);
+  }
+
   bool _opened(ViewId id) => _views.views.any((view) => view.id == id);
 
   /// Makes a view with no PIN and puts it among the opened views. [secrets]
@@ -75,6 +90,7 @@ final class ViewAdministration {
     Set<Fingerprint> secrets = const {},
     Set<String> publicWallets = const {},
   }) async {
+    if (_stale) return const Err(inventorySessionChangedFailure);
     final result = await _inventory._inSession(
       (_, view) async => (await _inventory._administration.create(
         source: view,
@@ -85,19 +101,22 @@ final class ViewAdministration {
       preserveCommittedCommand: true,
       expect: _token,
     );
-    if (result case Ok(:final value)) _inventory._mergeOpened([value]);
+    if (result case Ok(:final value) when !_stale) {
+      _inventory._mergeOpened([value]);
+    }
     return result;
   }
 
   @useResult
   Future<Result<void, SecretFailure>> rename(ViewId id, String name) async {
+    if (_stale) return const Err(inventorySessionChangedFailure);
     if (!_opened(id)) return const Err(viewNotOpenFailure);
     final result = await _inventory._inSession(
       (_, _) => _inventory._administration.rename(id.value, name),
       preserveCommittedCommand: true,
       expect: _token,
     );
-    if (result is Ok) {
+    if (result is Ok && !_stale) {
       _inventory._openedViews = List.unmodifiable([
         for (final view in _inventory._openedViews)
           view.id == id
@@ -116,6 +135,7 @@ final class ViewAdministration {
   /// Deletes a view other than the one in use, and never the last one.
   @useResult
   Future<Result<void, SecretFailure>> delete(ViewId id) async {
+    if (_stale) return const Err(inventorySessionChangedFailure);
     if (!_opened(id)) return const Err(viewNotOpenFailure);
     final inUse = _inventory._authority.current?.activeView;
     if (inUse == id.value) return const Err(viewInUseFailure);
@@ -124,7 +144,7 @@ final class ViewAdministration {
       preserveCommittedCommand: true,
       expect: _token,
     );
-    if (result is Ok) {
+    if (result is Ok && !_stale) {
       _inventory._openedViews = List.unmodifiable([
         for (final view in _inventory._openedViews)
           if (view.id != id) view,
@@ -139,6 +159,7 @@ final class ViewAdministration {
     Fingerprint secret, {
     required ViewId to,
   }) async {
+    if (_stale) return const Err(inventorySessionChangedFailure);
     if (!_opened(to)) return const Err(viewNotOpenFailure);
     return _inventory._inSession(
       (_, view) => _inventory._administration.attach(
@@ -153,11 +174,13 @@ final class ViewAdministration {
 
   /// Removes a seed from the view in use when another view still holds it.
   @useResult
-  Future<Result<void, SecretFailure>> detach(Fingerprint secret) =>
-      _inventory._inSession(
-        (_, view) =>
-            _inventory._administration.detach(view: view, secret: secret),
-        preserveCommittedCommand: true,
-        expect: _token,
-      );
+  Future<Result<void, SecretFailure>> detach(Fingerprint secret) async {
+    if (_stale) return const Err(inventorySessionChangedFailure);
+    return _inventory._inSession(
+      (_, view) =>
+          _inventory._administration.detach(view: view, secret: secret),
+      preserveCommittedCommand: true,
+      expect: _token,
+    );
+  }
 }
