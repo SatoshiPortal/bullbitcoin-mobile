@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
+import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -6,5 +6,5 @@ import 'package:primitives/primitives.dart';
 /// is the `try/catch` boundary for it, so nothing raw reaches the use-case.
 abstract interface class ExternalLinkPort {
   @useResult
-  Future<Result<void, FundExchangeFailure>> open(Uri url);
+  Future<Result<void, ExchangeFailure>> open(Uri url);
 }

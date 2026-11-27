@@ -1,6 +1,6 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/funding/domain/external_link_port.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/open_funding_payment_link_usecase.dart';
-import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -8,13 +8,13 @@ import '../../result_helpers.dart';
 
 /// Records what it was asked to open, and answers with [result].
 class _RecordingExternalLink implements ExternalLinkPort {
-  final Result<void, FundExchangeFailure> result;
+  final Result<void, ExchangeFailure> result;
   final List<Uri> opened = [];
 
   _RecordingExternalLink([this.result = const Ok(null)]);
 
   @override
-  Future<Result<void, FundExchangeFailure>> open(Uri url) async {
+  Future<Result<void, ExchangeFailure>> open(Uri url) async {
     opened.add(url);
     return result;
   }
@@ -31,10 +31,7 @@ void main() {
       ),
     );
 
-    expect(
-      result,
-      isA<Ok<OpenFundingPaymentLinkResult, FundExchangeFailure>>(),
-    );
+    expect(result, isA<Ok<OpenFundingPaymentLinkResult, ExchangeFailure>>());
     expect(link.opened.single.toString(), 'https://pay.example.com/abc');
   });
 
@@ -67,13 +64,10 @@ void main() {
 
         expect(
           result,
-          isA<Err<OpenFundingPaymentLinkResult, FundExchangeFailure>>(),
+          isA<Err<OpenFundingPaymentLinkResult, ExchangeFailure>>(),
           reason: '"$bad" should not reach the launcher',
         );
-        expect(
-          failureOf(result),
-          isA<FundExchangePaymentLinkUnavailableFailure>(),
-        );
+        expect(failureOf(result), isA<ExchangePaymentLinkUnavailableFailure>());
         expect(link.opened, isEmpty);
       }
     },
@@ -89,16 +83,13 @@ void main() {
       ),
     );
 
-    expect(
-      result,
-      isA<Ok<OpenFundingPaymentLinkResult, FundExchangeFailure>>(),
-    );
+    expect(result, isA<Ok<OpenFundingPaymentLinkResult, ExchangeFailure>>());
     expect(link.opened, hasLength(1));
   });
 
   test('a port failure is forwarded unchanged', () async {
     final link = _RecordingExternalLink(
-      const Err(FundExchangePaymentLinkUnavailableFailure('PlatformException')),
+      const Err(ExchangePaymentLinkUnavailableFailure('PlatformException')),
     );
     final usecase = OpenFundingPaymentLinkUsecase(externalLink: link);
 
@@ -109,7 +100,7 @@ void main() {
     );
 
     final failure = failureOf(result);
-    expect(failure, isA<FundExchangePaymentLinkUnavailableFailure>());
+    expect(failure, isA<ExchangePaymentLinkUnavailableFailure>());
     expect(failure.logMessage, 'PlatformException');
   });
 }

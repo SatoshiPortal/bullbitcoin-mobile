@@ -4,7 +4,7 @@
 ///
 /// These are `Exception`s, not `Failure`s: they are thrown inside the data
 /// layer and caught once at the repository boundary, which maps them to a
-/// `FundExchangeFailure`. They carry NO user-facing message — translation is
+/// `ExchangeFailure`. They carry NO user-facing message — translation is
 /// the presentation layer's job. [logMessage] reaches logs and Sentry only.
 sealed class FundingDatasourceException implements Exception {
   final String? logMessage;
