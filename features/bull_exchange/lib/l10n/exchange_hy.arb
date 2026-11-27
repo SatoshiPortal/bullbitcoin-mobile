@@ -813,7 +813,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Չհաջողվեց ջնջել դրամապանակի հասցեն",
   "exchangeSettingsWriteBusy": "Բորսային ուղղված մեկ այլ հարցում դեռ ընթացքի մեջ է։ Կրկին փորձեք մի փոքր ուշ։",
   "exchangeSettingsSignedOut": "Դուք այլևս մուտք գործած չեք բորսա։ Կրկին մուտք գործեք՝ այս կարգավորումները փոխելու համար։",
-  "exchangeBitcoinWalletsBusy": "Բորսային ուղղված մեկ այլ հարցում դեռ ընթացքի մեջ է։ Կրկին փորձեք մի փոքր ուշ։",
   "exchangeBitcoinWalletsUnsetSuccess": "Դրամապանակի հասցեն հեռացվեց",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Չկարողացանք պարզել՝ արդյոք այս հասցեն հեռացվել է։ Կրկին ստուգեք՝ նախքան այն փոխելը։",
   "exchangeBitcoinWalletsCheckAgain": "Կրկին ստուգել",

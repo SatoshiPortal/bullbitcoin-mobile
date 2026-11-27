@@ -1379,7 +1379,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "حذف آدرس کیف پول ناموفق بود",
   "exchangeSettingsWriteBusy": "درخواست دیگری به صرافی هنوز در حال انجام است. چند لحظه دیگر دوباره تلاش کنید.",
   "exchangeSettingsSignedOut": "دیگر وارد صرافی نیستید. برای تغییر این تنظیمات دوباره وارد شوید.",
-  "exchangeBitcoinWalletsBusy": "درخواست دیگری به صرافی هنوز در حال انجام است. چند لحظه دیگر دوباره تلاش کنید.",
   "exchangeBitcoinWalletsUnsetSuccess": "آدرس کیف پول حذف شد",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "نتوانستیم بفهمیم این آدرس حذف شده است یا نه. پیش از تغییر آن، دوباره بررسی کنید.",
   "exchangeBitcoinWalletsCheckAgain": "بررسی دوباره",

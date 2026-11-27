@@ -1379,7 +1379,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Αποτυχία διαγραφής διεύθυνσης πορτοφολιού",
   "exchangeSettingsWriteBusy": "Ένα άλλο αίτημα προς το ανταλλακτήριο εκτελείται ακόμη. Δοκιμάστε ξανά σε λίγο.",
   "exchangeSettingsSignedOut": "Δεν είστε πλέον συνδεδεμένοι στο ανταλλακτήριο. Συνδεθείτε ξανά για να αλλάξετε αυτές τις ρυθμίσεις.",
-  "exchangeBitcoinWalletsBusy": "Ένα άλλο αίτημα προς το ανταλλακτήριο εκτελείται ακόμη. Δοκιμάστε ξανά σε λίγο.",
   "exchangeBitcoinWalletsUnsetSuccess": "Η διεύθυνση πορτοφολιού αφαιρέθηκε",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Δεν ήταν δυνατό να διαπιστωθεί αν αφαιρέθηκε αυτή η διεύθυνση. Ελέγξτε ξανά πριν την αλλάξετε.",
   "exchangeBitcoinWalletsCheckAgain": "Έλεγχος ξανά",

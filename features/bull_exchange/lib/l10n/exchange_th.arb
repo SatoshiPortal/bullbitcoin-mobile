@@ -1379,7 +1379,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "ลบที่อยู่กระเป๋าเงินไม่สำเร็จ",
   "exchangeSettingsWriteBusy": "คำขออื่นไปยังแพลตฟอร์มซื้อขายยังดำเนินการอยู่ โปรดลองอีกครั้งในอีกสักครู่",
   "exchangeSettingsSignedOut": "คุณไม่ได้เข้าสู่ระบบแพลตฟอร์มซื้อขายแล้ว โปรดเข้าสู่ระบบอีกครั้งเพื่อเปลี่ยนการตั้งค่าเหล่านี้",
-  "exchangeBitcoinWalletsBusy": "คำขออื่นไปยังแพลตฟอร์มซื้อขายยังดำเนินการอยู่ โปรดลองอีกครั้งในอีกสักครู่",
   "exchangeBitcoinWalletsUnsetSuccess": "ลบที่อยู่กระเป๋าเงินแล้ว",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "เราไม่ทราบว่าที่อยู่นี้ถูกลบแล้วหรือไม่ โปรดตรวจสอบอีกครั้งก่อนเปลี่ยนแปลง",
   "exchangeBitcoinWalletsCheckAgain": "ตรวจสอบอีกครั้ง",

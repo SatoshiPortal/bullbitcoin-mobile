@@ -1,6 +1,5 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
-import 'package:bull_exchange/src/settings/presentation/exchange_settings_failure_l10n.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,26 +12,23 @@ const _rawReason =
 /// Every variant of the sealed family, each carrying the raw reason. If a
 /// variant is added without being listed here the l10n switch still forces a
 /// compile error, but these assertions are what prove it stays sanitized.
-const _everyFailure = <ExchangeSettingsFailure>[
-  ExchangeSettingsStatisticsUnavailableFailure(_rawReason),
-  ExchangeSettingsAccountUnavailableFailure(_rawReason),
-  ExchangeSettingsPreferencesSaveFailure(_rawReason),
-  ExchangeSettingsNetworkFailure(_rawReason),
-  ExchangeSettingsNotAuthenticatedFailure(_rawReason),
-  ExchangeSettingsUploadStatusUnavailableFailure(_rawReason),
-  ExchangeSettingsDocumentAlreadySubmittedFailure(_rawReason),
-  ExchangeSettingsDocumentEmptyFailure(_rawReason),
-  ExchangeSettingsDocumentTooLargeFailure(_rawReason),
-  ExchangeSettingsDocumentTypeNotAllowedFailure(_rawReason),
-  ExchangeSettingsDocumentUnreadableFailure(_rawReason),
-  ExchangeSettingsDocumentUploadFailure(_rawReason),
-  ExchangeSettingsUnexpectedFailure(_rawReason),
+const _everyFailure = <ExchangeFailure>[
+  ExchangeStatisticsUnavailableFailure(_rawReason),
+  ExchangeAccountDetailsUnavailableFailure(_rawReason),
+  ExchangePreferencesSaveFailure(_rawReason),
+  ExchangeNetworkFailure(_rawReason),
+  ExchangeNotAuthenticatedFailure(_rawReason),
+  ExchangeUploadStatusUnavailableFailure(_rawReason),
+  ExchangeDocumentAlreadySubmittedFailure(_rawReason),
+  ExchangeDocumentEmptyFailure(_rawReason),
+  ExchangeDocumentTooLargeFailure(_rawReason),
+  ExchangeDocumentTypeNotAllowedFailure(_rawReason),
+  ExchangeDocumentUnreadableFailure(_rawReason),
+  ExchangeDocumentUploadFailure(_rawReason),
+  ExchangeUnexpectedFailure(_rawReason),
 ];
 
-Future<String> _translate(
-  WidgetTester tester,
-  ExchangeSettingsFailure failure,
-) async {
+Future<String> _translate(WidgetTester tester, ExchangeFailure failure) async {
   late String translated;
 
   await tester.pumpWidget(
@@ -83,24 +79,18 @@ void main() {
 
   testWidgets('the message never depends on the raw reason', (tester) async {
     expect(
-      await _translate(
-        tester,
-        const ExchangeSettingsDocumentUploadFailure(_rawReason),
-      ),
-      await _translate(tester, const ExchangeSettingsDocumentUploadFailure()),
+      await _translate(tester, const ExchangeDocumentUploadFailure(_rawReason)),
+      await _translate(tester, const ExchangeDocumentUploadFailure()),
     );
   });
 
   testWidgets('each mapped failure reads differently from the catch-all', (
     tester,
   ) async {
-    final generic = await _translate(
-      tester,
-      const ExchangeSettingsUnexpectedFailure(),
-    );
+    final generic = await _translate(tester, const ExchangeUnexpectedFailure());
 
     for (final failure in _everyFailure) {
-      if (failure is ExchangeSettingsUnexpectedFailure) continue;
+      if (failure is ExchangeUnexpectedFailure) continue;
       expect(
         await _translate(tester, failure),
         isNot(generic),

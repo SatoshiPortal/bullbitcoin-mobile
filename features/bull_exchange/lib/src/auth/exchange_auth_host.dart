@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 
-import '../exchange_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
+
 import '../session/exchange_session_scope.dart';
 import 'exchange_auth_screen.dart';
 

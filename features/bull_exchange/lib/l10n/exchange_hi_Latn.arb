@@ -1382,7 +1382,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Wallet address delete nahi ho saka",
   "exchangeSettingsWriteBusy": "Exchange ki ek aur request abhi chal rahi hai. Thodi der mein dobara try karein.",
   "exchangeSettingsSignedOut": "Aap ab exchange mein signed in nahi hain. Ye settings badalne ke liye dobara sign in karein.",
-  "exchangeBitcoinWalletsBusy": "Exchange ki ek aur request abhi chal rahi hai. Thodi der mein dobara try karein.",
   "exchangeBitcoinWalletsUnsetSuccess": "Wallet address hata diya gaya",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Hum pata nahi laga sake ki yeh address hataya gaya ya nahi. Ise badalne se pehle dobara check karein.",
   "exchangeBitcoinWalletsCheckAgain": "Dobara check karein",

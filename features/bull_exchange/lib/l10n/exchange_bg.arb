@@ -1200,7 +1200,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Неуспешно изтриване на адреса на портфейла",
   "exchangeSettingsWriteBusy": "Друга заявка към борсата все още се изпълнява. Опитайте отново след малко.",
   "exchangeSettingsSignedOut": "Вече не сте влезли в борсата. Влезте отново, за да промените тези настройки.",
-  "exchangeBitcoinWalletsBusy": "Друга заявка към борсата все още се изпълнява. Опитайте отново след малко.",
   "exchangeBitcoinWalletsUnsetSuccess": "Адресът на портфейла е премахнат",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Не можахме да разберем дали този адрес е премахнат. Проверете отново, преди да го промените.",
   "exchangeBitcoinWalletsCheckAgain": "Провери отново",

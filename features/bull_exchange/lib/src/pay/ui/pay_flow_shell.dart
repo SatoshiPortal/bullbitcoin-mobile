@@ -15,7 +15,7 @@ import 'package:bull_exchange/src/payin/ui/payin_source_page.dart';
 import 'package:bull_exchange/src/payin/ui/payin_view.dart';
 import 'package:bull_exchange/src/payin/ui/quote_review_page.dart';
 import 'package:bull_exchange/src/payout/ui/payout_requirement_view.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_pick_screen.dart';
 import 'package:bull_exchange/src/sell/ui/sell_flow_shell.dart'
     show sellReviewRows;

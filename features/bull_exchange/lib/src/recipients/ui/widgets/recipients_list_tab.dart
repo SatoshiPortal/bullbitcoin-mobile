@@ -5,7 +5,7 @@ import 'package:bull_exchange/src/recipients/ui/widgets/jurisdiction_dropdown.da
 import 'package:bull_exchange/src/recipients/ui/widgets/recipients_list_tile.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/confidential_sepa_availability_status.dart';

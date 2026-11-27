@@ -882,7 +882,6 @@
   "exchangeBitcoinWalletsSaveOutcomeUnknown": "Impossible de savoir si cette adresse a été enregistrée. Vérifiez-la ci-dessous avant d’enregistrer à nouveau.",
   "exchangeSettingsWriteBusy": "Une autre requête à la plateforme est en cours. Réessayez dans un instant.",
   "exchangeSettingsSignedOut": "Vous n’êtes plus connecté à la plateforme. Reconnectez-vous pour modifier ces paramètres.",
-  "exchangeBitcoinWalletsBusy": "Une autre requête à la plateforme est en cours. Réessayez dans un instant.",
   "exchangeBitcoinWalletsUnsetSuccess": "Adresse de portefeuille supprimée",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Impossible de savoir si cette adresse a été supprimée. Vérifiez à nouveau avant de la modifier.",
   "exchangeBitcoinWalletsCheckAgain": "Vérifier à nouveau",

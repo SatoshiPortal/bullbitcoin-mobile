@@ -1379,7 +1379,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Cüzdan adresi silinemedi",
   "exchangeSettingsWriteBusy": "Başka bir borsa isteği hâlâ işleniyor. Birazdan tekrar deneyin.",
   "exchangeSettingsSignedOut": "Artık borsada oturumunuz açık değil. Bu ayarları değiştirmek için tekrar giriş yapın.",
-  "exchangeBitcoinWalletsBusy": "Başka bir borsa isteği hâlâ işleniyor. Birazdan tekrar deneyin.",
   "exchangeBitcoinWalletsUnsetSuccess": "Cüzdan adresi kaldırıldı",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Bu adresin kaldırılıp kaldırılmadığını anlayamadık. Değiştirmeden önce tekrar kontrol edin.",
   "exchangeBitcoinWalletsCheckAgain": "Tekrar kontrol et",

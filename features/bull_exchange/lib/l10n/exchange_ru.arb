@@ -865,7 +865,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Не удалось удалить адрес кошелька",
   "exchangeSettingsWriteBusy": "Другой запрос к бирже ещё выполняется. Повторите попытку через минуту.",
   "exchangeSettingsSignedOut": "Вы больше не авторизованы на бирже. Войдите снова, чтобы изменить эти настройки.",
-  "exchangeBitcoinWalletsBusy": "Другой запрос к бирже ещё выполняется. Повторите попытку через минуту.",
   "exchangeBitcoinWalletsUnsetSuccess": "Адрес кошелька удалён",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Не удалось определить, был ли удалён этот адрес. Проверьте ещё раз, прежде чем изменять его.",
   "exchangeBitcoinWalletsCheckAgain": "Проверить снова",

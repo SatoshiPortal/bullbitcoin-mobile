@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
 import 'package:bull_exchange/src/payout/ui/payout_requirement_view.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_pick_screen.dart';
 import 'package:bull_exchange/src/session/exchange_session_scope.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';

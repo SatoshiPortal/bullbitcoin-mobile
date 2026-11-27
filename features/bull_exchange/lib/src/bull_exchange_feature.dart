@@ -20,7 +20,9 @@ import 'dashboard/exchange_dashboard_route.dart';
 import 'dashboard/exchange_home_actions.dart';
 import 'dca/ui/dca_router.dart';
 import 'default_wallets/default_wallets_payout_fields.dart';
-import 'exchange_failure_l10n.dart';
+
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
+
 import 'exchange_l10n.dart';
 import 'exchange_payout_destinations.dart';
 import 'session/exchange_access_builder.dart';

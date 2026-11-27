@@ -1379,7 +1379,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "تعذّر حذف عنوان المحفظة",
   "exchangeSettingsWriteBusy": "لا يزال طلب آخر إلى المنصة قيد التنفيذ. حاول مرة أخرى بعد قليل.",
   "exchangeSettingsSignedOut": "لم تعد مسجّلًا الدخول إلى المنصة. سجّل الدخول مرة أخرى لتغيير هذه الإعدادات.",
-  "exchangeBitcoinWalletsBusy": "لا يزال طلب آخر إلى المنصة قيد التنفيذ. حاول مرة أخرى بعد قليل.",
   "exchangeBitcoinWalletsUnsetSuccess": "تمت إزالة عنوان المحفظة",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "لم نتمكن من معرفة ما إذا كان هذا العنوان قد أُزيل. تحقّق مرة أخرى قبل تغييره.",
   "exchangeBitcoinWalletsCheckAgain": "تحقّق مرة أخرى",

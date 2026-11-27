@@ -1295,10 +1295,6 @@
   "@exchangeSettingsSignedOut": {
     "description": "Exchange settings: the session ended or expired; a retry can't help (SET-3)"
   },
-  "exchangeBitcoinWalletsBusy": "Another exchange request is still running. Try again in a moment.",
-  "@exchangeBitcoinWalletsBusy": {
-    "description": "Default wallets: a save or delete was refused because another exchange write runs or is unsettled"
-  },
   "exchangeBitcoinWalletsUnsetSuccess": "Wallet address removed",
   "@exchangeBitcoinWalletsUnsetSuccess": {
     "description": "Default wallets: shown after an address is removed (DW-3; was the 'saved' message)"

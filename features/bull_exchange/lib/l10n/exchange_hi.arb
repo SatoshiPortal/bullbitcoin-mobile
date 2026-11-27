@@ -1382,7 +1382,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "वॉलेट पता हटाने में विफल",
   "exchangeSettingsWriteBusy": "एक्सचेंज का एक और अनुरोध अभी चल रहा है। थोड़ी देर में फिर से प्रयास करें।",
   "exchangeSettingsSignedOut": "आप अब एक्सचेंज में साइन इन नहीं हैं। ये सेटिंग्स बदलने के लिए फिर से साइन इन करें।",
-  "exchangeBitcoinWalletsBusy": "एक्सचेंज का एक और अनुरोध अभी चल रहा है। थोड़ी देर में फिर से प्रयास करें।",
   "exchangeBitcoinWalletsUnsetSuccess": "वॉलेट पता हटा दिया गया",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "हम पता नहीं लगा सके कि यह पता हटाया गया या नहीं। इसे बदलने से पहले फिर से जाँचें।",
   "exchangeBitcoinWalletsCheckAgain": "फिर से जाँचें",

@@ -1111,7 +1111,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "ৱালেটৰ ঠিকনা মচিব পৰা নগ'ল",
   "exchangeSettingsWriteBusy": "Exchange-লৈ পঠোৱা আন এটা অনুৰোধ এতিয়াও চলি আছে। অলপ পিছত পুনৰ চেষ্টা কৰক।",
   "exchangeSettingsSignedOut": "আপুনি এতিয়া Exchange-ত ছাইন ইন কৰা অৱস্থাত নাই। এই ছেটিংছ সলনি কৰিবলৈ পুনৰ ছাইন ইন কৰক।",
-  "exchangeBitcoinWalletsBusy": "Exchange-লৈ পঠোৱা আন এটা অনুৰোধ এতিয়াও চলি আছে। অলপ পিছত পুনৰ চেষ্টা কৰক।",
   "exchangeBitcoinWalletsUnsetSuccess": "ৱালেটৰ ঠিকনা আঁতৰোৱা হ'ল",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "এই ঠিকনাটো আঁতৰোৱা হ'ল নে নাই আমি জানিব নোৱাৰিলোঁ। সলনি কৰাৰ আগতে পুনৰ পৰীক্ষা কৰক।",
   "exchangeBitcoinWalletsCheckAgain": "পুনৰ পৰীক্ষা কৰক",

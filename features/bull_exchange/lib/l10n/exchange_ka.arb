@@ -813,7 +813,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "საფულის მისამართის წაშლა ვერ მოხერხდა",
   "exchangeSettingsWriteBusy": "ბირჟასთან სხვა მოთხოვნა ჯერ კიდევ სრულდება. სცადეთ ცოტა ხანში.",
   "exchangeSettingsSignedOut": "თქვენ აღარ ხართ შესული ბირჟაზე. ამ პარამეტრების შესაცვლელად ხელახლა შედით.",
-  "exchangeBitcoinWalletsBusy": "ბირჟასთან სხვა მოთხოვნა ჯერ კიდევ სრულდება. სცადეთ ცოტა ხანში.",
   "exchangeBitcoinWalletsUnsetSuccess": "საფულის მისამართი წაიშალა",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "ვერ დავადგინეთ, წაიშალა თუ არა ეს მისამართი. შეცვლამდე ხელახლა შეამოწმეთ.",
   "exchangeBitcoinWalletsCheckAgain": "ხელახლა შემოწმება",

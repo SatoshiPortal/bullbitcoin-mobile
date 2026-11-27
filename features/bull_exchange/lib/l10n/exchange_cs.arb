@@ -1379,7 +1379,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Nepodařilo se smazat adresu peněženky",
   "exchangeSettingsWriteBusy": "Jiný požadavek na burzu stále probíhá. Zkuste to za chvíli znovu.",
   "exchangeSettingsSignedOut": "Již nejste přihlášeni k burze. Pro změnu těchto nastavení se znovu přihlaste.",
-  "exchangeBitcoinWalletsBusy": "Jiný požadavek na burzu stále probíhá. Zkuste to za chvíli znovu.",
   "exchangeBitcoinWalletsUnsetSuccess": "Adresa peněženky odstraněna",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Nepodařilo se zjistit, zda byla tato adresa odstraněna. Než ji změníte, zkontrolujte to znovu.",
   "exchangeBitcoinWalletsCheckAgain": "Zkontrolovat znovu",

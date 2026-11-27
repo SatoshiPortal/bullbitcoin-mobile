@@ -1382,7 +1382,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "ওয়ালেট ঠিকানা মুছে ফেলা যায়নি",
   "exchangeSettingsWriteBusy": "এক্সচেঞ্জের আরেকটি অনুরোধ এখনও চলছে। একটু পরে আবার চেষ্টা করুন।",
   "exchangeSettingsSignedOut": "আপনি আর এক্সচেঞ্জে সাইন ইন করা নেই। এই সেটিংস পরিবর্তন করতে আবার সাইন ইন করুন।",
-  "exchangeBitcoinWalletsBusy": "এক্সচেঞ্জের আরেকটি অনুরোধ এখনও চলছে। একটু পরে আবার চেষ্টা করুন।",
   "exchangeBitcoinWalletsUnsetSuccess": "ওয়ালেট ঠিকানা সরানো হয়েছে",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "এই ঠিকানাটি সরানো হয়েছে কি না আমরা বুঝতে পারিনি। পরিবর্তন করার আগে আবার যাচাই করুন।",
   "exchangeBitcoinWalletsCheckAgain": "আবার যাচাই করুন",

@@ -865,7 +865,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Falha ao eliminar o endereço da carteira",
   "exchangeSettingsWriteBusy": "Outro pedido à exchange ainda está em curso. Tente novamente dentro de momentos.",
   "exchangeSettingsSignedOut": "Já não tem sessão iniciada na exchange. Inicie sessão novamente para alterar estas definições.",
-  "exchangeBitcoinWalletsBusy": "Outro pedido à exchange ainda está em curso. Tente novamente dentro de momentos.",
   "exchangeBitcoinWalletsUnsetSuccess": "Endereço da carteira removido",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Não conseguimos saber se este endereço foi removido. Verifique novamente antes de o alterar.",
   "exchangeBitcoinWalletsCheckAgain": "Verificar novamente",

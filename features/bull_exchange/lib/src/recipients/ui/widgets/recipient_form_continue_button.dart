@@ -2,7 +2,7 @@ import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecipientFormContinueButton extends StatelessWidget {

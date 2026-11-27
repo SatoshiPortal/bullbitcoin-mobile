@@ -865,7 +865,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "无法删除钱包地址",
   "exchangeSettingsWriteBusy": "另一个交易平台请求仍在进行中。请稍后重试。",
   "exchangeSettingsSignedOut": "您已不再登录交易平台。请重新登录以更改这些设置。",
-  "exchangeBitcoinWalletsBusy": "另一个交易平台请求仍在进行中。请稍后重试。",
   "exchangeBitcoinWalletsUnsetSuccess": "钱包地址已移除",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "我们无法确定此地址是否已移除。请先重新检查，再进行更改。",
   "exchangeBitcoinWalletsCheckAgain": "重新检查",

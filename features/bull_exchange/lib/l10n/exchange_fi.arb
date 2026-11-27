@@ -865,7 +865,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Lompakon osoitteen poisto epäonnistui",
   "exchangeSettingsWriteBusy": "Toinen pörssipyyntö on vielä käynnissä. Yritä hetken kuluttua uudelleen.",
   "exchangeSettingsSignedOut": "Et ole enää kirjautuneena pörssiin. Kirjaudu uudelleen muuttaaksesi näitä asetuksia.",
-  "exchangeBitcoinWalletsBusy": "Toinen pörssipyyntö on vielä käynnissä. Yritä hetken kuluttua uudelleen.",
   "exchangeBitcoinWalletsUnsetSuccess": "Lompakon osoite poistettu",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Emme saaneet selville, poistettiinko tämä osoite. Tarkista uudelleen ennen kuin muutat sitä.",
   "exchangeBitcoinWalletsCheckAgain": "Tarkista uudelleen",

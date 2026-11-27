@@ -891,7 +891,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Impossibile eliminare l'indirizzo del portafoglio",
   "exchangeSettingsWriteBusy": "Un'altra richiesta all'exchange è ancora in corso. Riprova tra un momento.",
   "exchangeSettingsSignedOut": "Non sei più connesso all'exchange. Accedi di nuovo per modificare queste impostazioni.",
-  "exchangeBitcoinWalletsBusy": "Un'altra richiesta all'exchange è ancora in corso. Riprova tra un momento.",
   "exchangeBitcoinWalletsUnsetSuccess": "Indirizzo del portafoglio rimosso",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Non sappiamo se questo indirizzo è stato rimosso. Controlla di nuovo prima di modificarlo.",
   "exchangeBitcoinWalletsCheckAgain": "Controlla di nuovo",

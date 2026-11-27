@@ -813,7 +813,6 @@
   "exchangeBitcoinWalletsDeleteFailed": "Imeshindwa kufuta anwani ya pochi",
   "exchangeSettingsWriteBusy": "Ombi lingine kwa exchange bado linaendelea. Jaribu tena baada ya muda mfupi.",
   "exchangeSettingsSignedOut": "Hujaingia tena kwenye exchange. Ingia tena ili kubadilisha mipangilio hii.",
-  "exchangeBitcoinWalletsBusy": "Ombi lingine kwa exchange bado linaendelea. Jaribu tena baada ya muda mfupi.",
   "exchangeBitcoinWalletsUnsetSuccess": "Anwani ya pochi imeondolewa",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "Hatukuweza kujua kama anwani hii iliondolewa. Angalia tena kabla ya kuibadilisha.",
   "exchangeBitcoinWalletsCheckAgain": "Angalia tena",

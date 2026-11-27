@@ -897,7 +897,6 @@
   "exchangeBitcoinWalletsSaveOutcomeUnknown": "No pudimos saber si esta dirección se guardó. Revísala abajo antes de volver a guardar.",
   "exchangeSettingsWriteBusy": "Otra solicitud al exchange sigue en curso. Inténtalo de nuevo en un momento.",
   "exchangeSettingsSignedOut": "Ya no tienes sesión iniciada en el exchange. Vuelve a iniciar sesión para cambiar estos ajustes.",
-  "exchangeBitcoinWalletsBusy": "Otra solicitud al exchange sigue en curso. Inténtalo de nuevo en un momento.",
   "exchangeBitcoinWalletsUnsetSuccess": "Dirección de billetera eliminada",
   "exchangeBitcoinWalletsUnsetOutcomeUnknown": "No pudimos saber si esta dirección se eliminó. Vuelve a comprobarlo antes de cambiarla.",
   "exchangeBitcoinWalletsCheckAgain": "Volver a comprobar",
