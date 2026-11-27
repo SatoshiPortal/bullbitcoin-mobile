@@ -78,7 +78,11 @@ final class ViewFixture {
   }
 
   Future<void> close() async {
-    await admission.close();
+    try {
+      await admission.close();
+    } on Object {
+      // Already closed by the test.
+    }
     await directory.delete(recursive: true);
   }
 }
