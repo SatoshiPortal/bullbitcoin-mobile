@@ -39,6 +39,13 @@ void main() {
       final readerFinder = find.byType(ReaderWidget);
       final reader = tester.widget<ReaderWidget>(readerFinder);
       final labels = ScanningLocalizations.of(tester.element(readerFinder));
+      expect(reader.showScannerOverlay, isFalse);
+      expect(
+        find.image(
+          const AssetImage('assets/qr_viewfinder.png', package: 'scanning'),
+        ),
+        findsOneWidget,
+      );
       expect(reader.showGallery, isTrue);
       expect(reader.tryInverted, isTrue);
 
