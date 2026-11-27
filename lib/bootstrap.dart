@@ -82,6 +82,9 @@ Future<void> startApp() async {
         await log.flush();
       }
       runApp(const BullBitcoinWalletApp());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        unawaited(Bull.startBackgroundWork());
+      });
       _refreshDiagnosticContextAfterFirstFrame();
     },
     (error, stackTrace) {
