@@ -9,6 +9,7 @@ import 'backup_guard.dart';
 import 'boundary.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
+import 'view_format.dart' show multiViewEnabled;
 
 /// Changes to the set of views, always decided from the view in use and the
 /// views the session opened. A caller names views by id, and an id is only an
@@ -32,6 +33,9 @@ final class ViewAdministrationRepository {
     required Set<Fingerprint> secrets,
     required Set<String> publicWallets,
   }) async {
+    // A build that supports one view never writes a second: the file would
+    // then be unreadable to the next start of that same build.
+    if (!multiViewEnabled) return const Err(ViewsUnsupportedFailure());
     final clean = _validName(name);
     if (clean == null) return const Err(InvalidViewNameFailure());
     SecretFailure? refused;
@@ -148,6 +152,7 @@ final class ViewAdministrationRepository {
     required String target,
     required Fingerprint secret,
   }) async {
+    if (!multiViewEnabled) return const Err(ViewsUnsupportedFailure());
     SecretFailure? refused;
     final result = await boundary(
       () => inventoryWriteTransaction(_database, () async {

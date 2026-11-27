@@ -53,6 +53,11 @@ final class ViewInUseFailure extends SecretFailure {
   const ViewInUseFailure() : super('view in use');
 }
 
+/// This build supports one view only. Nothing was written.
+final class ViewsUnsupportedFailure extends SecretFailure {
+  const ViewsUnsupportedFailure() : super('views unsupported');
+}
+
 sealed class SecretFailure extends Failure {
   const SecretFailure([super.logMessage]);
 }

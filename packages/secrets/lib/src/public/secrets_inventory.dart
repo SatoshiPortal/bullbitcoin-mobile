@@ -28,7 +28,6 @@ import '../data/ready_inventory_store.dart';
 import '../data/view_administration_repository.dart';
 export '../data/ready_inventory_store.dart' show inventoryReadinessFailure;
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
-import '../data/view_format.dart' show multiViewSupported;
 import '../domain/access_attempt.dart';
 import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
@@ -108,13 +107,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     required RuntimeAdmission admission,
     InventoryBackupVerification? backupVerification,
     required SessionAuthority authority,
-    @visibleForTesting bool multiView = multiViewSupported,
   }) async {
-    final opened = await openReadyInventoryStore(
-      file,
-      admission,
-      multiView: multiView,
-    );
+    final opened = await openReadyInventoryStore(file, admission);
     switch (opened) {
       case Err(:final failure):
         return Err(failure);
@@ -622,11 +616,9 @@ final class BackgroundWalletDescriptors {
   static Future<Result<BackgroundWalletDescriptors, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-    @visibleForTesting bool multiView = multiViewSupported,
   }) async => (await openReadyInventoryStore(
     file,
     admission,
-    multiView: multiView,
   )).map(BackgroundWalletDescriptors._);
 
   @useResult

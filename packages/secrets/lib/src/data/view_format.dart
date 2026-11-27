@@ -10,6 +10,16 @@ import 'secrets_database.dart';
 /// the binary, so the foreground and the background workers agree.
 const multiViewSupported = bool.fromEnvironment('BULL_MULTI_VIEW');
 
+bool? _testOverride;
+
+/// Whether this process supports more than the initial view. The compile-time
+/// [multiViewSupported], unless a test replaced it through `testing.dart`.
+/// Nothing in production can set the override.
+bool get multiViewEnabled => _testOverride ?? multiViewSupported;
+
+/// Replaces the gate for tests; `null` restores the build's own value.
+void overrideMultiViewForTests(bool? value) => _testOverride = value;
+
 /// Checks the layout invariants of the supported format, in every opener.
 ///
 /// A build without multiple views supports exactly one view, `'all'`, whose
@@ -18,9 +28,9 @@ const multiViewSupported = bool.fromEnvironment('BULL_MULTI_VIEW');
 /// the access state to exist. Anything else is [DatabaseViewsUnsupported], which
 /// is not a damaged file and never starts a recovery.
 Future<Result<void, DatabaseOpenFailure>> checkSupportedViewFormat(
-  SecretsDatabase database, {
-  required bool multiView,
-}) async {
+  SecretsDatabase database,
+) async {
+  final multiView = multiViewEnabled;
   final views = await database.customSelect('''
       SELECT v.id AS id,
              v.credential_id AS credential_id,

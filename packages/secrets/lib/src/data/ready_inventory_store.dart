@@ -25,9 +25,8 @@ import 'view_format.dart';
 /// this build cannot read before any of them uses the connection.
 Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
   File file,
-  RuntimeAdmission admission, {
-  bool multiView = multiViewSupported,
-}) async {
+  RuntimeAdmission admission,
+) async {
   final result = await InventoryStore.open(file, admission, existing: true);
   switch (result) {
     case Err():
@@ -36,10 +35,7 @@ Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
       switch (await readInventoryReadiness(value.database, admitted: true)) {
         case Ok(value: OwnerReadiness.imported || OwnerReadiness.initialized):
           try {
-            switch (await checkSupportedViewFormat(
-              value.database,
-              multiView: multiView,
-            )) {
+            switch (await checkSupportedViewFormat(value.database)) {
               case Err(:final failure):
                 await value.close();
                 return Err(failure);

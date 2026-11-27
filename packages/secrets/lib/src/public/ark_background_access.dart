@@ -7,7 +7,6 @@ import 'package:primitives/primitives.dart';
 import '../data/ark_notify_policy.dart';
 import '../data/inventory_store.dart';
 import '../data/ready_inventory_store.dart';
-import '../data/view_format.dart' show multiViewSupported;
 import '../domain/domain.dart';
 
 /// BIP85 index of the Ark child derived from a wallet seed.
@@ -35,11 +34,9 @@ final class ArkBackgroundAccess {
   static Future<Result<ArkBackgroundAccess, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-    @visibleForTesting bool multiView = multiViewSupported,
   }) async => (await openReadyInventoryStore(
     file,
     admission,
-    multiView: multiView,
   )).map(ArkBackgroundAccess._);
 
   /// Whether Ark may still notify for [parent] while locked; see

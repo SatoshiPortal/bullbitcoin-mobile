@@ -44,6 +44,7 @@ export 'package:secrets/src/domain/domain.dart'
         ViewHoldsSecretsFailure,
         ViewInUseFailure,
         ViewNotOpenFailure,
+        ViewsUnsupportedFailure,
         ViewSummary,
         VaultKey,
         WalletAlreadyRegisteredFailure,

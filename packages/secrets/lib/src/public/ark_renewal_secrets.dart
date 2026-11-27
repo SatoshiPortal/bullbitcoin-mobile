@@ -13,7 +13,6 @@ import '../data/inventory_store.dart';
 import '../data/ready_inventory_store.dart';
 import '../data/secret_repository.dart';
 import '../data/secrets_database.dart';
-import '../data/view_format.dart' show multiViewSupported;
 import '../domain/domain.dart';
 import 'ark_background_access.dart' show arkChildBip85Index;
 
@@ -80,12 +79,8 @@ final class ArkRenewalSecrets {
   static Future<Result<ArkRenewalSecrets, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-    @visibleForTesting bool multiView = multiViewSupported,
-  }) async => (await openReadyInventoryStore(
-    file,
-    admission,
-    multiView: multiView,
-  )).map(ArkRenewalSecrets._);
+  }) async =>
+      (await openReadyInventoryStore(file, admission)).map(ArkRenewalSecrets._);
 
   /// Whether [parent] may be refreshed now, read afresh under the inventory's
   /// write lock. It reads no seed and derives nothing. The host asks before

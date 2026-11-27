@@ -14,3 +14,4 @@ export 'src/testing/testing.dart'
         LegacyExchangeKeychainFixture,
         unlockedSessionAuthority;
 export 'src/testing/wallet_inventory_fixtures.dart';
+export 'src/data/view_format.dart' show overrideMultiViewForTests;
