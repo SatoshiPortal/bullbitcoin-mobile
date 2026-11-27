@@ -173,6 +173,8 @@ class ChainSwap {
     required String lbtcElectrumUrl,
     required String boltzUrl,
     String? referralId,
+    ElectrumSettings? btcElectrumSettings,
+    ElectrumSettings? lbtcElectrumSettings,
   }) => BullSdk.instance.api.boltzApiChainSwapChainSwapNewSwap(
     direction: direction,
     swapMasterKey: swapMasterKey,
@@ -183,6 +185,8 @@ class ChainSwap {
     lbtcElectrumUrl: lbtcElectrumUrl,
     boltzUrl: boltzUrl,
     referralId: referralId,
+    btcElectrumSettings: btcElectrumSettings,
+    lbtcElectrumSettings: lbtcElectrumSettings,
   );
 
   /// Refund a failed swap

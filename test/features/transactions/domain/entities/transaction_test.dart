@@ -1,4 +1,5 @@
 import 'package:swaps/order_swaps.dart';
+import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:transactions/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -109,6 +110,53 @@ void main() {
       expect(outgoing.isReceivingWallet('w2', isCounterpart: true), isTrue);
       expect(incoming.isReceivingWallet('w1'), isTrue);
       expect(incoming.isReceivingWallet('w2', isCounterpart: true), isFalse);
+    });
+  });
+
+  group('Transaction swap amounts in a wallet list', () {
+    final swap = Swap.chain(
+      id: 'chain-swap',
+      keyIndex: 0,
+      type: SwapType.bitcoinToLiquid,
+      status: SwapStatus.completed,
+      environment: Environment.mainnet,
+      creationTime: DateTime.utc(2026),
+      sendWalletId: 'bitcoin-wallet',
+      paymentAddress: 'bc1qlockup',
+      paymentAmount: 50000,
+      sendTxid: 'lockup-tx',
+      receiveWalletId: 'liquid-wallet',
+      receiveTxid: 'claim-tx',
+    );
+
+    test('the sending wallet shows exactly what it sent', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(txId: 'lockup-tx', amountSat: 50000),
+        swap: swap,
+      );
+
+      expect(transaction.isChainSwap, isTrue);
+      expect(transaction.walletListAmountSat, 50000);
+    });
+
+    test('the receiving wallet shows exactly what came in', () {
+      final transaction = Transaction(
+        walletTransaction: _walletTx(
+          txId: 'claim-tx',
+          direction: WalletTransactionDirection.incoming,
+          amountSat: 49500,
+        ),
+        swap: swap,
+      );
+
+      expect(transaction.isChainSwap, isTrue);
+      expect(transaction.isIncoming, isTrue);
+      expect(transaction.walletListAmountSat, 49500);
+      expect(transaction.swapListAmountSat, 50000);
+    });
+
+    test('a swap with no transaction yet shows the swap amount', () {
+      expect(Transaction(swap: swap).walletListAmountSat, 50000);
     });
   });
 

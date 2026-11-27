@@ -37,68 +37,65 @@ class WalletCard extends StatelessWidget {
     final label = context.bullType.caption;
     final accent = context.appColors.secondary;
     final muted = context.appColors.onSurfaceVariant;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: InkWell(
-        onTap: onTap,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(context.bullShapes.card),
+      child: Material(
+        elevation: 2,
+        shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
+        color: context.appColors.walletCardBackground,
         borderRadius: BorderRadius.circular(context.bullShapes.card),
-        child: Material(
-          elevation: 2,
-          shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
-          color: context.appColors.walletCardBackground,
-          borderRadius: BorderRadius.circular(context.bullShapes.card),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
-            decoration: BoxDecoration(
-              color: context.appColors.walletCardBackground,
-              border: Border(left: BorderSide(color: tagColor, width: 4)),
-              borderRadius: BorderRadius.circular(context.bullShapes.card),
-            ),
-            child: Stack(
-              // Centres the content once the minimum height exceeds it.
-              alignment: AlignmentDirectional.centerStart,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: .start,
-                          mainAxisAlignment: .center,
-                          children: [
-                            _line(context, title, bodyStyle, accent, false),
-                            const Gap(4),
-                            _line(context, description, label, muted, true),
-                          ],
-                        ),
-                      ),
-                      const Gap(8),
-                      Icon(
-                        Icons.chevron_right,
-                        color: context.appColors.onSurfaceVariant,
-                        size: 24,
-                      ),
-                    ],
-                  ),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
+          decoration: BoxDecoration(
+            color: context.appColors.walletCardBackground,
+            border: Border(left: BorderSide(color: tagColor, width: 4)),
+            borderRadius: BorderRadius.circular(context.bullShapes.card),
+          ),
+          child: Stack(
+            // Centres the content once the minimum height exceeds it.
+            alignment: AlignmentDirectional.centerStart,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
                 ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: BullFadingLinearProgress(
-                    trigger: isSyncing,
-                    backgroundColor: context.appColors.transparent,
-                    foregroundColor: context.appColors.secondary,
-                    height: 3.0,
-                  ),
+                child: Row(
+                  mainAxisAlignment: .spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        mainAxisAlignment: .center,
+                        children: [
+                          _line(context, title, bodyStyle, accent, false),
+                          const Gap(4),
+                          _line(context, description, label, muted, true),
+                        ],
+                      ),
+                    ),
+                    const Gap(8),
+                    Icon(
+                      Icons.chevron_right,
+                      color: context.appColors.onSurfaceVariant,
+                      size: 24,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: BullFadingLinearProgress(
+                  trigger: isSyncing,
+                  backgroundColor: context.appColors.transparent,
+                  foregroundColor: context.appColors.secondary,
+                  height: 3.0,
+                ),
+              ),
+            ],
           ),
         ),
       ),

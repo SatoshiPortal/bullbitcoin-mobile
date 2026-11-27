@@ -13,6 +13,7 @@ class BullPaymentDestinationInput extends StatefulWidget {
     super.key,
     required this.value,
     required this.onChanged,
+    this.onCommitted,
     this.label,
     required this.hint,
     required this.pasteLabel,
@@ -33,6 +34,11 @@ class BullPaymentDestinationInput extends StatefulWidget {
 
   final String value;
   final ValueChanged<String> onChanged;
+
+  /// When set, typing stays in the field and the text is reported here once
+  /// the user leaves the field or submits it, instead of to [onChanged] on
+  /// every keystroke. Paste, scan and clear still report at once.
+  final ValueChanged<String>? onCommitted;
   final String? label;
   final String hint;
   final String pasteLabel;
@@ -58,16 +64,41 @@ class BullPaymentDestinationInput extends StatefulWidget {
 class _BullPaymentDestinationInputState
     extends State<BullPaymentDestinationInput> {
   late final TextEditingController _controller;
+  final _focus = FocusNode();
+  String? _committed;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.value);
+    _focus.addListener(_onFocusChanged);
   }
+
+  void _onFocusChanged() {
+    if (!mounted) return;
+    if (!_focus.hasFocus) _commit();
+    setState(() {});
+  }
+
+  void _commit() {
+    final onCommitted = widget.onCommitted;
+    final text = _controller.text;
+    if (onCommitted == null || text == (_committed ?? widget.value)) return;
+    _committed = text;
+    onCommitted(text);
+  }
+
+  VoidCallback _replacing(VoidCallback action) => () {
+    _committed = _controller.text;
+    _focus.unfocus();
+    action();
+  };
 
   @override
   void didUpdateWidget(covariant BullPaymentDestinationInput oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value) _committed = null;
+    if (_focus.hasFocus && widget.onCommitted != null) return;
     if (_controller.text != widget.value) {
       _controller.value = TextEditingValue(
         text: widget.value,
@@ -78,6 +109,9 @@ class _BullPaymentDestinationInputState
 
   @override
   void dispose() {
+    _focus
+      ..removeListener(_onFocusChanged)
+      ..dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -85,7 +119,13 @@ class _BullPaymentDestinationInputState
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
-    final valid = widget.validAddress != null && widget.error == null;
+    // While the user types, a prefix that already parses (ishi@w) must not
+    // replace the field; the recognised destination shows once they leave it.
+    final valid =
+        widget.validAddress != null && widget.error == null && !_focus.hasFocus;
+    final error = widget.onCommitted != null && _focus.hasFocus
+        ? null
+        : widget.error;
     final messageStyle = context.bullType.label.copyWith(
       fontWeight: FontWeight.w400,
     );
@@ -120,7 +160,7 @@ class _BullPaymentDestinationInputState
             color: colors.surface,
             borderRadius: BorderRadius.circular(context.bullShapes.input),
             border: Border.all(
-              color: widget.error == null ? colors.border : colors.error,
+              color: error == null ? colors.border : colors.error,
             ),
           ),
           child: valid
@@ -159,7 +199,9 @@ class _BullPaymentDestinationInputState
                     ),
                     BullFieldAction(
                       label: widget.clearLabel,
-                      onPressed: widget.enabled ? widget.onClear : null,
+                      onPressed: widget.enabled
+                          ? _replacing(widget.onClear)
+                          : null,
                       icon: Icons.close,
                     ),
                     const SizedBox(width: 8),
@@ -172,8 +214,14 @@ class _BullPaymentDestinationInputState
                       : widget.hint,
                   child: TextField(
                     controller: _controller,
+                    focusNode: _focus,
                     enabled: widget.enabled,
-                    onChanged: widget.onChanged,
+                    onChanged: widget.onCommitted == null
+                        ? widget.onChanged
+                        : null,
+                    onSubmitted: widget.onCommitted == null
+                        ? null
+                        : (_) => _focus.unfocus(),
                     keyboardType: widget.keyboardType,
                     autocorrect: false,
                     enableSuggestions: false,
@@ -201,7 +249,7 @@ class _BullPaymentDestinationInputState
                   ),
                 ),
         ),
-        if (widget.error case final error?) ...[
+        if (error case final error?) ...[
           const SizedBox(height: 8),
           Text(error, style: messageStyle.copyWith(color: colors.error)),
         ] else if (!valid) ...[
@@ -217,7 +265,9 @@ class _BullPaymentDestinationInputState
               Expanded(
                 child: BullButton.secondary(
                   label: widget.pasteLabel,
-                  onPressed: (!widget.enabled) ? null : widget.onPaste,
+                  onPressed: (!widget.enabled)
+                      ? null
+                      : _replacing(widget.onPaste),
                   iconData: Icons.paste_sharp,
                   iconFirst: true,
                   height: 44,
@@ -230,7 +280,9 @@ class _BullPaymentDestinationInputState
               Expanded(
                 child: BullButton.secondary(
                   label: widget.scanLabel,
-                  onPressed: (!widget.enabled) ? null : widget.onScan,
+                  onPressed: (!widget.enabled)
+                      ? null
+                      : _replacing(widget.onScan),
                   iconData: Icons.qr_code_scanner,
                   iconFirst: true,
                   height: 44,

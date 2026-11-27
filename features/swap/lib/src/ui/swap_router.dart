@@ -3,7 +3,6 @@ import 'package:swaps/swaps.dart' show ChainSwap;
 import 'package:swap_feature/src/presentation/transfer_bloc.dart';
 import 'package:swap_feature/src/presentation/internal_ark_transfer_cubit.dart';
 import 'package:swap_feature/src/ui/pages/swap_confirm_page.dart';
-import 'package:swap_feature/src/ui/pages/swap_in_progress_page.dart';
 import 'package:swap_feature/src/ui/pages/internal_transfer_page.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/transactions.dart' show SettlementPoll;
@@ -12,8 +11,7 @@ import 'package:go_router/go_router.dart';
 
 enum TransferRoute {
   swap('/swap'),
-  confirmSwap('/swap/confirm'),
-  inProgressSwap('/swap/in-progress');
+  confirmSwap('/swap/confirm');
 
   final String path;
 
@@ -69,34 +67,25 @@ class SwapRouter {
               listenWhen: shouldNavigateOnTransferBroadcast,
               listener: (context, state) {
                 final orderSwap = state.orderSwap;
-                if (orderSwap != null) {
-                  TransactionsNavigation.goToDetails(
-                    context,
-                    TransactionDetailsTarget.orderSwap(orderSwap.localId),
-                    returnHome: true,
-                  );
-                } else {
-                  context.goNamed(
-                    TransferRoute.inProgressSwap.name,
-                    extra: context.read<TransferBloc>(),
-                  );
-                }
+                final swap = state.swap;
+                final TransactionDetailsTarget? target = orderSwap != null
+                    ? TransactionDetailsTarget.orderSwap(orderSwap.localId)
+                    : swap == null
+                    ? null
+                    : TransactionDetailsTarget.swap(
+                        swap.id,
+                        walletId: swap.walletId,
+                      );
+                if (target == null) return;
+                TransactionsNavigation.goToDetails(
+                  context,
+                  target,
+                  returnHome: true,
+                  view: TransactionDetailsView.details,
+                );
               },
               child: SwapConfirmPage(poll: pollSettlement),
             ),
-          );
-        },
-      ),
-      GoRoute(
-        name: TransferRoute.inProgressSwap.name,
-        path: TransferRoute.inProgressSwap.path,
-        builder: (context, state) {
-          final bloc = state.extra;
-          if (bloc is! TransferBloc) return const SizedBox.shrink();
-
-          return BlocProvider.value(
-            value: bloc,
-            child: const SwapInProgressPage(),
           );
         },
       ),

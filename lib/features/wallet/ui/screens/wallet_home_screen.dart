@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_ongoing_swaps.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/ark_dashboard_entry.dart';
@@ -82,7 +83,10 @@ class WalletHomeScreen extends StatelessWidget {
         ),
       ),
       announcements: announcements,
-      warnings: const HomeWarnings(),
+      warnings: const Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [HomeOngoingSwaps(), HomeWarnings()],
+      ),
       consolidation: const HomeConsolidationBanner(),
       wallets: WalletCards(
         onTap: (wallet) => context.pushNamed(

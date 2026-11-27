@@ -223,6 +223,9 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   ) => _boltz.limitsAndFees(type);
 
   @override
+  Future<Result<void, SwapsFailure>> checkServer() => _boltz.checkServer();
+
+  @override
   Future<Result<LnSendSwap, SwapsFailure>> createBitcoinToLightningSwap({
     required String walletId,
     required String invoice,

@@ -11,10 +11,14 @@ class OngoingSwapsWidget extends StatelessWidget {
     super.key,
     required this.ongoingSwaps,
     required this.onDetailsClosed,
+    this.walletScoped = false,
   });
 
   final List<Transaction> ongoingSwaps;
   final VoidCallback onDetailsClosed;
+
+  /// The list shows one wallet's transactions.
+  final bool walletScoped;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +80,7 @@ class OngoingSwapsWidget extends StatelessWidget {
               TransactionListItem.transaction(
                 tx,
                 onDetailsClosed: onDetailsClosed,
+                walletScoped: walletScoped,
               ),
               const Gap(8),
             ],

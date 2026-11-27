@@ -20,8 +20,8 @@ abstract class SwapSettingsState with _$SwapSettingsState {
           swapServerEnvironment == NetworkEnv.testnet);
 
   bool get isDefaultSwapServer => switch (swapServerEnvironment) {
-    NetworkEnv.mainnet => swapServer == SwapServer.mainnetDefault,
-    NetworkEnv.testnet => swapServer == SwapServer.testnetDefault,
+    NetworkEnv.mainnet => swapServer.host == SwapServer.mainnetDefault.host,
+    NetworkEnv.testnet => swapServer.host == SwapServer.testnetDefault.host,
     _ => false,
   };
 }

@@ -8,6 +8,8 @@ class SetSwapServerUsecase {
   const SetSwapServerUsecase(this._servers);
 
   @useResult
-  Future<Result<SwapServer, SwapsFailure>> execute(String input) =>
-      _servers.setServer(input);
+  Future<Result<SwapServer, SwapsFailure>> execute(
+    String input, {
+    SwapServerCredentials? credentials,
+  }) => _servers.setServer(input, credentials: credentials);
 }

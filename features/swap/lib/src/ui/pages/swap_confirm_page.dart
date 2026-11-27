@@ -9,10 +9,8 @@ import 'package:swap_feature/src/presentation/transfer_confirm_error.dart';
 import 'package:fees_feature/fee_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:swaps/swaps.dart';
 import 'package:swaps/order_swaps.dart';
-import 'package:swap_feature/src/ui/swap_router.dart';
 import 'package:transactions/payment_status.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/transactions.dart'
@@ -109,29 +107,27 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
     final bloc = context.read<TransferBloc>();
     final state = bloc.state;
     final orderId = _attemptOrderId ?? state.orderSwap?.localId;
+    final swap = state.swap;
+    final TransactionDetailsTarget? target = orderId != null
+        ? TransactionDetailsTarget.orderSwap(orderId)
+        : swap == null
+        ? null
+        : TransactionDetailsTarget.swap(swap.id, walletId: swap.walletId);
     try {
+      if (target == null) return;
       if (state.txId.isNotEmpty) {
-        if (orderId != null) {
-          TransactionsNavigation.goToDetails(
-            context,
-            TransactionDetailsTarget.orderSwap(orderId),
-            returnHome: true,
-            view: TransactionDetailsView.details,
-          );
-        } else {
-          context.goNamed(TransferRoute.inProgressSwap.name, extra: bloc);
-        }
-      } else if (orderId != null) {
-        await TransactionsNavigation.openDetails(
+        TransactionsNavigation.goToDetails(
           context,
-          TransactionDetailsTarget.orderSwap(orderId),
+          target,
           returnHome: true,
           view: TransactionDetailsView.details,
         );
       } else {
-        await context.pushNamed<void>(
-          TransferRoute.inProgressSwap.name,
-          extra: bloc,
+        await TransactionsNavigation.openDetails(
+          context,
+          target,
+          returnHome: true,
+          view: TransactionDetailsView.details,
         );
       }
     } finally {
@@ -476,6 +472,7 @@ class _SwapConfirmPageState extends State<SwapConfirmPage> {
                                       formattedBitcoinAmount:
                                           formattedConfirmedAmountBitcoin,
                                       swap: swap,
+                                      fiatOf: state.formattedFiatOf,
                                     );
                                   }
                                 },

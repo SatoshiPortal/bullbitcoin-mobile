@@ -47,7 +47,7 @@ class AnnouncementCarousel extends StatelessWidget {
                         padding: const EdgeInsets.only(
                           left: 13,
                           right: 13,
-                          top: 13,
+                          top: BullSizes.homeCardGap,
                         ),
                         child: _CarouselBody(
                           announcements: announcements,

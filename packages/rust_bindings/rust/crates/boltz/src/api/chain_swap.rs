@@ -1,6 +1,6 @@
 use crate::util::{
-    ensure_boltz_url, ensure_http_prefix, force_https, get_electrum_configs, strip_protocol_prefix,
-    HTTP_TIMEOUT,
+    bitcoin_tip_height, ensure_boltz_url, ensure_http_prefix, force_https, get_electrum_configs,
+    liquid_tip_height, strip_protocol_prefix, HTTP_TIMEOUT,
 };
 
 use super::{
@@ -56,6 +56,24 @@ pub struct ChainSwap {
     pub referral_id: Option<String>,
     pub blinding_key: String,
 }
+/// Tip height of `chain` as the user's own Electrum server for it sees it.
+async fn chain_tip_height(
+    chain: AllChains,
+    btc_electrum_settings: Option<ElectrumSettings>,
+    btc_electrum_url: &str,
+    lbtc_electrum_settings: Option<ElectrumSettings>,
+    lbtc_electrum_url: &str,
+) -> Result<u32, BoltzError> {
+    match chain {
+        AllChains::Bitcoin(chain) => {
+            bitcoin_tip_height(chain, btc_electrum_settings, btc_electrum_url).await
+        }
+        AllChains::Liquid(chain) => {
+            liquid_tip_height(chain, lbtc_electrum_settings, lbtc_electrum_url).await
+        }
+    }
+}
+
 impl ChainSwap {
     /// Convert instance to a JSON string.
     pub async fn to_json(&self) -> Result<String, BoltzError> {
@@ -171,6 +189,8 @@ impl ChainSwap {
         lbtc_electrum_url: String,
         boltz_url: String,
         referral_id: Option<String>,
+        btc_electrum_settings: Option<ElectrumSettings>,
+        lbtc_electrum_settings: Option<ElectrumSettings>,
     ) -> Result<ChainSwap, BoltzError> {
         if network != swap_master_key.network {
             return Err(BoltzError::new(
@@ -234,6 +254,21 @@ impl ChainSwap {
                     refund_network,
                     claim_network,
                     &preimage.sha256,
+                )?;
+                let tip_of = |chain| {
+                    chain_tip_height(
+                        chain,
+                        btc_electrum_settings.clone(),
+                        &btc_electrum_url,
+                        lbtc_electrum_settings.clone(),
+                        &lbtc_electrum_url,
+                    )
+                };
+                create_chain_response.validate_timeouts(
+                    refund_network,
+                    tip_of(refund_network).await?,
+                    claim_network,
+                    tip_of(claim_network).await?,
                 )?;
                 let lockup_details: ChainSwapDetails = create_chain_response.clone().lockup_details;
                 let lockup_script = BtcSwapScript::chain_from_swap_resp(
@@ -306,6 +341,21 @@ impl ChainSwap {
                     refund_network,
                     claim_network,
                     &preimage.sha256,
+                )?;
+                let tip_of = |chain| {
+                    chain_tip_height(
+                        chain,
+                        btc_electrum_settings.clone(),
+                        &btc_electrum_url,
+                        lbtc_electrum_settings.clone(),
+                        &lbtc_electrum_url,
+                    )
+                };
+                create_chain_response.validate_timeouts(
+                    refund_network,
+                    tip_of(refund_network).await?,
+                    claim_network,
+                    tip_of(claim_network).await?,
                 )?;
                 let lockup_details: ChainSwapDetails = create_chain_response.clone().lockup_details;
                 let lockup_script = LBtcSwapScript::chain_from_swap_resp(
@@ -492,12 +542,10 @@ impl ChainSwap {
             }
             ChainSwapDirection::LbtcToBtc => {
                 let btc_claim_script: BtcSwapScript = self.btc_script_str.clone().try_into()?;
-                let claim_tx = BtcSwapTx::new_claim(
+                let claim_tx = BtcSwapTx::new_claim_confirmed(
                     btc_claim_script.clone(),
                     out_address.clone(),
                     &btc_network_config,
-                    &boltz_client,
-                    self.id.clone(),
                 )
                 .await?;
                 if let Some(expected_amount) = self.expected_onchain_amount {

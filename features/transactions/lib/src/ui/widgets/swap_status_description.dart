@@ -3,7 +3,7 @@ import 'package:bull_ui/bull_ui.dart' show BullThemeX;
 import 'package:transactions/src/presentation/transactions_localizations_x.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInfoCard, BullShapesX, BullText, Gap, BullTypographyX;
+    show BullShapesX, BullText, Gap, BullTypographyX;
 
 class SwapStatusDescription extends StatelessWidget {
   const SwapStatusDescription({required this.swap});
@@ -14,9 +14,6 @@ class SwapStatusDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isFailedOrExpired =
         swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
-    final bool shouldShowWarning =
-        swap.status != SwapStatus.completed &&
-        swap.status != SwapStatus.refunded;
 
     return Column(
       crossAxisAlignment: .stretch,
@@ -108,18 +105,6 @@ class SwapStatusDescription extends StatelessWidget {
             ],
           ),
         ),
-        if (shouldShowWarning) ...[
-          const Gap(16),
-          BullInfoCard(
-            description: swap.isChainSwap
-                ? '${context.loc.transactionSwapDoNotUninstall}\n\n'
-                      '${context.loc.transactionSwapOpenWithin24h}'
-                : context.loc.transactionSwapDoNotUninstall,
-            tagColor: context.bull.tertiary,
-            bgColor: context.bull.warningContainer,
-            boldDescription: true,
-          ),
-        ],
       ],
     );
   }

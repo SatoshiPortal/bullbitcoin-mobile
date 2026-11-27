@@ -8,7 +8,9 @@ import 'package:swaps/swaps.dart' show SwapStatus;
 import 'package:transactions/routes.dart' show TransactionDetailsView;
 
 class ReceiveLightningTransition extends StatelessWidget {
-  const ReceiveLightningTransition({super.key});
+  const ReceiveLightningTransition({super.key, this.onBack});
+
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,9 @@ class ReceiveLightningTransition extends StatelessWidget {
           ? context.loc.receiveStepPaymentDetected
           : context.loc.receiveStepBoltzLockup,
       if (!direct) context.loc.receiveStepClaimBroadcast,
-      context.loc.receiveStepConfirmed,
+      direct
+          ? context.loc.receiveStepConfirmed
+          : context.loc.receiveStepComplete,
     ];
     final hasReceiveTxid = swap.receiveTxid?.isNotEmpty ?? false;
     final confirmed = context.select(
@@ -60,6 +64,7 @@ class ReceiveLightningTransition extends StatelessWidget {
       skipLabel: context.loc.receiveViewDetails,
       onSkip: () =>
           openReceiveDetails(context, view: TransactionDetailsView.details),
+      onBack: onBack,
       onDone: () {},
     );
   }

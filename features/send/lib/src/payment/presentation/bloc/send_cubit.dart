@@ -1560,6 +1560,9 @@ class SendCubit extends Cubit<SendState>
             emit(
               state.copyWith(
                 lnurlPay: (recipient: paymentRequest.address, limits: value),
+                label: state.label.isEmpty
+                    ? value.description ?? state.label
+                    : state.label,
                 amount: hasExistingLimits ? state.amount : '',
                 amountEntryValid: hasExistingLimits && state.amountEntryValid,
                 amountConversion: hasExistingLimits

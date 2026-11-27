@@ -195,7 +195,6 @@
   "transactionDetailLabelTransferFee": "Swap-kulu",
   "globalDefaultBitcoinWalletLabel": "Turvallinen Bitcoin",
   "globalDefaultLiquidWalletLabel": "Pikamaksulompakko",
-  "walletBalanceUnconfirmedIncoming": "Käynnissä",
   "walletButtonReceive": "Vastaanota",
   "walletButtonSend": "Lähetä",
   "fundExchangeMethodInstantSepa": "Välitön ja tavallinen SEPA-maksu",

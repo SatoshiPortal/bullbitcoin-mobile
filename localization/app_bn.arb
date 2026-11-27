@@ -1068,10 +1068,6 @@
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
   },
-  "walletBalanceUnconfirmedIncoming": "চলমান",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "selectAmountTitle": "পরিমাণ নির্বাচন করুন",
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"

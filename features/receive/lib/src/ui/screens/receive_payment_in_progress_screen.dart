@@ -14,6 +14,10 @@ class ReceivePaymentInProgressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showsLightningStatus = context.select(
+      (ReceiveBloc bloc) =>
+          bloc.state.orderSwap == null && bloc.state.lightningSwap != null,
+    );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -22,23 +26,19 @@ class ReceivePaymentInProgressScreen extends StatelessWidget {
         openHome(context);
       },
       child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: BullTopBar(
-            title: context.loc.receiveTitle,
-            onAction: () => openHome(context),
-          ),
-        ),
-        body:
-            context.select(
-              (ReceiveBloc bloc) =>
-                  bloc.state.orderSwap == null &&
-                  bloc.state.lightningSwap != null,
-            )
-            ? const ReceiveLightningTransition()
+        appBar: showsLightningStatus
+            ? null
+            : AppBar(
+                forceMaterialTransparency: true,
+                automaticallyImplyLeading: false,
+                flexibleSpace: BullTopBar(
+                  title: context.loc.receiveTitle,
+                  onAction: () => openHome(context),
+                ),
+              ),
+        body: showsLightningStatus
+            ? ReceiveLightningTransition(onBack: () => openHome(context))
             : const PaymentInProgressPage(),
-        // child: AmountPage(),
       ),
     );
   }

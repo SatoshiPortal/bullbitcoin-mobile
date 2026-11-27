@@ -958,10 +958,6 @@
   "@testCompletedSuccessMessage": {
     "description": "Message shown when backup test is successful"
   },
-  "walletBalanceUnconfirmedIncoming": "التقدم المحرز",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "selectAmountTitle": "الكمية المختارة",
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"

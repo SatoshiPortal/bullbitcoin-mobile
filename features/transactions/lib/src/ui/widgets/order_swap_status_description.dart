@@ -3,7 +3,7 @@ import 'package:transactions/src/presentation/transactions_localizations_x.dart'
 import 'package:swaps/order_swaps.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullInfoCard, BullShapesX, BullText, Gap, BullTypographyX;
+    show BullShapesX, BullText, Gap, BullTypographyX;
 
 class OrderSwapStatusDescription extends StatelessWidget {
   final OrderSwapRecord orderSwap;
@@ -86,18 +86,6 @@ class OrderSwapStatusDescription extends StatelessWidget {
         if (orderSwap.order?.requiresManualReview == true) ...[
           const Gap(16),
           orderSwapUnderReview(orderSwap),
-        ],
-        if (!orderSwap.localStatus.isTerminal) ...[
-          const Gap(16),
-          BullInfoCard(
-            description: isChainSwap
-                ? '${context.loc.transactionSwapDoNotUninstall}\n\n'
-                      '${context.loc.transactionSwapOpenWithin24h}'
-                : context.loc.transactionSwapDoNotUninstall,
-            tagColor: context.bull.tertiary,
-            bgColor: context.bull.warningContainer,
-            boldDescription: true,
-          ),
         ],
       ],
     );

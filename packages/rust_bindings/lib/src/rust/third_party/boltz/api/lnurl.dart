@@ -57,13 +57,21 @@ class LnurlPayBounds {
   final BigInt minSendableMsat;
   final BigInt maxSendableMsat;
 
+  /// The recipient's plain-text description from the LUD-06 metadata. The
+  /// invoice carries only its hash.
+  final String? description;
+
   const LnurlPayBounds({
     required this.minSendableMsat,
     required this.maxSendableMsat,
+    this.description,
   });
 
   @override
-  int get hashCode => minSendableMsat.hashCode ^ maxSendableMsat.hashCode;
+  int get hashCode =>
+      minSendableMsat.hashCode ^
+      maxSendableMsat.hashCode ^
+      description.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -71,5 +79,6 @@ class LnurlPayBounds {
       other is LnurlPayBounds &&
           runtimeType == other.runtimeType &&
           minSendableMsat == other.minSendableMsat &&
-          maxSendableMsat == other.maxSendableMsat;
+          maxSendableMsat == other.maxSendableMsat &&
+          description == other.description;
 }

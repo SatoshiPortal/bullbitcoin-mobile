@@ -7,10 +7,24 @@ import '../label_editor_l10n.dart';
 import 'label_text.dart';
 
 class LabelsWidget extends StatefulWidget {
-  const LabelsWidget({super.key, required this.labels, this.onDelete});
+  const LabelsWidget({
+    super.key,
+    required this.labels,
+    this.onDelete,
+    this.maxCharacters,
+  });
 
   final List<Label> labels;
   final Future<void> Function(Label)? onDelete;
+
+  /// Shortens each label to this many characters, with an ellipsis.
+  final int? maxCharacters;
+
+  String _shown(String label) {
+    final max = maxCharacters;
+    if (max == null || label.characters.length <= max) return label;
+    return '${label.characters.take(max)}…';
+  }
 
   @override
   State<LabelsWidget> createState() => _LabelsWidgetState();
@@ -53,7 +67,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       children: distinctLabels.map((label) {
         final isDeleting = _deletingLabels.contains(label);
         return LabelChip(
-          label: label.label,
+          label: widget._shown(label.label),
           isDeleting: isDeleting,
           onDelete: widget.onDelete != null ? () => _deleteLabel(label) : null,
         );

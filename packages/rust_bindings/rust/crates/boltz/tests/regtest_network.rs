@@ -176,6 +176,7 @@ async fn all_networks_reject_mismatched_keys_before_derivation_or_io() {
                 electrum.clone(),
                 url.clone(),
                 None,
+                None,
             )
             .await;
             let liquid_sub = LbtcLnSwap::new_submarine(
@@ -185,6 +186,7 @@ async fn all_networks_reject_mismatched_keys_before_derivation_or_io() {
                 liquid,
                 electrum.clone(),
                 url.clone(),
+                None,
                 None,
             )
             .await;
@@ -198,6 +200,7 @@ async fn all_networks_reject_mismatched_keys_before_derivation_or_io() {
                 url.clone(),
                 None,
                 None,
+                None,
             )
             .await;
             let liquid_rev = LbtcLnSwap::new_reverse(
@@ -208,6 +211,7 @@ async fn all_networks_reject_mismatched_keys_before_derivation_or_io() {
                 liquid,
                 electrum.clone(),
                 url.clone(),
+                None,
                 None,
                 None,
             )
@@ -226,6 +230,8 @@ async fn all_networks_reject_mismatched_keys_before_derivation_or_io() {
                     electrum.clone(),
                     electrum.clone(),
                     url.clone(),
+                    None,
+                    None,
                     None,
                 )
                 .await;

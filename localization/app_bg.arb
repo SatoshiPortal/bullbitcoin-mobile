@@ -124,10 +124,6 @@
   "@transactionStatusSwapFailed": {
     "description": "Status label for failed swaps"
   },
-  "walletBalanceUnconfirmedIncoming": "В процес",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "closeDialogButton": "Затвори",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"

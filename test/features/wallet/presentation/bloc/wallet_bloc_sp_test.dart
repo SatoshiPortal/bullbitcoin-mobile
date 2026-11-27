@@ -20,7 +20,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
@@ -69,8 +69,7 @@ class _MockWatchElectrumSyncResults extends Mock implements _ElectrumResults {}
 class _MockSyncCoordinator extends Mock
     implements SyncCoordinator<Wallet, WalletFailure> {}
 
-class _MockGetUnconfirmed extends Mock
-    implements GetUnconfirmedIncomingBalanceUsecase {}
+class _MockGetUnconfirmed extends Mock implements GetOngoingSwapsUsecase {}
 
 class _MockRefreshSpWalletForWallet extends Mock
     implements RefreshSpWalletForWalletUsecase {}
@@ -191,7 +190,7 @@ WalletBloc _makeBloc({
       watchElectrum: watchElectrum.execute,
     ),
     syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator.sync),
-    getUnconfirmedIncomingBalanceUsecase: _MockGetUnconfirmed(),
+    getOngoingSwapsUsecase: _MockGetUnconfirmed(),
     getExternalTorProxyStatusUsecase: _MockExternalTorStatus(),
     checkSpWalletSetupForWalletUsecase: checkSetup,
     checkSpScanningForWalletUsecase: checkScanning,

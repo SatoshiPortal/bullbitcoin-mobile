@@ -1051,5 +1051,13 @@
   "paymentStatusRefunded": "Refunded",
   "@paymentStatusRefunded": {
     "description": "Payment status: refunded"
+  },
+  "transactionDetailViewStatus": "View status",
+  "@transactionDetailViewStatus": {
+    "description": "Button under a payment's details that opens its live status while the payment is in progress"
+  },
+  "transactionDetailViewDetails": "View details",
+  "@transactionDetailViewDetails": {
+    "description": "Button at the bottom of a payment's live status that opens its details"
   }
 }

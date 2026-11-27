@@ -207,9 +207,19 @@ class GetTransactionsUsecase {
                   (wt.isOutgoing && s.sendTxId == wt.txId) ||
                   (wt.isIncoming &&
                       (s.receiveTxId == wt.txId || s.refundTxId == wt.txId));
+              final legInItsWallet = switch (s) {
+                ChainSwap(:final receiveWalletId)
+                    when wt.isIncoming && s.receiveTxId == wt.txId =>
+                  receiveWalletId == wt.walletId,
+                _ => s.walletId == wt.walletId,
+              };
+              final lockedSat = switch (s) {
+                LnSendSwap(:final paymentAmount) => paymentAmount,
+                _ => s.amountSat,
+              };
               if (claimedLeg &&
-                  s.walletId == wt.walletId &&
-                  (s.amountSat == 0 || wt.amountSat <= s.amountSat) &&
+                  legInItsWallet &&
+                  (lockedSat == 0 || wt.amountSat <= lockedSat) &&
                   _transactionPaysSwapAddress(wt, s)) {
                 swap = s;
                 break;

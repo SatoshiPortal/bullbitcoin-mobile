@@ -23,6 +23,10 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showsLightningStatus = context.select(
+      (ReceiveBloc bloc) =>
+          bloc.state.orderSwap == null && bloc.state.lightningSwap != null,
+    );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -30,23 +34,19 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
         openHome(context);
       },
       child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: BullTopBar(
-            title: context.loc.receiveTitle,
-            onAction: () => openHome(context),
-          ),
-        ),
-        body:
-            context.select(
-              (ReceiveBloc bloc) =>
-                  bloc.state.orderSwap == null &&
-                  bloc.state.lightningSwap != null,
-            )
-            ? const ReceiveLightningTransition()
+        appBar: showsLightningStatus
+            ? null
+            : AppBar(
+                forceMaterialTransparency: true,
+                automaticallyImplyLeading: false,
+                flexibleSpace: BullTopBar(
+                  title: context.loc.receiveTitle,
+                  onAction: () => openHome(context),
+                ),
+              ),
+        body: showsLightningStatus
+            ? ReceiveLightningTransition(onBack: () => openHome(context))
             : PaymentReceivedPage(successAnimation: successAnimation),
-        // child: AmountPage(),
       ),
     );
   }
@@ -137,6 +137,7 @@ void openReceiveDetails(
         TransactionsNavigation.openDetails(
           context,
           TransactionDetailsTarget.wallet(target.id, walletId: walletId),
+          returnHome: true,
           view: view,
         );
       }
@@ -144,6 +145,7 @@ void openReceiveDetails(
       TransactionsNavigation.openDetails(
         context,
         TransactionDetailsTarget.orderSwap(target.id),
+        returnHome: true,
         view: view,
       );
     case ReceiveDetailsTargetKind.swap:
@@ -151,6 +153,7 @@ void openReceiveDetails(
         TransactionsNavigation.openDetails(
           context,
           TransactionDetailsTarget.swap(target.id, walletId: walletId),
+          returnHome: true,
           view: view,
         );
       }
@@ -158,6 +161,7 @@ void openReceiveDetails(
       TransactionsNavigation.openDetails(
         context,
         TransactionDetailsTarget.payjoin(target.id),
+        returnHome: true,
         view: view,
       );
   }

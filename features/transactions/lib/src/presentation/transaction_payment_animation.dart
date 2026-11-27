@@ -216,7 +216,9 @@ TransactionPaymentAnimation _boltzSwap(
             ? labels.paymentStatusPaymentDetected
             : labels.paymentStatusBoltzLockup,
         if (!direct) labels.paymentStatusClaimBroadcast,
-        labels.paymentStatusReceivedConfirmed,
+        direct
+            ? labels.paymentStatusReceivedConfirmed
+            : labels.paymentStatusCompleted,
       ];
       final progress = receiveLightningProgress(
         steps: steps,

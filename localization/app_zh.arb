@@ -353,7 +353,6 @@
   "autoswapRecipientRequired": "* E/CN.6/2009/1",
   "backupWalletGoogleDrivePermissionWarning": "谷歌将请你与本信分享个人信息.",
   "testCompletedSuccessMessage": "你们能够恢复使用丢失的“红外墙”",
-  "walletBalanceUnconfirmedIncoming": "A. 进展",
   "selectAmountTitle": "选择性数额",
   "routeErrorMessage": "页 次",
   "connectHardwareWalletPassport": "Foundation Passport",

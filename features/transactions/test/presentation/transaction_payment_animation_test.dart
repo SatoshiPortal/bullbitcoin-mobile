@@ -111,7 +111,7 @@ void main() {
       receiveTxid: 'claim',
     ) as LnReceiveSwap;
 
-    test('Lightning receive is confirmed only by the observed claim', () {
+    test('Lightning receive is complete once its claim is broadcast', () {
       final transaction = Transaction(swap: lnReceive);
       final unconfirmed = transactionPaymentAnimation(
         state(transaction),
@@ -123,25 +123,17 @@ void main() {
       expect(unconfirmed.progress.steps, [
         'Boltz lockup',
         'Claim broadcast',
-        'Confirmed',
+        'Completed',
       ]);
-      expect(unconfirmed.progress.completed, 1);
-      expect(unconfirmed.phase, BullPaymentPhase.sending);
+      expect(unconfirmed.progress.completed, 2);
+      expect(unconfirmed.phase, BullPaymentPhase.success);
 
-      final other = transactionPaymentAnimation(
+      final unobserved = transactionPaymentAnimation(
         state(transaction),
         labels,
-        settlement: walletTx('other', incoming: true, confirmed: true),
       )!;
-      expect(other.phase, BullPaymentPhase.sending);
-
-      final confirmed = transactionPaymentAnimation(
-        state(transaction),
-        labels,
-        settlement: walletTx('claim', incoming: true, confirmed: true),
-      )!;
-      expect(confirmed.phase, BullPaymentPhase.success);
-      expect(confirmed.progress.completed, 2);
+      expect(unobserved.progress.completed, 2);
+      expect(unobserved.phase, BullPaymentPhase.success);
     });
 
     test('Lightning send is a four status Boltz payment', () {
