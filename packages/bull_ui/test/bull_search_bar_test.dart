@@ -63,5 +63,38 @@ void main() {
       await tester.tap(find.byType(BullSearchBar));
       expect(taps, 1);
     });
+
+    testWidgets('exposes one enabled button action that opens search', (
+      tester,
+    ) async {
+      var taps = 0;
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            BullSearchBar.button(label: 'Search settings', onTap: () => taps++),
+          ),
+        );
+
+        expect(find.bySemanticsLabel('Search settings'), findsOneWidget);
+        expect(
+          tester.getSemantics(find.byType(BullSearchBar)),
+          matchesSemantics(
+            label: 'Search settings',
+            isButton: true,
+            isFocusable: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+          ),
+        );
+
+        tester.semantics.tap(find.semantics.byLabel('Search settings'));
+        await tester.pump();
+        expect(taps, 1);
+      } finally {
+        semantics.dispose();
+      }
+    });
   });
 }
