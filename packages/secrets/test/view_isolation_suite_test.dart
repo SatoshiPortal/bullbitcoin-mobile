@@ -169,8 +169,8 @@ void _suite() {
         admission: _NoAdmission(),
         backupVerification: _NoBackups(),
       );
-      final held = ok(await references.getCustodyFingerprints());
-      expect(held, containsAll([inA, inB]));
+      expect(ok(await references.isReferenced(inA)), isTrue);
+      expect(ok(await references.isReferenced(inB)), isTrue);
     });
   });
 
