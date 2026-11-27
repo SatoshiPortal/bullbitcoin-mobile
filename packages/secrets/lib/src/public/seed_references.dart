@@ -7,7 +7,7 @@ import 'secrets.dart';
 import 'secrets_inventory.dart' show SecretsInventory, custodyReferencesOf;
 import 'seed_reference_port.dart';
 
-class SeedReferences implements SeedReferencePort {
+class SeedReferences {
   final List<SeedReferencePort> _owners;
   final ParentCustodyAdmissionPort admission;
   final InventoryBackupVerification _backups;
@@ -53,7 +53,7 @@ class SeedReferences implements SeedReferencePort {
     if (state != ParentCustodyState.ready && !reconcileBeforeDelete) {
       return const Err(ParentCustodyStateFailure());
     }
-    switch (await getCustodyFingerprints()) {
+    switch (await _custody()) {
       case Ok(:final value) when value.contains(parent):
         return const Err(ParentCustodyReferencedFailure());
       case Err():
@@ -99,8 +99,13 @@ class SeedReferences implements SeedReferencePort {
     return const Ok(null);
   });
 
-  @override
-  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async {
+  /// Whether any owner still refers to [seed]. The decision is the only thing
+  /// published: the list behind it names the seeds of views the caller may not
+  /// open, and an unreadable reference is never an answer of "no".
+  Future<Result<bool, Failure>> isReferenced(Fingerprint seed) async =>
+      (await _custody()).map((all) => all.contains(seed));
+
+  Future<Result<Set<Fingerprint>, Failure>> _custody() async {
     final fingerprints = <Fingerprint>{};
     try {
       for (final owner in List<SeedReferencePort>.of(_owners)) {
