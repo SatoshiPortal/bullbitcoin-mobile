@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
+import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
@@ -19,12 +20,15 @@ final class MempoolImport implements LegacyImportParticipant {
   final List<String> defaultServers;
   final DatabaseKeys? testingKeys;
   final Future<void> Function(String)? checkpoint;
+  final bool retainRuntimeStore;
+  final _verifiedStores = Expando<MempoolStore>();
 
   MempoolImport({
     required this.file,
     required List<String> defaultServers,
     this.testingKeys,
     this.checkpoint,
+    this.retainRuntimeStore = false,
   }) : defaultServers = List.unmodifiable(defaultServers) {
     if (defaultServers.length != 4) {
       throw ArgumentError('Four networks required');
@@ -83,11 +87,30 @@ final class MempoolImport implements LegacyImportParticipant {
           : const Err(LegacyImportUnavailable());
     }
     final store = (opened as Ok<MempoolStore, DatabaseOpenFailure>).value;
+    var retained = false;
     try {
-      return await readMempoolReadiness(store.database);
+      final readiness = await readMempoolReadiness(store.database);
+      if (retainRuntimeStore &&
+          admission is RuntimeAdmission &&
+          readiness is Ok<OwnerReadiness, LegacyImportFailure> &&
+          readiness.value != OwnerReadiness.pending) {
+        // The admission still owns the handle, including on a later
+        // participant's failure. Only its successful caller can take it.
+        _verifiedStores[admission] = store;
+        retained = true;
+      }
+      return readiness;
     } finally {
-      await store.handle.close();
+      if (!retained) await store.handle.close();
     }
+  }
+
+  @internal
+  MempoolStore? takeRuntimeStore(RuntimeAdmission admission) {
+    if (!admission.isOpen) return null;
+    final store = _verifiedStores[admission];
+    _verifiedStores[admission] = null;
+    return store;
   }
 }
 
