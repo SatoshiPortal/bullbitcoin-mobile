@@ -4,6 +4,8 @@ import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
+Future<T> passthroughSessionJoin<T>(Future<T> Function() read) => read();
+
 /// A read-only catalog projection over rows a test publishes itself.
 final class MemoryWalletRegistrations implements WalletRegistrations {
   final Map<String, WalletMetadataModel> rows = {};

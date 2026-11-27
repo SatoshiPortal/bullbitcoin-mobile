@@ -26,6 +26,8 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
 
+import '../../../support/wallet_registrations.dart' show passthroughSessionJoin;
+
 class _Labels extends Mock implements Labels {}
 
 class _Catalog extends Mock implements WalletCatalogPort {}
@@ -109,6 +111,7 @@ void main() {
     );
     repository = WalletRepository(
       walletRegistrations: metadata,
+      session: passthroughSessionJoin,
       walletValuesDatasource: values,
       synchronization: bridge.synchronization,
       syncStarted: bridge.started,
@@ -332,6 +335,7 @@ void main() {
       final forwarding = _Policy();
       final repository = WalletRepository(
         walletRegistrations: metadata,
+        session: passthroughSessionJoin,
         walletValuesDatasource: values,
         synchronization: ForegroundWalletSynchronization(
           ElectrumSync(

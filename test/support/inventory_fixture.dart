@@ -290,6 +290,7 @@ final class InventoryFixture {
     services.registerSingleton<WalletRegistrations>(
       MemoryWalletRegistrations(),
     );
+    services.registerSingleton<WalletSessionJoin>(passthroughSessionJoin);
   }
 
   Future<void> close() async {

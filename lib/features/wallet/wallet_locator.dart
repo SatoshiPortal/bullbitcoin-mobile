@@ -67,6 +67,7 @@ class WalletLocator {
       final electrum = locator<ElectrumSync>();
       return WalletRepository(
         walletRegistrations: locator<WalletRegistrations>(),
+        session: locator<WalletSessionJoin>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronization: locator<ForegroundWalletSynchronization>(),
         syncStarted: electrum.started.map((key) => key.id),
