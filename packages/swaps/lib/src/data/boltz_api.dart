@@ -88,6 +88,7 @@ class BoltzDatasource {
   final String? _liquidExplorerUrl;
   final BoltzWebSocketFactory webSocketFactory;
   late String _httpsUrl;
+  late final String _plainUrl;
   late final Dio _http;
 
   BoltzWebSocket? _boltzWebSocket;
@@ -137,11 +138,14 @@ class BoltzDatasource {
       throw ArgumentError('Regtest requires an explicit Boltz websocket');
     }
     // A bare host gets https (the production default cannot be downgraded);
-    // an explicit http:// is a deliberate dev/staging opt-in (SSH tunnel to
-    // a local backend) and the websocket follows it as ws://.
-    final plainUrl = _baseUrl.startsWith('http://')
+    // an explicit https:// is kept as is; an explicit http:// is a deliberate
+    // dev/staging opt-in (SSH tunnel to a local backend) and the websocket
+    // follows it as ws://.
+    final plainUrl =
+        _baseUrl.startsWith('http://') || _baseUrl.startsWith('https://')
         ? _baseUrl
         : 'https://$_baseUrl';
+    _plainUrl = plainUrl;
     _httpsUrl = _withUserInfo(plainUrl);
     _boltzStore.blobOnLoad = (blob) =>
         swapBlobOnServer(blob, current: _httpsUrl);
@@ -172,6 +176,11 @@ class BoltzDatasource {
     final scheme = url.substring(0, url.indexOf('://') + 3);
     return '$scheme${credentials.userInfo}@${url.substring(scheme.length)}';
   }
+
+  /// The API origin every HTTP call and native swap is built on, without
+  /// the credentials the native client is given with it.
+  @visibleForTesting
+  String get apiBaseUrl => _plainUrl;
 
   String get _wsBaseUrl =>
       _webSocketUrl ??

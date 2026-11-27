@@ -501,10 +501,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "Επιβεβαίωση αποστολής",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "Η ανταλλαγή βρίσκεται σε εξέλιξη. Το τιμολόγιο θα πληρωθεί σε λίγα δευτερόλεπτα.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
@@ -566,5 +562,8 @@
   "closeDialogButton": "Κλείσιμο",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  }
+  },
+  "sendPayjoinSpendPaused": "Αυτή η πληρωμή Payjoin έχει τεθεί σε παύση επειδή το πορτοφόλι δεν μπορεί να συνεχίσει με ασφάλεια. Οι είσοδοί της παραμένουν δεσμευμένες. Ανανεώστε το πορτοφόλι ή χρησιμοποιήστε τη Σάρωση για συναλλαγές που λείπουν και επαναλάβετε αυτή την πρόταση όσο είναι ακόμη έγκυρη. Αν έχει λήξει, ελέγξτε την πληρωμή στις Συναλλαγές πριν κάνετε οτιδήποτε άλλο.",
+  "walletSpendAwaitingObservation": "Οι δαπάνες δεν είναι διαθέσιμες μέχρι να συγχρονιστεί αυτό το πορτοφόλι και να δει τις προηγούμενες πληρωμές του στο δίκτυο. Ανανεώστε το πορτοφόλι ή χρησιμοποιήστε τη Σάρωση για συναλλαγές που λείπουν και δοκιμάστε ξανά.",
+  "walletSpendBusy": "Το πορτοφόλι είναι απασχολημένο. Δοκιμάστε ξανά σε λίγο."
 }

@@ -1,5 +1,4 @@
 {
-  "wizardAdvancedOptionsTitle": "Լրացուցիչ ընտրանքներ",
   "getStartedButton": "Սկսել",
   "@getStartedButton": {
     "description": "Final call-to-action button that finishes the install/upgrade wizard"

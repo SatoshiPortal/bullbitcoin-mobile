@@ -40,6 +40,7 @@ import 'package:bb_mobile/network_banner.dart';
 import 'package:startup/startup.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_reporting/statistics.dart';
 import 'package:bull_logs/bull_logs.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:bull_tor/tor_adapter.dart' as tor;
@@ -82,12 +83,17 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     _torLifecycleController = locator<tor.TorLifecycleController>()..start();
     // Initialize the AppLifecycleListener class and pass callbacks
     _listener = AppLifecycleListener(onStateChange: _onStateChanged);
+    final state = WidgetsBinding.instance.lifecycleState;
+    Statistics.instance.setForeground(
+      state == null || state == AppLifecycleState.resumed,
+    );
   }
 
   @override
   void dispose() {
     // Do not forget to dispose the listener
     _listener.dispose();
+    Statistics.instance.setForeground(false);
     if (locator.isRegistered<PayjoinLifecycle>()) {
       unawaited(locator<PayjoinLifecycle>().dispose());
     }
@@ -98,6 +104,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   // Overview schedules its own resume sync through its lifecycle listener.
   void _onStateChanged(AppLifecycleState state) {
+    Statistics.instance.setForeground(state == AppLifecycleState.resumed);
     log.info(state.name);
     if (locator.isRegistered<ForegroundWalletStartup>()) {
       resumePayjoinsOnAppResume(state, locator<ForegroundWalletStartup>());

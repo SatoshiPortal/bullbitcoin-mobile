@@ -276,5 +276,9 @@
   "statusCheckTor": "Tor",
   "statusCheckRecoverBull": "RecoverBull",
   "torCloseTooltip": "Fermer",
-  "networkRefreshServers": "Actualiser les serveurs"
+  "networkRefreshServers": "Actualiser les serveurs",
+  "statusCheckSilentPayments": "Silent Payments",
+  "statusCheckDisabled": "Désactivé",
+  "torTitle": "Tor",
+  "electrumOnionUsesTorDescription": "La connexion à ce serveur .onion passe par Tor."
 }

@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:bull_recoverbull/migration.dart'
     show RecoverBullCutover, RecoverBullFailure;
-import 'package:bull_recoverbull/bull_recoverbull.dart' show RecoverBullFacade;
 import 'package:bull_recoverbull/storage.dart';
-import 'package:preferences/preferences.dart' show ActiveEnvironmentReader;
 import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
@@ -30,32 +28,10 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
   required RecoverBullCutover recoverBull,
   required RecoverBullCutover regtestRecoverBull,
 }) async {
-  final openedInventory = await SecretsInventory.open(
-    file: inventoryFile,
-    admission: admission,
-  );
-  if (openedInventory case Err(:final failure)) return Err(failure);
-  final inventory =
-      (openedInventory as Ok<SecretsInventory, DatabaseOpenFailure>).value;
-  services.registerSingleton(inventory, dispose: (value) => value.close());
-
-  final signers = await SignerDevices.open(
-    file: signersFile,
-    admission: admission,
-    keys: signerKeys,
-  );
-  if (signers case Err(:final failure)) return Err(failure);
-  final signerDevices =
-      (signers as Ok<SignerDevices, SignerDeviceFailure>).value;
-  services.registerSingleton(signerDevices);
-  final freshness = await SyncFreshness.open(
-    file: syncFile,
-    admission: admission,
-    keys: syncKeys,
-  );
-  if (freshness case Err(:final failure)) return Err(failure);
-  final syncFreshness = (freshness as Ok<SyncFreshness, SyncFailure>).value;
-  services.registerSingleton(syncFreshness);
+  // RecoverBull opens first: the inventory takes its backup verifier at open,
+  // so the verifier exists before the capability does and nothing can bind or
+  // replace it afterwards. That one instance is registered as the foreground's
+  // only proof of a backup, for protection and for deletion alike.
   final backups = await RecoverBullWalletBackups.open(
     cutover: recoverBull,
     admission: admission,
@@ -79,17 +55,46 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
     instanceName: 'regtest',
     dispose: (value) => value.close(),
   );
-  // Preferences and RecoverBull open after the inventory.
+  // One reading of "is this secret backed up" for the whole foreground: the
+  // inventory's protection gate and seed deletion judge the same evidence, so
+  // a seed can never be deletable while unprotectable, or the reverse.
+  final backupVerification = RecoverBullBackupVerification(
+    backups: mainBackups,
+    regtestBackups: regtestBackups,
+  );
+  services.registerSingleton(backupVerification);
+  final openedInventory = await SecretsInventory.open(
+    file: inventoryFile,
+    admission: admission,
+    backupVerification: backupVerification,
+  );
+  if (openedInventory case Err(:final failure)) return Err(failure);
+  final inventory =
+      (openedInventory as Ok<SecretsInventory, DatabaseOpenFailure>).value;
+  services.registerSingleton(inventory, dispose: (value) => value.close());
+
+  final signers = await SignerDevices.open(
+    file: signersFile,
+    admission: admission,
+    keys: signerKeys,
+  );
+  if (signers case Err(:final failure)) return Err(failure);
+  final signerDevices =
+      (signers as Ok<SignerDevices, SignerDeviceFailure>).value;
+  services.registerSingleton(signerDevices);
+  final freshness = await SyncFreshness.open(
+    file: syncFile,
+    admission: admission,
+    keys: syncKeys,
+  );
+  if (freshness case Err(:final failure)) return Err(failure);
+  final syncFreshness = (freshness as Ok<SyncFreshness, SyncFailure>).value;
+  services.registerSingleton(syncFreshness);
   services.registerLazySingleton(
     () => RecoverBullWalletProperties(
       backups: mainBackups,
       regtestBackups: regtestBackups,
-      environment: services<ActiveEnvironmentReader>(),
-      vaultStatus: (context) => services<RecoverBullFacade>().status(context),
     ),
-  );
-  services.registerLazySingleton<InventoryBackupVerification>(
-    () => services<RecoverBullWalletProperties>(),
   );
   registerWalletProjections(
     services,

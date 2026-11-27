@@ -27,7 +27,6 @@ final _workspace = File('assets/fonts/GolosText.ttf').existsSync()
     ? '.'
     : '../..';
 
-late Uint8List _arrowBytes;
 late Uint8List _successBytes;
 
 class _Send extends Mock implements SendCubit {}
@@ -42,8 +41,6 @@ void main() {
     ),
   };
   setUpAll(() async {
-    _arrowBytes = await File('$_workspace/assets/icons/right-arrow.png')
-        .readAsBytes();
     _successBytes = await File('$_workspace/assets/animations/success_tick.gif')
         .readAsBytes();
     await (FontLoader(
@@ -72,24 +69,6 @@ void main() {
       'multi-list',
     ]) {
       testWidgets('$name ${theme.name}', (tester) async {
-        await tester.runAsync(() async {
-          final stream = MemoryImage(_arrowBytes)
-              .resolve(ImageConfiguration.empty);
-          final loaded = Completer<void>();
-          late ImageStreamListener listener;
-          listener = ImageStreamListener(
-            (_, _) {
-              stream.removeListener(listener);
-              loaded.complete();
-            },
-            onError: (error, stackTrace) {
-              stream.removeListener(listener);
-              loaded.completeError(error, stackTrace);
-            },
-          );
-          stream.addListener(listener);
-          await loaded.future;
-        });
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
@@ -176,7 +155,6 @@ void main() {
                 openHome: (_) {},
                 openCoins: (_, _) {},
                 orderUnderReview: (_) => const SizedBox.shrink(),
-                arrowImage: MemoryImage(_arrowBytes),
                 successImage: MemoryImage(_successBytes),
                 child: BlocProvider<SendCubit>.value(
                   value: send,

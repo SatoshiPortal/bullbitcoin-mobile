@@ -93,7 +93,6 @@
   "receiveNote": "Kuvaus",
   "selectAmountTitle": "Valitse määrä",
   "sendAdvancedOptions": "Lisäasetukset",
-  "sendDone": "Valmis",
   "sendErrorBuildFailed": "Tätä maksua ei voitu valmistella. Yritä uudelleen.",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
   "sendFastFee": "Nopea",
@@ -182,5 +181,8 @@
   "swapRestoreKindLightningSend": "Lightning-lähetys",
   "swapRestoreNoSwaps": "Palautettavia swappeja ei löytynyt",
   "swapRestoreRecoverableSection": "Palautettavissa",
-  "swapRestoreTitle": "Swapin palautus"
+  "swapRestoreTitle": "Swapin palautus",
+  "networkFeatureUnavailable": "Tämä toiminto ei ole käytettävissä valitussa verkossa.",
+  "walletSpendAwaitingObservation": "Kuluttaminen ei ole mahdollista, ennen kuin tämä lompakko on synkronoitu ja nähnyt aiemmat maksunsa verkossa. Päivitä lompakko tai käytä Etsi puuttuvia tapahtumia -toimintoa ja yritä sitten uudelleen.",
+  "walletSpendBusy": "Lompakko on varattu. Yritä hetken kuluttua uudelleen."
 }

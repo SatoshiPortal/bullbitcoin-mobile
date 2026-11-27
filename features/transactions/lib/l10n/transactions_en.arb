@@ -473,6 +473,14 @@
     "description": "Description for ongoing transfers section"
   },
   "transactionListLoadingTransactions": "Loading transactions…",
+  "transactionBroadcastWaiting": "Waiting for the transaction",
+  "@transactionBroadcastWaiting": {
+    "description": "Shown after a proven broadcast while the wallet is indexing the transaction."
+  },
+  "transactionBroadcastWaitExpired": "The transaction has been broadcast but is not yet available. Try again.",
+  "@transactionBroadcastWaitExpired": {
+    "description": "Shown when the bounded wait for a broadcast transaction expires."
+  },
   "@transactionListLoadingTransactions": {
     "description": "Message displayed while loading transactions"
   },

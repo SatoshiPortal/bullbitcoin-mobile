@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Feito",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -460,5 +456,8 @@
   "swapRestoreKindLightningSend": "Envio Lightning",
   "swapRestoreNoSwaps": "Nenhum swap encontrado para restaurar",
   "swapRestoreRecoverableSection": "Recuperáveis",
-  "swapRestoreTitle": "Restaurar swap"
+  "swapRestoreTitle": "Restaurar swap",
+  "networkFeatureUnavailable": "Este recurso não está disponível na rede selecionada.",
+  "walletSpendAwaitingObservation": "Não é possível gastar até que esta carteira esteja sincronizada e tenha visto seus pagamentos anteriores na rede. Atualize a carteira ou use \"Buscar transações ausentes\" e tente novamente.",
+  "walletSpendBusy": "A carteira está ocupada. Tente novamente em instantes."
 }

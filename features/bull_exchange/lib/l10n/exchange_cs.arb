@@ -1385,8 +1385,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Zkontrolovat znovu",
   "exchangeBitcoinWalletsSessionEnded": "Již nejste přihlášeni k burze. Pro úpravu výchozích peněženek se znovu přihlaste.",
   "destinationExpectedType": "Zadejte nebo naskenujte platnou hodnotu {type}.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Nakupujte, prodávejte a plaťte s Bull Bitcoin přímo ze své peněženky.",
   "exchangeTradingUnavailable": "Obchodování není dostupné.",
   "priceChartShowTooltip": "Zobrazit graf ceny",
   "recipientsErrorSaveOutcomeUnknown": "Nepodařilo se zjistit, zda byl tento příjemce uložen. Než jej přidáte znovu, zkontrolujte své příjemce.",

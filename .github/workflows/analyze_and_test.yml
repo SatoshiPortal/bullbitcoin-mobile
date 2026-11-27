@@ -178,10 +178,7 @@ jobs:
 
       # Diagnostic, compared with the same step in unit shard 1: hooks_runner reruns a hook when one of these variables changes, so print a short hash of each value, never the value.
       - name: Fingerprint the Native Assets hook environment
-        shell: bash
-        run: |
-          env | cut -d= -f1 | LC_ALL=C sort | grep -E '^(ANDROID_HOME|ANDROID_NDK.*|HOME|LIBCLANG_PATH|PATH|TEMP|TMP|TMPDIR|HTTPS?_PROXY|NO_PROXY|no_proxy|CARGO_.*|RUSTUP_.*|CCACHE_.*|NIX_.*)$' |
-            while IFS= read -r name; do printf '%s %s\n' "$name" "$(printenv "$name" | sha256sum | cut -c1-12)"; done
+        run: python3 tools/trace_access_hooks.py --fingerprint
 
       - name: Pack generated code and Native Assets
         shell: bash
@@ -327,10 +324,17 @@ jobs:
         with:
           codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
+      - name: Fingerprint the Native Assets hook environment
+        if: matrix.shard == 1
+        run: python3 tools/trace_access_hooks.py --fingerprint
+
       - name: Unit tests must pass
         env:
           TRACE_ACCESS_SHARD: ${{ matrix.shard == 1 && '1' || '0' }}
-        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
+          TRACE_ACCESS_HOOKS: '1'
+        # FVM adds its SDK directory to PATH for each nested invocation.
+        # Keep Access aligned with the single FVM invocation in prepare-x64.
+        run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
 
   integration:
     needs: [classification, action-pins, readiness]
@@ -341,7 +345,7 @@ jobs:
     # surfaces a toolchain wart, revert this job to ubuntu-24.04 in one commit
     # (x64 runners have ~86 GB free before setup and need no cleanup).
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -370,7 +374,7 @@ jobs:
             libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
             dbus gnome-keyring \
             xdg-desktop-portal xdg-desktop-portal-gtk \
-            libsqlite3-dev xvfb xauth
+            libsqlite3-dev xvfb xauth xdg-user-dirs
 
       # The tests build and launch the real Linux GTK app, which needs a
       # display to init even though the tests themselves render nothing —
@@ -398,6 +402,22 @@ jobs:
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
             make integration-test
           '
+
+      # Run separately: the aggregated suite initializes Bull only once on
+      # its normal network and cannot select regtest before services start.
+      - name: Coins and prices on isolated local regtest
+        run: bash tools/local_regtest_integration.sh
+
+      - name: Payjoin on isolated local regtest
+        run: |
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/payjoin-mailrooms"
+          cargo build --locked --manifest-path tools/local_payjoin_mailrooms/Cargo.toml
+          tools/local_payjoin_mailrooms/build-peer.sh "$RUNNER_TEMP/payjoin-peer"
+          tools/local_payjoin_integration.sh --pull-images
+          export BULL_PAYJOIN_MAILROOMS="$CARGO_TARGET_DIR/debug/bull-regtest-mailrooms"
+          export BULL_PAYJOIN_TEST_PEER="$RUNNER_TEMP/payjoin-peer/bin/payjoin-cli"
+          unset CARGO_TARGET_DIR
+          tools/local_payjoin_integration.sh
 
   ci:
     name: CI

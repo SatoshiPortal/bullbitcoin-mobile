@@ -225,5 +225,7 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "scanNfcButton": "Scanner NFC"
+  "scanNfcButton": "Scanner NFC",
+  "mnemonicShuffleKeyboardHint": "Mélanger les touches et les suggestions après chaque pression",
+  "importMnemonicBackupRequiredError": "Ce portefeuille est protégé par un code PIN. Vous pouvez uniquement ajouter une phrase de récupération dont la sauvegarde a été vérifiée. Retirez le code PIN, importez le portefeuille, sauvegardez-le, puis définissez à nouveau le code PIN."
 }

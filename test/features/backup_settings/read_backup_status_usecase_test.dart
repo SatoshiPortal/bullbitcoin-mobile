@@ -48,7 +48,7 @@ void main() {
         birthday: null,
         isDefault: true,
       ),
-      prepareProperties: () async => const Ok(null),
+      prepareProperties: (existingSecretMember) async => const Ok(null),
     );
     expect(registered, isA<Ok>());
     final result = await ReadBackupStatusUsecase(

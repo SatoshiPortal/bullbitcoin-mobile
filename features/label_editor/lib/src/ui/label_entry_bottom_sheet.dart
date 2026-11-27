@@ -63,12 +63,16 @@ abstract final class LabelEditor {
   }
 
   /// Open the sheet for a private local label. No disclosure is shown.
+  ///
+  /// [allowEmpty] lets the user save an empty value to remove a label that
+  /// is optional, such as a payment note.
   static Future<String?> label(
     BuildContext context, {
     required String title,
     String? initialValue,
     Future<Set<String>>? suggestionsFuture,
     String? hint,
+    bool allowEmpty = false,
   }) {
     return _show(
       context,
@@ -77,7 +81,7 @@ abstract final class LabelEditor {
       suggestionsFuture: suggestionsFuture,
       hint: hint,
       disclosure: null,
-      allowEmpty: false,
+      allowEmpty: allowEmpty,
     );
   }
 

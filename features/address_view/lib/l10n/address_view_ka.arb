@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "არასწორი Bitcoin გადახდის მისამართი ან ინვოისი",
   "exchangeDcaAddressLabelBitcoin": "Bitcoin მისამართი",
   "exchangeDcaAddressLabelLiquid": "Liquid მისამართი",
-  "exchangeDcaAddressLabelLightning": "Lightning მისამართი"
+  "exchangeDcaAddressLabelLightning": "Lightning მისამართი",
+  "destinationExpectedType": "შეიყვანეთ ან დაასკანერეთ სწორი {type}."
 }

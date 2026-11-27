@@ -33,6 +33,25 @@ Future<Result<void, RecoverBullFailure>> importWalletBackupUsages({
   }
 }
 
+/// Whether the secondary receipt of the wallet-backup projection is recorded
+/// in this cutover's own encrypted store. Read-only, under exclusive admission.
+Future<Result<bool, LegacyImportFailure>> hasWalletBackupReceipt({
+  required RecoverBullCutover cutover,
+  required ExclusiveAdmission admission,
+}) async {
+  final opened = await cutover.openForInventory(admission);
+  switch (opened) {
+    case Err(:final failure):
+      return Err(failure);
+    case Ok(:final value):
+      try {
+        return await hasLegacyImportReceipt(value.database, _receiptId);
+      } finally {
+        await value.handle.close();
+      }
+  }
+}
+
 /// The shared runtime admission keeps the legacy family alive while this
 /// synchronous read takes a snapshot of the retired wallet columns.
 Future<void> importLegacyWalletBackupUsages(
@@ -148,11 +167,18 @@ WalletBackupUsage backupUsageFromRow(WalletBackupUsageRow row) => (
 
 Future<SecretBackupProjection> readSecretBackupProjection(
   RecoverBullDatabase database,
-  String fingerprint,
-) async {
-  final rows = await (database.select(
-    database.recoverbullWalletBackups,
-  )..where((row) => row.secretFingerprint.equals(fingerprint))).get();
+  String fingerprint, {
+  String? excludingWalletId,
+}) async {
+  final rows =
+      await (database.select(database.recoverbullWalletBackups)..where(
+            (row) =>
+                row.secretFingerprint.equals(fingerprint) &
+                (excludingWalletId == null
+                    ? const Constant(true)
+                    : row.walletId.isNotValue(excludingWalletId)),
+          ))
+          .get();
   int? encrypted;
   int? physical;
   var encryptedTested = false;

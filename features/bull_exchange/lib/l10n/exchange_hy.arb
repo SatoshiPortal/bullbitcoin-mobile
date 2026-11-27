@@ -819,8 +819,6 @@
   "exchangeBitcoinWalletsCheckAgain": "Կրկին ստուգել",
   "exchangeBitcoinWalletsSessionEnded": "Դուք այլևս մուտք գործած չեք բորսա։ Կրկին մուտք գործեք՝ ձեր լռելյայն դրամապանակները խմբագրելու համար։",
   "destinationExpectedType": "Մուտքագրեք կամ սկանավորեք վավեր {type}։",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Գնեք, վաճառեք և վճարեք Bull Bitcoin-ով անմիջապես ձեր դրամապանակից։",
   "exchangeTradingUnavailable": "Առևտուրն անհասանելի է։",
   "priceChartShowTooltip": "Ցույց տալ գնի գծապատկերը",
   "recipientsErrorSaveOutcomeUnknown": "Չկարողացանք պարզել՝ արդյոք այս ստացողը պահպանվել է։ Ստուգեք ձեր ստացողներին՝ նախքան կրկին ավելացնելը։",

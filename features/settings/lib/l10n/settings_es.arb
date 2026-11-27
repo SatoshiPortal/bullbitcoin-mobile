@@ -199,5 +199,12 @@
   "permissionsTitle": "Permisos",
   "settingsSearchPermissionsKeywords": "notificaciones|tareas en segundo plano|batería|alertas",
   "amountInputBitcoin": "Bitcoin",
-  "amountInputTitle": "Introducir importes en"
+  "amountInputTitle": "Introducir importes en",
+  "networkRestartDialogTitle": "Es necesario reiniciar",
+  "networkRestartDialogMessage": "El cambio hacia o desde regtest se aplica al reiniciar la app. La app se cerrará ahora. Vuelve a abrirla para continuar.",
+  "networkRestartDialogAction": "Cerrar la app",
+  "statisticsConsentTitle": "Compartir estadísticas de uso",
+  "statisticsConsentDescription": "Comparte un registro diario de actividad con la versión de la app y su entorno, sin un identificador persistente de la instalación. Puedes cambiar esta opción en cualquier momento.",
+  "statisticsConsentWriteFailed": "No se pudo guardar esta opción. Es posible que se restaure la opción anterior al reiniciar. Inténtalo de nuevo.",
+  "statisticsConsentRetry": "Reintentar"
 }

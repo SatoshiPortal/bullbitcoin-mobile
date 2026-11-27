@@ -198,19 +198,6 @@ void main() {
             .execute(false),
   );
 
-  expectsLift(
-    'setExchangeTestnetBasicAuth',
-    () => when(
-      () => repository.setExchangeTestnetBasicAuth(
-        username: any(named: 'username'),
-        password: any(named: 'password'),
-      ),
-    ).thenAnswer((_) async => const Err(_sanitized)),
-    () =>
-        SetExchangeTestnetBasicAuthUsecase(preferences: repository)
-            .execute(username: 'u', password: 'p'),
-  );
-
   test('a successful write is forwarded as Ok', () async {
     when(() => repository.setCurrency(any()))
         .thenAnswer((_) async => const Ok(null));

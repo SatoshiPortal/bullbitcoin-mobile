@@ -11,7 +11,7 @@ void main() {
     final fixture = await InventoryFixture.open(pin: '1234');
     addTearDown(fixture.close);
     final usecase = IsPinCodeSetUsecase(
-      inventory: AccessInventory(fixture.inventory, fixture.backup),
+      inventory: AccessInventory(fixture.inventory),
     );
     expect((await usecase.execute() as Ok).value, isTrue);
   });

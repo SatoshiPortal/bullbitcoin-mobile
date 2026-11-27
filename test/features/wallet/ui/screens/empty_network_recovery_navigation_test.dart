@@ -4,8 +4,6 @@ import 'package:preferences/preferences.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
@@ -62,12 +60,10 @@ void main() {
       final references = _References();
       final defaults = _Defaults();
       NetworkWalletSetupCubit createSetupCubit() => NetworkWalletSetupCubit(
-        LoadNetworkWalletSetupUsecase(settings, references),
-        CreateNetworkWalletUsecase(
-          settings,
-          references,
-          Secrets(scratchDirectory: () async => '${temporary.path}/scratch'),
-          defaults,
+        NetworkWalletProvisioning(
+          settings: settings,
+          inventory: references,
+          defaults: defaults,
         ),
       );
       final wallets = _WalletBloc();

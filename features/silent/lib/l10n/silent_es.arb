@@ -165,5 +165,13 @@
   "silentHeaderValidationInvalidChain": "El servidor Electrum envía una cadena incorrecta",
   "silentHeaderValidationInvalidChainDetail": "Este servidor no sigue la cadena real de Bitcoin. Cambia a otro servidor Electrum en la configuración.",
   "copiedToClipboard": "Copiado al portapapeles",
-  "silentFailurePassphraseUnsupported": "Silent Payments no está disponible para una billetera protegida con frase de contraseña."
+  "silentFailurePassphraseUnsupported": "Silent Payments no está disponible para una billetera protegida con frase de contraseña.",
+  "silentFailureBackendRollbackFailed": "No se pudo restablecer la conexión anterior de la billetera. Revisa los ajustes del servidor guardados antes de volver a intentarlo.",
+  "silentScanTipUnavailable": "No se pudo obtener el bloque más reciente del servidor de escaneo.",
+  "silentScanResumeInterrupted": "Escaneo sin terminar",
+  "silentScanResumeButton": "Reanudar escaneo",
+  "silentWalletScanUpToDate": "Escaneo al día",
+  "silentWalletScanBehind": "Escaneo atrasado",
+  "silentWalletScanRequired": "Escaneo necesario",
+  "silentWalletScanUnknown": "Estado del escaneo desconocido"
 }

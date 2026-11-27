@@ -9,7 +9,8 @@ import 'package:analyzer/dart/element/element.dart';
 
 import 'native_import_allowlist.dart';
 
-/// Symbol-resolved native-write boundary. This is not whole-program path/taint
+/// Symbol-resolved native-write and RecoverBull backup-preparation boundary.
+/// This is not whole-program path/taint
 /// analysis: dynamic IO helpers and new native APIs require policy review.
 /// Analysis errors and unresolved sensitive native members fail closed.
 Future<void> main(List<String> arguments) async {
@@ -125,11 +126,154 @@ List<String> productionDartFiles(String root) {
 }
 
 List<String> checkUnit(CompilationUnit unit, String relativePath) {
+  final backup = _BackupBoundaryVisitor(relativePath);
+  unit.accept(backup);
   // Native store mutations are confined to the writer, sync passes included.
-  if (relativePath.startsWith(writerModules)) return [];
+  if (relativePath.startsWith(writerModules)) return backup.violations.toList();
   final visitor = _NativeWriteVisitor(relativePath, unit);
   unit.accept(visitor);
-  return visitor.violations.toList()..sort();
+  return {...visitor.violations, ...backup.violations}.toList()..sort();
+}
+
+/// RecoverBull backup preparation is a privileged inventory operation. This
+/// checks resolved declarations, including aliases and tear-offs, not names
+/// alone. Dynamic dispatch remains outside this static boundary.
+class _BackupBoundaryVisitor extends RecursiveAstVisitor<void> {
+  final String path;
+  final Set<String> violations = {};
+
+  _BackupBoundaryVisitor(this.path);
+
+  bool _recoverBull(String uri) =>
+      uri.startsWith('package:bull_recoverbull/') ||
+      uri.contains('/features/recoverbull/lib/');
+
+  bool _testing(String? uri) =>
+      uri == 'package:bull_recoverbull/testing.dart' ||
+      (uri?.endsWith('/features/recoverbull/lib/testing.dart') ?? false);
+
+  @override
+  void visitImportDirective(ImportDirective node) {
+    final uri = node.libraryImport?.importedLibrary?.uri.toString();
+    if (_testing(uri)) {
+      violations.add('$path: RecoverBull testing library in production');
+    }
+    super.visitImportDirective(node);
+  }
+
+  @override
+  void visitExportDirective(ExportDirective node) {
+    final uri = node.libraryExport?.exportedLibrary?.uri.toString();
+    if (_testing(uri)) {
+      violations.add('$path: RecoverBull testing library in production');
+    }
+    super.visitExportDirective(node);
+  }
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    if (!node.inDeclarationContext()) _check(node.element, node);
+    super.visitSimpleIdentifier(node);
+  }
+
+  @override
+  void visitConstructorName(ConstructorName node) {
+    _check(node.element, node);
+    super.visitConstructorName(node);
+  }
+
+  void _check(Element? element, AstNode node) {
+    // This library is the fixture-only boundary itself, not a consumer.
+    if (path == 'features/recoverbull/lib/testing.dart') return;
+    final uri = element?.library?.uri.toString() ?? '';
+    final owner = element?.enclosingElement?.name;
+    final name = element?.name;
+    if (_recoverBull(uri) &&
+        {
+          'writeWalletBackupForTesting',
+          'removeWalletBackupForTesting',
+          'openRecoverBullDatabaseForTesting',
+          'recoverBullStorageForTesting',
+          'recoverBullCutoverForTesting',
+        }.contains(name)) {
+      violations.add('$path: RecoverBull testing helper $name');
+    }
+    if (_recoverBull(uri) &&
+        owner == 'RecoverBullWalletBackups' &&
+        name == 'prepare' &&
+        path !=
+            'features/recoverbull/lib/src/data/database/recoverbull_wallet_properties.dart') {
+      violations.add('$path: RecoverBullWalletBackups.prepare');
+    }
+    if (((_recoverBull(uri) && owner == 'RecoverBullWalletProperties') ||
+            ((uri.startsWith('package:secrets/') ||
+                    uri.contains('/packages/secrets/lib/')) &&
+                owner == 'WalletPropertyStore')) &&
+        name == 'prepareWallet') {
+      AstNode? cursor = node;
+      while (cursor != null && cursor is! MethodDeclaration) {
+        cursor = cursor.parent;
+      }
+      if (path != 'packages/provisioning/lib/src/wallet_provisioning.dart' ||
+          cursor is! MethodDeclaration ||
+          cursor.name.lexeme != '_prepareProperties') {
+        violations.add('$path: $owner.prepareWallet');
+      }
+    }
+    if ((uri.startsWith('package:provisioning/') ||
+            uri.contains('/packages/provisioning/lib/')) &&
+        owner == '_WalletProvisioning' &&
+        name == '_prepareProperties') {
+      var inCallback = false;
+      AstNode? cursor = node;
+      while (cursor != null && cursor is! MethodDeclaration) {
+        if (cursor is NamedArgument &&
+            cursor.name.lexeme == 'prepareProperties') {
+          final arguments = cursor.parent;
+          final call = arguments?.parent;
+          if (call is MethodInvocation) {
+            final target = call.methodName.element;
+            final source = target?.library?.uri.toString() ?? '';
+            inCallback =
+                target?.name == 'registerWallet' &&
+                target?.enclosingElement?.name == 'SecretsInventory' &&
+                (source.startsWith('package:secrets/') ||
+                    source.contains('/packages/secrets/lib/'));
+          }
+        }
+        cursor = cursor.parent;
+      }
+      if (path != 'packages/provisioning/lib/src/wallet_provisioning.dart' ||
+          !inCallback ||
+          cursor is! MethodDeclaration ||
+          cursor.name.lexeme != '_provision') {
+        violations.add(
+          '$path: provisioning property preparation outside inventory callback',
+        );
+      }
+    }
+    if (_recoverBull(uri) &&
+        owner == 'RecoverBullCutover' &&
+        (name == 'open' ||
+            name == 'openForInventory' ||
+            name == 'withTestExecutor') &&
+        !{
+          'features/recoverbull/lib/src/data/database/recoverbull_wallet_backups.dart',
+          'features/recoverbull/lib/src/data/database/wallet_backup_import.dart',
+          'features/recoverbull/lib/src/data/database/recoverbull_storage.dart',
+        }.contains(path)) {
+      violations.add('$path: RecoverBullCutover.$name');
+    }
+  }
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    if ({'prepare', 'prepareWallet'}.contains(node.methodName.name) &&
+        node.methodName.element == null) {
+      violations.add('$path: unresolved ${node.methodName.name}');
+    }
+    super.visitMethodInvocation(node);
+  }
 }
 
 const writerModules = 'packages/sync/lib/src/data/write/';

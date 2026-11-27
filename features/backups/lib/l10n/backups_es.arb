@@ -94,5 +94,8 @@
   "passphraseIncorrect": "Frase de contraseña incorrecta.",
   "passphraseWordsIncompleteWarning": "Estas palabras por sí solas no pueden restaurar esta billetera. Guarda tu frase de contraseña por separado.",
   "backupCardTitle": "Protege tus bitcoins.",
-  "backupCardSubtitle": "Haz una copia de seguridad de tu billetera ahora."
+  "backupCardSubtitle": "Haz una copia de seguridad de tu billetera ahora.",
+  "backupSettingsMoneySection": "Copia de seguridad de los fondos",
+  "backupSettingsDataSection": "Copia de seguridad de los datos",
+  "backupSettingsAutomaticBackup": "Copia de seguridad automática"
 }

@@ -13,6 +13,11 @@ shift
 total=${TEST_TOTAL_SHARDS:-1}
 index=${TEST_SHARD_INDEX:-0}
 
+# Match the PATH used by prepare-x64 before the outer FVM/Melos invocation.
+if [[ ${MELOS_PACKAGE_NAME:-} == access && -n ${ACCESS_UNIT_TEST_PATH:-} ]]; then
+  export PATH="$ACCESS_UNIT_TEST_PATH"
+fi
+
 if [[ "$total" -le 1 ]]; then
   exec fvm "$runner" test "$@"
 fi
@@ -33,12 +38,17 @@ if [[ ${#files[@]} -eq 0 ]]; then
 fi
 echo "Shard $index of $total: ${#files[@]} test files."
 if [[ ${TRACE_ACCESS_SHARD:-0} == 1 && $runner == flutter && ${MELOS_PACKAGE_NAME:-} == access && $total == 3 && $index == 1 ]]; then
-  # The normal test output remains untouched; CI timestamps its loading lines.
+  # Keep the original invocation and opt in to filtered verbose diagnostics in CI.
   # Emit only fixed labels and numeric values, never environment or arguments.
   start=$SECONDS
   echo "Access shard trace: start"
   status=0
-  fvm "$runner" test "$@" "${files[@]}" || status=$?
+  if [[ ${TRACE_ACCESS_HOOKS:-0} == 1 ]]; then
+    python3 "$(dirname "${BASH_SOURCE[0]}")/trace_access_hooks.py" \
+      fvm "$runner" test "$@" -v "${files[@]}" || status=$?
+  else
+    fvm "$runner" test "$@" "${files[@]}" || status=$?
+  fi
   echo "Access shard trace: end (elapsed $((SECONDS - start))s, exit $status)"
   exit "$status"
 fi

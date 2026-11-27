@@ -95,5 +95,6 @@
   "exchangeDcaAddressLabelLightning": "ที่อยู่",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "ป้อนหรือสแกน {type} ที่ถูกต้อง"
 }

@@ -9,14 +9,31 @@ Run `make workspace-graph` to regenerate [WORKSPACE.md](../WORKSPACE.md) and [DE
 
 ## arb.dart — manage the `.arb` localization files
 
-The files under `localization/` are large and easy to corrupt by hand. This tool
+ARB files are easy to corrupt by hand. This tool
 reads them with a JSON parser and mutates them with surgical line edits, so every
 other key stays byte-for-byte unchanged and JSON never breaks. It refuses to edit
 a file that doesn't match the expected 2-space-per-top-level-key layout.
 
 ```
-fvm dart run tools/arb.dart <command>
+fvm dart tools/arb.dart <command> [--catalog MEMBER_DIR]
 ```
+
+From the workspace root, commands default to `localization/app_*.arb`. Use
+`--catalog` to read the member's `l10n.yaml` and select its ARB directory and
+English template. These commands export missing German messages from `receive`
+and preview applying the reviewed translations.
+
+```sh
+fvm dart tools/arb.dart missing-detail de --catalog features/receive
+fvm dart tools/arb.dart fill de --catalog features/receive --translations-file /path/to/reviewed-de.json --dry-run
+```
+
+The `dead` command searches the app's source tree and is available for the root
+catalog only. `make translations` writes a separate `untranslated-messages.txt`
+report for each catalog. These files hold JSON keyed by locale and reflect the
+generator's language fallback rules. For a variant such as `hi_Latn`,
+`missing-detail` lists keys absent from that ARB file, while the Flutter report
+also accounts for values inherited from `hi`.
 
 Read:
 
@@ -58,18 +75,16 @@ and `_assertInvariant` in `arb.dart` to match, don't hand-patch the files.
 
 After any write command (`add`, `set`, `set-meta`, `rename`, `delete`), run
 `make translations` to regenerate the Dart localizations — each changes either
-the key set or a generated string. Run `fvm dart run tools/arb.dart help` for the
+the key set or a generated string. Run `fvm dart tools/arb.dart help` for the
 full reference.
 
-`arb.dart` only reads `localization/app_*.arb`. The store-vocabulary overrides
-live in `packages/novlang/lib/l10n/novlang_<lang>.arb` and are validated by
+The store-vocabulary overrides live in
+`packages/novlang/lib/l10n/novlang_<lang>.arb` and are validated by
 `cd packages/novlang && fvm flutter test` (manifest keys, the 27 languages,
 placeholders, no word the store forbids). `tools/novlang_bridge.dart` generates
 the override classes from the manifest; `make translations` runs it, or run
 `fvm dart tools/novlang_bridge.dart` after `gen-l10n` (use `dart <file>`, not
 `dart run`, which would build the app's native hooks).
-
-> First run is slow (cold package build hooks); subsequent runs are sub-second.
 
 ## Launcher icons
 

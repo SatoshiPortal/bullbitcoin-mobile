@@ -10,6 +10,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../crypto/access_verifier.dart';
 import '../domain/domain.dart';
+import 'encrypted_database.dart' show databaseFileProblemOf;
 import 'inventory_store.dart';
 import 'owner_keychain.dart';
 import 'secret_repository.dart';
@@ -22,6 +23,10 @@ const _imported = 'split-v1/secrets';
 const _fresh = 'fresh-v1/secrets';
 const _importedWithAccess = 'split-v1/secrets/access-v2';
 const _freshWithAccess = 'fresh-v1/secrets/access-v2';
+
+/// Receipts a retirement accepts: access reconciled into the encrypted store.
+const importedWithAccessReceipt = _importedWithAccess;
+const freshWithAccessReceipt = _freshWithAccess;
 
 typedef _LegacyAccessSnapshot = ({
   String? pin,
@@ -39,14 +44,21 @@ final class SecretsImport implements LegacyImportParticipant {
   @override
   String get ownerId => 'secrets';
 
+  /// A refused access throws instead of reading as absent, so the coordinator
+  /// reports an I/O failure and never a lost inventory.
   @override
-  Future<bool> hasState() async => [
-    '',
-    '-wal',
-    '-shm',
-    '-journal',
-    '.retire-pending',
-  ].any((suffix) => File('${_file.path}$suffix').existsSync());
+  Future<bool> hasState() async {
+    for (final suffix in const [
+      '',
+      '-wal',
+      '-shm',
+      '-journal',
+      '.retire-pending',
+    ]) {
+      if (_lengthIfPresent(File('${_file.path}$suffix')) != null) return true;
+    }
+    return false;
+  }
 
   @override
   Future<Result<PreparedOwner, LegacyImportFailure>> prepare(
@@ -60,15 +72,16 @@ final class SecretsImport implements LegacyImportParticipant {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     final opened = await InventoryStore.open(_file, admission, existing: true);
     switch (opened) {
       case Err(:final failure):
-        return Err(_mapOpenFailure(failure));
+        // The owner is admitted by now: its own data is what failed.
+        return Err(_admittedOpenFailure(failure));
       case Ok(:final value):
         try {
-          return await readInventoryReadiness(value.database);
+          return await readInventoryReadiness(value.database, admitted: true);
         } finally {
           await value.close();
         }
@@ -83,11 +96,43 @@ final class SecretsImport implements LegacyImportParticipant {
         ) => const LegacyImportDeferred(),
         _ => const LegacyImportUnavailable(),
       };
+
+  /// Only [inspect] knows the owner was admitted, so only it may say the data
+  /// is lost. [prepare] still holds the legacy source and keeps the plain
+  /// mapping.
+  static LegacyImportFailure _admittedOpenFailure(DatabaseOpenFailure failure) {
+    LegacyImportFailure owner(LegacyOwnerFailureCause cause) =>
+        LegacyOwnerFailure('secrets', cause);
+    return switch (failure) {
+      DatabaseKeyUnavailable(reason: DatabaseKeyProblem.locked) => owner(
+        LegacyOwnerFailureCause.keystoreLocked,
+      ),
+      DatabaseKeyUnavailable(
+        reason: DatabaseKeyProblem.missing || DatabaseKeyProblem.corrupt,
+      ) =>
+        owner(LegacyOwnerFailureCause.keyLost),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.unreadable) => owner(
+        LegacyOwnerFailureCause.unreadable,
+      ),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.missing) => owner(
+        LegacyOwnerFailureCause.missingAfterAdmission,
+      ),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.schemaMismatch) =>
+        owner(LegacyOwnerFailureCause.unsupportedSchema),
+      DatabaseFileUnavailable(reason: DatabaseFileProblem.contended) => owner(
+        LegacyOwnerFailureCause.contention,
+      ),
+      _ => _mapOpenFailure(failure),
+    };
+  }
 }
 
+/// [admitted] says the owner already passed admission, so unreadable content
+/// is lost data rather than an import that has not finished.
 Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
-  SecretsDatabase database,
-) async {
+  SecretsDatabase database, {
+  bool admitted = false,
+}) async {
   try {
     final state = await database.select(database.accessState).getSingleOrNull();
     return switch (state?.importReceipt) {
@@ -96,8 +141,19 @@ Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
       _fresh || _freshWithAccess => const Ok(OwnerReadiness.initialized),
       _ => const Err(LegacyImportVerificationFailed()),
     };
-  } on SqliteException {
-    return const Err(LegacyImportUnavailable());
+  } on SqliteException catch (error) {
+    return Err(
+      admitted ? _admittedReadFailure(error) : const LegacyImportUnavailable(),
+    );
+  }
+}
+
+// Only a missing path is absent: any other error propagates.
+int? _lengthIfPresent(File file) {
+  try {
+    return file.lengthSync();
+  } on PathNotFoundException {
+    return null;
   }
 }
 
@@ -176,10 +232,24 @@ Future<Result<void, LegacyImportFailure>> reconcileInventoryAccess(
     });
   } on _VerificationRejected {
     return const Err(LegacyImportVerificationFailed());
-  } on SqliteException {
-    return const Err(LegacyImportUnavailable());
+  } on SqliteException catch (error) {
+    // Reconciliation runs on an admitted inventory: keep what the engine said.
+    return Err(_admittedReadFailure(error));
   }
 }
+
+LegacyImportFailure _admittedReadFailure(SqliteException error) =>
+    switch (databaseFileProblemOf(error)) {
+      DatabaseFileProblem.unreadable => const LegacyOwnerFailure(
+        'secrets',
+        LegacyOwnerFailureCause.unreadable,
+      ),
+      DatabaseFileProblem.contended => const LegacyOwnerFailure(
+        'secrets',
+        LegacyOwnerFailureCause.contention,
+      ),
+      _ => const LegacyImportUnavailable(),
+    };
 
 Future<void> _writeInitialCredential(
   SecretsDatabase database,

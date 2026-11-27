@@ -93,7 +93,6 @@
   "receiveNote": "Nota",
   "selectAmountTitle": "Selecione o valor",
   "sendAdvancedOptions": "Opções avançadas",
-  "sendDone": "Feito",
   "sendErrorBuildFailed": "Não foi possível preparar este pagamento. Tente novamente.",
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
   "sendFastFee": "Rápido",
@@ -182,5 +181,8 @@
   "swapRestoreKindLightningSend": "Envio Lightning",
   "swapRestoreNoSwaps": "Não foram encontrados swaps para restaurar",
   "swapRestoreRecoverableSection": "Recuperáveis",
-  "swapRestoreTitle": "Restauro de swaps"
+  "swapRestoreTitle": "Restauro de swaps",
+  "networkFeatureUnavailable": "Esta funcionalidade não está disponível na rede selecionada.",
+  "walletSpendAwaitingObservation": "Não é possível gastar até esta carteira estar sincronizada e ter visto os seus pagamentos anteriores na rede. Atualize a carteira ou use \"Procurar transações em falta\" e tente novamente.",
+  "walletSpendBusy": "A carteira está ocupada. Tente novamente dentro de momentos."
 }

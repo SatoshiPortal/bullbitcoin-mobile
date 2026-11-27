@@ -6,6 +6,9 @@ import 'src/data/database/recoverbull_cutover.dart';
 import 'src/data/database/recoverbull_database.dart';
 import 'src/data/database/recoverbull_storage.dart';
 
+export 'src/data/database/recoverbull_wallet_backups.dart'
+    show writeWalletBackupForTesting, removeWalletBackupForTesting;
+
 RecoverBullDatabase openRecoverBullDatabaseForTesting(String path) =>
     RecoverBullDatabase.forTesting(
       NativeDatabase.createInBackground(

@@ -54,15 +54,18 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
         ),
       ),
     );
-    on<_WizardConsentPicked>(_onConsentPicked);
-    on<_WizardThemeDetected>(_onThemeDetected);
-    on<_WizardExchangePicked>(
+    on<_WizardScreenPrivacyPicked>(
       (event, emit) => emit(
         state.copyWith(
-          choices: state.choices.copyWith(exchangeAccess: event.enabled),
+          choices: state.choices.copyWith(
+            screenPrivacy: event.enabled,
+            clearScreenPrivacy: event.enabled == null,
+          ),
         ),
       ),
     );
+    on<_WizardConsentPicked>(_onConsentPicked);
+    on<_WizardThemeDetected>(_onThemeDetected);
     on<_WizardExchangeConfirmed>(
       (event, emit) => emit(
         state.copyWith(choices: state.choices.copyWith(confirmExchange: true)),

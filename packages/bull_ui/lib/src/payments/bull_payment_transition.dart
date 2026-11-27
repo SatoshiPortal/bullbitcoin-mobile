@@ -168,67 +168,75 @@ class _BullPaymentTransitionState extends State<BullPaymentTransition>
                 ),
               ),
             SafeArea(
-              minimum: const EdgeInsets.all(BullSpacing.lg),
+              minimum: const EdgeInsets.fromLTRB(
+                BullSpacing.lg,
+                64,
+                BullSpacing.lg,
+                BullSpacing.lg,
+              ),
               child: Align(
                 alignment: Alignment.bottomLeft,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        palette.background.withValues(alpha: 0),
-                        palette.background,
-                      ],
+                child: SingleChildScrollView(
+                  reverse: true,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          palette.background.withValues(alpha: 0),
+                          palette.background,
+                        ],
+                      ),
                     ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(BullSpacing.md),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Semantics(
-                          liveRegion: true,
-                          child: Text(
-                            headline,
-                            style: context.bullType.display.copyWith(
-                              fontFamily: BullTypography.brandFamily,
-                              color: successful
-                                  ? palette.success
-                                  : broadcast
-                                  ? palette.broadcast
-                                  : palette.foreground,
+                    child: Padding(
+                      padding: const EdgeInsets.all(BullSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              headline,
+                              style: context.bullType.display.copyWith(
+                                fontFamily: BullTypography.brandFamily,
+                                color: successful
+                                    ? palette.success
+                                    : broadcast
+                                    ? palette.broadcast
+                                    : palette.foreground,
+                              ),
                             ),
                           ),
-                        ),
-                        if (successful && headline != widget.status)
-                          Text(
-                            widget.status,
-                            style: context.bullType.body.copyWith(
-                              color: palette.foreground,
+                          if (successful && headline != widget.status)
+                            Text(
+                              widget.status,
+                              style: context.bullType.body.copyWith(
+                                color: palette.foreground,
+                              ),
                             ),
-                          ),
-                        if (widget.progress case final progress?)
-                          BullPaymentStepRail(
-                            progress: progress,
-                            network: widget.network,
-                            phase: widget.phase,
-                            palette: palette,
-                            reduced: _reduced,
-                          ),
-                        if (widget.bottom case final bottom?)
-                          bottom
-                        else if (onSkip != null && skipLabel != null)
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor: palette.foreground,
-                              minimumSize: const Size(48, 48),
+                          if (widget.progress case final progress?)
+                            BullPaymentStepRail(
+                              progress: progress,
+                              network: widget.network,
+                              phase: widget.phase,
+                              palette: palette,
+                              reduced: _reduced,
                             ),
-                            onPressed: onSkip,
-                            child: Text(skipLabel),
-                          ),
-                      ],
+                          if (widget.bottom case final bottom?)
+                            bottom
+                          else if (onSkip != null && skipLabel != null)
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: palette.foreground,
+                                minimumSize: const Size(48, 48),
+                              ),
+                              onPressed: onSkip,
+                              child: Text(skipLabel),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

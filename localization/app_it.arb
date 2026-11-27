@@ -1690,5 +1690,11 @@
   "walletDetailsDescriptorLabel": "Descrittore",
   "walletDetailsSignerDeviceLabel": "Dispositivo di firma",
   "walletDetailsPubkeyLabel": "Pubkey",
-  "walletDetailsNetworkLabel": "Rete"
+  "walletDetailsNetworkLabel": "Rete",
+  "destinationExpectedType": "Inserisci o scansiona un {type} valido.",
+  "exchangeAccessSignIn": "Accedi o crea un account",
+  "networkFeatureUnavailable": "Questa funzione non è disponibile sulla rete selezionata.",
+  "sendPayjoinSpendPaused": "Questo pagamento Payjoin è in pausa perché il portafoglio non può continuare in sicurezza. I suoi input restano riservati. Aggiorna il portafoglio o usa \"Cerca transazioni mancanti\", poi riprova questa proposta finché è ancora valida. Se è scaduta, controlla il pagamento in Transazioni prima di fare altro.",
+  "walletSpendAwaitingObservation": "Non puoi spendere finché questo portafoglio non è sincronizzato e non ha rilevato i suoi pagamenti precedenti sulla rete. Aggiorna il portafoglio o usa \"Cerca transazioni mancanti\", poi riprova.",
+  "walletSpendBusy": "Il portafoglio è occupato. Riprova tra un momento."
 }

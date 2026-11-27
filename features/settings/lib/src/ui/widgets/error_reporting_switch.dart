@@ -17,16 +17,19 @@ class ErrorReportingSwitch extends StatelessWidget {
 
     return Switch(
       value: isEnabled,
-      onChanged: (value) {
+      onChanged: (value) async {
         if (value) {
-          ErrorReportingConfirmationBottomSheet.show(context);
+          await ErrorReportingConfirmationBottomSheet.show(context);
         } else {
-          context.read<SettingsCubit>().toggleErrorReporting(false);
+          final saved = await context
+              .read<SettingsCubit>()
+              .toggleErrorReporting(false);
+          if (!context.mounted || !saved) return;
+          BullSnackBar.show(
+            context,
+            message: context.loc.errorReportingRestartSnackbar,
+          );
         }
-        BullSnackBar.show(
-          context,
-          message: context.loc.errorReportingRestartSnackbar,
-        );
       },
     );
   }

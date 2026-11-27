@@ -125,7 +125,6 @@
   "receiveNote": "Nota",
   "selectAmountTitle": "Seleccionar monto",
   "sendAdvancedOptions": "Opciones Avanzadas",
-  "sendDone": "Listo",
   "sendErrorBuildFailed": "No se pudo preparar este pago. Inténtelo de nuevo.",
   "sendErrorSelectedCoinsInsufficient": "Las monedas seleccionadas no cubren el monto y las comisiones. Selecciona más monedas o reduce el monto.",
   "sendErrorSelectedCoinsUnavailable": "Una o varias de las monedas seleccionadas ya no están disponibles. Revisa tu selección de monedas e inténtalo de nuevo.",
@@ -202,7 +201,6 @@
   "transactionSwapDescChainFailed": "Hubo un problema con su intercambio. Por favor contacte con soporte si los fondos no han sido devueltos dentro de 24 horas.",
   "transactionSwapOpenWithin24h": "Abra la aplicación dentro de las próximas 24 horas para completar su intercambio.",
   "typeLabel": "Tipo: ",
-  "walletLoadFailed": "No se pudieron cargar sus billeteras. Compruebe su conexión e inténtelo de nuevo.",
   "walletSpendAwaitingObservation": "Los gastos no están disponibles hasta que esta cartera esté sincronizada y haya visto sus pagos anteriores en la red. Actualiza la cartera o busca transacciones faltantes y vuelve a intentarlo.",
   "walletSpendBusy": "La cartera está ocupada. Vuelve a intentarlo en un momento.",
   "copiedToClipboard": "Copiado al portapapeles",
@@ -232,5 +230,12 @@
   "swapsFailureNetwork": "No se pudo conectar con ningún servidor. Verifique su conexión e inténtelo de nuevo.",
   "swapsFailureNotRestorable": "No se pudo reconstruir este swap desde el servidor. Contacte a soporte con su ID de swap.",
   "swapsFailureRefundNotFinal": "El reembolso aún no es gastable (timelock). Inténtelo de nuevo más tarde.",
-  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo."
+  "swapsFailureUnexpected": "Algo salió mal con el swap. Inténtelo de nuevo.",
+  "networkRelaunchRequiredError": "La red cambió desde que abriste la app. Ciérrala, vuelve a abrirla e inténtalo de nuevo.",
+  "swapArkBelowMinimum": "El monto es demasiado bajo. El mínimo es de {amount} sats más comisiones.",
+  "swapArkFeeReview": "Podrás revisar y confirmar las comisiones y el monto que recibirás en la siguiente pantalla.",
+  "swapArkMinimum": "Monto mínimo de {amount} sats más comisiones de red",
+  "swapArkRouteUnavailable": "Esta transferencia no está disponible.",
+  "swapInternalTransferDescription": "Transfiere bitcoin fácilmente entre tus billeteras. Guarda en la Billetera de Pagos Instantáneos solo lo que necesites para tus gastos diarios.",
+  "swapTransferDirection": "Invertir el origen y el destino de la transferencia"
 }

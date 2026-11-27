@@ -1,4 +1,4 @@
-.PHONY: workspace-graph workspace-graph-check rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: regtest-hosted-check workspace-graph workspace-graph-check rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -76,6 +76,7 @@ custody-check:
 	@fvm dart packages/secrets/tool/key_material_gate.dart
 
 # Native stores have exactly one writer; readers and signers have scoped exceptions.
+# RecoverBull backup preparation is confined to the inventory callback.
 # BDK/LWK stay in packages/sync, plus a shrinking list of legacy files.
 native-write-check:
 	@fvm dart packages/sync/tool/native_write_gate.dart
@@ -149,40 +150,47 @@ build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
 	@cd "$(if $(MEMBER),$(MEMBER),.)" && fvm dart run build_runner watch $(if $(MEMBER),,--workspace) --force-jit
 
+# Flutter prints this configuration reminder for every catalog.
+gen-l10n = bash -o pipefail -c 'fvm flutter gen-l10n | awk "$$1"' -- \
+	'$$0 == "Because l10n.yaml exists, the options defined there will be used instead." { next } \
+	 $$0 == "To use the command line arguments, delete the l10n.yaml file in the Flutter project." { skip_blank = 1; next } \
+	 skip_blank && !NF { next } \
+	 { skip_blank = 0; print }'
+
 translations:
 	@echo "🌐 Generating translations files"
 	@$(MAKE) novlang-translations
-	@fvm flutter gen-l10n
-	@(cd features/announcements && fvm flutter gen-l10n)
-	@(cd features/bitcoin_price && fvm flutter gen-l10n)
-	@(cd features/btc_map && fvm flutter gen-l10n)
-	@(cd features/bull_exchange && fvm flutter gen-l10n)
-	@(cd features/logs && fvm flutter gen-l10n)
-	@(cd features/quick_actions && fvm flutter gen-l10n)
-	@(cd features/signers && fvm flutter gen-l10n)
-	@(cd features/scanning && fvm flutter gen-l10n)
-	@(cd features/mnemonic_entry && fvm flutter gen-l10n)
-	@(cd features/backups && fvm flutter gen-l10n)
-	@(cd features/backup_metadata && fvm flutter gen-l10n)
-	@(cd features/access && fvm flutter gen-l10n)
-	@(cd features/startup && fvm flutter gen-l10n)
-	@(cd features/bip85 && fvm flutter gen-l10n)
-	@(cd features/all_seed_view && fvm flutter gen-l10n)
-	@(cd features/silent && fvm flutter gen-l10n)
-	@(cd features/swap && fvm flutter gen-l10n)
-	@(cd features/wallet_import && fvm flutter gen-l10n)
-	@(cd features/transactions && fvm flutter gen-l10n)
-	@(cd features/send && fvm flutter gen-l10n)
-	@(cd features/address_view && fvm flutter gen-l10n)
-	@(cd features/receive && fvm flutter gen-l10n)
-	@(cd features/coins && fvm flutter gen-l10n)
-	@(cd features/label_editor && fvm flutter gen-l10n)
-	@(cd features/fees && fvm flutter gen-l10n)
-	@(cd features/network && fvm flutter gen-l10n)
-	@(cd features/settings && fvm flutter gen-l10n)
-	@(cd features/wizard && fvm flutter gen-l10n)
-	@(cd features/onboarding && fvm flutter gen-l10n)
-	@(cd packages/notifications && fvm flutter gen-l10n)
+	@$(gen-l10n)
+	@(cd features/announcements && $(gen-l10n))
+	@(cd features/bitcoin_price && $(gen-l10n))
+	@(cd features/btc_map && $(gen-l10n))
+	@(cd features/bull_exchange && $(gen-l10n))
+	@(cd features/logs && $(gen-l10n))
+	@(cd features/quick_actions && $(gen-l10n))
+	@(cd features/signers && $(gen-l10n))
+	@(cd features/scanning && $(gen-l10n))
+	@(cd features/mnemonic_entry && $(gen-l10n))
+	@(cd features/backups && $(gen-l10n))
+	@(cd features/backup_metadata && $(gen-l10n))
+	@(cd features/access && $(gen-l10n))
+	@(cd features/startup && $(gen-l10n))
+	@(cd features/bip85 && $(gen-l10n))
+	@(cd features/all_seed_view && $(gen-l10n))
+	@(cd features/silent && $(gen-l10n))
+	@(cd features/swap && $(gen-l10n))
+	@(cd features/wallet_import && $(gen-l10n))
+	@(cd features/transactions && $(gen-l10n))
+	@(cd features/send && $(gen-l10n))
+	@(cd features/address_view && $(gen-l10n))
+	@(cd features/receive && $(gen-l10n))
+	@(cd features/coins && $(gen-l10n))
+	@(cd features/label_editor && $(gen-l10n))
+	@(cd features/fees && $(gen-l10n))
+	@(cd features/network && $(gen-l10n))
+	@(cd features/settings && $(gen-l10n))
+	@(cd features/wizard && $(gen-l10n))
+	@(cd features/onboarding && $(gen-l10n))
+	@(cd packages/notifications && $(gen-l10n))
 	@$(MAKE) recoverbull-translations
 	@$(MAKE) bull-ui-translations
 	@$(MAKE) ark-translations
@@ -190,15 +198,15 @@ translations:
 
 .PHONY: ark-translations
 ark-translations:
-	@(cd features/ark && fvm flutter gen-l10n)
+	@(cd features/ark && $(gen-l10n))
 
 .PHONY: bull-ui-translations
 bull-ui-translations:
-	@(cd packages/bull_ui && fvm flutter gen-l10n)
+	@(cd packages/bull_ui && $(gen-l10n))
 
 .PHONY: novlang-translations
 novlang-translations:
-	@(cd packages/novlang && fvm flutter gen-l10n)
+	@(cd packages/novlang && $(gen-l10n))
 
 # Generates store-aware delegates from the novlang manifest and gen-l10n
 # output for each catalogue. `dart <file>` on purpose: `dart run` would run
@@ -209,7 +217,7 @@ novlang-bridge:
 
 .PHONY: recoverbull-translations
 recoverbull-translations:
-	@(cd features/recoverbull && fvm flutter gen-l10n)
+	@(cd features/recoverbull && $(gen-l10n))
 
 hooks:
 	@CURRENT_HOOKS_PATH=$$(git config --local core.hooksPath); \
@@ -448,6 +456,10 @@ rustc-pins-test:
 unit-test-shard-test:
 	@python3 -m unittest tools.testing.test_unit_test_shard
 
+# Read-only reachability check of every hosted regtest endpoint the app uses.
+regtest-hosted-check:
+	@python3 -I tools/regtest/check_hosted.py tools/regtest/hosted.json
+
 # Compile the app to a release AOT snapshot without the native build; catches Dart AOT compiler crashes that debug builds and tests miss. Needs generated code.
 aot-check:
 	@bash tools/aot_snapshot_check.sh
@@ -530,12 +542,10 @@ bitbox-device-test:
 # Physical-device credential probes use a separately installed debug APK.
 # The SDK driver connects through VM_SERVICE_URL without installing an app.
 .PHONY: exchange-credentials-device-build exchange-credentials-device-test
-EXCHANGE_DEVICE_LIVE ?= false
 exchange-credentials-device-build:
 	@fvm flutter build apk --debug --target-platform android-arm64 --split-per-abi --flavor production \
 		--target integration_test/device/exchange_credentials_test.dart \
-		--dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false \
-		--dart-define=TEST_EXCHANGE_LIVE=$(EXCHANGE_DEVICE_LIVE)
+		--dart-define=INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false
 
 exchange-credentials-device-test:
 	@test -n "$$VM_SERVICE_URL" || { echo "Set VM_SERVICE_URL to the running test app"; exit 1; }

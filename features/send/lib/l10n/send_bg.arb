@@ -437,10 +437,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "Потвърди изпращане\n==WEBLATE_PART==",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "Обменът е в ход. Инвойсът ще бъде платен след няколко секунди.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
@@ -506,5 +502,8 @@
   "closeDialogButton": "Затвори",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  }
+  },
+  "sendPayjoinSpendPaused": "Това Payjoin плащане е на пауза, защото портфейлът не може да продължи безопасно. Входовете му остават резервирани. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново това предложение, докато е валидно. Ако е изтекло, проверете плащането в „Транзакции“, преди да предприемете други действия.",
+  "walletSpendAwaitingObservation": "Харченето не е възможно, докато този портфейл не се синхронизира и не види предишните си плащания в мрежата. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново.",
+  "walletSpendBusy": "Портфейлът е зает. Опитайте отново след малко."
 }

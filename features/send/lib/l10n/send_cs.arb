@@ -501,10 +501,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "Odeslat",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "Swap je v průběhu. Faktura bude vyplacena během několika sekund.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
@@ -566,5 +562,8 @@
   "closeDialogButton": "Zavřít",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  }
+  },
+  "sendPayjoinSpendPaused": "Tato platba Payjoin je pozastavena, protože peněženka nemůže bezpečně pokračovat. Její vstupy zůstávají rezervované. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a poté tento návrh zopakujte, dokud je platný. Pokud vypršel, zkontrolujte platbu v Transakcích, než uděláte cokoli dalšího.",
+  "walletSpendAwaitingObservation": "Utrácení není dostupné, dokud tato peněženka není synchronizovaná a nevidí v síti své předchozí platby. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a zkuste to znovu.",
+  "walletSpendBusy": "Peněženka je zaneprázdněná. Zkuste to za chvíli znovu."
 }

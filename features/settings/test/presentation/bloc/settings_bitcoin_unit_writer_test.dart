@@ -51,6 +51,16 @@ class _MockSetShowPaymentAnimationsUsecase extends Mock
 class _MockSetExchangeTestnetBasicAuthUsecase extends Mock
     implements SetExchangeTestnetBasicAuthUsecase {}
 
+class _MockLoadExchangeTestnetBasicAuthUsecase extends Mock
+    implements LoadExchangeTestnetBasicAuthUsecase {}
+
+LoadExchangeTestnetBasicAuthUsecase _loadBasicAuth() {
+  final usecase = _MockLoadExchangeTestnetBasicAuthUsecase();
+  when(usecase.execute)
+      .thenAnswer((_) async => const Ok((username: null, password: null)));
+  return usecase;
+}
+
 class _MockSetPayjoinEnabledUsecase extends Mock
     implements SetPayjoinEnabledUsecase {}
 
@@ -82,6 +92,7 @@ class _TestSettingsCubit extends SettingsCubit {
     required super.checkSpWalletSetupUsecase,
     required super.setErrorReportingUsecase,
     required super.setScreenCaptureProtectionUsecase,
+    required super.loadExchangeTestnetBasicAuthUsecase,
     required super.setShowPaymentAnimationsUsecase,
     required super.setExchangeTestnetBasicAuthUsecase,
     required super.setPayjoinEnabledUsecase,
@@ -129,6 +140,7 @@ void main() {
       checkSpWalletSetupUsecase: _MockCheckSpWalletSetupForSettingsUsecase(),
       setErrorReportingUsecase: _MockSetErrorReportingUsecase(),
       setScreenCaptureProtectionUsecase: setScreenCapture,
+      loadExchangeTestnetBasicAuthUsecase: _loadBasicAuth(),
       setShowPaymentAnimationsUsecase: setShowPaymentAnimations,
       setExchangeTestnetBasicAuthUsecase:
           _MockSetExchangeTestnetBasicAuthUsecase(),

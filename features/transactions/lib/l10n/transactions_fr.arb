@@ -111,6 +111,8 @@
   "transactionListOngoingTransfersTitle": "Échanges en cours",
   "transactionListOngoingTransfersDescription": "Ces échanges sont actuellement en cours. Vos fonds sont en sécurité et seront disponibles lorsque l'échange se terminera.",
   "transactionListLoadingTransactions": "Chargement des transactions...",
+  "transactionBroadcastWaiting": "En attente de la transaction",
+  "transactionBroadcastWaitExpired": "La transaction a été diffusée mais n’est pas encore disponible. Réessayez.",
   "transactionListNoTransactions": "Aucune transaction pour le moment.",
   "transactionListToday": "Aujourd'hui",
   "transactionListYesterday": "Hier",
@@ -260,5 +262,14 @@
   "paymentStatusFailed": "Échec",
   "paymentStatusExpired": "Expiré",
   "paymentStatusRefundInProgress": "Remboursement en cours",
-  "paymentStatusRefunded": "Remboursé"
+  "paymentStatusRefunded": "Remboursé",
+  "transactionDetailRetryClaimRefund": "Relancer la récupération ou le remboursement",
+  "transactionDetailSwapRetryStarted": "Nouvelle tentative de récupération ou de remboursement…",
+  "transactionDetailSwapRetryFailed": "La récupération ou le remboursement n’a pas abouti. Réessayez.",
+  "transactionDetailLabelRecipient": "Destinataire",
+  "transactionDetailLabelPayjoinInProgress": "En cours",
+  "transactionPayjoinFallbackProcessing": "Traitement sous forme de transaction classique…",
+  "transactionListPending": "En attente",
+  "viewerCopyLinkDisclosePayjoin": "Copier le lien (révèle le Payjoin)",
+  "viewerViewInExplorerDisclosePayjoin": "Voir dans l’explorateur (révèle le Payjoin)"
 }

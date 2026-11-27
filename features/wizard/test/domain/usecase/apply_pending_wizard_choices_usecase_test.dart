@@ -69,6 +69,32 @@ void main() {
         .thenAnswer((_) async => const Ok(null));
   });
 
+  test('privacy failure remains pending and can be retried', () async {
+    const pending = WizardChoices(
+      screenPrivacy: false,
+      touched: {WizardField.screenPrivacy},
+    );
+    when(() => wizard.readPending()).thenAnswer((_) async => pending);
+    when(() => settings.setScreenCaptureProtectionEnabled(false))
+        .thenAnswer((_) async => const Err(PreferencesWriteFailure()));
+    final result = await usecase.execute();
+    expect(
+      result,
+      isA<Err<void, PreferencesFailure>>().having(
+        (value) => value.failure,
+        'failure',
+        isA<PreferencesWriteFailure>(),
+      ),
+    );
+    verifyNever(() => wizard.savePending(any()));
+    verifyNever(() => wizard.clearPending());
+    when(() => wizard.readPending()).thenAnswer((_) async => pending);
+    when(() => settings.setScreenCaptureProtectionEnabled(false))
+        .thenAnswer((_) async => const Ok(null));
+    await usecase.execute();
+    verify(() => wizard.clearPending()).called(1);
+  });
+
   test('short-circuits when nothing is staged', () async {
     when(() => wizard.readPending()).thenAnswer((_) async => null);
 

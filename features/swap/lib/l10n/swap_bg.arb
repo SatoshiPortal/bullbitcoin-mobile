@@ -184,10 +184,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Готово",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Това плащане не можа да бъде подготвено. Моля, опитайте отново.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -406,5 +402,8 @@
   "swapRestoreKindLightningSend": "Изпращане през Lightning",
   "swapRestoreNoSwaps": "Няма намерени обмени за възстановяване",
   "swapRestoreRecoverableSection": "Възстановими",
-  "swapRestoreTitle": "Възстановяване на обмен"
+  "swapRestoreTitle": "Възстановяване на обмен",
+  "networkFeatureUnavailable": "Тази функция не е налична в избраната мрежа.",
+  "walletSpendAwaitingObservation": "Харченето не е възможно, докато този портфейл не се синхронизира и не види предишните си плащания в мрежата. Обновете портфейла или използвайте „Търсене на липсващи транзакции“, след което опитайте отново.",
+  "walletSpendBusy": "Портфейлът е зает. Опитайте отново след малко."
 }

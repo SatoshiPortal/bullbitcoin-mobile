@@ -112,6 +112,8 @@
   "transactionListOngoingTransfersTitle": "Intercambios en curso",
   "transactionListOngoingTransfersDescription": "Estos intercambios están actualmente en progreso. Sus fondos están seguros y estarán disponibles cuando se complete el intercambio.",
   "transactionListLoadingTransactions": "Cargando transacciones...",
+  "transactionBroadcastWaiting": "Esperando la transacción",
+  "transactionBroadcastWaitExpired": "La transacción se ha difundido, pero aún no está disponible. Inténtalo de nuevo.",
   "transactionListNoTransactions": "Aún no hay transacciones.",
   "transactionListToday": "Hoy",
   "transactionListYesterday": "Ayer",

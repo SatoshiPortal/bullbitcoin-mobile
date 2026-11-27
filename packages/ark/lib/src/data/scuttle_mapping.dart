@@ -40,6 +40,7 @@ ArkMovement projectScuttleMovement(scuttle.ScuttleMovement movement) =>
         _ => ArkMovementDirection.unknown,
       },
       amount: Sats.fromInt(movement.effectiveSats.abs()),
+      positiveEffectiveAmount: movement.effectiveSats > 0,
       fee: Sats(movement.feeSats),
       createdAt: _seconds(movement.createdAt),
       completedAt: switch (movement.completedAt) {

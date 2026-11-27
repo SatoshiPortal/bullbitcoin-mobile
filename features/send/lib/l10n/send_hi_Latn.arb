@@ -364,10 +364,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "sendConfirmSend": "Bhejne Ki Pushthi Karo",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSelfTransfer": "Khud ko transfer",
   "@sendSelfTransfer": {
     "description": "Label shown when the transaction is sending to the same wallet"
@@ -579,5 +575,9 @@
   "closeDialogButton": "Band Karo",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  }
+  },
+  "sendPayjoinSpendPaused": "Yeh Payjoin payment rok diya gaya hai kyunki wallet surakshit roop se aage nahi badh sakta. Iske inputs reserved rahenge. Wallet refresh karein ya \"Scan for missing transactions\" use karein, phir jab tak yeh proposal valid hai, ise dobara try karein. Agar yeh expire ho gaya hai, toh aage kuch bhi karne se pehle Transactions mein payment check karein.",
+  "walletSpendAwaitingObservation": "Jab tak yeh wallet sync hokar network par apne pichhle payments nahi dekh leta, tab tak spending available nahi hai. Wallet refresh karein ya \"Scan for missing transactions\" use karein, phir dobara try karein.",
+  "walletSpendBusy": "Wallet busy hai. Thodi der mein dobara try karein.",
+  "walletTypeWatchOnly": "Sirf Dekhne Wala"
 }

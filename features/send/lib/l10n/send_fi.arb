@@ -126,7 +126,6 @@
   "sendTransferFeeDescription": "Tämä on lähetetystä summasta vähennetty kokonaiskulu",
   "sendReceiveNetworkFee": "Vastaanoton verkkokulu",
   "sendServerNetworkFees": "Palvelimen verkkokulut",
-  "sendConfirmSend": "Vahvista lähetys",
   "sendSending": "Lähetetään",
   "sendBroadcastingTransaction": "Lähetetään transaktiota.",
   "sendSwapInProgressInvoice": "Swap on käynnissä. Lasku maksetaan muutamassa sekunnissa.",
@@ -217,5 +216,10 @@
   "sendErrorFeesUnavailable": "Verkkomaksuja ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen.",
   "sendErrorExchangeOrderMismatch": "Tämä maksu ei enää vastaa tilausta. Aloita maksu uudelleen.",
   "sendErrorInvoiceExpiryTooShort": "Tämä lasku vanhenee liian pian. Pyydä vastaanottajalta uusi lasku.",
-  "closeDialogButton": "Sulje"
+  "closeDialogButton": "Sulje",
+  "sendPayjoinSpendPaused": "Tämä Payjoin-maksu on keskeytetty, koska lompakko ei voi jatkaa turvallisesti. Sen syötteet pysyvät varattuina. Päivitä lompakko tai käytä Etsi puuttuvia tapahtumia -toimintoa ja yritä tätä ehdotusta uudelleen, kun se on vielä voimassa. Jos se on vanhentunut, tarkista maksu Tapahtumat-näkymästä ennen muita toimia.",
+  "walletSpendAwaitingObservation": "Kuluttaminen ei ole mahdollista, ennen kuin tämä lompakko on synkronoitu ja nähnyt aiemmat maksunsa verkossa. Päivitä lompakko tai käytä Etsi puuttuvia tapahtumia -toimintoa ja yritä sitten uudelleen.",
+  "walletSpendBusy": "Lompakko on varattu. Yritä hetken kuluttua uudelleen.",
+  "walletTypeBitcoinNetwork": "Bitcoin-verkko",
+  "walletTypeWatchOnly": "Vain katselu"
 }

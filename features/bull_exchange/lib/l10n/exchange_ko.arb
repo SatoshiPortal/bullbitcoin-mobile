@@ -1385,8 +1385,6 @@
   "exchangeBitcoinWalletsCheckAgain": "다시 확인",
   "exchangeBitcoinWalletsSessionEnded": "거래소에서 로그아웃되었습니다. 기본 지갑을 수정하려면 다시 로그인하세요.",
   "destinationExpectedType": "유효한 {type}을(를) 입력하거나 스캔하세요.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "지갑에서 바로 Bull Bitcoin으로 매수, 매도 및 결제하세요.",
   "exchangeTradingUnavailable": "거래를 사용할 수 없습니다.",
   "priceChartShowTooltip": "가격 차트 보기",
   "recipientsErrorSaveOutcomeUnknown": "이 수취인이 저장되었는지 확인할 수 없습니다. 다시 추가하기 전에 수취인 목록을 확인하세요.",

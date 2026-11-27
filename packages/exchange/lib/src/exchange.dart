@@ -36,6 +36,7 @@ import 'domain/entities/user_summary.dart';
 import 'domain/entities/virtual_iban.dart';
 import 'domain/exchange_access.dart';
 import 'domain/exchange_availability.dart';
+import 'domain/exchange_basic_auth.dart';
 import 'domain/exchange_account_deletion_outcome.dart';
 import 'domain/exchange_call_result.dart';
 import 'domain/exchange_environment.dart';
@@ -165,6 +166,7 @@ final class Exchange {
   final ExchangeAccessLifecycle? _access;
   final Preferences? _sessionPreferences;
   final ExchangeWebAuthEndpoints? _webAuthEndpoints;
+  final ExchangeBasicAuthStore? _basicAuth;
   final ExchangeRecipients recipients;
   final UnknownWriteJournal? _unknownWrites;
   final Future<Result<_SessionPoint, ExchangeFailure>> Function()
@@ -194,6 +196,7 @@ final class Exchange {
     this.recipients,
     this._sessionPreferences,
     this._webAuthEndpoints,
+    this._basicAuth,
     this._unknownWrites,
     this._readSessionPoint,
     this.writeGate,
@@ -219,6 +222,7 @@ final class Exchange {
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
     ExchangeWebAuthEndpoints? webAuthEndpoints,
+    ExchangeBasicAuthStore? basicAuth,
     UnknownWriteJournal? unknownWrites,
   }) => _open(
     mainnetEndpoint: mainnetEndpoint,
@@ -230,6 +234,7 @@ final class Exchange {
     access: access,
     sessionPreferences: sessionPreferences,
     webAuthEndpoints: webAuthEndpoints,
+    basicAuth: basicAuth,
     unknownWrites: unknownWrites,
     openClient: (endpoint, readKey) => Bbx.open(
       endpoint: endpoint.toString(),
@@ -249,6 +254,7 @@ final class Exchange {
     ExchangeAccessLifecycle? access,
     Preferences? sessionPreferences,
     ExchangeWebAuthEndpoints? webAuthEndpoints,
+    ExchangeBasicAuthStore? basicAuth,
     UnknownWriteJournal? unknownWrites,
   }) {
     final recorder = unknownWrites == null
@@ -652,7 +658,12 @@ final class Exchange {
           environment: environment,
         ),
       ),
-      kyc == null ? null : ExchangeKycConfigurationRepository(kyc),
+      kyc == null
+          ? null
+          : ExchangeKycConfigurationRepository(
+              kyc,
+              () => _loadWebPreferences(sessionPreferences, basicAuth),
+            ),
       () => withClient((client) async {
         switch (await BbxApiUserRepository(api: client).getUserSummary()) {
           case Err():
@@ -689,6 +700,7 @@ final class Exchange {
       ),
       sessionPreferences,
       webAuthEndpoints,
+      basicAuth,
       unknownWrites,
       () async => (await sessionSnapshot()).map(
         (s) => (environment: s.environment, epoch: s.epoch),
@@ -713,11 +725,36 @@ final class Exchange {
 
   @useResult
   Future<Result<ExchangeWebPreferences, ExchangeFailure>>
-  loadWebPreferences() async {
-    final preferences = _sessionPreferences;
-    if (preferences == null) return const Err(ExchangeUnexpectedFailure());
-    return GetExchangeWebSettingsUsecase(preferences: preferences).execute();
+  loadWebPreferences() => _loadWebPreferences(_sessionPreferences, _basicAuth);
+
+  static Future<Result<ExchangeWebPreferences, ExchangeFailure>>
+  _loadWebPreferences(
+    ActiveEnvironmentReader? environment,
+    ExchangeBasicAuthStore? basicAuth,
+  ) async {
+    if (environment == null || basicAuth == null) {
+      return const Err(ExchangeUnexpectedFailure());
+    }
+    return GetExchangeWebSettingsUsecase(
+      environment: environment,
+      basicAuth: basicAuth,
+    ).execute();
   }
+
+  /// The sandbox's Basic Auth as stored. A failed read is not an empty value.
+  @useResult
+  Future<Result<ExchangeBasicAuthValues, ExchangeFailure>>
+  readTestnetBasicAuth() async =>
+      await _basicAuth?.read() ?? const Err(ExchangeCredentialReadFailure());
+
+  /// Replaces the sandbox's Basic Auth; a null field clears it.
+  @useResult
+  Future<Result<void, ExchangeFailure>> saveTestnetBasicAuth({
+    String? username,
+    String? password,
+  }) async =>
+      await _basicAuth?.save(username: username, password: password) ??
+      const Err(ExchangeBasicAuthSaveFailure());
 
   /// Whether the active network has no Exchange service.
   Future<bool> networkUnavailable() async =>
@@ -1311,6 +1348,7 @@ Exchange exchangeForTesting({
   ExchangeRecipients? recipients,
   ExchangeAccessLifecycle? access,
   Preferences? sessionPreferences,
+  ExchangeBasicAuthStore? basicAuth,
   UnknownWriteJournal? unknownWrites,
   Future<
     Result<({ExchangeEnvironment environment, int epoch}), ExchangeFailure>
@@ -1413,6 +1451,7 @@ Exchange exchangeForTesting({
   ),
   sessionPreferences,
   null,
+  basicAuth,
   unknownWrites,
   readSessionPoint ?? () => throw StateError('Unexpected session read'),
   writeGate ?? ExchangeWriteGate(journal: unknownWrites),

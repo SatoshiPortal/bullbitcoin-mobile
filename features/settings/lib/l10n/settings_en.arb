@@ -328,7 +328,7 @@
   "@errorReportingCancelButton": {
     "description": "Button to cancel error reporting"
   },
-  "errorReportingRestartSnackbar": "Restart the app to apply this change",
+  "errorReportingRestartSnackbar": "Close and reopen the app to apply this change.",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
@@ -691,5 +691,13 @@
   "amountInputBitcoin": "Bitcoin",
   "@amountInputBitcoin": {},
   "amountInputTitle": "Enter amounts in",
-  "@amountInputTitle": {}
+  "@amountInputTitle": {},
+  "statisticsConsentTitle": "Share usage statistics",
+  "@statisticsConsentTitle": {},
+  "statisticsConsentDescription": "A daily signal that counts active users.",
+  "@statisticsConsentDescription": {},
+  "statisticsConsentWriteFailed": "Could not save this choice. The previous choice may return after restart. Please retry.",
+  "@statisticsConsentWriteFailed": {},
+  "statisticsConsentRetry": "Retry",
+  "@statisticsConsentRetry": {}
 }

@@ -4,3 +4,4 @@ template-arb-file: app_en.arb
 output-localization-file: quick_actions_localizations.dart
 output-class: QuickActionsLocalizations
 nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

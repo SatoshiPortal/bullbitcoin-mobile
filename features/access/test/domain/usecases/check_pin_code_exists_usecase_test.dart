@@ -12,7 +12,7 @@ void main() {
     final fixture = await InventoryFixture.open(pin: '1234');
     addTearDown(fixture.close);
     final usecase = CheckPinCodeExistsUsecase(
-      inventory: AccessInventory(fixture.inventory, fixture.backup),
+      inventory: AccessInventory(fixture.inventory),
     );
     expect((await usecase.execute() as Ok).value, isTrue);
     fixture.storage.entries.remove('securityKey');
@@ -23,7 +23,7 @@ void main() {
     final fixture = await InventoryFixture.open();
     addTearDown(fixture.close);
     final usecase = CheckPinCodeExistsUsecase(
-      inventory: AccessInventory(fixture.inventory, fixture.backup),
+      inventory: AccessInventory(fixture.inventory),
     );
     expect((await usecase.execute() as Ok).value, isFalse);
   });

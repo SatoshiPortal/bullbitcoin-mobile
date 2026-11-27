@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, NetworkEnv, RegtestHostProfile;
+    show BitcoinUnit, NetworkEnv, RegtestHostProfile, RegtestHostedDefines;
 
 import '../../../support/preferences_database.dart';
 
@@ -44,6 +44,26 @@ SettingsEntity _selected(
 RegtestRecoverBullProfile _profile() => RegtestRecoverBullProfile(
   RegtestHostProfile.forNetwork(NetworkEnv.regtest, host: 'stack.example') ??
       (throw StateError('Missing test profile')),
+);
+
+const _onion =
+    'http://jvoev3472o6kq5cja7h622jogk6duperesp35st66y5coirxjbs6pwid.onion';
+
+RegtestRecoverBullProfile _hostedProfile() => RegtestRecoverBullProfile(
+  RegtestHostProfile.forNetwork(
+        NetworkEnv.regtest,
+        host: '',
+        hosted: const RegtestHostedDefines(
+          electrumBitcoin: 'ssl://electrum.example:443',
+          electrumLiquid: 'ssl://electrum.example:8443',
+          esploraBitcoin: 'https://esplora.example',
+          esploraLiquid: 'https://liquid.example',
+          boltzApi: 'https://boltz.example/v2',
+          boltzWebSocket: 'wss://boltz.example/v2/ws',
+          recoverBull: _onion,
+        ),
+      ) ??
+      (throw StateError('Missing hosted test profile')),
 );
 
 TorReady _ready(TorProxyEndpoint endpoint) => TorReady(
@@ -92,13 +112,16 @@ void main() {
     adapters.clear();
     await database.close();
   });
-  RecoverBullSettingsAdapter adapter({bool regtest = true}) {
+  RecoverBullSettingsAdapter adapter({
+    bool regtest = true,
+    RegtestRecoverBullProfile? profile,
+  }) {
     final value = RecoverBullSettingsAdapter(
       settings,
       PreferencesTesting.fromDao(PreferencesDao(database)).recoverBull,
       embedded,
       tor,
-      regtestProfile: regtest ? _profile() : null,
+      regtestProfile: regtest ? profile ?? _profile() : null,
     );
     adapters.add(value);
     return value;
@@ -274,6 +297,49 @@ void main() {
     expect(value.snowflakeAvailable, isFalse);
     verifyZeroInteractions(embedded);
   });
+  group('hosted stack', () {
+    test('reaches its onion service over the embedded Tor route', () async {
+      selected = _selected(Environment.regtest, useProxy: false);
+      when(() => embedded.mode).thenReturn(TorTransportMode.automatic);
+      const states = Stream<TorConnectionState>.empty();
+      when(() => embedded.states).thenAnswer((_) => states);
+      final value = adapter(profile: _hostedProfile());
+      expect(value.configuredServer.toString(), _onion);
+      expect(value.snowflakeAvailable, isTrue);
+      expect(value.watch(), same(states));
+      // The embedded engine reports stopped here: the route fails on it,
+      // without ever trying an external proxy.
+      expect(
+        await value.open(),
+        isA<Err<RecoverBullRoute, RecoverBullFailure>>(),
+      );
+      verify(() => embedded.ensureReady()).called(1);
+      verifyNever(() => external.verify(any()));
+    });
+
+    test('keeps the regtest permission and network', () async {
+      await database.customStatement(
+        "INSERT INTO recoverbull_permission_overrides (family, is_permission_granted) VALUES ('regtest', 1)",
+      );
+      final value = adapter(profile: _hostedProfile());
+      expect(
+        await value.readPermission(),
+        isA<Ok<({bool granted, int revision}), RecoverBullFailure>>().having(
+          (r) => r.value.granted,
+          'consent',
+          true,
+        ),
+      );
+      expect(
+        await value.currentNetwork(),
+        isA<Ok<BitcoinNetwork, RecoverBullFailure>>().having(
+          (r) => r.value,
+          'network',
+          BitcoinNetwork.regtest,
+        ),
+      );
+    });
+  });
   test(
     'regtest uses the fixture URL and its isolated live permission',
     () async {
@@ -314,7 +380,7 @@ void main() {
       final result = adapter().open();
       await pumpEventQueue();
       selected = _selected(Environment.mainnet);
-      pending.complete(_ready(_profile().endpoint));
+      pending.complete(_ready(_profile().endpoint!));
       expect(
         await result,
         isA<Err<RecoverBullRoute, RecoverBullFailure>>().having(

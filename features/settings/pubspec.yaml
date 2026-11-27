@@ -28,6 +28,7 @@ dependencies:
   bull_logger:
   bull_payjoin:
   bull_pricer:
+  bull_reporting:
   bull_recoverbull:
   bull_tor:
   bull_ui:

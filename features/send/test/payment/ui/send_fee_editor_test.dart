@@ -17,24 +17,27 @@ void main() {
       child: Scaffold(body: child),
     ),
   );
-  Widget editor({ValueChanged<String>? submit, FocusNode? focus}) =>
-      SendCustomFeeEditor(
-        title: 'Custom fee',
-        backLabel: 'Back',
-        closeLabel: 'Close',
-        modes: const {'Rate', 'Total'},
-        selectedMode: 'Rate',
-        value: '',
-        unit: 'sat/vB',
-        help: 'Enter a fee',
-        applyHint: 'Apply with keyboard check',
-        onMode: (_) {},
-        onChanged: (_) {},
-        onBack: () {},
-        onClose: () {},
-        onSubmit: submit,
-        focusNode: focus,
-      );
+  Widget editor({
+    ValueChanged<String>? submit,
+    FocusNode? focus,
+    VoidCallback? back,
+  }) => SendCustomFeeEditor(
+    title: 'Custom fee',
+    backLabel: 'Back',
+    closeLabel: 'Close',
+    modes: const {'Rate', 'Total'},
+    selectedMode: 'Rate',
+    value: '',
+    unit: 'sat/vB',
+    help: 'Enter a fee',
+    doneLabel: 'Done',
+    onMode: (_) {},
+    onChanged: (_) {},
+    onBack: back ?? () {},
+    onClose: () {},
+    onSubmit: submit,
+    focusNode: focus,
+  );
 
   testWidgets('invalid keyboard completion retains focus and raw input', (
     tester,
@@ -66,6 +69,38 @@ void main() {
     expect(values, ['0.333']);
     expect(focus.hasFocus, isFalse);
   });
+
+  testWidgets('Done on the iOS keyboard bar applies the value', (tester) async {
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetViewInsets);
+    final values = <String>[];
+    final focus = FocusNode();
+    addTearDown(focus.dispose);
+    await tester.pumpWidget(shell(editor(focus: focus, submit: values.add)));
+    await tester.showKeyboard(find.byType(TextField));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+    expect(values, ['']);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+
+  testWidgets('Back on iOS cancels a typed fee instead of applying it', (
+    tester,
+  ) async {
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetViewInsets);
+    final values = <String>[];
+    var backs = 0;
+    await tester.pumpWidget(
+      shell(editor(submit: values.add, back: () => backs++)),
+    );
+    await tester.showKeyboard(find.byType(TextField));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    expect(backs, 1);
+    expect(values, isEmpty);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
   testWidgets('translated segments fit at large text scale', (tester) async {
     tester.view.physicalSize = const Size(320, 844);

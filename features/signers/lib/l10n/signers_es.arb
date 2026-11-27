@@ -360,5 +360,6 @@
   "bitboxScreenTroubleshootingBluetoothStep2": "Asegúrese de que el Bluetooth esté activado en su BitBox Nova.",
   "bitboxScreenTroubleshootingBluetoothStep3": "Reinicie su BitBox Nova e intente conectarse de nuevo.",
   "psbtFlowInvalidPsbtError": "No se pudo leer esta transacción. Vuelve atrás y créala de nuevo.",
-  "psbtFlowQrEncodingError": "No se pudo convertir esta transacción en un código QR."
+  "psbtFlowQrEncodingError": "No se pudo convertir esta transacción en un código QR.",
+  "psbtFlowQrDensity": "Densidad del código QR"
 }

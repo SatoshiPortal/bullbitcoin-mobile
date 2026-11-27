@@ -31,13 +31,8 @@ void main() {
   late StreamController<bool> platform;
 
   void stubEnvironment(Environment environment) =>
-      when(preferences.readExchangeWebPreferences).thenAnswer(
-        (_) async => Ok((
-          environment: environment,
-          exchangeTestnetBasicAuthUsername: null,
-          exchangeTestnetBasicAuthPassword: null,
-        )),
-      );
+      when(preferences.readActiveEnvironment)
+          .thenAnswer((_) async => Ok(environment));
 
   setUp(() {
     final lifecycle = _Access();
@@ -50,6 +45,9 @@ void main() {
     exchange = exchangeForTesting(
       access: lifecycle,
       sessionPreferences: preferences,
+      basicAuth: ExchangeCredentials.openBasicAuth(
+        InMemoryExchangeCredentialStorage(),
+      ),
     );
   });
 

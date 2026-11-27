@@ -1,25 +1,28 @@
 // ignore_for_file: avoid_print
 //
-// arb.dart — a small utility for managing the app's .arb localization files.
+// arb.dart — a small utility for managing workspace localization files.
 //
 // The .arb files under `localization/` are large and easy to corrupt by hand.
 // This tool reads and mutates them safely: reads use a JSON parser, and writes
 // are surgical line edits that preserve every other byte of the file (so diffs
 // stay small and formatting is never churned).
 //
-// It relies on one invariant that holds for every file in `localization/`:
+// It relies on one invariant that holds for every supported ARB file:
 // each top-level key sits on its own line indented by exactly two spaces, and
 // its block runs until the next such line (or the closing brace). The tool
 // validates this invariant before mutating and refuses to touch a file that
 // breaks it.
 //
-// Run `dart run tools/arb.dart help` for usage.
+// Run `fvm dart tools/arb.dart help` for usage.
 
 import 'dart:convert';
 import 'dart:io';
 
-const arbDir = 'localization';
+import 'package:path/path.dart' as p;
+import 'package:yaml/yaml.dart';
+
 const templateLocale = 'en';
+late final _ArbCatalog _catalog;
 
 void main(List<String> args) {
   if (args.isEmpty) {
@@ -33,6 +36,10 @@ void main(List<String> args) {
   try {
     if (command != 'help' && command != '-h' && command != '--help') {
       _rejectUnknownOptions(command, rest);
+      final member = _option(rest, '--catalog');
+      _catalog = member == null
+          ? const _ArbCatalog('localization', 'app')
+          : _ArbCatalog.fromMember(member);
     }
     _dryRun = _flag(rest, '--dry-run');
     switch (command) {
@@ -763,27 +770,74 @@ void _cmdValidate(List<String> args) {
 // File / locale helpers
 // ---------------------------------------------------------------------------
 
+class _ArbCatalog {
+  final String directory;
+  final String prefix;
+
+  const _ArbCatalog(this.directory, this.prefix);
+
+  factory _ArbCatalog.fromMember(String member) {
+    final config = File(p.join(member, 'l10n.yaml'));
+    final Object? options;
+    try {
+      options = loadYaml(config.readAsStringSync());
+    } on FileSystemException catch (e) {
+      throw ArbException('Cannot read ${config.path}: ${e.message}');
+    } on YamlException catch (e) {
+      throw ArbException('Invalid ${config.path}: $e');
+    }
+    if (options is! YamlMap) {
+      throw ArbException('${config.path} must contain a YAML mapping.');
+    }
+
+    final arbDir = options['arb-dir'] ?? p.join('lib', 'l10n');
+    final template = options['template-arb-file'] ?? 'app_en.arb';
+    const suffix = '_$templateLocale.arb';
+    if (arbDir is! String || arbDir.isEmpty) {
+      throw ArbException('${config.path}: arb-dir must be a directory path.');
+    }
+    if (template is! String ||
+        p.basename(template) != template ||
+        !template.endsWith(suffix) ||
+        template.length == suffix.length) {
+      throw ArbException(
+        '${config.path}: template-arb-file must be an English filename '
+        'ending in $suffix.',
+      );
+    }
+
+    final directory = p.normalize(p.join(member, arbDir));
+    final templatePath = p.join(directory, template);
+    if (!File(templatePath).existsSync()) {
+      throw ArbException('Template ARB file not found: $templatePath');
+    }
+    final prefix = template.substring(0, template.length - suffix.length);
+    return _ArbCatalog(directory, prefix);
+  }
+}
+
 List<String> _allLocales() {
-  final dir = Directory(arbDir);
+  final dir = Directory(_catalog.directory);
   if (!dir.existsSync()) {
     throw ArbException(
-      'Localization directory "$arbDir" not found. Run from '
+      'Localization directory "${dir.path}" not found. Run from '
       'the repository root.',
     );
   }
+  final localeFile = RegExp('^${RegExp.escape(_catalog.prefix)}_(.+)\\.arb\$');
   final locales = <String>[];
   for (final entity in dir.listSync()) {
     if (entity is File) {
-      final name = _basename(entity.path);
-      final match = RegExp(r'^app_(.+)\.arb$').firstMatch(name);
-      if (match != null) locales.add(match.group(1)!);
+      final match = localeFile.firstMatch(_basename(entity.path));
+      if (match?.group(1) case final String locale) locales.add(locale);
     }
   }
   locales.sort();
   return locales;
 }
 
-String _fileFor(String locale) => '$arbDir/app_$locale.arb';
+String _fileFor(String locale) =>
+    p.join(_catalog.directory, '${_catalog.prefix}_$locale.arb');
 
 void _requireLocale(String locale) {
   if (!File(_fileFor(locale)).existsSync()) {
@@ -1159,6 +1213,7 @@ Set<String> _referencedTokens() {
 // starts with `--`, put it after a bare `--`: everything after the separator is
 // positional even if it equals a known option/flag name (e.g. `set k en -- --list`).
 const _valueOptions = {
+  '--catalog',
   '--locale',
   '--translations',
   '--translations-file',
@@ -1256,7 +1311,10 @@ bool _flag(List<String> args, String name) => _optionArgs(args).contains(name);
 /// known value-options are skipped, so `--description --foo` keeps `--foo` as
 /// the description; a literal option-like value goes after the `--` separator.
 void _rejectUnknownOptions(String command, List<String> args) {
-  final allowed = _commandOptions[command] ?? const <String>{};
+  final allowed = {
+    ...?_commandOptions[command],
+    if (_commandOptions.containsKey(command) && command != 'dead') '--catalog',
+  };
   final head = _optionArgs(args);
   for (var i = 0; i < head.length; i++) {
     final a = head[i];
@@ -1367,9 +1425,13 @@ class ArbException implements Exception {
 
 void _printUsage() {
   print(r'''
-arb.dart — manage the .arb localization files under localization/
+arb.dart — manage workspace localization files
 
-Usage: dart run tools/arb.dart <command> [args]
+Usage: fvm dart tools/arb.dart <command> [--catalog MEMBER_DIR] [args]
+
+Without --catalog, commands use localization/app_*.arb. With --catalog,
+the member directory's l10n.yaml selects the ARB directory and template.
+The dead command searches app source and only supports the root catalog.
 
 Read commands:
   get KEY [--locale L]

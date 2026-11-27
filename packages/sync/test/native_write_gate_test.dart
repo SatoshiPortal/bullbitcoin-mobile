@@ -75,6 +75,111 @@ final create = Store.newSqlite;
     },
   );
 
+  test('backup preparation is restricted to inventory composition', () async {
+    final violations = await inspect('backup_preparation', '''
+import 'package:bull_recoverbull/storage.dart' as rb;
+import 'package:secrets/storage.dart' as secrets;
+void bypass(rb.RecoverBullWalletBackups backups,
+    rb.RecoverBullWalletProperties properties, secrets.WalletPropertyDraft draft) {
+  backups.prepare;
+  properties.prepareWallet(draft);
+}
+''');
+    expect(violations, contains(contains('RecoverBullWalletBackups.prepare')));
+    expect(
+      violations,
+      contains(contains('RecoverBullWalletProperties.prepareWallet')),
+    );
+  });
+
+  test('wallet backup write and remove are not consumer methods', () async {
+    final file = File('${fixture.path}/removed_backup_methods.dart')
+      ..writeAsStringSync('''
+import 'package:bull_recoverbull/storage.dart';
+void bypass(RecoverBullWalletBackups records, WalletBackupUsage usage) {
+  records.write(usage);
+  records.remove('wallet');
+}
+''');
+    final result = await collection
+        .contextFor(file.path)
+        .currentSession
+        .getResolvedUnit(file.path);
+    expect(result, isA<ResolvedUnitResult>());
+    final errors = (result as ResolvedUnitResult).diagnostics.where(
+      (diagnostic) =>
+          diagnostic.diagnosticCode.lowerCaseName == 'undefined_method',
+    );
+    expect(errors, hasLength(2));
+  });
+
+  test(
+    'the backup owner database and testing helpers are not consumer APIs',
+    () async {
+      final violations = await inspect('backup_bypass', '''
+import 'package:bull_recoverbull/migration.dart';
+import 'package:bull_recoverbull/testing.dart' as fixture;
+import 'package:legacy_storage/coordination.dart';
+Object bypass(RecoverBullCutover cutover, RuntimeAdmission admission) =>
+    cutover.open(admission);
+final helper = fixture.openRecoverBullDatabaseForTesting;
+''');
+      expect(violations, contains(contains('RecoverBullCutover.open')));
+      expect(violations, contains(contains('RecoverBull testing library')));
+    },
+  );
+
+  test(
+    'test-executor cutover cannot be constructed by production code',
+    () async {
+      final violations = await inspect('backup_test_executor', '''
+import 'dart:io';
+import 'package:drift/native.dart';
+import 'package:bull_recoverbull/migration.dart';
+final cutover = RecoverBullCutover.withTestExecutor(
+  file: File('owner'), standalone: File('source'), regtest: false,
+  executor: NativeDatabase.memory,
+);
+''');
+      expect(
+        violations,
+        contains(contains('RecoverBullCutover.withTestExecutor')),
+      );
+    },
+  );
+
+  test('the provisioning property port is confined to its callback', () async {
+    const source = '''
+import 'package:secrets/storage.dart';
+void bypass(WalletPropertyStore store, WalletPropertyDraft draft) {
+  store.prepareWallet(draft);
+}
+''';
+    expect(
+      await inspect('backup_port', source),
+      contains(contains('WalletPropertyStore.prepareWallet')),
+    );
+    expect(
+      await inspect(
+        'backup_port_wrong_method',
+        source,
+        path: 'packages/provisioning/lib/src/wallet_provisioning.dart',
+      ),
+      contains(contains('WalletPropertyStore.prepareWallet')),
+    );
+  });
+
+  test('dynamic preparation cannot avoid symbol checks', () async {
+    final violations = await inspect('dynamic_preparation', '''
+void bypass(dynamic records, dynamic properties, Object usage, Object draft) {
+  records.prepare(usage, preserveVerified: false);
+  properties.prepareWallet(draft);
+}
+''');
+    expect(violations, contains(contains('unresolved prepare')));
+    expect(violations, contains(contains('unresolved prepareWallet')));
+  });
+
   test(
     'wallet mutation tear-offs and Liquid entry points are rejected',
     () async {

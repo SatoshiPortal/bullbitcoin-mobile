@@ -10,6 +10,35 @@ FILES = [f"test/{name}_test.dart" for name in "abcdefg"] + ["test/nested/h_test.
 
 
 class UnitTestShardTest(unittest.TestCase):
+    def test_access_restores_original_path_without_affecting_other_members(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = root / "original"
+            nested = root / "nested"
+            original.mkdir()
+            nested.mkdir()
+            for folder, marker in ((original, "original"), (nested, "nested")):
+                fvm = folder / "fvm"
+                fvm.write_text(f'#!/bin/sh\nprintf "{marker}\\n"\n')
+                fvm.chmod(0o755)
+            (root / "test").mkdir()
+            (root / "test" / "sample_test.dart").write_text("")
+            env = dict(
+                os.environ,
+                PATH=f"{nested}:{original}:{os.environ['PATH']}",
+                ACCESS_UNIT_TEST_PATH=f"{original}:{os.environ['PATH']}",
+                TEST_TOTAL_SHARDS="1",
+                TEST_SHARD_INDEX="0",
+            )
+            command = ["bash", str(SCRIPT), "flutter"]
+            access = subprocess.run(command, cwd=root, env=dict(env, MELOS_PACKAGE_NAME="access"), text=True, capture_output=True, check=False)
+            other = subprocess.run(command, cwd=root, env=dict(env, MELOS_PACKAGE_NAME="other"), text=True, capture_output=True, check=False)
+            ordinary = subprocess.run(command, cwd=root, env={k: v for k, v in dict(env, MELOS_PACKAGE_NAME="access").items() if k != "ACCESS_UNIT_TEST_PATH"}, text=True, capture_output=True, check=False)
+        self.assertEqual(access.returncode, 0)
+        self.assertEqual(access.stdout.strip(), "original")
+        self.assertEqual(other.stdout.strip(), "nested")
+        self.assertEqual(ordinary.stdout.strip(), "nested")
+
     def run_shard(self, total, index, files=FILES):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -92,23 +121,55 @@ class UnitTestShardTest(unittest.TestCase):
         self.assertEqual("\n".join(line for line in lines if line not in markers) + "\n", plain.stdout)
         self.assertNotIn(env["SENSITIVE_FIXTURE"], traced.stdout + traced.stderr)
 
+    def test_verbose_access_trace_filters_raw_output(self):
+        secret = "private-ci-fixture"
+        output = "\n".join([
+            "[ +464 ms] Running build hooks for linux_x64.",
+            f"[  +27 ms] Skipping build for sqlite3 in /{secret}. Last build on today.",
+            f"[ +502 ms] Rerunning build for onion in /{secret}. Input changed",
+            f"[   +1 ms] Rerunning build for unknown_package in /{secret}. Input changed",
+            "[ +137 ms] Running build hooks for linux_x64 done.",
+            f"00:00 +0: loading /{secret}",
+            f"[        ] Compiling file:///{secret} took 9468ms",
+            f"::warning::{secret}",
+        ])
+        for status in (0, 23):
+            with self.subTest(status=status):
+                result = subprocess.run(
+                    ["python3", str(SCRIPT.with_name("trace_access_hooks.py")), "python3",
+                     "-c", f"import sys; print({output!r}, file=sys.stderr); sys.exit({status})"],
+                    text=True, capture_output=True, check=False,
+                )
+                self.assertEqual(result.returncode, status)
+                self.assertIn("Skipping build for sqlite3", result.stdout)
+                self.assertIn("Rerunning build for onion (input changed)", result.stdout)
+                self.assertIn("first test loading", result.stdout)
+                self.assertIn("test compilation took 9468ms", result.stdout)
+                self.assertNotIn("unknown_package", result.stdout)
+                self.assertNotIn(secret, result.stdout + result.stderr)
+
     def test_real_access_shard_inventory_is_unchanged(self):
         access = SCRIPT.parents[1] / "features" / "access"
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fvm = root / "fvm"
-            fvm.write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+            fvm.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$ARGUMENTS"\n')
             fvm.chmod(0o755)
             env = dict(os.environ, PATH=f"{root}:{os.environ['PATH']}", TEST_TOTAL_SHARDS="3", TEST_SHARD_INDEX="1", MELOS_PACKAGE_NAME="access")
             command = ["bash", str(SCRIPT), "flutter", "--enable-vmservice", "--reporter=compact"]
+            env["ARGUMENTS"] = str(root / "args")
             plain = subprocess.run(command, cwd=access, env=env, text=True, capture_output=True, check=False)
-            traced = subprocess.run(command, cwd=access, env=dict(env, TRACE_ACCESS_SHARD="1"), text=True, capture_output=True, check=False)
+            plain_args = (root / "args").read_text().splitlines()
+            traced = subprocess.run(
+                command, cwd=access, env=dict(env, TRACE_ACCESS_SHARD="1", TRACE_ACCESS_HOOKS="1"),
+                text=True, capture_output=True, check=False,
+            )
+            traced_args = (root / "args").read_text().splitlines()
         self.assertEqual(plain.returncode, 0)
         self.assertEqual(traced.returncode, 0)
-        plain_files = [line for line in plain.stdout.splitlines() if line.endswith("_test.dart")]
-        traced_files = [line for line in traced.stdout.splitlines() if line.endswith("_test.dart")]
-        self.assertEqual(traced_files, plain_files)
-        self.assertTrue(plain_files)
+        self.assertEqual(traced_args.count("-v"), 1)
+        self.assertEqual([arg for arg in traced_args if arg != "-v"], plain_args)
+        self.assertTrue(any(arg.endswith("_test.dart") for arg in plain_args))
 
 
 if __name__ == "__main__":

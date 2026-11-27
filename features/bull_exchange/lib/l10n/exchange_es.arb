@@ -311,8 +311,6 @@
   "exchangeBitcoinWalletsSaveFailed": "No se pudo guardar la dirección de la billetera",
   "exchangeBitcoinWalletsDeleteFailed": "No se pudo eliminar la dirección de la billetera",
   "destinationExpectedType": "Introduce o escanea un valor válido ({type}).",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "Compra, vende y paga con Bull Bitcoin directamente desde tu billetera.",
   "settingsTermsOfServiceTitle": "Términos de servicio",
   "continueButton": "Continuar",
   "autoBuyTitle": "Compra Automática",

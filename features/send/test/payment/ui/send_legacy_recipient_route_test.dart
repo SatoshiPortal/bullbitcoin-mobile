@@ -131,21 +131,21 @@ void main() {
   );
 
   testWidgets(
-    'normal /send plain Bitcoin Advanced settings leaves multi disabled',
+    'normal /send plain Bitcoin Advanced settings opens multiple recipients',
     (tester) async {
       final cubit = await pump(tester, request: raw);
       expect(find.byType(SendAddressScreen), findsNothing);
       await tester.tap(find.byType(BullSettingsEntryTile));
       await tester.pumpAndSettle();
-      expect(find.text('Multiple recipients'), findsOneWidget);
-      final disabled = find.byWidgetPredicate(
+      final toggle = find.byWidgetPredicate(
         (widget) =>
-            widget is BullSwitch && !widget.value && widget.onChanged == null,
+            widget is BullSwitch && !widget.value && widget.onChanged != null,
       );
-      expect(disabled, findsOneWidget);
-      await tester.tap(disabled, warnIfMissed: false);
+      expect(toggle, findsOneWidget);
+      await tester.tap(toggle);
       await tester.pumpAndSettle();
-      expect(find.text('Add'), findsNothing);
+      expect(find.byType(SendAddressScreen), findsOneWidget);
+      // Opening the list adds nobody until the user asks.
       verifyNever(() => cubit.addRecipient());
       verifyNever(() => cubit.addInternalRecipient(wallet.id));
       expect(tester.takeException(), isNull);

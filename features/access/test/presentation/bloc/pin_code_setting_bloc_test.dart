@@ -38,7 +38,8 @@ void main() {
       'routes to backupRequired when no verified backup is available',
       () async {
         final checkBackup = MockCheckPinBackupUsecase();
-        when(() => checkBackup.execute()).thenAnswer((_) async => false);
+        when(() => checkBackup.execute())
+            .thenAnswer((_) async => const Err(AccessBackupRequiredFailure(1)));
         final bloc = buildBloc(checkBackup);
         addTearDown(bloc.close);
 
@@ -49,13 +50,13 @@ void main() {
         expect(bloc.state.status, PinCodeSettingStatus.backupRequired);
         // The other feature's failure is a routing input here, not something
         // this screen shows.
-        expect(bloc.state.failure, isNull);
+        expect(bloc.state.failure, isA<AccessBackupRequiredFailure>());
       },
     );
 
     test('routes to choose when a backup exists', () async {
       final checkBackup = MockCheckPinBackupUsecase();
-      when(() => checkBackup.execute()).thenAnswer((_) async => true);
+      when(() => checkBackup.execute()).thenAnswer((_) async => const Ok(null));
       final bloc = buildBloc(checkBackup);
       addTearDown(bloc.close);
 

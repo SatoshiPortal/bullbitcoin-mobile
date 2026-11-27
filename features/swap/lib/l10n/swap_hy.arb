@@ -65,7 +65,6 @@
   "receiveNote": "Նշում",
   "selectAmountTitle": "Ընտրեք գումարը",
   "sendAdvancedOptions": "Ընդլայնված ընտրանքներ",
-  "sendDone": "Պատրաստ է",
   "sendErrorBuildFailed": "Այս վճարումը չհաջողվեց նախապատրաստել։ Խնդրում ենք կրկին փորձել։",
   "sendErrorSwapCreationFailed": "Չհաջողվեց ստեղծել փոխանակումը։",
   "sendFastFee": "Արագ",
@@ -140,5 +139,8 @@
   "swapRestoreKindLightningSend": "Lightning ուղարկում",
   "swapRestoreNoSwaps": "Վերականգնման ենթակա փոխանակումներ չեն գտնվել",
   "swapRestoreRecoverableSection": "Վերականգնելի",
-  "swapRestoreTitle": "Փոխանակման վերականգնում"
+  "swapRestoreTitle": "Փոխանակման վերականգնում",
+  "networkFeatureUnavailable": "Այս գործառույթն անհասանելի է ընտրված ցանցում։",
+  "walletSpendAwaitingObservation": "Ծախսելն անհասանելի է, մինչև այս դրամապանակը համաժամեցվի և ցանցում տեսնի իր նախորդ վճարումները։ Թարմացրեք դրամապանակը կամ օգտագործեք «Սկանավորել բացակայող գործարքները», ապա կրկին փորձեք։",
+  "walletSpendBusy": "Դրամապանակը զբաղված է։ Կրկին փորձեք մի փոքր ուշ։"
 }

@@ -178,7 +178,6 @@
   "transactionNetworkLiquid": "Liquid",
   "coreWalletTransactionStatusConfirmed": "Bestätigt",
   "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
-  "sendConfirmSend": "Senden bestätigen",
   "sendSwapInProgressInvoice": "Der Swap läuft. Die Invoice wird in wenigen Sekunden bezahlt.",
   "sendScanBitcoinQRCode": "Scannen Sie einen beliebigen Bitcoin- oder Lightning-QR-Code, um mit Bitcoin zu bezahlen.",
   "sendConfirm": "Bestätigen",
@@ -228,5 +227,8 @@
   "sendErrorAddressNetworkMismatch": "Diese Adresse gehört zu einem anderen Netzwerk als Ihre Wallet.",
   "walletSpTitle": "Silent Payments",
   "sendErrorInvoiceExpiryTooShort": "Diese Invoice läuft zu früh ab. Bitten Sie den Empfänger um eine neue Invoice.",
-  "closeDialogButton": "Schließen"
+  "closeDialogButton": "Schließen",
+  "sendPayjoinSpendPaused": "Diese Payjoin-Zahlung ist pausiert, weil die Wallet nicht sicher fortfahren kann. Ihre Inputs bleiben reserviert. Aktualisieren Sie die Wallet oder verwenden Sie „Nach fehlenden Transaktionen suchen“ und wiederholen Sie diesen Vorschlag, solange er noch gültig ist. Falls er abgelaufen ist, prüfen Sie die Zahlung unter Transaktionen, bevor Sie weitere Schritte unternehmen.",
+  "walletSpendAwaitingObservation": "Ausgaben sind nicht möglich, bis diese Wallet synchronisiert ist und ihre früheren Zahlungen im Netzwerk gesehen hat. Aktualisieren Sie die Wallet oder verwenden Sie „Nach fehlenden Transaktionen suchen“ und versuchen Sie es dann erneut.",
+  "walletSpendBusy": "Die Wallet ist beschäftigt. Versuchen Sie es gleich noch einmal."
 }

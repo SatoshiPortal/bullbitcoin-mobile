@@ -93,7 +93,6 @@
   "receiveNote": "Notiz",
   "selectAmountTitle": "Betrag auswählen",
   "sendAdvancedOptions": "Erweiterte Optionen",
-  "sendDone": "Fertig",
   "sendErrorBuildFailed": "Transaktion konnte nicht erstellt werden.",
   "sendErrorSelectedCoinsInsufficient": "Die ausgewählten Coins reichen nicht aus, um den Betrag und die Gebühren zu decken. Wählen Sie weitere Coins aus oder verringern Sie den Betrag.",
   "sendErrorSelectedCoinsUnavailable": "Ein oder mehrere ausgewählte Coins sind nicht mehr verfügbar. Überprüfen Sie Ihre Coin-Auswahl und versuchen Sie es erneut.",
@@ -190,5 +189,8 @@
   "swapRestoreKindLightningSend": "Lightning-Versand",
   "swapRestoreNoSwaps": "Keine wiederherstellbaren Swaps gefunden",
   "swapRestoreRecoverableSection": "Wiederherstellbar",
-  "swapRestoreTitle": "Swap-Wiederherstellung"
+  "swapRestoreTitle": "Swap-Wiederherstellung",
+  "networkFeatureUnavailable": "Diese Funktion ist im ausgewählten Netzwerk nicht verfügbar.",
+  "walletSpendAwaitingObservation": "Ausgaben sind nicht möglich, bis diese Wallet synchronisiert ist und ihre früheren Zahlungen im Netzwerk gesehen hat. Aktualisieren Sie die Wallet oder verwenden Sie „Nach fehlenden Transaktionen suchen“ und versuchen Sie es dann erneut.",
+  "walletSpendBusy": "Die Wallet ist beschäftigt. Versuchen Sie es gleich noch einmal."
 }

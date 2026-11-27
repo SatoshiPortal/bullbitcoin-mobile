@@ -517,10 +517,6 @@
   "@sendServerNetworkFees": {
     "description": "Label for Boltz server fees"
   },
-  "sendConfirmSend": "Confirm Send",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSelfTransfer": "Self-transfer",
   "@sendSelfTransfer": {
     "description": "Label shown when the transaction is sending to the same wallet"
@@ -841,10 +837,6 @@
   "@coinsSweepTitle": {
     "description": "Title shown throughout the selected-coins sweep flow."
   },
-  "sendRemaining": "Remaining",
-  "@sendRemaining": {
-    "description": "Amount-field value for the recipient receiving the balance left after fixed outputs and fees"
-  },
   "sendRecipientNumber": "Recipient {number}",
   "@sendRecipientNumber": {
     "description": "Numbered recipient heading in the multi-recipient amount form",
@@ -987,8 +979,8 @@
   "@sendEstimatedNetworkFee": {
     "description": "Send payment form"
   },
-  "sendTotalDebited": "Total debited",
-  "@sendTotalDebited": {
+  "sendTotal": "Total",
+  "@sendTotal": {
     "description": "Send payment form"
   },
   "sendLightningInvoiceAmount": "Lightning invoice · {amount} sats",
@@ -1025,15 +1017,9 @@
       }
     }
   },
-  "amountInputHeader": "Amounts in",
-  "@amountInputHeader": {
-    "description": "Shared input unit heading for multiple send recipients."
-  },
-  "sendAmountLocked": "Enter a valid recipient first",
-  "@sendAmountLocked": {},
   "sendWholeBalanceTitle": "Send your whole balance?",
   "@sendWholeBalanceTitle": {},
-  "sendWholeBalanceDescription": "Everything in {wallet} leaves this wallet. The network fee is taken from it, so nothing stays.",
+  "sendWholeBalanceDescription": "Everything in {wallet} is sent. The fee comes out of it, so nothing is left in the wallet.",
   "@sendWholeBalanceDescription": {
     "placeholders": {
       "wallet": {
@@ -1071,8 +1057,6 @@
   "@sendCustomRateMode": {},
   "sendCustomTotalMode": "Total (sats)",
   "@sendCustomTotalMode": {},
-  "sendCustomApplyHint": "Apply with the keyboard checkmark.",
-  "@sendCustomApplyHint": {},
   "sendCustomInvalid": "Enter a valid fee.",
   "@sendCustomInvalid": {},
   "sendCustomSizeUnavailable": "Enter an amount first to calculate the transaction size.",
@@ -1081,6 +1065,10 @@
   "@sendCustomSubOne": {},
   "sendPaymentChanged": "The payment changed. Please check it again.",
   "@sendPaymentChanged": {},
+  "sendCoinsNeedRecipient": "Enter an address first",
+  "@sendCoinsNeedRecipient": {
+    "description": "Snackbar when Send UTXOs instead is tapped before a recipient picks the wallet"
+  },
   "sendCustomMinimumRate": "Minimum {rate} sat/vB.",
   "@sendCustomMinimumRate": {
     "placeholders": {
@@ -1095,14 +1083,6 @@
       "amount": {
         "type": "String"
       },
-      "rate": {
-        "type": "String"
-      }
-    }
-  },
-  "sendCustomEffectiveRate": "Effective rate: {rate} sat/vB",
-  "@sendCustomEffectiveRate": {
-    "placeholders": {
       "rate": {
         "type": "String"
       }
@@ -1152,10 +1132,6 @@
   },
   "sendOpenCoins": "Open Coins",
   "@sendOpenCoins": {
-    "description": "Mono Send payment interface"
-  },
-  "sendSecureWalletDescription": "Secure Bitcoin wallet",
-  "@sendSecureWalletDescription": {
     "description": "Mono Send payment interface"
   },
   "sendErrorInvoiceExpiryTooShort": "This invoice expires too soon. Ask the recipient for a new invoice.",

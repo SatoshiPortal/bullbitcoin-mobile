@@ -47,24 +47,6 @@ abstract interface class TorProxyPreferencesReader {
   readTorProxyPreferences();
 }
 
-typedef ExchangeWebPreferences = ({
-  Environment environment,
-  String? exchangeTestnetBasicAuthUsername,
-  String? exchangeTestnetBasicAuthPassword,
-});
-
-abstract interface class ExchangeTestnetBasicAuthPreferences {
-  @useResult
-  Future<Result<ExchangeWebPreferences, PreferencesFailure>>
-  readExchangeWebPreferences();
-
-  @useResult
-  Future<Result<void, PreferencesFailure>> setExchangeTestnetBasicAuth({
-    String? username,
-    String? password,
-  });
-}
-
 abstract interface class RuntimeDisplayPreferencesReader {
   @useResult
   Future<Result<Language?, PreferencesFailure>> readLanguage();
@@ -95,7 +77,6 @@ abstract interface class SettingsRepository
         DeveloperEnvironmentReader,
         TorProxyPreferencesReader,
         RuntimeDisplayPreferencesReader,
-        ExchangeTestnetBasicAuthPreferences,
         PaymentAnimationPreferencesReader {
   /// The environment after each successful [setEnvironment].
   Stream<Result<Environment, PreferencesFailure>> get environmentChangeStream;

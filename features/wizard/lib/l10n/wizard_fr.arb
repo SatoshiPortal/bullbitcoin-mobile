@@ -1,7 +1,6 @@
 {
   "@@locale": "fr",
   "settingsLanguageTitle": "Langue",
-  "wizardAdvancedOptionsTitle": "Options avancées",
   "onboardingBullBitcoin": "Bull Bitcoin",
   "onboardingOwnYourMoney": "Possédez votre argent",
   "onboardingSplashDescription": "Portefeuille Bitcoin à auto-garde souveraine et service d'échange exclusivement Bitcoin.",
@@ -21,7 +20,7 @@
   "wizardMissionQuestion": "Acceptez-vous de participer à notre programme de signalement automatique des problèmes ?",
   "wizardMissionYes": "Oui",
   "wizardMissionNo": "Non",
-  "wizardMissionRequired": "Veuillez choisir Oui ou Non avant de continuer.",
+  "wizardMissionRequired": "Veuillez choisir d’envoyer ou non les rapports d’erreurs avant de continuer.",
   "wizardJourneyTitle": "Progressez dans votre parcours",
   "wizardJourneyBody": "Si vous découvrez le portefeuille BULL, voici quelques fonctionnalités dont vous pouvez profiter pour améliorer votre confidentialité, votre sécurité et votre expérience utilisateur.",
   "wizardJourneyTip1": "Ajoutez un PIN de sécurité pour déverrouiller votre portefeuille",

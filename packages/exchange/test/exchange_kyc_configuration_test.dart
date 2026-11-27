@@ -1,52 +1,49 @@
 import 'package:exchange/exchange.dart';
+import 'package:exchange/setup.dart';
+import 'package:exchange/testing.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
-final class _Preferences implements ExchangeTestnetBasicAuthPreferences {
-  final Result<ExchangeWebPreferences, PreferencesFailure> _value;
+class _Preferences extends Mock implements Preferences {}
 
-  const _Preferences(this._value);
-
+final class _UnreadableStorage extends InMemoryExchangeCredentialStorage {
   @override
-  Future<Result<ExchangeWebPreferences, PreferencesFailure>>
-  readExchangeWebPreferences() async => _value;
-
-  @override
-  Future<Result<void, PreferencesFailure>> setExchangeTestnetBasicAuth({
-    String? username,
-    String? password,
-  }) async => throw StateError('Unexpected credentials write');
+  Future<ExchangeBasicAuthValues> readBasicAuth() async =>
+      throw const FormatException();
 }
 
 void main() {
   final mainnet = Uri.parse('https://verify.example.invalid');
   final testnet = Uri.parse('https://verify-testnet.example.invalid');
 
-  Exchange open(Result<ExchangeWebPreferences, PreferencesFailure> settings) {
+  Exchange open(
+    Result<Environment, PreferencesFailure> environment, {
+    InMemoryExchangeCredentialStorage? storage,
+  }) {
+    final preferences = _Preferences();
+    when(preferences.readActiveEnvironment)
+        .thenAnswer((_) async => environment);
     final exchange = Exchange.open(
       mainnetEndpoint: mainnet,
       testnetEndpoint: testnet,
       readSession: () async => fail('KYC must not read a session key'),
-      kyc: (
-        mainnetUrl: mainnet,
-        testnetUrl: testnet,
-        preferences: _Preferences(settings),
+      sessionPreferences: preferences,
+      basicAuth: ExchangeCredentials.openBasicAuth(
+        storage ??
+            (InMemoryExchangeCredentialStorage()
+              ..username = 'test-user'
+              ..password = 'test-password'),
       ),
+      kyc: (mainnetUrl: mainnet, testnetUrl: testnet),
     );
     addTearDown(exchange.close);
     return exchange;
   }
 
   test('testnet authentication is never sent to mainnet', () async {
-    final exchange = open(
-      const Ok((
-        environment: Environment.mainnet,
-        exchangeTestnetBasicAuthUsername: 'test-user',
-        exchangeTestnetBasicAuthPassword: 'test-password',
-      )),
-    );
-    final result = await exchange.loadKyc();
+    final result = await open(const Ok(Environment.mainnet)).loadKyc();
     expect(
       result,
       isA<Ok<ExchangeKycConfiguration, ExchangeFailure>>().having(
@@ -58,14 +55,7 @@ void main() {
   });
 
   test('testnet configuration carries complete credentials', () async {
-    final exchange = open(
-      const Ok((
-        environment: Environment.testnet,
-        exchangeTestnetBasicAuthUsername: 'test-user',
-        exchangeTestnetBasicAuthPassword: 'test-password',
-      )),
-    );
-    final result = await exchange.loadKyc();
+    final result = await open(const Ok(Environment.testnet)).loadKyc();
     expect(
       result,
       isA<Ok<ExchangeKycConfiguration, ExchangeFailure>>().having(
@@ -79,15 +69,23 @@ void main() {
     );
   });
 
-  test('regtest cannot load a verification web view', () async {
-    final exchange = open(
-      const Ok((
-        environment: Environment.regtest,
-        exchangeTestnetBasicAuthUsername: null,
-        exchangeTestnetBasicAuthPassword: null,
-      )),
+  test('a half-stored credential is not sent', () async {
+    final result = await open(
+      const Ok(Environment.testnet),
+      storage: InMemoryExchangeCredentialStorage()..username = 'test-user',
+    ).loadKyc();
+    expect(
+      result,
+      isA<Ok<ExchangeKycConfiguration, ExchangeFailure>>().having(
+        (ok) => ok.value,
+        'configuration',
+        (url: testnet, basicAuth: null),
+      ),
     );
-    final result = await exchange.loadKyc();
+  });
+
+  test('regtest cannot load a verification web view', () async {
+    final result = await open(const Ok(Environment.regtest)).loadKyc();
     expect(
       result,
       isA<Err<ExchangeKycConfiguration, ExchangeFailure>>().having(
@@ -99,14 +97,28 @@ void main() {
   });
 
   test('a preference read failure produces a typed failure', () async {
-    final exchange = open(const Err(PreferencesReadFailure()));
-    final result = await exchange.loadKyc();
+    final result = await open(const Err(PreferencesReadFailure())).loadKyc();
     expect(
       result,
       isA<Err<ExchangeKycConfiguration, ExchangeFailure>>().having(
         (err) => err.failure,
         'failure',
         isA<ExchangeUnexpectedFailure>(),
+      ),
+    );
+  });
+
+  test('an unreadable credential store is reported, not emptied', () async {
+    final result = await open(
+      const Ok(Environment.testnet),
+      storage: _UnreadableStorage(),
+    ).loadKyc();
+    expect(
+      result,
+      isA<Err<ExchangeKycConfiguration, ExchangeFailure>>().having(
+        (err) => err.failure,
+        'failure',
+        isA<ExchangeCredentialReadFailure>(),
       ),
     );
   });

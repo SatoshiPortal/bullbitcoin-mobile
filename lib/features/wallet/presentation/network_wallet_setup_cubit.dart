@@ -1,8 +1,6 @@
-import 'package:bb_mobile/features/wallet/domain/network_wallet_setup_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/create_network_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/load_network_wallet_setup_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
+import 'package:provisioning/provisioning.dart';
 
 final class NetworkWalletSetupState {
   final NetworkWalletSetup? options;
@@ -19,16 +17,15 @@ final class NetworkWalletSetupState {
 }
 
 final class NetworkWalletSetupCubit extends Cubit<NetworkWalletSetupState> {
-  final LoadNetworkWalletSetupUsecase _load;
-  final CreateNetworkWalletUsecase _create;
+  final NetworkWalletProvisioning _provisioning;
 
-  NetworkWalletSetupCubit(this._load, this._create)
+  NetworkWalletSetupCubit(this._provisioning)
     : super(const NetworkWalletSetupState());
 
   Future<void> load() async {
     if (state.working) return;
     emit(const NetworkWalletSetupState(working: true));
-    final result = await _load.execute();
+    final result = await _provisioning.load();
     if (isClosed) return;
     emit(switch (result) {
       Ok(:final value) => NetworkWalletSetupState(options: value),
@@ -40,7 +37,7 @@ final class NetworkWalletSetupCubit extends Cubit<NetworkWalletSetupState> {
     final options = state.options;
     if (options == null || state.working) return;
     emit(NetworkWalletSetupState(options: options, working: true));
-    final result = await _create.execute(
+    final result = await _provisioning.create(
       network: options.network,
       reuse: reuse,
     );

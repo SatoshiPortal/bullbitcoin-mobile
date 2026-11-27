@@ -53,6 +53,12 @@ class _WizardScreenState extends State<WizardScreen> {
   final PageController _controller = PageController();
   WizardPage _page = WizardPage.welcome;
 
+  /// Superuser mode, unlocked on the welcome page and read by the settings
+  /// step. Kept here, not in the bloc, as it only gates what is shown; the
+  /// choices it leads to are in the bloc.
+  bool _superuser = false;
+  bool _networkConsented = false;
+
   /// Side of the mission Yes button, drawn at random so neither hand is
   /// favoured, and once so it stays put while the user swipes back and forth.
   final bool _yesFirst = Random().nextBool();
@@ -104,7 +110,6 @@ class _WizardScreenState extends State<WizardScreen> {
     if (_page.isLast) {
       _tryFinish(choices);
     } else {
-      if (_page == WizardPage.customize) _confirmExchange();
       _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
     }
   }
@@ -116,11 +121,41 @@ class _WizardScreenState extends State<WizardScreen> {
     _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
   }
 
-  /// The exchange switch shares the customize page, which every path to Next
-  /// or Skip goes through: leaving that page confirms what it shows.
+  /// The wizard offers no exchange choice: where the platform allows the
+  /// exchange, finishing stages its default (on), applied only if the access
+  /// was never set. Settings > Exchange is where the user changes it.
   void _confirmExchange() {
     if (!widget.exchangeAllowed) return;
     context.read<WizardBloc>().add(const WizardEvent.exchangeConfirmed());
+  }
+
+  /// Seven taps on the welcome logo unlock the superuser rows of the settings
+  /// step, or lock them again and drop what they chose.
+  void _toggleSuperuser() {
+    final bloc = context.read<WizardBloc>();
+    setState(() {
+      _superuser = !_superuser;
+      if (!_superuser) _networkConsented = false;
+    });
+    if (_superuser) return;
+    bloc.add(const WizardEvent.networkPicked(null));
+    bloc.add(const WizardEvent.screenPrivacyPicked(null));
+  }
+
+  /// Leaving mainnet asks for consent once; cancelling keeps the previous
+  /// network.
+  Future<void> _pickNetwork(Environment network) async {
+    final bloc = context.read<WizardBloc>();
+    if (network != Environment.mainnet && !_networkConsented) {
+      final accepted = await confirmDeveloperNetwork(context);
+      if (!mounted || !accepted) return;
+      _networkConsented = true;
+    }
+    bloc.add(
+      WizardEvent.networkPicked(
+        network == Environment.mainnet ? null : network,
+      ),
+    );
   }
 
   void _tryFinish(WizardChoices choices) {
@@ -202,26 +237,33 @@ class _WizardScreenState extends State<WizardScreen> {
                               children: [
                                 WelcomeStep(
                                   logo: widget.branding.welcomeLogo,
-                                  logoWidget: widget.allowDeveloperNetwork
-                                      ? WizardNetworkControl(
-                                          logo: widget.branding.welcomeLogo,
-                                          onChanged: (network) => bloc.add(
-                                            WizardEvent.networkPicked(network),
-                                          ),
-                                        )
-                                      : null,
+                                  logoWidget: WizardNetworkControl(
+                                    logo: widget.branding.welcomeLogo,
+                                    unlocked: _superuser,
+                                    onToggled: _toggleSuperuser,
+                                  ),
                                 ),
                                 CustomizeStep(
-                                  exchangeAccess: widget.exchangeAllowed
-                                      ? c.exchangeAccess
+                                  superuserOptions: _superuser
+                                      ? WizardSuperuserOptions(
+                                          screenPrivacy: c.screenPrivacy,
+                                          onScreenPrivacyPicked: (value) =>
+                                              bloc.add(
+                                                WizardEvent.screenPrivacyPicked(
+                                                  value,
+                                                ),
+                                              ),
+                                          network:
+                                              c.network ?? Environment.mainnet,
+                                          onNetworkPicked: _pickNetwork,
+                                          allowDeveloperNetwork:
+                                              widget.allowDeveloperNetwork,
+                                        )
                                       : null,
                                   language: c.language,
                                   defaultCurrency: c.defaultCurrency,
                                   onThemePicked: (m) =>
                                       bloc.add(WizardEvent.themePicked(m)),
-                                  onExchangePicked: (value) => bloc.add(
-                                    WizardEvent.exchangePicked(value),
-                                  ),
                                   onLanguagePicked: (l) =>
                                       bloc.add(WizardEvent.languagePicked(l)),
                                   onCurrencyPicked: (code) => bloc.add(

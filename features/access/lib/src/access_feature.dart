@@ -13,15 +13,10 @@ import 'package:access/src/domain/usecases/get_latest_unlock_attempt_usecase.dar
 import 'package:access/src/presentation/bloc/app_unlock_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-void _setupAccess(
-  GetIt locator, {
-  required Future<bool> Function() hasVerifiedBackup,
-  required SecretsInventory inventory,
-  required InventoryBackupVerification backupVerification,
-}) {
+void _setupAccess(GetIt locator, {required SecretsInventory inventory}) {
   accessLocator = locator;
-  locator.registerSingleton(AccessInventory(inventory, backupVerification));
-  PinCodeLocator.setup(locator, hasVerifiedBackup: hasVerifiedBackup);
+  locator.registerSingleton(AccessInventory(inventory));
+  PinCodeLocator.setup(locator);
 
   // Use cases
   locator.registerFactory<GetLatestUnlockAttemptUsecase>(
@@ -61,17 +56,10 @@ final class AccessFeature {
   static AccessFeature mount({
     required GetIt services,
     required SecretsInventory inventory,
-    required InventoryBackupVerification backupVerification,
-    required Future<bool> Function() hasVerifiedBackup,
     required void Function(BuildContext) onUnlocked,
     required Future<void> Function(BuildContext) onBackUp,
   }) {
-    _setupAccess(
-      services,
-      hasVerifiedBackup: hasVerifiedBackup,
-      inventory: inventory,
-      backupVerification: backupVerification,
-    );
+    _setupAccess(services, inventory: inventory);
     return AccessFeature._((
       root: List.unmodifiable([AccessRoutes.unlock(onUnlocked: onUnlocked)]),
       settings: List.unmodifiable([

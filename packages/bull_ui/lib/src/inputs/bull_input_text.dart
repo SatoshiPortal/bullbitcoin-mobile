@@ -34,6 +34,7 @@ class BullInputText extends StatefulWidget {
     this.onlyNumbers = false,
     this.digitsOnly = false,
     this.suffixText,
+    this.suffixStyle,
     this.obscure = false,
     this.enableSuggestions = true,
     this.autocorrect = true,
@@ -106,6 +107,10 @@ class BullInputText extends StatefulWidget {
 
   /// Trailing unit shown inside the field, e.g. `sats`.
   final String? suffixText;
+
+  /// Style of [suffixText]; defaults to the field's own style. A large
+  /// amount can show its unit smaller and muted.
+  final TextStyle? suffixStyle;
 
   /// Obscures the text (e.g. for secrets).
   final bool obscure;
@@ -246,6 +251,7 @@ class _BullInputTextState extends State<BullInputText> {
               )
             : null,
         suffixText: widget.suffixText,
+        suffixStyle: widget.suffixStyle,
         hintStyle: hintStyle,
         prefixIcon: widget.fixedPrefix != null
             ? Container(

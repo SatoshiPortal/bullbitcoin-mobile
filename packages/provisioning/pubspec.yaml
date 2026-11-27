@@ -14,7 +14,9 @@ dependencies:
   secrets:
   sync:
 dev_dependencies:
+  bip39_mnemonic: ^4.1.0
   flutter_test:
     sdk: flutter
   legacy_storage:
+  mocktail: ^1.0.4
   rust_bindings:

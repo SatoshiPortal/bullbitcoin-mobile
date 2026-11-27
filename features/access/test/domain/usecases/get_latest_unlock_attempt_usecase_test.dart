@@ -14,7 +14,7 @@ void main() {
       expect(await fixture.inventory.unlock('0000'), isA<Ok>());
     }
     final usecase = GetLatestUnlockAttemptUsecase(
-      inventory: AccessInventory(fixture.inventory, fixture.backup),
+      inventory: AccessInventory(fixture.inventory),
     );
     final result = await usecase.execute();
     final attempt = (result as Ok).value;

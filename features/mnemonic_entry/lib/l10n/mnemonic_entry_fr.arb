@@ -23,5 +23,6 @@
   "mnemonicInvalidChecksumError": "Cette phrase de récupération n’est pas valide. Un mot est mal saisi ou mal placé.",
   "mnemonicUnknownWordError": "Certains mots ne figurent pas dans la liste de récupération — les numéros en rouge les indiquent.",
   "mnemonicOtherLanguageWordsError": "Ces mots figurent dans la liste de mots « {language} », pas « {selected} », et ne forment pas non plus une phrase de récupération valide dans cette langue. Vérifiez chaque mot et sa position.",
-  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite"
+  "oopsSomethingWentWrong": "Oups ! Une erreur s'est produite",
+  "mnemonicShuffleKeyboardHint": "Mélanger les touches et les suggestions après chaque pression"
 }

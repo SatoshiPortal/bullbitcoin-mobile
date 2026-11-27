@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "সম্পন্ন",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "এই পেমেন্ট প্রস্তুত করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -463,5 +459,8 @@
   "swapRestoreKindLightningSend": "লাইটনিং পাঠানো",
   "swapRestoreNoSwaps": "পুনরুদ্ধারের জন্য কোনো সোয়াপ পাওয়া যায়নি",
   "swapRestoreRecoverableSection": "পুনরুদ্ধারযোগ্য",
-  "swapRestoreTitle": "সোয়াপ পুনরুদ্ধার"
+  "swapRestoreTitle": "সোয়াপ পুনরুদ্ধার",
+  "networkFeatureUnavailable": "নির্বাচিত নেটওয়ার্কে এই ফিচারটি উপলব্ধ নয়।",
+  "walletSpendAwaitingObservation": "এই ওয়ালেটটি সিঙ্ক হয়ে নেটওয়ার্কে এর আগের পেমেন্টগুলো না দেখা পর্যন্ত খরচ করা যাবে না। ওয়ালেট রিফ্রেশ করুন বা \"হারানো লেনদেন স্ক্যান করুন\" ব্যবহার করুন, তারপর আবার চেষ্টা করুন।",
+  "walletSpendBusy": "ওয়ালেট ব্যস্ত। একটু পরে আবার চেষ্টা করুন।"
 }

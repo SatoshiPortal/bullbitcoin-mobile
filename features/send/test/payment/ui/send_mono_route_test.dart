@@ -11,7 +11,6 @@ import '../testing/send_source_fixture.dart';
 import 'package:go_router/go_router.dart';
 
 import 'dart:async';
-import 'dart:convert';
 
 // The legacy screen already has a public shell import target.
 import 'package:send/src/payment/ui/screens/send_payment_page.dart';
@@ -22,6 +21,8 @@ import 'package:sync/sync.dart' show WalletKey;
 
 import 'package:fees/fees.dart';
 import 'package:satoshifier/payment_request.dart';
+import 'package:secrets/secrets.dart' show WalletSigner;
+import 'package:signers/signers.dart' show SignerDevice;
 import 'package:send/src/payment/domain/send_amount_conversion.dart';
 import 'package:primitives/primitives.dart' show Sats;
 import 'package:send/src/payment/domain/send_failure.dart';
@@ -70,12 +71,6 @@ class _DuplicateFeeLabelsDelegate
   @override
   bool shouldReload(_DuplicateFeeLabelsDelegate old) => false;
 }
-
-final _transparentPixel = MemoryImage(
-  base64Decode(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mNgAAIAAAUAAen63NgAAAAASUVORK5CYII=',
-  ),
-);
 
 void main() {
   setUpAll(() {
@@ -143,6 +138,7 @@ void main() {
     Stream<SendState>? updates,
     GoRouter? router,
     bool animations = true,
+    bool silent = false,
     Locale? locale,
     LocalizationsDelegate<SendLocalizations>? localizationOverride,
   }) async {
@@ -157,7 +153,7 @@ void main() {
       (next) => when(() => cubit.state).thenReturn(next),
     );
     if (subscription != null) addTearDown(subscription.cancel);
-    when(() => cubit.isSpMode).thenReturn(false);
+    when(() => cubit.isSpMode).thenReturn(silent);
     when(cubit.readShowPaymentAnimations).thenAnswer((_) async => animations);
     when(() => cubit.preparedMaxAmountSat)
         .thenReturn(value.isMaxSend ? 80000 : null);
@@ -173,7 +169,6 @@ void main() {
                 GoRouter.of(context)
                     .pushReplacementNamed('coins', extra: wallet),
             orderUnderReview: (_) => const SizedBox.shrink(),
-            arrowImage: _transparentPixel,
             successImage: const AssetImage('unused-success'),
             child: child ?? const SizedBox.shrink(),
           ),
@@ -246,7 +241,8 @@ void main() {
     expect(find.text('Public amount'), findsOneWidget);
     expect(find.text('100 sats'), findsOneWidget);
     expect(find.text('10,100 sats'), findsOneWidget);
-    expect(find.byType(BullAdvancedOptionsLink), findsOneWidget);
+    // Advanced settings live on the amount step, not on the review.
+    expect(find.byType(BullAdvancedOptionsLink), findsNothing);
   });
 
   testWidgets('Liquid advanced settings retain manual coin selection', (
@@ -342,6 +338,252 @@ void main() {
 
     expect(find.byType(SendPaymentPage), findsOneWidget);
   });
+
+  testWidgets('Continue confirms a recipient kept after Edit', (tester) async {
+    final cubit = await pump(tester, state(step: SendStep.address));
+    when(cubit.continueOnAddressConfirmed).thenAnswer((_) async {});
+
+    expect(find.byType(SendPaymentPage), findsOneWidget);
+    final button = find.widgetWithText(BullButton, 'Continue');
+    expect(tester.widget<BullButton>(button).disabled, isFalse);
+    await tester.tap(button);
+    verify(cubit.continueOnAddressConfirmed).called(1);
+  });
+
+  testWidgets('From lists the Liquid wallet without subtitles', (tester) async {
+    final liquid = sendSourceFixture(
+      id: 'mono-liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(1000000),
+      label: 'Instant',
+    );
+    await pump(
+      tester,
+      state().copyWith(
+        wallets: [
+          sendSourceFixture(
+            id: 'mono',
+            network: BitcoinNetwork.mainnet,
+            balanceSat: BigInt.from(1000000),
+            label: 'Secure',
+          ),
+          liquid,
+        ],
+      ),
+    );
+
+    await tester.tap(find.text('Secure'));
+    await tester.pumpAndSettle();
+    expect(find.text('Instant'), findsWidgets);
+    expect(find.textContaining('Secure Bitcoin wallet'), findsNothing);
+  });
+
+  testWidgets('a plain Liquid payment confirms on the shared review', (
+    tester,
+  ) async {
+    final liquid = sendSourceFixture(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(4909),
+      label: 'Instant payments',
+    );
+    await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(
+        sendType: SendType.liquid,
+        selectedWallet: SendWalletBitcoin(liquid),
+        paymentRequest: const PaymentRequest.liquid(
+          address: 'lq1qqwzrpfmt9d7tx76jq6lgr7ylkg',
+          isTestnet: false,
+        ),
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+        confirmedAmountSat: 1000,
+        liquidAbsoluteFees: 26,
+      ),
+    );
+
+    expect(find.byType(SendPaymentReview), findsOneWidget);
+    expect(find.text('Note'), findsOneWidget);
+    expect(find.byType(SendConfirmScreen), findsNothing);
+  });
+
+  testWidgets('the classic amount step chooses the fee in Advanced settings', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    await pump(
+      tester,
+      state().copyWith(
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qfixture',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qsecond',
+            amount: '2000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+        recipientAmountsSat: [8000, 2000],
+      ),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Replace-by-fee activated'), findsOneWidget);
+    expect(find.text('Multiple recipients'), findsNothing);
+  });
+
+  testWidgets('several recipients confirm on the shared review', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(
+        recipientDrafts: [
+          (
+            id: 0,
+            address: 'bc1qfixture',
+            amount: '',
+            receivesRemainder: true,
+            isValid: true,
+          ),
+          (
+            id: 1,
+            address: 'bc1qsecond',
+            amount: '2000',
+            receivesRemainder: false,
+            isValid: true,
+          ),
+        ],
+        recipientAmountsSat: [8000, 2000],
+        confirmedAmountSat: 10000,
+      ),
+    );
+
+    expect(find.byType(SendPaymentReview), findsOneWidget);
+    expect(find.text('Total'), findsOneWidget);
+    expect(find.textContaining('2,000'), findsWidgets);
+  });
+
+  testWidgets('a watch-only Liquid payment keeps the classic confirmation', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    final liquid = sendSourceFixture(
+      id: 'liquid-watch',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(4909),
+      signer: WalletSigner.none,
+    );
+    await pump(
+      tester,
+      state(step: SendStep.confirm).copyWith(
+        sendType: SendType.liquid,
+        selectedWallet: SendWalletBitcoin(liquid),
+        paymentRequest: const PaymentRequest.liquid(
+          address: 'lq1qqwzrpfmt9d7tx76jq6lgr7ylkg',
+          isTestnet: false,
+        ),
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+        confirmedAmountSat: 1000,
+        liquidAbsoluteFees: 26,
+      ),
+    );
+
+    // The shared review has no PSBT or device action.
+    expect(find.byType(SendPaymentReview), findsNothing);
+    expect(find.byType(SendConfirmScreen), findsOneWidget);
+  });
+
+  testWidgets('a Liquid payment on the classic screen keeps coin selection', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    final liquid = sendSourceFixture(
+      id: 'liquid',
+      network: LiquidNetwork.mainnet,
+      balanceSat: BigInt.from(100000),
+    );
+    await pump(
+      tester,
+      state().copyWith(
+        sendType: SendType.lightning,
+        selectedWallet: SendWalletBitcoin(liquid),
+        paymentRequest: const PaymentRequest.lnAddress(address: 'a@b.com'),
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+      ),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Select coins manually'), findsOneWidget);
+  });
+
+  testWidgets('a single sweep chooses its fee on the recipient step', (
+    tester,
+  ) async {
+    Device.screen = const Size(390, 844);
+    await pump(
+      tester,
+      state(step: SendStep.address)
+          .copyWith(sweepOutpoints: {(txId: 'sweep', vout: 0)}),
+    );
+    expect(find.byType(SendPaymentPage), findsNothing);
+    await tester.tap(
+      find.widgetWithText(BullSettingsEntryTile, 'Advanced settings'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Replace-by-fee activated'), findsOneWidget);
+  });
+
+  testWidgets(
+    'picking a wallet the page cannot sign hands over to the classic screen',
+    (tester) async {
+      Device.screen = const Size(390, 844);
+      final hardware = sendSourceFixture(
+        id: 'hardware',
+        network: BitcoinNetwork.mainnet,
+        balanceSat: BigInt.from(1000000),
+        signerDevice: SignerDevice.ledgerNanoX,
+        signer: WalletSigner.remote,
+        label: 'Ledger',
+      );
+      final updates = StreamController<SendState>.broadcast();
+      addTearDown(updates.close);
+      final start = state().copyWith(wallets: [wallet, hardware]);
+      final cubit = await pump(tester, start, updates: updates.stream);
+      when(() => cubit.updateSelectedWallet(hardware)).thenAnswer((_) async {
+        updates.add(
+          start.copyWith(selectedWallet: SendWalletBitcoin(hardware)),
+        );
+      });
+
+      await tester.tap(find.byType(BullDropdown<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ledger').last);
+      await tester.pumpAndSettle();
+
+      verify(() => cubit.updateSelectedWallet(hardware)).called(1);
+      expect(find.byType(SendPaymentPage), findsNothing);
+      expect(find.byType(SendAmountScreen), findsOneWidget);
+    },
+  );
 
   testWidgets('a regtest payment URI keeps the legacy Send page', (
     tester,
@@ -464,7 +706,13 @@ void main() {
       ),
     );
     final page = tester.widget<SendPaymentPage>(find.byType(SendPaymentPage));
-    expect(page.onWallet, isNull);
+    // The From dropdown is the source picker.
+    expect(
+      tester
+          .widget<BullDropdown<String>>(find.byType(BullDropdown<String>))
+          .onChanged,
+      isNull,
+    );
     expect(page.onContinue, isNull);
     expect(page.isBusy, isTrue);
     verifyNever(() => cubit.onAmountConfirmed());
@@ -496,7 +744,12 @@ void main() {
     );
     final page = tester.widget<SendPaymentPage>(find.byType(SendPaymentPage));
     expect(page.onContinue, isNull);
-    expect(page.onWallet, isNotNull);
+    expect(
+      tester
+          .widget<BullDropdown<String>>(find.byType(BullDropdown<String>))
+          .onChanged,
+      isNotNull,
+    );
   });
 
   testWidgets('identical fee labels keep distinct preset actions', (
@@ -525,6 +778,37 @@ void main() {
       () => cubit.feeOptionSelected(FeeSelection.economic),
       () => cubit.feeOptionSelected(FeeSelection.fastest),
     ]);
+  });
+
+  testWidgets('Multiple recipients opens the recipient list', (tester) async {
+    await pump(tester, state(step: SendStep.address));
+
+    await tester.tap(find.byType(BullSettingsEntryTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Multiple recipients'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SendPaymentPage), findsNothing);
+    expect(find.byType(SendAddressScreen), findsOneWidget);
+  });
+
+  testWidgets('Send UTXOs instead asks for an address first', (tester) async {
+    await pump(
+      tester,
+      state(step: SendStep.address).copyWith(
+        selectedWallet: null,
+        paymentRequest: null,
+        amount: '',
+        recipientDrafts: [],
+        recipientAmountsSat: [],
+      ),
+    );
+    await tester.tap(find.byType(BullSettingsEntryTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Send UTXOs instead'));
+    await tester.pump();
+    expect(find.text('Enter an address first'), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 4));
   });
 
   testWidgets('Advanced settings opens and reopens without a wallet', (
@@ -679,6 +963,12 @@ void main() {
     await tester.pump();
 
     expect(find.byType(BullPaymentTransition), findsOneWidget);
+    expect(
+      tester
+          .widget<BullPaymentTransition>(find.byType(BullPaymentTransition))
+          .onSkip,
+      isNull,
+    );
     verify(cubit.onConfirmTransactionClicked).called(1);
 
     pending.complete();
@@ -937,7 +1227,7 @@ void main() {
     });
   });
 
-  testWidgets('payment animations on: View details opens the details view', (
+  testWidgets('payment animations on: broadcast opens status once', (
     tester,
   ) async {
     final updates = StreamController<SendState>.broadcast();
@@ -970,105 +1260,222 @@ void main() {
     expect(find.byType(BullPaymentTransition), findsOneWidget);
     updates.add(
       state(step: SendStep.confirm)
+          .copyWith(sendType: SendType.bitcoin, txId: ''),
+    );
+    await tester.pump();
+    expect(opened, isEmpty);
+    updates.add(
+      state(step: SendStep.confirm)
           .copyWith(sendType: SendType.bitcoin, txId: 'broadcast-tx'),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(opened, isEmpty);
-    tester
-        .widget<BullPaymentTransition>(find.byType(BullPaymentTransition))
-        .onSkip!();
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(opened, hasLength(1));
-    expect(opened.single, contains('view=details'));
+    expect(opened.single, isNot(contains('view=details')));
     pending.complete();
     await tester.pumpAndSettle();
   });
 
-  testWidgets(
-    'Bitcoin send: tag and headline follow the step, success stays on screen',
-    (tester) async {
+  for (final animations in [true, false]) {
+    testWidgets('Liquid broadcast passes private wallet context: $animations', (
+      tester,
+    ) async {
       final updates = StreamController<SendState>.broadcast();
       addTearDown(updates.close);
-      final opened = <String>[];
+      final extras = <Object?>[];
+      final uris = <Uri>[];
       final router = GoRouter(
         routes: [
           GoRoute(path: '/', builder: (_, _) => const SendScreen()),
           GoRoute(
             name: TransactionsRoute.transactionDetails.name,
             path: TransactionsRoute.transactionDetails.path,
-            builder: (_, routeState) {
-              opened.add(routeState.uri.toString());
+            builder: (_, state) {
+              extras.add(state.extra);
+              uris.add(state.uri);
               return const Scaffold(body: Text('Details'));
             },
           ),
         ],
       );
       addTearDown(router.dispose);
-      final base = state(step: SendStep.confirm)
-          .copyWith(sendType: SendType.bitcoin);
+      final base = liquidState(step: SendStep.confirm);
       final cubit = await pump(
         tester,
         base,
         updates: updates.stream,
         router: router,
+        animations: animations,
       );
       final pending = Completer<void>();
       when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
       tester.widget<BullButton>(find.byType(BullButton)).onPressed();
       await tester.pump();
-
-      // Broadcasted: tag and headline are the current step label.
-      updates.add(base.copyWith(txId: 'broadcast-tx'));
+      updates.add(base.copyWith(txId: 'liquid-tx'));
       await tester.pump();
-      await tester.pump(const Duration(seconds: 6));
-      var transition = tester.widget<BullPaymentTransition>(
-        find.byType(BullPaymentTransition),
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(extras, [(txId: 'liquid-tx', walletId: 'liquid', isLiquid: true)]);
+      expect(uris.single.queryParameters.containsKey('isLiquid'), isFalse);
+      expect(
+        uris.single.queryParameters['view'],
+        animations ? isNull : 'details',
       );
-      expect(transition.status, 'Broadcasted');
-      expect(transition.statusTag, 'Broadcasted');
-      expect(transition.phase, isNot(BullPaymentPhase.success));
-
-      // Confirmed: success, and the animation finishing never dismisses it.
-      updates.add(
-        base.copyWith(
-          txId: 'broadcast-tx',
-          walletTransaction: WalletTransaction(
-            walletId: 'mono',
-            network: BitcoinNetwork.mainnet,
-            direction: WalletTransactionDirection.outgoing,
-            status: WalletTransactionStatus.confirmed,
-            txId: 'broadcast-tx',
-            amountSat: 10000,
-            feeSat: 200,
-            vsize: 140,
-            inputs: const [],
-            outputs: const [],
-            isRbf: false,
-          ),
-        ),
-      );
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 15));
-      transition = tester.widget<BullPaymentTransition>(
-        find.byType(BullPaymentTransition),
-      );
-      expect(transition.phase, BullPaymentPhase.success);
-      expect(transition.status, 'Confirmed');
-      expect(transition.statusTag, 'Confirmed');
-      transition.onDone();
-      await tester.pump(const Duration(seconds: 5));
-      expect(find.byType(BullPaymentTransition), findsOneWidget);
-      expect(opened, isEmpty);
-
-      transition.onSkip!();
-      await tester.pumpAndSettle();
-      expect(opened, hasLength(1));
-      expect(opened.single, contains('view=details'));
       pending.complete();
-      await tester.pumpAndSettle();
-    },
-  );
+      await tester.pump();
+    });
+  }
+
+  testWidgets('back during signing does not navigate after broadcast', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast();
+    addTearDown(updates.close);
+    final opened = <String>[];
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, state) {
+            opened.add(state.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final base = state(step: SendStep.confirm)
+        .copyWith(sendType: SendType.bitcoin);
+    final cubit = await pump(
+      tester,
+      base,
+      updates: updates.stream,
+      router: router,
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+    await tester.pump();
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    updates.add(base.copyWith(txId: 'broadcast-tx'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(opened, isEmpty);
+    pending.complete();
+    await tester.pump();
+  });
+
+  testWidgets('Silent Payments never opens the artificial sp wallet target', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast();
+    addTearDown(updates.close);
+    final opened = <String>[];
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, state) {
+            opened.add(state.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final base = state(step: SendStep.confirm).copyWith(
+      sendType: SendType.bitcoin,
+      selectedWallet: SendWalletSp(
+        label: 'Silent Payments',
+        network: BitcoinNetwork.mainnet,
+        balanceSat: BigInt.from(100000),
+      ),
+    );
+    final cubit = await pump(
+      tester,
+      base,
+      updates: updates.stream,
+      router: router,
+      silent: true,
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    tester.widget<BullButton>(find.byType(BullButton).last).onPressed();
+    await tester.pump();
+    updates.add(base.copyWith(txId: 'silent-tx', step: SendStep.success));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(opened, isEmpty);
+    pending.complete();
+    await tester.pump();
+  });
+
+  testWidgets('Bitcoin broadcast and confirmation navigate only once', (
+    tester,
+  ) async {
+    final updates = StreamController<SendState>.broadcast();
+    addTearDown(updates.close);
+    final opened = <String>[];
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const SendScreen()),
+        GoRoute(
+          name: TransactionsRoute.transactionDetails.name,
+          path: TransactionsRoute.transactionDetails.path,
+          builder: (_, routeState) {
+            opened.add(routeState.uri.toString());
+            return const Scaffold(body: Text('Details'));
+          },
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    final base = state(step: SendStep.confirm)
+        .copyWith(sendType: SendType.bitcoin);
+    final cubit = await pump(
+      tester,
+      base,
+      updates: updates.stream,
+      router: router,
+    );
+    final pending = Completer<void>();
+    when(cubit.onConfirmTransactionClicked).thenAnswer((_) => pending.future);
+    tester.widget<BullButton>(find.byType(BullButton)).onPressed();
+    await tester.pump();
+
+    updates.add(base.copyWith(txId: 'broadcast-tx'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(opened, hasLength(1));
+    expect(opened.single, isNot(contains('view=details')));
+
+    updates.add(
+      base.copyWith(
+        txId: 'broadcast-tx',
+        walletTransaction: WalletTransaction(
+          walletId: 'mono',
+          network: BitcoinNetwork.mainnet,
+          direction: WalletTransactionDirection.outgoing,
+          status: WalletTransactionStatus.confirmed,
+          txId: 'broadcast-tx',
+          amountSat: 10000,
+          feeSat: 200,
+          vsize: 140,
+          inputs: const [],
+          outputs: const [],
+          isRbf: false,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(opened, hasLength(1));
+    pending.complete();
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('mono MAX review shows the actual drain recipient amount', (
     tester,

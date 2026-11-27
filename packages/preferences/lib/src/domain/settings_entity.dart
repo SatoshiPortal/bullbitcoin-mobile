@@ -145,8 +145,6 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(false) bool isErrorReportingEnabled,
     @Default(true) bool screenCaptureProtectionEnabled,
     @Default(true) bool showPaymentAnimations,
-    String? exchangeTestnetBasicAuthUsername,
-    String? exchangeTestnetBasicAuthPassword,
   }) = _SettingsEntity;
   const SettingsEntity._();
 

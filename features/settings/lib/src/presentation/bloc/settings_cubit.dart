@@ -16,6 +16,7 @@ import 'package:settings/src/domain/usecases/set_currency_usecase.dart';
 import 'package:settings/src/domain/usecases/set_environment_usecase.dart';
 import 'package:settings/src/domain/usecases/set_hide_amounts_usecase.dart';
 import 'package:settings/src/domain/usecases/set_is_dev_mode_usecase.dart';
+import 'package:settings/src/domain/usecases/load_exchange_testnet_basic_auth_usecase.dart';
 import 'package:settings/src/domain/usecases/set_exchange_testnet_basic_auth_usecase.dart';
 import 'package:settings/src/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:settings/src/domain/usecases/set_language_usecase.dart';
@@ -54,6 +55,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this._checkSpWalletSetupUsecase,
     required this._setErrorReportingUsecase,
     required this._setScreenCaptureProtectionUsecase,
+    required this._loadExchangeTestnetBasicAuthUsecase,
     required this._setShowPaymentAnimationsUsecase,
     required this._setExchangeTestnetBasicAuthUsecase,
     required this._setPayjoinEnabledUsecase,
@@ -84,6 +86,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   final CheckSpWalletSetupForSettingsUsecase _checkSpWalletSetupUsecase;
   final SetErrorReportingUsecase _setErrorReportingUsecase;
   final SetScreenCaptureProtectionUsecase _setScreenCaptureProtectionUsecase;
+  final LoadExchangeTestnetBasicAuthUsecase
+  _loadExchangeTestnetBasicAuthUsecase;
   final SetShowPaymentAnimationsUsecase _setShowPaymentAnimationsUsecase;
   final SetExchangeTestnetBasicAuthUsecase _setExchangeTestnetBasicAuthUsecase;
   final SetPayjoinEnabledUsecase _setPayjoinEnabledUsecase;
@@ -103,8 +107,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> init() async {
-    final (result, appInfo) = await (
+    final (result, basicAuth, appInfo) = await (
       _loadPreferencesUsecase.execute(),
+      _loadExchangeTestnetBasicAuthUsecase.execute(),
       PackageInfo.fromPlatform(),
     ).wait;
     if (isClosed) return;
@@ -123,8 +128,22 @@ class SettingsCubit extends Cubit<SettingsState> {
     ScreenCaptureProtection.instance.enabledByUser =
         storedSettings.screenCaptureProtectionEnabled;
 
+    // An unreadable credential is reported and left empty, never invented.
+    final basicAuthValues = switch (basicAuth) {
+      Ok(:final value) => value,
+      Err() => null,
+    };
     emit(
-      state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
+      state.copyWith(
+        storedSettings: storedSettings,
+        appVersion: appVersion,
+        exchangeTestnetBasicAuthUsername: basicAuthValues?.username,
+        exchangeTestnetBasicAuthPassword: basicAuthValues?.password,
+        failure: switch (basicAuth) {
+          Err(:final failure) => failure,
+          Ok() => state.failure,
+        },
+      ),
     );
     await checkSpWalletSetup();
   }
@@ -370,15 +389,13 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        storedSettings: state.storedSettings?.copyWith(
-          exchangeTestnetBasicAuthUsername: user,
-          exchangeTestnetBasicAuthPassword: pass,
-        ),
+        exchangeTestnetBasicAuthUsername: user,
+        exchangeTestnetBasicAuthPassword: pass,
       ),
     );
   }
 
-  Future<void> toggleErrorReporting(bool enabled) async {
+  Future<bool> toggleErrorReporting(bool enabled) async {
     final settings = state.storedSettings;
     log.config(
       'Error reporting toggled: $enabled was ${settings?.isErrorReportingEnabled}',
@@ -386,7 +403,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final result = await _setErrorReportingUsecase.execute(enabled);
     if (result case Err(:final failure)) {
       emit(state.copyWith(failure: failure));
-      return;
+      return false;
     }
 
     emit(
@@ -396,6 +413,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         ),
       ),
     );
+    return true;
   }
 
   Future<void> toggleScreenCaptureProtection(bool enabled) async {

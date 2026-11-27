@@ -19,7 +19,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullAlertCard,
         BullKeyboardActions,
-        BullAdvancedOptionsLink,
+        BullSettingsEntryTile,
         BullBottomSheet,
         BullButton,
         BullFadingLinearProgress,
@@ -271,10 +271,12 @@ class SwapPageState extends State<SwapPage> {
           // Continue is pinned, so a failure below the fold would go unseen.
           listenWhen: (previous, current) =>
               (current.swapCreationException != null ||
-                  current.swapFailure != null) &&
+                  current.swapFailure != null ||
+                  current.startError != null) &&
               (current.swapCreationException !=
                       previous.swapCreationException ||
-                  current.swapFailure != previous.swapFailure),
+                  current.swapFailure != previous.swapFailure ||
+                  current.startError != previous.startError),
           listener: (context, state) => _revealError(),
           child:
               BlocSelector<
@@ -282,8 +284,11 @@ class SwapPageState extends State<SwapPage> {
                 TransferState,
                 (SwapCreationException?, SwapFailure?)
               >(
-                selector: (state) =>
-                    (state.swapCreationException, state.swapFailure),
+                // A failed wallet load shows here too, like every other error.
+                selector: (state) => (
+                  state.swapCreationException,
+                  state.swapFailure ?? state.startError,
+                ),
                 builder: (context, errors) {
                   final (swapCreationError, swapFailure) = errors;
                   if (swapCreationError == null && swapFailure == null) {
@@ -386,7 +391,8 @@ class SwapPageState extends State<SwapPage> {
         crossAxisAlignment: .stretch,
         children: [
           if (showAdvancedOptions) ...[
-            BullAdvancedOptionsLink(
+            // The settings row of the send pages, not a bare link.
+            BullSettingsEntryTile(
               label: context.swapCopyForLocale.sendAdvancedOptions,
               onPressed: () {
                 BullBottomSheet.show(

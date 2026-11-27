@@ -1,39 +1,33 @@
 import 'package:bull_logger/bull_logger.dart';
-import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/exchange_kyc_configuration.dart';
+import '../domain/exchange_basic_auth.dart';
 import '../domain/exchange_failure.dart';
+import '../domain/exchange_kyc_configuration.dart';
 
-typedef ExchangeKycSetup = ({
-  Uri mainnetUrl,
-  Uri testnetUrl,
-  ExchangeTestnetBasicAuthPreferences preferences,
-});
+import 'package:preferences/preferences.dart' show Environment;
+
+typedef ExchangeKycSetup = ({Uri mainnetUrl, Uri testnetUrl});
 
 final class ExchangeKycConfigurationRepository {
   final ExchangeKycSetup _setup;
+  final Future<Result<ExchangeWebPreferences, ExchangeFailure>> Function()
+  _readWebPreferences;
 
-  const ExchangeKycConfigurationRepository(this._setup);
+  const ExchangeKycConfigurationRepository(
+    this._setup,
+    this._readWebPreferences,
+  );
 
   Future<Result<ExchangeKycConfiguration, ExchangeFailure>> load() async {
     try {
-      switch (await _setup.preferences.readExchangeWebPreferences()) {
-        case Err():
-          log.warning('Could not load exchange web settings: preferences');
-          return const Err(ExchangeUnexpectedFailure());
+      switch (await _readWebPreferences()) {
+        case Err(:final failure):
+          log.warning(
+            'Could not load exchange web settings: ${failure.runtimeType}',
+          );
+          return Err(failure);
         case Ok(:final value):
-          final network = switch (value.environment) {
-            Environment.mainnet => BitcoinNetwork.mainnet,
-            Environment.testnet => BitcoinNetwork.testnet,
-            Environment.regtest => BitcoinNetwork.regtest,
-          };
-          if (!NetworkCapabilities.supports(
-            network,
-            NetworkCapability.exchange,
-          )) {
-            return const Err(ExchangeUnsupportedNetworkFailure());
-          }
           final isTestnet = value.environment == Environment.testnet;
           final username = value.exchangeTestnetBasicAuthUsername;
           final password = value.exchangeTestnetBasicAuthPassword;

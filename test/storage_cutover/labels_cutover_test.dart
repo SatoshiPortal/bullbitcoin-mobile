@@ -19,6 +19,116 @@ import '../../packages/legacy_storage/test/migrations_test/bull_database/generat
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test(
+    'prepared fresh Labels database is not admitted without a receipt',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('labels-fresh-');
+      addTearDown(() async {
+        await LifecycleAdmission.retryQuarantined();
+        await directory.delete(recursive: true);
+      });
+      final secure = FakeSecureStoragePlatform().install();
+      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final file = File('${directory.path}/labels.sqlite');
+      final keys = secrets.databaseKeys(module: 'labels');
+      final coordination = Directory('${directory.path}/coordination');
+      final legacy = LegacySourceStore(
+        source: LegacySource(File('${directory.path}/legacy.sqlite'), 16),
+        create: SqliteDatabase.new,
+      );
+      var fail = true;
+      var reachedFreshSchema = false;
+      StorageCutover cutover() => StorageCutover(
+        directory: coordination,
+        legacy: legacy,
+        expectedOwners: splitV1Owners,
+        destinationFamilies: [file],
+        participants: [
+          createLabelsImportForTesting(
+            file: file,
+            keys: keys,
+            checkpoint: (step) async {
+              if (fail && step == 'fresh-schema') {
+                reachedFreshSchema = true;
+                throw const FileSystemException(
+                  'injected fresh schema failure',
+                );
+              }
+            },
+          ),
+        ],
+      );
+
+      expect(await cutover().prepare(), isA<Err>());
+      expect(reachedFreshSchema, isTrue);
+      final savedEntries = Map<String, String>.of(secure.entries);
+      expect(savedEntries, isNotEmpty);
+      secure.writesFail = true;
+
+      final exclusive = await NativeFileGate(
+        File('${coordination.path}/lifecycle.lock'),
+      ).acquire(exclusive: true, timeout: Duration.zero);
+      final opened = await keys.open(
+        name: 'main',
+        file: file,
+        existingSchemaVersion: 1,
+      );
+      expect(opened, isA<Ok<QueryExecutor, DatabaseOpenFailure>>());
+      final probe = _Probe(
+        (opened as Ok<QueryExecutor, DatabaseOpenFailure>).value,
+      );
+      exclusive.track(probe.close);
+      final tables = await probe
+          .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+          .get();
+      expect(
+        tables.map((row) => row.read<String>('name')),
+        containsAll(['labels', 'frozen_utxos', 'legacy_import_receipts']),
+      );
+      expect(
+        await probe.customSelect('SELECT id FROM legacy_import_receipts').get(),
+        isEmpty,
+      );
+      await exclusive.close();
+
+      expect(
+        await cutover().admit(timeout: Duration.zero),
+        isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
+          (result) => result.failure,
+          'failure',
+          isA<LegacyImportDeferred>(),
+        ),
+      );
+      fail = false;
+      final prepared = await cutover().prepare();
+      expect(prepared, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
+      final runtime =
+          (prepared as Ok<RuntimeAdmission, LegacyImportFailure>).value;
+      final reopened = await keys.open(
+        name: 'main',
+        file: file,
+        existingSchemaVersion: 1,
+      );
+      expect(reopened, isA<Ok<QueryExecutor, DatabaseOpenFailure>>());
+      final readyProbe = _Probe(
+        (reopened as Ok<QueryExecutor, DatabaseOpenFailure>).value,
+      );
+      runtime.track(readyProbe.close);
+      final receipts = await readyProbe
+          .customSelect('SELECT id FROM legacy_import_receipts')
+          .get();
+      expect(receipts.map((row) => row.read<String>('id')), [
+        'fresh-v1/labels',
+      ]);
+      await runtime.close();
+      expect(secure.entries, savedEntries);
+      final admitted = await cutover().admit(timeout: Duration.zero);
+      expect(admitted, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
+      await (admitted as Ok<RuntimeAdmission, LegacyImportFailure>).value
+          .close();
+    },
+  );
+
   for (final freshPilot in [false, true]) {
     test(
       'Labels imports ${freshPilot ? 'later writes from fresh S1a' : 'published v15'} without replacing source',
@@ -204,7 +314,11 @@ void main() {
           isA<Err<RuntimeAdmission, LegacyImportFailure>>().having(
             (result) => result.failure,
             'failure',
-            isA<LegacyImportUnavailable>(),
+            isA<LegacyOwnerFailure>().having(
+              (failure) => failure.cause,
+              'cause',
+              LegacyOwnerFailureCause.missingAfterAdmission,
+            ),
           ),
         );
         expect(file.existsSync(), isFalse);

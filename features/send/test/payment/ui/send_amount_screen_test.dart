@@ -183,7 +183,14 @@ void main() {
     await tester.tap(find.byType(Switch));
     await tester.pumpAndSettle();
     expect(find.text('Add'), findsOneWidget);
-    expect(find.text('Recipient'), findsOneWidget);
+    // The step bar also reads "Recipient"; the add action is in the form.
+    expect(
+      find.descendant(
+        of: find.byType(SingleChildScrollView),
+        matching: find.text('Recipient'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('My wallet'), findsOneWidget);
   });
 
@@ -667,17 +674,25 @@ void main() {
     expect(find.byType(Radio<int>), findsNothing);
     expect(find.text('Add Recipient'), findsNothing);
     expect(find.text('MAX'), findsNothing);
-    final input = tester.widget<BullAmountInput>(find.byType(BullAmountInput));
+    // The first recipient is typed; the second holds the rest, read-only.
+    final inputs = tester.widgetList<BullAmountInput>(
+      find.byType(BullAmountInput),
+    );
+    expect(inputs.map((input) => input.readOnly), [false, true]);
+    final input = inputs.first;
     expect(input.amountController.text, '10000');
-    await tester.tap(find.byType(BullAmountUnitToggle));
+    await tester.tap(find.byType(BullAmountUnitToggle).first);
     await tester.pump();
-    expect(find.text('0.0001'), findsOneWidget);
+    // Both boxes follow the unit, the rest included.
+    expect(find.text('0.0001'), findsNWidgets(2));
     expect(input.amountController.text, '10000');
     await tester.enterText(
-      find.descendant(
-        of: find.byType(BullAmountInput),
-        matching: find.byType(TextField),
-      ),
+      find
+          .descendant(
+            of: find.byType(BullAmountInput),
+            matching: find.byType(TextField),
+          )
+          .first,
       '0.0002',
     );
     await tester.pump();

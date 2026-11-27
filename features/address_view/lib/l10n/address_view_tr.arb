@@ -95,5 +95,6 @@
   "exchangeDcaAddressLabelLightning": "Lightning address",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "Geçerli bir {type} girin veya tarayın."
 }

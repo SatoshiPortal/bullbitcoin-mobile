@@ -819,8 +819,6 @@
   "exchangeBitcoinWalletsCheckAgain": "ხელახლა შემოწმება",
   "exchangeBitcoinWalletsSessionEnded": "თქვენ აღარ ხართ შესული ბირჟაზე. ნაგულისხმევი საფულეების შესაცვლელად ხელახლა შედით.",
   "destinationExpectedType": "შეიყვანეთ ან დაასკანერეთ სწორი {type}.",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "იყიდეთ, გაყიდეთ და გადაიხადეთ Bull Bitcoin-ით პირდაპირ თქვენი საფულიდან.",
   "exchangeTradingUnavailable": "ვაჭრობა მიუწვდომელია.",
   "priceChartShowTooltip": "ფასის გრაფიკის ჩვენება",
   "recipientsErrorSaveOutcomeUnknown": "ვერ დავადგინეთ, შეინახა თუ არა ეს მიმღები. ხელახლა დამატებამდე შეამოწმეთ თქვენი მიმღებები.",

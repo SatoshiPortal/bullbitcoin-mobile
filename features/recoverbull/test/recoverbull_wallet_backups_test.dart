@@ -134,9 +134,9 @@ void main() {
       expect(_ok(await main.read('other'))?.physicalBackupTested, isFalse);
       expect(_ok(await main.read('watch')), watchOnly);
       expect(_ok(await reg.read('reg'))?.latestPhysicalBackup, 11);
-      _ok(await main.remove('test'));
+      _ok(await removeWalletBackupForTesting(main, 'test'));
       _ok(
-        await reg.write((
+        await writeWalletBackupForTesting(reg, (
           walletId: 'reg',
           secretFingerprint: fingerprint.hex,
           encryptedVaultTested: true,

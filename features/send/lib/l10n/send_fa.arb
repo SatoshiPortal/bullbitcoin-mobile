@@ -505,10 +505,6 @@
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
   },
-  "sendConfirmSend": "تایید ارسال",
-  "@sendConfirmSend": {
-    "description": "Title for send confirmation screen"
-  },
   "sendSwapInProgressInvoice": "مبادله در حال پیشرفت است. این فاکتور در چند ثانیه پرداخت خواهد شد.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
@@ -566,5 +562,8 @@
   "closeDialogButton": "بستن",
   "@closeDialogButton": {
     "description": "Button to close the value display modal dialog"
-  }
+  },
+  "sendPayjoinSpendPaused": "این پرداخت Payjoin متوقف شده است، زیرا کیف پول نمی‌تواند با اطمینان ادامه دهد. ورودی‌های آن همچنان رزرو هستند. کیف پول را تازه‌سازی کنید یا از «اسکن تراکنش‌های گم‌شده» استفاده کنید، سپس تا وقتی این پیشنهاد معتبر است آن را دوباره امتحان کنید. اگر منقضی شده است، پیش از هر اقدام دیگری پرداخت را در تراکنش‌ها بررسی کنید.",
+  "walletSpendAwaitingObservation": "تا زمانی که این کیف پول همگام‌سازی نشود و پرداخت‌های قبلی خود را در شبکه نبیند، خرج کردن در دسترس نیست. کیف پول را تازه‌سازی کنید یا از «اسکن تراکنش‌های گم‌شده» استفاده کنید، سپس دوباره تلاش کنید.",
+  "walletSpendBusy": "کیف پول مشغول است. چند لحظه دیگر دوباره تلاش کنید."
 }

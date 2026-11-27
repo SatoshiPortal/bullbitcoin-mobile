@@ -95,5 +95,6 @@
   "exchangeDcaAddressLabelLightning": "Lightning address",
   "@exchangeDcaAddressLabelLightning": {
     "description": "Label for Lightning address in DCA settings"
-  }
+  },
+  "destinationExpectedType": "Ek valid {type} enter ya scan karein."
 }

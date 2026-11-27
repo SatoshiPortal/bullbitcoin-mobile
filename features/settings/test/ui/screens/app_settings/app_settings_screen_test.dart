@@ -141,6 +141,33 @@ void main() {
     expect(find.text(failureMessage), findsNothing);
   });
 
+  // The test host has no Permissions row (background tasks are mobile only),
+  // so the statistics row falls back to the end of the list, exactly once.
+  testWidgets('without Permissions, the statistics row is listed last once', (
+    tester,
+  ) async {
+    when(() => settingsCubit.stream).thenAnswer((_) => const Stream.empty());
+    await pumpScreen(tester);
+    await tester.pump();
+
+    expect(find.text('Permissions'), findsNothing);
+    final statistics = find.ancestor(
+      of: find.text('Share usage statistics'),
+      matching: find.byType(ListTile),
+    );
+    expect(statistics, findsOneWidget);
+
+    final statisticsTile = statistics.evaluate().single;
+    final statisticsTop = tester.getTopLeft(statistics).dy;
+    for (final tile in find.byType(ListTile).evaluate()) {
+      if (tile == statisticsTile) continue;
+      expect(
+        tester.getTopLeft(find.byElementPredicate((e) => e == tile)).dy,
+        lessThan(statisticsTop),
+      );
+    }
+  });
+
   // The fiat currency is picked in place, like the language; there is no
   // separate currency screen any more.
   testWidgets('the default currency is picked inline', (tester) async {

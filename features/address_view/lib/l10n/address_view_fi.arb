@@ -29,5 +29,6 @@
   "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
   "exchangeDcaAddressLabelBitcoin": "Bitcoin-osoite",
   "exchangeDcaAddressLabelLiquid": "Liquid-osoite",
-  "exchangeDcaAddressLabelLightning": "Lightning-osoite"
+  "exchangeDcaAddressLabelLightning": "Lightning-osoite",
+  "destinationExpectedType": "Syötä tai skannaa kelvollinen {type}."
 }

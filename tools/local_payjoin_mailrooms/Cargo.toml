@@ -1,0 +1,12 @@
+[package]
+name = "bull-regtest-mailrooms"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = "1"
+axum-server = { version = "0.8", features = ["tls-rustls-no-provider"] }
+payjoin-mailroom = { git = "https://github.com/payjoin/rust-payjoin.git", rev = "7ca4b1b57964008b772de5c6139c79733ab20730", features = ["_manual-tls"] }
+rustls = { version = "0.23", default-features = false, features = ["ring", "std"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal"] }

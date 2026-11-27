@@ -2,8 +2,6 @@ import 'package:provisioning/provisioning.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 
-import 'domain/usecases/load_network_wallet_setup_usecase.dart';
-import 'domain/usecases/create_network_wallet_usecase.dart';
 import 'presentation/network_wallet_setup_cubit.dart';
 
 import 'package:electrum/electrum.dart' show ElectrumSyncResult;
@@ -46,26 +44,16 @@ class WalletLocator {
     OverviewSynchronization overviewSync() =>
         locator<OverviewSynchronization>();
 
-    locator.registerFactory<LoadNetworkWalletSetupUsecase>(
-      () => LoadNetworkWalletSetupUsecase(
-        locator<DeveloperEnvironmentReader>(),
-        locator<SecretsInventory>(),
-        locator<Secrets>(),
-      ),
-    );
-    locator.registerFactory<CreateNetworkWalletUsecase>(
-      () => CreateNetworkWalletUsecase(
-        locator<DeveloperEnvironmentReader>(),
-        locator<SecretsInventory>(),
-        locator<Secrets>(),
-        locator<DefaultWalletProvisioning>(),
+    locator.registerFactory<NetworkWalletProvisioning>(
+      () => NetworkWalletProvisioning(
+        settings: locator<DeveloperEnvironmentReader>(),
+        inventory: locator<SecretsInventory>(),
+        defaults: locator<DefaultWalletProvisioning>(),
+        secrets: locator<Secrets>(),
       ),
     );
     locator.registerFactory<NetworkWalletSetupCubit>(
-      () => NetworkWalletSetupCubit(
-        locator<LoadNetworkWalletSetupUsecase>(),
-        locator<CreateNetworkWalletUsecase>(),
-      ),
+      () => NetworkWalletSetupCubit(locator<NetworkWalletProvisioning>()),
     );
     locator.registerLazySingleton<SyncWalletValuesDatasource>(
       () => SyncWalletValuesDatasource(
@@ -79,6 +67,7 @@ class WalletLocator {
       final electrum = locator<ElectrumSync>();
       return WalletRepository(
         walletRegistrations: locator<WalletRegistrations>(),
+        session: locator<WalletSessionJoin>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronization: locator<ForegroundWalletSynchronization>(),
         syncStarted: electrum.started.map((key) => key.id),

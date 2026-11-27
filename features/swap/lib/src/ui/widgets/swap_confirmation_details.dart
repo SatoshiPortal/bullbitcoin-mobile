@@ -77,10 +77,8 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                       const Spacer(),
                       BullAmount.signedSats(
                         total,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                        color: context.appColors.secondary,
+                        style: context.bullType.body,
+                        color: context.appColors.text,
                         interactive: false,
                       ),
                       const Gap(4),
@@ -151,7 +149,7 @@ class SwapConfirmationDetails extends StatelessWidget {
   final String formattedBitcoinAmount;
   final Swap swap;
   Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.appColors.secondaryFixedDim);
+    return Container(height: 1, color: context.appColors.border);
   }
 
   @override
@@ -173,9 +171,9 @@ class SwapConfirmationDetails extends StatelessWidget {
             title: context.swapCopyForLocale.coreScreensFromLabel,
             details: BullText(
               sendWalletLabel,
-              style: context.bullType.body
-                  .copyWith(fontWeight: FontWeight.w500)
-                  .copyWith(color: context.appColors.secondary),
+              style: context.bullType.body.copyWith(
+                color: context.appColors.text,
+              ),
               textAlign: .end,
             ),
           ),
@@ -196,8 +194,7 @@ class SwapConfirmationDetails extends StatelessWidget {
                             child: AddressViewer(
                               externalAddress,
                               style: context.bullType.body.copyWith(
-                                fontWeight: FontWeight.w500,
-                                color: context.appColors.secondary,
+                                color: context.appColors.text,
                               ),
                             ),
                           ),
@@ -211,8 +208,7 @@ class SwapConfirmationDetails extends StatelessWidget {
                 ? BullText(
                     receiveWalletLabel,
                     style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: context.appColors.secondary,
+                      color: context.appColors.text,
                     ),
                     textAlign: .end,
                   )
@@ -229,9 +225,9 @@ class SwapConfirmationDetails extends StatelessWidget {
                 Expanded(
                   child: BullText(
                     swap.id,
-                    style: context.bullType.body
-                        .copyWith(fontWeight: FontWeight.w500)
-                        .copyWith(color: context.appColors.secondary),
+                    style: context.bullType.body.copyWith(
+                      color: context.appColors.text,
+                    ),
                     textAlign: .end,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -251,25 +247,25 @@ class SwapConfirmationDetails extends StatelessWidget {
                 if (swap case ChainSwap(:final paymentAmount))
                   BullAmount.signedSats(
                     paymentAmount,
-                    style: context.bullType.body
-                        .copyWith(fontWeight: FontWeight.w500)
-                        .copyWith(color: context.appColors.secondary),
+                    style: context.bullType.body.copyWith(
+                      color: context.appColors.text,
+                    ),
                     interactive: false,
                   )
                 else if (swap case LnSendSwap(:final paymentAmount))
                   BullAmount.signedSats(
                     paymentAmount,
-                    style: context.bullType.body
-                        .copyWith(fontWeight: FontWeight.w500)
-                        .copyWith(color: context.appColors.secondary),
+                    style: context.bullType.body.copyWith(
+                      color: context.appColors.text,
+                    ),
                     interactive: false,
                   )
                 else
                   BullText(
                     formattedBitcoinAmount,
-                    style: context.bullType.body
-                        .copyWith(fontWeight: FontWeight.w500)
-                        .copyWith(color: context.appColors.secondary),
+                    style: context.bullType.body.copyWith(
+                      color: context.appColors.text,
+                    ),
                   ),
               ],
             ),
@@ -283,10 +279,8 @@ class SwapConfirmationDetails extends StatelessWidget {
                 children: [
                   BullAmount.signedSats(
                     receiveAmount,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    color: context.appColors.secondary,
+                    style: context.bullType.body,
+                    color: context.appColors.text,
                     interactive: false,
                   ),
                 ],
@@ -301,10 +295,8 @@ class SwapConfirmationDetails extends StatelessWidget {
                 children: [
                   BullAmount.signedSats(
                     lockupFee,
-                    style: context.bullType.body.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    color: context.appColors.secondary,
+                    style: context.bullType.body,
+                    color: context.appColors.text,
                     interactive: false,
                   ),
                 ],

@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Čeština",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Tuto platbu nebylo možné připravit. Zkuste to prosím znovu.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -460,5 +456,8 @@
   "swapRestoreKindLightningSend": "Odeslání přes Lightning",
   "swapRestoreNoSwaps": "Nebyly nalezeny žádné swapy k obnovení",
   "swapRestoreRecoverableSection": "Obnovitelné",
-  "swapRestoreTitle": "Obnovení swapu"
+  "swapRestoreTitle": "Obnovení swapu",
+  "networkFeatureUnavailable": "Tato funkce není ve vybrané síti dostupná.",
+  "walletSpendAwaitingObservation": "Utrácení není dostupné, dokud tato peněženka není synchronizovaná a nevidí v síti své předchozí platby. Obnovte peněženku nebo použijte Vyhledat chybějící transakce a zkuste to znovu.",
+  "walletSpendBusy": "Peněženka je zaneprázdněná. Zkuste to za chvíli znovu."
 }

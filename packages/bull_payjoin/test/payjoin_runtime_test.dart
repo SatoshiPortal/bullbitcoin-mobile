@@ -250,6 +250,46 @@ void main() {
     }
   });
 
+  test('a hosted regtest stack keeps Payjoin typed unavailable', () async {
+    final production = File('${directory.path}/payjoin.sqlite');
+    final legacy = _CountingLegacy();
+    final hosted = RegtestHostProfile.forNetwork(
+      NetworkEnv.regtest,
+      host: '',
+      hosted: const RegtestHostedDefines(
+        electrumBitcoin: 'ssl://electrum.example:443',
+        electrumLiquid: 'ssl://electrum.example:8443',
+        esploraBitcoin: 'https://esplora.example',
+        esploraLiquid: 'https://liquid.example',
+        boltzApi: 'https://boltz.example/v2',
+        boltzWebSocket: 'wss://boltz.example/v2/ws',
+        recoverBull: 'http://keyserver.onion',
+      ),
+    );
+    final runtime = switch (await open(host: hosted, legacy: legacy)) {
+      Ok(:final value) => value,
+      Err(:final failure) => throw failure,
+    };
+    final result = await runtime.payjoin.receiver.start(
+      StartPayjoinReceiver(
+        walletId: 'wallet',
+        network: BitcoinNetwork.regtest,
+        address: 'bcrt1fixture',
+      ),
+    );
+    expect(
+      (result as Err<PayjoinReceiverSession, PayjoinFailure>).failure,
+      isA<PayjoinUnavailableFailure>(),
+    );
+    await runtime.dispose();
+    expect(legacy.reads, 0);
+    expect(await production.exists(), isFalse);
+    expect(
+      await File('${directory.path}/payjoin-regtest.sqlite').exists(),
+      isTrue,
+    );
+  });
+
   test('without usable fixture trust coin selection works and Payjoin is typed unavailable', () async {
     final production = File('${directory.path}/payjoin.sqlite');
     final legacy = _CountingLegacy();

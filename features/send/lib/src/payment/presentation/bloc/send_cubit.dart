@@ -2665,16 +2665,14 @@ class SendCubit extends Cubit<SendState>
       return;
     }
     // Regtest nodes may have no fee estimate yet. Keep the explicit failure
-    // and unsigned state, but expose the existing custom-fee control on the
-    // confirmation screen. A build still needs a user-selected valid fee.
+    // on the amount step, whose Advanced settings set a custom fee; a build
+    // still needs that user-selected valid fee.
     if (state.failure is SendFeesUnavailableFailure &&
         state.selectedWallet?.network == BitcoinNetwork.regtest &&
         state.sendType == SendType.bitcoin &&
         state.effectiveAmountSat > 0 &&
         await hasBalance()) {
-      emit(
-        state.copyWith(step: SendStep.confirm, amountConfirmedClicked: false),
-      );
+      emit(state.copyWith(amountConfirmedClicked: false));
       return;
     }
     // Any other failure keeps the user here.
@@ -3064,6 +3062,18 @@ class SendCubit extends Cubit<SendState>
     // RBF flag changes the sequence numbers in the PSBT — flipping it
     // makes the cached PSBT semantically wrong even if vsize matches.
     clearBitcoinFeePreviews();
+    await _rebuildAfterFeeChange();
+  }
+
+  /// A fee, custom fee or RBF choice rebuilds the payment only once it is
+  /// being confirmed. Before that, on the amount step, there may be no swap or
+  /// amount to build against yet: the choice is stored and Continue builds.
+  Future<void> _rebuildAfterFeeChange() async {
+    if (state.step != SendStep.confirm) {
+      // The fee, total and rest shown on the amount step follow the new fee.
+      _scheduleRecipientPreview();
+      return;
+    }
     await createTransaction();
   }
 
@@ -3145,7 +3155,7 @@ class SendCubit extends Cubit<SendState>
         armPriorCustomFee: null,
       ),
     );
-    await createTransaction();
+    await _rebuildAfterFeeChange();
     // updateSwapLockupFees();
   }
 
@@ -3163,9 +3173,13 @@ class SendCubit extends Cubit<SendState>
       ),
     );
 
+    // A fee the user typed answers a missing estimate (regtest).
+    if (state.failure is SendFeesUnavailableFailure) {
+      emit(state.copyWith(failure: null));
+    }
     // The settings sheet can commit a fee before Send has selected a wallet.
     if (state.selectedWallet == null) return;
-    await createTransaction();
+    await _rebuildAfterFeeChange();
     // updateSwapLockupFees();
   }
 

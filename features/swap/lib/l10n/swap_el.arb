@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "Έγινε",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "Αυτή η πληρωμή δεν μπόρεσε να προετοιμαστεί. Δοκιμάστε ξανά.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -460,5 +456,8 @@
   "swapRestoreKindLightningSend": "Αποστολή Lightning",
   "swapRestoreNoSwaps": "Δεν βρέθηκαν ανταλλαγές για επαναφορά",
   "swapRestoreRecoverableSection": "Ανακτήσιμα",
-  "swapRestoreTitle": "Επαναφορά ανταλλαγών"
+  "swapRestoreTitle": "Επαναφορά ανταλλαγών",
+  "networkFeatureUnavailable": "Αυτή η λειτουργία δεν είναι διαθέσιμη στο επιλεγμένο δίκτυο.",
+  "walletSpendAwaitingObservation": "Οι δαπάνες δεν είναι διαθέσιμες μέχρι να συγχρονιστεί αυτό το πορτοφόλι και να δει τις προηγούμενες πληρωμές του στο δίκτυο. Ανανεώστε το πορτοφόλι ή χρησιμοποιήστε τη Σάρωση για συναλλαγές που λείπουν και δοκιμάστε ξανά.",
+  "walletSpendBusy": "Το πορτοφόλι είναι απασχολημένο. Δοκιμάστε ξανά σε λίγο."
 }

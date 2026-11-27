@@ -4409,5 +4409,11 @@
   "walletDetailsNetworkLabel": "Ağ Ağı Ağı",
   "@walletDetailsNetworkLabel": {
     "description": "Label for the network field in wallet details"
-  }
+  },
+  "destinationExpectedType": "Geçerli bir {type} girin veya tarayın.",
+  "exchangeAccessSignIn": "Giriş yapın veya hesap oluşturun",
+  "networkFeatureUnavailable": "Bu özellik seçili ağda kullanılamıyor.",
+  "sendPayjoinSpendPaused": "Cüzdan güvenli şekilde devam edemediği için bu Payjoin ödemesi duraklatıldı. Girdileri ayrılmış olarak kalır. Cüzdanı yenileyin veya \"Eksik işlemleri tara\" özelliğini kullanın, ardından bu teklif hâlâ geçerliyken tekrar deneyin. Süresi dolduysa, başka bir işlem yapmadan önce ödemeyi İşlemler bölümünden kontrol edin.",
+  "walletSpendAwaitingObservation": "Bu cüzdan senkronize olup önceki ödemelerini ağda görene kadar harcama yapılamaz. Cüzdanı yenileyin veya \"Eksik işlemleri tara\" özelliğini kullanın, ardından tekrar deneyin.",
+  "walletSpendBusy": "Cüzdan meşgul. Birazdan tekrar deneyin."
 }

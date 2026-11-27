@@ -4409,5 +4409,11 @@
   "walletDetailsNetworkLabel": "회사연혁",
   "@walletDetailsNetworkLabel": {
     "description": "Label for the network field in wallet details"
-  }
+  },
+  "destinationExpectedType": "유효한 {type}을(를) 입력하거나 스캔하세요.",
+  "exchangeAccessSignIn": "로그인 또는 계정 만들기",
+  "networkFeatureUnavailable": "선택한 네트워크에서는 이 기능을 사용할 수 없습니다.",
+  "sendPayjoinSpendPaused": "지갑이 안전하게 계속할 수 없어 이 Payjoin 결제가 일시 중지되었습니다. 입력은 계속 예약되어 있습니다. 지갑을 새로고침하거나 '누락된 거래 스캔'을 사용한 후, 이 제안이 유효한 동안 다시 시도하세요. 만료되었다면 추가 조치를 하기 전에 거래 내역에서 결제를 확인하세요.",
+  "walletSpendAwaitingObservation": "이 지갑이 동기화되어 네트워크에서 이전 결제를 확인할 때까지 송금할 수 없습니다. 지갑을 새로고침하거나 '누락된 거래 스캔'을 사용한 후 다시 시도하세요.",
+  "walletSpendBusy": "지갑이 사용 중입니다. 잠시 후 다시 시도하세요."
 }

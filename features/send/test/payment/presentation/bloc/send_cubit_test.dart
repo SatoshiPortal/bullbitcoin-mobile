@@ -1671,6 +1671,30 @@ void main() {
     );
   });
 
+  test('a fee choice before the confirm step builds nothing', () async {
+    final cubit = buildCubit();
+    addTearDown(cubit.close);
+    cubit.setStateForTest(
+      SendState(
+        step: SendStep.amount,
+        sendType: SendType.lightning,
+        selectedWallet: SendWalletBitcoin(_bitcoinLocalWallet()),
+        paymentRequest: const PaymentRequest.lnAddress(address: 'a@b.com'),
+        bitcoinFeesList: _sweepFeeOptions,
+      ),
+    );
+
+    await cubit.feeOptionSelected(FeeSelection.slow);
+    await cubit.replaceByFeeChanged(false);
+    await cubit.customFeesChanged(const RelativeFee(500));
+
+    // Only stored: no build, so no build failure under the amount field.
+    expect(cubit.state.selectedFeeOption, FeeSelection.custom);
+    expect(cubit.state.replaceByFee, isFalse);
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.unsignedPsbt, isNull);
+  });
+
   group('SendCubit Liquid coin control', () {
     const outpoint = (txId: 'liquid-selected', vout: 0);
     const request = PaymentRequest.liquid(
@@ -4663,7 +4687,10 @@ void main() {
         );
         final cubit = buildCubit();
         addTearDown(cubit.close);
-        cubit.setStateForTest(readyState(wallet));
+        // A fee change rebuilds only while the payment is being confirmed.
+        cubit.setStateForTest(
+          readyState(wallet).copyWith(step: SendStep.confirm),
+        );
 
         final olderSelection = cubit.feeOptionSelected(FeeSelection.economic);
         await firstStarted.future;
@@ -4691,6 +4718,51 @@ void main() {
         expect(cubit.state.selectedFeeOption, FeeSelection.slow);
         expect(cubit.state.unsignedPsbt, 'newer');
         expect(cubit.state.signedBitcoinPsbt, 'signed-newer');
+      },
+    );
+
+    test(
+      'a fee change on the amount step refreshes the recipient preview',
+      () async {
+        final wallet = _bitcoinLocalWallet();
+        when(
+          () => previewBitcoinFeeUsecase.execute(
+            walletId: any(named: 'walletId'),
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            selectedOnly: any(named: 'selectedOnly'),
+          ),
+        ).thenAnswer(
+          (_) async => const BitcoinFeePreviewSlot(
+            feeSat: 300,
+            txSize: 200,
+            unsignedPsbt: 'preview',
+            recipientAmountsSat: [10000, 20000],
+          ),
+        );
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.setStateForTest(
+          readyState(wallet).copyWith(step: SendStep.amount),
+        );
+
+        await cubit.feeOptionSelected(FeeSelection.slow);
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+
+        // The shown fee and amounts follow the new fee; nothing is built.
+        verify(
+          () => previewBitcoinFeeUsecase.execute(
+            walletId: any(named: 'walletId'),
+            recipients: any(named: 'recipients'),
+            networkFee: any(named: 'networkFee'),
+            replaceByFee: any(named: 'replaceByFee'),
+            selectedInputs: any(named: 'selectedInputs'),
+            selectedOnly: any(named: 'selectedOnly'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+        expect(cubit.state.unsignedPsbt, isNull);
       },
     );
 
@@ -7410,7 +7482,7 @@ void main() {
 
   // A shortfall used to show "Build Failed", the same message as a dead
   // Electrum server or a bad address.
-  test('regtest exposes custom fees on confirmation when estimates are unavailable', () async {
+  test('regtest keeps the amount step for a custom fee when estimates are unavailable', () async {
     final cubit = buildCubit();
     addTearDown(cubit.close);
     final wallet = _bitcoinWallet(
@@ -7434,13 +7506,15 @@ void main() {
       ),
     );
     await cubit.onAmountConfirmed();
-    expect(cubit.state.step, SendStep.confirm);
+    // The fee is set in Advanced settings on the amount step.
+    expect(cubit.state.step, SendStep.amount);
     expect(cubit.state.failure, isA<SendFeesUnavailableFailure>());
     expect(cubit.state.signedBitcoinPsbt, isNull);
     expect(cubit.state.bitcoinFeesList, isNull);
     expect(cubit.state.liquidFeesList, isNull);
-    await cubit.onConfirmTransactionClicked();
-    expect(cubit.state.failure, isA<SendFeesUnavailableFailure>());
+    await cubit.customFeesChanged(const RelativeFee(500));
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.selectedFeeOption, FeeSelection.custom);
     expect(cubit.state.signedBitcoinPsbt, isNull);
     verifyZeroInteractions(prepareBitcoinSendUsecase);
     verifyZeroInteractions(broadcastBitcoinTxUsecase);

@@ -11,7 +11,7 @@ final class PayjoinRegtestProfile {
   static const maximumCertificateBytes = 16 * 1024;
 
   /// Physical route only; protocol origins and TLS names remain logical.
-  final RegtestHostProfile hostProfile;
+  final LocalRegtestHost hostProfile;
 
   final Uint8List certificateDer;
   final String certificateSha256;
@@ -30,7 +30,7 @@ final class PayjoinRegtestProfile {
   }
 
   factory PayjoinRegtestProfile.fromBuildEnvironment({
-    required RegtestHostProfile hostProfile,
+    required LocalRegtestHost hostProfile,
   }) => PayjoinRegtestProfile(
     hostProfile: hostProfile,
     certificateDer: base64Decode(

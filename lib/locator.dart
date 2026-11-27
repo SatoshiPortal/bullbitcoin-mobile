@@ -172,9 +172,7 @@ class AppLocator {
       Tor Function() tor,
     )
     openElectrum,
-    required Future<Result<Preferences, PreferencesFailure>> Function(
-      SqliteDatabase legacy,
-    )
+    required Future<Result<Preferences, PreferencesFailure>> Function()
     openPreferences,
     required Future<Result<Mempool, MempoolFailure>> Function(
       Tor Function() tor,
@@ -277,7 +275,7 @@ class AppLocator {
       openLabels: openLabels,
     );
     if (labels case Err(:final failure)) return Err(failure);
-    final openedPreferences = await openPreferences(database);
+    final openedPreferences = await openPreferences();
     if (openedPreferences case Err(:final failure)) return Err(failure);
     final preferences =
         (openedPreferences as Ok<Preferences, PreferencesFailure>).value;
@@ -354,17 +352,10 @@ class AppLocator {
         catalog: SpendCatalog.fromInventory(inventory),
       ),
     );
-    final backupVerification = locator<InventoryBackupVerification>();
     locator.registerSingleton<AccessFeature>(
       AccessFeature.mount(
         services: locator,
         inventory: inventory,
-        backupVerification: backupVerification,
-        hasVerifiedBackup: () async =>
-            switch (await inventory.hasVerifiedBackups(backupVerification)) {
-              Ok(:final value) => value,
-              Err() => false,
-            },
         onUnlocked: (context) async {
           await startWalletsAfterUnlock(locator);
           if (!context.mounted) return;

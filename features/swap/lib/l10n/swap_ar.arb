@@ -238,10 +238,6 @@
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
-  "sendDone": "تم",
-  "@sendDone": {
-    "description": "Button label for completing the send flow"
-  },
   "sendErrorBuildFailed": "لم يتم تحضير هذا الدفع. يرجى المحاولة مرة أخرى.",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"
@@ -460,5 +456,8 @@
   "swapRestoreKindLightningSend": "إرسال عبر البرق",
   "swapRestoreNoSwaps": "لم يُعثر على مبادلات لاستعادتها",
   "swapRestoreRecoverableSection": "قابلة للاستعادة",
-  "swapRestoreTitle": "استعادة المبادلات"
+  "swapRestoreTitle": "استعادة المبادلات",
+  "networkFeatureUnavailable": "هذه الميزة غير متاحة على الشبكة المحددة.",
+  "walletSpendAwaitingObservation": "الإنفاق غير متاح حتى تتم مزامنة هذه المحفظة وترى دفعاتها السابقة على الشبكة. حدّث المحفظة أو استخدم «البحث عن المعاملات المفقودة»، ثم حاول مرة أخرى.",
+  "walletSpendBusy": "المحفظة مشغولة. حاول مرة أخرى بعد قليل."
 }

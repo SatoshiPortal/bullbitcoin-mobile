@@ -58,7 +58,7 @@ final class ElectrumImport implements LegacyImportParticipant {
 
   @override
   Future<Result<OwnerReadiness, LegacyImportFailure>> inspect(
-    RuntimeAdmission admission,
+    LifecycleAdmission admission,
   ) async {
     final opened = await ElectrumStore.open(
       file,

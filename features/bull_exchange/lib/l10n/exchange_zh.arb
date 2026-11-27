@@ -871,8 +871,6 @@
   "exchangeBitcoinWalletsCheckAgain": "重新检查",
   "exchangeBitcoinWalletsSessionEnded": "您已不再登录交易平台。请重新登录以编辑默认钱包。",
   "destinationExpectedType": "请输入或扫描有效的{type}。",
-  "wizardExchangeTitle": "BULL Exchange",
-  "wizardExchangeDescription": "直接在钱包中通过 Bull Bitcoin 买入、卖出和付款。",
   "exchangeTradingUnavailable": "交易暂不可用。",
   "priceChartShowTooltip": "显示价格图表",
   "recipientsErrorSaveOutcomeUnknown": "我们无法确定此收款人是否已保存。请先检查您的收款人列表，再重新添加。",
