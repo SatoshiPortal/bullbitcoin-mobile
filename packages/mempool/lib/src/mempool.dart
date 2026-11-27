@@ -109,6 +109,28 @@ class Mempool {
   }
 }
 
+/// Binds the runtime to the store inspected by the foreground cutover.
+@useResult
+Result<Mempool, MempoolFailure> openAdmittedMempool({
+  required MempoolImport participant,
+  required RuntimeAdmission admission,
+  required Tor Function() tor,
+  required TorHttpClientFactory torHttp,
+}) {
+  final store = participant.takeRuntimeStore(admission);
+  if (store == null) {
+    return const Err(MempoolStorageUnavailableFailure(deferred: true));
+  }
+  return Ok(
+    Mempool._usingDatabase(
+      store: store,
+      database: store.database,
+      tor: tor,
+      torHttp: torHttp,
+    ),
+  );
+}
+
 /// Constructs a capability around an injected database for tests only.
 @visibleForTesting
 Mempool createMempoolForTesting({
