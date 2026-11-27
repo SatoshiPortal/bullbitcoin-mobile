@@ -1,5 +1,5 @@
-import 'package:bull_exchange/src/buy/domain/buy_accelerate_flow.dart';
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_state.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/create_buy_order_usecase.dart';

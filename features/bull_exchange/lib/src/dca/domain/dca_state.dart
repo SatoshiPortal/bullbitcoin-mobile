@@ -3,6 +3,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'dca_effect.dart';
+import 'dca_event.dart';
+
 /// The recurring buy (composition §5, DCA): session → account and exchange
 /// default wallets → amount and frequency (funding detour back to the same
 /// draft) → payout (an exchange default wallet, a typed address or a
@@ -248,7 +251,6 @@ ConfirmCheck<DcaPlan> dcaConfirmCheck(
 };
 
 typedef DcaConfirmState = ServerConfirmState<DcaPlan, DcaPlan>;
-typedef DcaConfirmEvent = ServerConfirmEvent<DcaPlan, DcaPlan>;
 
 final class DcaLoading extends DcaFlowState {
   final ExchangeSession session;
@@ -352,178 +354,10 @@ final class DcaClosed extends DcaFlowState {
   List<Object?> get _props => const [];
 }
 
-@immutable
-sealed class DcaFlowEvent {
-  const DcaFlowEvent();
-}
-
-final class DcaContextLoaded extends DcaFlowEvent {
-  final int attempt;
-  final Result<DcaContext, ExchangeReadFailure> read;
-
-  const DcaContextLoaded(this.attempt, this.read);
-}
-
-final class DcaRetryPressed extends DcaFlowEvent {
-  const DcaRetryPressed();
-}
-
-final class DcaAmountChanged extends DcaFlowEvent {
-  final AmountEntryEvent event;
-
-  const DcaAmountChanged(this.event);
-}
-
-final class DcaFrequencyPicked extends DcaFlowEvent {
-  final DcaBuyFrequency frequency;
-
-  const DcaFrequencyPicked(this.frequency);
-}
-
-final class DcaContinuePressed extends DcaFlowEvent {
-  const DcaContinuePressed();
-}
-
-/// Back from funding the account.
-final class DcaFundingReturned extends DcaFlowEvent {
-  const DcaFundingReturned();
-}
-
-/// Back from the KYC web view.
-final class DcaKycReturned extends DcaFlowEvent {
-  const DcaKycReturned();
-}
-
-final class DcaDetourLoaded extends DcaFlowEvent {
-  final Result<DcaContext, ExchangeReadFailure> read;
-
-  const DcaDetourLoaded(this.read);
-}
-
-final class DcaPayoutChosen extends DcaFlowEvent {
-  final DcaPayout payout;
-
-  const DcaPayoutChosen(this.payout);
-}
-
-/// Back from the default wallets editor.
-final class DcaDefaultWalletsReturned extends DcaFlowEvent {
-  const DcaDefaultWalletsReturned();
-}
-
-final class DcaDefaultWalletsLoaded extends DcaFlowEvent {
-  final int ticket;
-  final Result<DefaultWallets, ExchangeReadFailure> read;
-
-  const DcaDefaultWalletsLoaded(this.ticket, this.read);
-}
-
-final class DcaConfirmPressed extends DcaFlowEvent {
-  const DcaConfirmPressed();
-}
-
-final class DcaConfirmChanged extends DcaFlowEvent {
-  final DcaConfirmEvent event;
-
-  const DcaConfirmChanged(this.event);
-}
-
-final class DcaBackPressed extends DcaFlowEvent {
-  const DcaBackPressed();
-}
-
-final class DcaDonePressed extends DcaFlowEvent {
-  const DcaDonePressed();
-}
-
-final class DcaSessionChanged extends DcaFlowEvent {
-  final ExchangeSession? session;
-
-  const DcaSessionChanged(this.session);
-}
-
-@immutable
-sealed class DcaFlowEffect {
-  const DcaFlowEffect();
-}
-
-final class DcaLoadContext extends DcaFlowEffect {
-  final int attempt;
-
-  const DcaLoadContext(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is DcaLoadContext && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(DcaLoadContext, attempt);
-}
-
-final class DcaReloadForDetour extends DcaFlowEffect {
-  const DcaReloadForDetour();
-
-  @override
-  bool operator ==(Object other) => other is DcaReloadForDetour;
-
-  @override
-  int get hashCode => (DcaReloadForDetour).hashCode;
-}
-
-final class DcaFetchRate extends DcaFlowEffect {
-  final Market market;
-
-  const DcaFetchRate(this.market);
-
-  @override
-  bool operator ==(Object other) =>
-      other is DcaFetchRate && other.market == market;
-
-  @override
-  int get hashCode => Object.hash(DcaFetchRate, market);
-}
-
-final class DcaLoadDefaultWallets extends DcaFlowEffect {
-  final int ticket;
-
-  const DcaLoadDefaultWallets(this.ticket);
-
-  @override
-  bool operator ==(Object other) =>
-      other is DcaLoadDefaultWallets && other.ticket == ticket;
-
-  @override
-  int get hashCode => Object.hash(DcaLoadDefaultWallets, ticket);
-}
-
-final class DcaConfirmEffect extends DcaFlowEffect {
-  final ServerConfirmEffect<DcaPlan> effect;
-
-  const DcaConfirmEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is DcaConfirmEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(DcaConfirmEffect, effect);
-}
-
-/// The recurring buy is active: turn the account's DCA preference on
-/// (best-effort, as before).
-final class DcaActivated extends DcaFlowEffect {
-  const DcaActivated();
-
-  @override
-  bool operator ==(Object other) => other is DcaActivated;
-
-  @override
-  int get hashCode => (DcaActivated).hashCode;
-}
-
 typedef DcaFlowNext = StepNext<DcaFlowState, DcaFlowEffect>;
 
 const _ended = DcaFlowNext(DcaSessionEnded());
+
 const _closed = DcaFlowNext(DcaClosed());
 
 DcaFlowNext dcaFlowStart(ExchangeSession? session) => switch (session) {

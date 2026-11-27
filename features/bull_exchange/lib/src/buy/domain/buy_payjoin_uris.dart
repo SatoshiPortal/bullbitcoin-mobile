@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
 import 'package:exchange/exchange.dart';
 
 /// The payjoin URI each buy create attached, by order and by request: some

@@ -3,6 +3,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'buy_accelerate_effect.dart';
+import 'buy_accelerate_event.dart';
+
 /// Accelerating a confirmed buy's bitcoin payout (composition §5, buy's
 /// add-on): load the order and what the express payout costs → Confirm
 /// express (a server confirm through the write gate) → done. Opened by order
@@ -158,7 +161,6 @@ ConfirmCheck<BuyOrder> accelerateConfirmCheck(
 };
 
 typedef AccelerateConfirmState = ServerConfirmState<AccelerateTarget, BuyOrder>;
-typedef AccelerateConfirmEvent = ServerConfirmEvent<AccelerateTarget, BuyOrder>;
 
 final class AccelerateLoading extends AccelerateFlowState {
   final ExchangeSession session;
@@ -222,85 +224,11 @@ final class AccelerateClosed extends AccelerateFlowState {
   List<Object?> get _props => const [];
 }
 
-@immutable
-sealed class AccelerateFlowEvent {
-  const AccelerateFlowEvent();
-}
-
-final class AccelerateLoaded extends AccelerateFlowEvent {
-  final int attempt;
-  final Result<AccelerateQuote, ExchangeReadFailure> read;
-
-  const AccelerateLoaded(this.attempt, this.read);
-}
-
-final class AccelerateRetryPressed extends AccelerateFlowEvent {
-  const AccelerateRetryPressed();
-}
-
-final class AccelerateConfirmPressed extends AccelerateFlowEvent {
-  const AccelerateConfirmPressed();
-}
-
-final class AccelerateConfirmChanged extends AccelerateFlowEvent {
-  final AccelerateConfirmEvent event;
-
-  const AccelerateConfirmChanged(this.event);
-}
-
-/// Back, or "Wait for free withdrawal".
-final class AccelerateBackPressed extends AccelerateFlowEvent {
-  const AccelerateBackPressed();
-}
-
-final class AccelerateDonePressed extends AccelerateFlowEvent {
-  const AccelerateDonePressed();
-}
-
-final class AccelerateSessionChanged extends AccelerateFlowEvent {
-  final ExchangeSession? session;
-
-  const AccelerateSessionChanged(this.session);
-}
-
-@immutable
-sealed class AccelerateFlowEffect {
-  const AccelerateFlowEffect();
-}
-
-final class AccelerateLoad extends AccelerateFlowEffect {
-  final String orderId;
-  final int attempt;
-
-  const AccelerateLoad(this.orderId, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AccelerateLoad &&
-      other.orderId == orderId &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(AccelerateLoad, orderId, attempt);
-}
-
-final class AccelerateConfirmEffect extends AccelerateFlowEffect {
-  final ServerConfirmEffect<AccelerateTarget> effect;
-
-  const AccelerateConfirmEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AccelerateConfirmEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(AccelerateConfirmEffect, effect);
-}
-
 typedef AccelerateFlowNext =
     StepNext<AccelerateFlowState, AccelerateFlowEffect>;
 
 const _ended = AccelerateFlowNext(AccelerateSessionEnded());
+
 const _closed = AccelerateFlowNext(AccelerateClosed());
 
 AccelerateFlowNext accelerateFlowStart(

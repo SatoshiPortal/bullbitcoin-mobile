@@ -1,4 +1,5 @@
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
+import 'package:bull_exchange/src/buy/domain/buy_event.dart';
 import 'package:bull_exchange/src/buy/ui/buy_flow_shell.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';

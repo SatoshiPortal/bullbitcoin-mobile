@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
 import 'package:bull_exchange/src/buy/domain/buy_listed_wallets.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/load_buy_context_usecase.dart';
 import 'package:bull_exchange/src/exchange_payout_wallets.dart';

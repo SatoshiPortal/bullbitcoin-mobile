@@ -1,4 +1,5 @@
-import 'package:bull_exchange/src/dca/domain/dca_flow.dart';
+import 'package:bull_exchange/src/dca/domain/dca_state.dart';
+import 'package:bull_exchange/src/dca/domain/dca_event.dart';
 import 'package:bull_exchange/src/dca/ui/widgets/dca_confirmation_detail_row.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'

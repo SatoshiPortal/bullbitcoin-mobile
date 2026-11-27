@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/dca/domain/dca_flow.dart';
+import 'package:bull_exchange/src/dca/domain/dca_state.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';

@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
+import 'package:bull_exchange/src/buy/domain/buy_event.dart';
+import 'package:bull_exchange/src/buy/domain/buy_effect.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/find_created_buy_order_usecase.dart';

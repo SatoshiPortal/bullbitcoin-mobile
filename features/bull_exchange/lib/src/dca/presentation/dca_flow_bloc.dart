@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_exchange/src/account/domain/usecases/get_user_summary_usecase.dart';
-import 'package:bull_exchange/src/dca/domain/dca_flow.dart';
+import 'package:bull_exchange/src/dca/domain/dca_state.dart';
+import 'package:bull_exchange/src/dca/domain/dca_event.dart';
+import 'package:bull_exchange/src/dca/domain/dca_effect.dart';
 import 'package:bull_exchange/src/dca/domain/usecases/activate_dca_usecase.dart';
 import 'package:bull_exchange/src/dca/domain/usecases/create_dca_usecase.dart';
 import 'package:bull_exchange/src/dca/domain/usecases/load_dca_context_usecase.dart';

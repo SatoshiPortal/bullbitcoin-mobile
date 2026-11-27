@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/dca/domain/dca_flow.dart';
+import 'package:bull_exchange/src/dca/domain/dca_state.dart';
+import 'package:bull_exchange/src/dca/domain/dca_event.dart';
 import 'package:bull_exchange/src/dca/presentation/dca_flow_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';

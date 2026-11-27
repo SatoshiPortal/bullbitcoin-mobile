@@ -3,6 +3,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
+import 'buy_effect.dart';
+import 'buy_event.dart';
+
 /// The buy flow (composition §5, Buy column): session → account and wallets
 /// → amount from a funded balance (KYC and funding detours come back to the
 /// same draft) with the payout destination beside it → order create + quote
@@ -385,12 +388,12 @@ ConfirmCheck<BuyOrder> buyConfirmCheck(
 };
 
 typedef BuyDestinationState = PickState<DestinationOption, Destination>;
-typedef BuyDestinationEvent = PickEvent<DestinationOption, Destination>;
+
 typedef BuyOrderState = OrderStepState<BuyRequest, BuyOrder>;
-typedef BuyOrderEvent = OrderStepEvent<BuyRequest, BuyOrder>;
+
 typedef BuyQuote = OrderQuoted<BuyRequest, BuyOrder>;
+
 typedef BuyConfirmState = ServerConfirmState<BuyConfirmTarget, BuyOrder>;
-typedef BuyConfirmEvent = ServerConfirmEvent<BuyConfirmTarget, BuyOrder>;
 
 /// Why the review is shown again; cleared by the next Confirm.
 @immutable
@@ -579,243 +582,10 @@ final class BuyClosed extends BuyFlowState {
   List<Object?> get _props => [bought];
 }
 
-@immutable
-sealed class BuyFlowEvent {
-  const BuyFlowEvent();
-}
-
-final class BuyContextLoaded extends BuyFlowEvent {
-  final int attempt;
-  final Result<BuyContext, ExchangeReadFailure> read;
-
-  const BuyContextLoaded(this.attempt, this.read);
-}
-
-/// Retry of whatever failed on screen: the load, the create, the quote, the
-/// confirm's re-read or the payout watch.
-final class BuyRetryPressed extends BuyFlowEvent {
-  const BuyRetryPressed();
-}
-
-final class BuyAmountChanged extends BuyFlowEvent {
-  final AmountEntryEvent event;
-
-  const BuyAmountChanged(this.event);
-}
-
-/// The payout wallet dropdown: an app wallet, or null for an external
-/// address.
-final class BuyDestinationPicked extends BuyFlowEvent {
-  final DestinationOptionAppWallet? option;
-
-  const BuyDestinationPicked(this.option);
-}
-
-/// The external address field changed.
-final class BuyAddressTyped extends BuyFlowEvent {
-  final String text;
-
-  const BuyAddressTyped(this.text);
-}
-
-/// An answer of the destination pick's lookup or validation.
-final class BuyDestinationChanged extends BuyFlowEvent {
-  final BuyDestinationEvent event;
-
-  const BuyDestinationChanged(this.event);
-}
-
-final class BuyPayjoinToggled extends BuyFlowEvent {
-  final bool enabled;
-
-  const BuyPayjoinToggled(this.enabled);
-}
-
-final class BuyContinuePressed extends BuyFlowEvent {
-  const BuyContinuePressed();
-}
-
-/// Back from the KYC web view; the account is read again.
-final class BuyKycReturned extends BuyFlowEvent {
-  const BuyKycReturned();
-}
-
-/// Back from funding the account; the account is read again.
-final class BuyFundingReturned extends BuyFlowEvent {
-  const BuyFundingReturned();
-}
-
-/// The account read after a detour.
-final class BuyDetourLoaded extends BuyFlowEvent {
-  final Result<BuyContext, ExchangeReadFailure> read;
-
-  const BuyDetourLoaded(this.read);
-}
-
-final class BuyOrderChanged extends BuyFlowEvent {
-  final BuyOrderEvent event;
-
-  const BuyOrderChanged(this.event);
-}
-
-/// Confirm on the review, at [at]: a price whose lock has lapsed by then is
-/// refreshed, never confirmed.
-final class BuyConfirmPressed extends BuyFlowEvent {
-  final DateTime at;
-
-  const BuyConfirmPressed(this.at);
-}
-
-final class BuyConfirmChanged extends BuyFlowEvent {
-  final BuyConfirmEvent event;
-
-  const BuyConfirmChanged(this.event);
-}
-
-final class BuyWatchChanged extends BuyFlowEvent {
-  final OutcomeWatchEvent<BuyOrder> event;
-
-  const BuyWatchChanged(this.event);
-}
-
-/// App bar, system Back or a page the user removed.
-final class BuyBackPressed extends BuyFlowEvent {
-  const BuyBackPressed();
-}
-
-final class BuyDonePressed extends BuyFlowEvent {
-  const BuyDonePressed();
-}
-
-/// The flow's screen became visible or hidden (route, app lifecycle).
-final class BuyVisibilityChanged extends BuyFlowEvent {
-  final bool visible;
-
-  const BuyVisibilityChanged({required this.visible});
-}
-
-/// The signed-in session changed; null when signed out.
-final class BuySessionChanged extends BuyFlowEvent {
-  final ExchangeSession? session;
-
-  const BuySessionChanged(this.session);
-}
-
-@immutable
-sealed class BuyFlowEffect {
-  const BuyFlowEffect();
-}
-
-final class BuyLoadContext extends BuyFlowEffect {
-  final int attempt;
-
-  const BuyLoadContext(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is BuyLoadContext && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(BuyLoadContext, attempt);
-}
-
-/// Read the account again after a detour; answer [BuyDetourLoaded].
-final class BuyReloadForDetour extends BuyFlowEffect {
-  const BuyReloadForDetour();
-
-  @override
-  bool operator ==(Object other) => other is BuyReloadForDetour;
-
-  @override
-  int get hashCode => (BuyReloadForDetour).hashCode;
-}
-
-final class BuyFetchRate extends BuyFlowEffect {
-  final Market market;
-
-  const BuyFetchRate(this.market);
-
-  @override
-  bool operator ==(Object other) =>
-      other is BuyFetchRate && other.market == market;
-
-  @override
-  int get hashCode => Object.hash(BuyFetchRate, market);
-}
-
-final class BuyDestinationEffect extends BuyFlowEffect {
-  final PickEffect<DestinationOption> effect;
-
-  const BuyDestinationEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is BuyDestinationEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(BuyDestinationEffect, effect);
-}
-
-final class BuyOrderEffect extends BuyFlowEffect {
-  final OrderStepEffect<BuyRequest> effect;
-
-  const BuyOrderEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is BuyOrderEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(BuyOrderEffect, effect);
-}
-
-final class BuyConfirmEffect extends BuyFlowEffect {
-  final ServerConfirmEffect<BuyConfirmTarget> effect;
-
-  const BuyConfirmEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is BuyConfirmEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(BuyConfirmEffect, effect);
-}
-
-final class BuyWatchEffect extends BuyFlowEffect {
-  final OutcomeWatchEffect effect;
-
-  const BuyWatchEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is BuyWatchEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(BuyWatchEffect, effect);
-}
-
-/// The payout of [order] completed: label the completed order and sync the
-/// app wallet it went to ([walletId], null for an external address).
-final class BuyPayoutSettled extends BuyFlowEffect {
-  final BuyOrder order;
-  final String? walletId;
-
-  const BuyPayoutSettled(this.order, this.walletId);
-
-  @override
-  bool operator ==(Object other) =>
-      other is BuyPayoutSettled &&
-      other.order.orderId == order.orderId &&
-      other.walletId == walletId;
-
-  @override
-  int get hashCode => Object.hash(BuyPayoutSettled, order.orderId, walletId);
-}
-
 typedef BuyFlowNext = StepNext<BuyFlowState, BuyFlowEffect>;
 
 const _ended = BuyFlowNext(BuySessionEnded());
+
 const _closed = BuyFlowNext(BuyClosed());
 
 /// The flow for [session]; without a signed-in session it has ended.

@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/dca/domain/dca_flow.dart';
+import 'package:bull_exchange/src/dca/domain/dca_state.dart';
+import 'package:bull_exchange/src/dca/domain/dca_event.dart';
 import 'package:bull_exchange/src/dca/ui/widgets/dca_wallet_radio_list.dart';
 import 'package:bull_exchange/src/default_wallets/ui/default_wallets_router.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
