@@ -99,8 +99,9 @@ final class FakeGetExchangePreferencesUsecase
   FakeGetExchangePreferencesUsecase(this.answer);
 
   @override
-  Future<Result<ExchangePreferences, ExchangeSettingsFailure>> execute() =>
-      answer();
+  Future<Result<ExchangePreferences, ExchangeSettingsFailure>> execute(
+    ExchangeSession? session,
+  ) => answer();
 }
 
 final class FakeUpdateExchangePreferencesUsecase
@@ -130,8 +131,9 @@ final class FakeGetSecureFileUploadStatusUsecase
   FakeGetSecureFileUploadStatusUsecase(this.answer);
 
   @override
-  Future<Result<SecureFileUpload, ExchangeSettingsFailure>> execute() =>
-      answer();
+  Future<Result<SecureFileUpload, ExchangeSettingsFailure>> execute(
+    ExchangeSession? session,
+  ) => answer();
 }
 
 final class FakePickExchangeDocumentUsecase

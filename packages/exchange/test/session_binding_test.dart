@@ -67,4 +67,31 @@ void main() {
       );
     });
   });
+
+  group('getSessionUserSummary', () {
+    test('reads the summary of the current session', () async {
+      final asked = <ExchangeEnvironment?>[];
+      final exchange = exchangeForTesting(
+        access: _signedIn(),
+        getUserSummary: (environment) async {
+          asked.add(environment);
+          return const Err(ExchangeAccountUnavailableFailure());
+        },
+      );
+      final _ = await exchange.getSessionUserSummary(_current);
+      expect(asked, [ExchangeEnvironment.mainnet]);
+    });
+
+    test('an old session reads nothing', () async {
+      final exchange = exchangeForTesting(access: _signedIn());
+      expect(
+        await exchange.getSessionUserSummary(_old),
+        isA<Err<UserSummary, ExchangeFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeOperationStaleFailure>(),
+        ),
+      );
+    });
+  });
 }

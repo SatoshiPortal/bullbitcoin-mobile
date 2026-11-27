@@ -889,6 +889,15 @@ final class Exchange {
     ExchangeEnvironment? environment,
   ]) => _getUserSummary(environment);
 
+  /// The summary of [session]'s account. For a session that is no longer
+  /// the current one nothing is read ([ExchangeOperationStaleFailure]).
+  @useResult
+  Future<Result<UserSummary, ExchangeFailure>> getSessionUserSummary(
+    ExchangeSession session,
+  ) async => _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _getUserSummary(session.environment);
+
   /// Checks account eligibility and then the IBAN under one session. A failed
   /// lookup is distinct from an eligible account without an active IBAN.
   @useResult

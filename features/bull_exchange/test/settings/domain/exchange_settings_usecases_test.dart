@@ -32,8 +32,21 @@ abstract interface class _SummaryReader {
 
 class _MockGetUserSummary extends Mock implements _SummaryReader {}
 
-Exchange _withSummary(_SummaryReader summary) =>
-    exchangeForTesting(getUserSummary: (_) => summary.execute());
+const _signedIn = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'signed-in',
+);
+const _earlier = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 0,
+  sessionId: 'earlier',
+);
+
+Exchange _withSummary(_SummaryReader summary) => exchangeForTesting(
+  access: fixedAccessForTesting(const ExchangeAccessSignedIn(_signedIn)),
+  getUserSummary: (_) => summary.execute(),
+);
 
 abstract interface class _Upload {
   Future<Result<void, ExchangeFailure>> execute({
@@ -235,7 +248,7 @@ void main() {
 
       final result = await GetExchangePreferencesUsecase(
         exchange: _withSummary(core),
-      ).execute();
+      ).execute(_signedIn);
 
       final preferences =
           (result as Ok<ExchangePreferences, ExchangeSettingsFailure>).value;
@@ -254,7 +267,7 @@ void main() {
 
         final result = await GetExchangePreferencesUsecase(
           exchange: _withSummary(core),
-        ).execute();
+        ).execute(_signedIn);
 
         final failure = (result as Err).failure as ExchangeSettingsFailure;
         expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
@@ -273,7 +286,7 @@ void main() {
 
         final result = await GetExchangePreferencesUsecase(
           exchange: _withSummary(core),
-        ).execute();
+        ).execute(_signedIn);
 
         expect(
           (result as Err).failure,
@@ -281,6 +294,42 @@ void main() {
         );
       });
     }
+  });
+
+  group('preference and upload status reads with another session', () {
+    test('no session reads nothing', () async {
+      final core = _MockGetUserSummary();
+      expect(
+        (await GetExchangePreferencesUsecase(
+          exchange: _withSummary(core),
+        ).execute(null) as Err).failure,
+        isA<ExchangeSettingsNotAuthenticatedFailure>(),
+      );
+      expect(
+        (await GetSecureFileUploadStatusUsecase(
+          exchange: _withSummary(core),
+        ).execute(null) as Err).failure,
+        isA<ExchangeSettingsUploadStatusUnavailableFailure>(),
+      );
+      verifyNever(core.execute);
+    });
+
+    test('a session that is no longer current reads nothing', () async {
+      final core = _MockGetUserSummary();
+      expect(
+        (await GetExchangePreferencesUsecase(
+          exchange: _withSummary(core),
+        ).execute(_earlier) as Err).failure,
+        isA<ExchangeSettingsAccountUnavailableFailure>(),
+      );
+      expect(
+        (await GetSecureFileUploadStatusUsecase(
+          exchange: _withSummary(core),
+        ).execute(_earlier) as Err).failure,
+        isA<ExchangeSettingsUploadStatusUnavailableFailure>(),
+      );
+      verifyNever(core.execute);
+    });
   });
 
   group('UpdateExchangePreferencesUsecase', () {
@@ -476,7 +525,7 @@ void main() {
 
       final result = await GetSecureFileUploadStatusUsecase(
         exchange: _withSummary(core),
-      ).execute();
+      ).execute(_signedIn);
 
       final upload =
           (result as Ok<SecureFileUpload, ExchangeSettingsFailure>).value;
@@ -494,7 +543,7 @@ void main() {
 
         final result = await GetSecureFileUploadStatusUsecase(
           exchange: _withSummary(core),
-        ).execute();
+        ).execute(_signedIn);
 
         final failure = (result as Err).failure as ExchangeSettingsFailure;
         expect(failure, isA<ExchangeSettingsUploadStatusUnavailableFailure>());

@@ -57,7 +57,7 @@ class ExchangePreferencesBloc extends Bloc<PreferencesEvent, PreferencesState> {
       switch (effect) {
         FetchPreferences(:final attempt) => PreferencesLoaded(
           attempt,
-          await _getPreferences.execute(),
+          await _getPreferences.execute(_session),
         ),
         SavePreferences(:final saved, :final edited) => PreferencesSaveAnswered(
           await _updatePreferences.execute(

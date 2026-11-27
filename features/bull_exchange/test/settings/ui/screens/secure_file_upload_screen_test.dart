@@ -31,6 +31,11 @@ Future<SecureUploadBloc> _pump(
   Result<void, ExchangeSettingsFailure>? upload,
 }) async {
   final cubit = SecureUploadBloc(
+    session: const ExchangeSession(
+      environment: ExchangeEnvironment.mainnet,
+      epoch: 1,
+      sessionId: 's',
+    ),
     getUploadStatus: FakeGetSecureFileUploadStatusUsecase(
       () async => uploadStatus,
     ),

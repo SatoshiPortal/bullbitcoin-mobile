@@ -155,6 +155,7 @@ class ExchangeSettingsRouter {
       path: ExchangeSettingsRoute.secureFileUpload.path,
       builder: (context, state) => BlocProvider(
         create: (_) => SecureUploadBloc(
+          session: config.exchange().currentSession,
           getUploadStatus: GetSecureFileUploadStatusUsecase(
             exchange: config.exchange(),
           ),
