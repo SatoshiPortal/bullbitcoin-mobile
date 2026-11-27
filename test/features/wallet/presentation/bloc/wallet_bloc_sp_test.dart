@@ -9,7 +9,7 @@ import 'package:bull_logger/bull_logger.dart';
 
 import 'package:electrum/electrum.dart';
 import 'package:overview/setup.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
+import 'package:network/network.dart' show ExternalTorProxyDiagnostic;
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -71,7 +71,7 @@ class _MockCheckSpWalletSetupForWallet extends Mock
 class _MockCheckSpScanningForWallet extends Mock implements _Read<bool> {}
 
 class _MockExternalTorStatus extends Mock
-    implements GetExternalTorProxyStatusUsecase {}
+    implements ExternalTorProxyDiagnostic {}
 
 class _HomeSilent extends Fake implements Silent {
   final _MockRefreshSpWalletForWallet read;
@@ -201,7 +201,7 @@ WalletBloc _makeBloc({
     ),
     syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator.sync),
     ongoingSwaps: _MockGetUnconfirmed(),
-    getExternalTorProxyStatusUsecase: _MockExternalTorStatus(),
+    externalTorProxy: _MockExternalTorStatus(),
     silentHome: SilentHomeObservation(
       _HomeSilent(
         refreshSp,

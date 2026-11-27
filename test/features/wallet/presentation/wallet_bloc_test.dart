@@ -33,7 +33,8 @@ import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
+import 'package:network/network.dart'
+    show ExternalTorProxyDiagnostic, ExternalTorProxyStatus;
 import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -55,7 +56,7 @@ class _MockSyncWalletsUsecase extends Mock implements SyncWalletsUsecase {}
 class _MockOngoingSwaps extends Mock implements OngoingSwaps {}
 
 class _MockExternalTorStatusUsecase extends Mock
-    implements GetExternalTorProxyStatusUsecase {}
+    implements ExternalTorProxyDiagnostic {}
 
 class _DisabledSilent extends Fake implements Silent {
   @override
@@ -69,7 +70,7 @@ class _DisabledSilent extends Fake implements Silent {
 }
 
 WalletBloc createBloc(
-  GetExternalTorProxyStatusUsecase externalStatus, {
+  ExternalTorProxyDiagnostic externalStatus, {
   GetWalletsUsecase? getWallets,
   SyncWalletsUsecase? refreshSync,
   ReadWalletUsecase? readWallet,
@@ -87,7 +88,7 @@ WalletBloc createBloc(
     syncWalletsUsecase: refreshSync ?? _stubbedSync(),
     ongoingSwaps: getUnconfirmed ?? _MockOngoingSwaps(),
     readBackupWarning: () async => null,
-    getExternalTorProxyStatusUsecase: externalStatus,
+    externalTorProxy: externalStatus,
     silentHome: SilentHomeObservation(_DisabledSilent()),
   );
 }
@@ -492,7 +493,7 @@ void main() {
           ongoingSwaps: _MockOngoingSwaps(),
           silentHome: SilentHomeObservation(_DisabledSilent()),
           readBackupWarning: () async => null,
-          getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+          externalTorProxy: _MockExternalTorStatusUsecase(),
         );
 
         try {
@@ -601,7 +602,7 @@ void main() {
         ongoingSwaps: _MockOngoingSwaps(),
         silentHome: SilentHomeObservation(_DisabledSilent()),
         readBackupWarning: () async => null,
-        getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+        externalTorProxy: _MockExternalTorStatusUsecase(),
       );
       try {
         var refreshSettled = false;
@@ -647,6 +648,11 @@ void main() {
       WalletWarningAction.torSettings,
     ),
     (
+      'unreadable Bitcoin proxy keeps the Tor settings destination',
+      ExternalTorProxyStatus.unreadable,
+      WalletWarningAction.torSettings,
+    ),
+    (
       'available Bitcoin proxy keeps Electrum settings',
       ExternalTorProxyStatus.available,
       WalletWarningAction.electrumSettings,
@@ -659,7 +665,7 @@ void main() {
   ]) {
     test(scenario.$1, () async {
       final status = _MockExternalTorStatusUsecase();
-      when(status.execute).thenAnswer((_) async => scenario.$2);
+      when(status.check).thenAnswer((_) async => scenario.$2);
       final bloc = createBloc(status);
       addTearDown(bloc.close);
 
@@ -696,7 +702,7 @@ void main() {
         state.warnings.single.action,
         WalletWarningAction.electrumSettings,
       );
-      verifyNever(status.execute);
+      verifyNever(status.check);
     },
   );
 
@@ -706,7 +712,7 @@ void main() {
       final status = _MockExternalTorStatusUsecase();
       final started = Completer<void>();
       final release = Completer<ExternalTorProxyStatus>();
-      when(status.execute).thenAnswer((_) async {
+      when(status.check).thenAnswer((_) async {
         started.complete();
         return release.future;
       });
@@ -838,7 +844,7 @@ void main() {
         ongoingSwaps: _MockOngoingSwaps(),
         silentHome: SilentHomeObservation(_DisabledSilent()),
         readBackupWarning: () async => null,
-        getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+        externalTorProxy: _MockExternalTorStatusUsecase(),
       );
       addTearDown(bloc.close);
 
@@ -900,7 +906,7 @@ WalletBloc _blocWithFailingLoad(
     ongoingSwaps: _MockOngoingSwaps(),
     silentHome: SilentHomeObservation(_DisabledSilent()),
     readBackupWarning: () async => null,
-    getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+    externalTorProxy: _MockExternalTorStatusUsecase(),
   );
 }
 
@@ -970,7 +976,7 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     ongoingSwaps: _MockOngoingSwaps(),
     silentHome: SilentHomeObservation(_DisabledSilent()),
     readBackupWarning: () async => null,
-    getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+    externalTorProxy: _MockExternalTorStatusUsecase(),
   );
 }
 

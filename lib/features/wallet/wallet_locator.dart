@@ -25,7 +25,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.da
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
+import 'package:network/network.dart' show ExternalTorProxyDiagnostic;
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:swap_feature/swap_feature.dart';
@@ -65,12 +65,6 @@ class WalletLocator {
         syncFinished: electrum.finished.map((event) => event.key.id),
       );
     });
-    locator.registerFactory<GetExternalTorProxyStatusUsecase>(
-      () => GetExternalTorProxyStatusUsecase(
-        locator<TorProxyPreferencesReader>(),
-        locator<Tor>(),
-      ),
-    );
 
     locator.registerFactory<SyncWalletsUsecase>(
       () => SyncWalletsUsecase(overviewSync().coordinator.sync),
@@ -108,8 +102,10 @@ class WalletLocator {
         readBackupWarning: () => BackupsFeature.readWarningNeeded(
           locator<RecoverBullFacade>().backupWarningNeeded,
         ),
-        getExternalTorProxyStatusUsecase:
-            locator<GetExternalTorProxyStatusUsecase>(),
+        externalTorProxy: ExternalTorProxyDiagnostic(
+          locator<TorProxyPreferencesReader>(),
+          locator<Tor>(),
+        ),
       ),
     );
   }

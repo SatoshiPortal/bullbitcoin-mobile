@@ -1,8 +1,7 @@
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show Ok, Err;
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
+import 'package:network/network.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:bull_tor/src/domain/ports/external_tor_port.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -12,17 +11,11 @@ class _MockTor extends Mock implements Tor {}
 
 class _MockExternalTor extends Mock implements ExternalTor {}
 
-class _FakeExternalTorPort implements ExternalTorPort {
+class _FakeExternalTorPort {
   _FakeExternalTorPort(this.available);
 
   final bool available;
   int verificationCount = 0;
-
-  @override
-  Future<void> verify(TorProxyEndpoint endpoint) async {
-    verificationCount++;
-    if (!available) throw StateError('proxy unavailable');
-  }
 }
 
 TorProxyPreferences settings({required bool useTorProxy, int port = 9050}) =>
@@ -33,7 +26,7 @@ void main() {
     registerFallbackValue(TorProxyEndpoint(host: '127.0.0.1', port: 9050));
   });
 
-  GetExternalTorProxyStatusUsecase usecase(
+  ExternalTorProxyDiagnostic usecase(
     _MockSettingsRepository repository,
     _FakeExternalTorPort port,
   ) {
@@ -41,6 +34,7 @@ void main() {
     final external = _MockExternalTor();
     when(() => tor.external).thenReturn(external);
     when(() => external.verify(any())).thenAnswer((invocation) async {
+      port.verificationCount++;
       final endpoint =
           invocation.positionalArguments.single as TorProxyEndpoint;
       if (!port.available) {
@@ -57,7 +51,7 @@ void main() {
         ),
       );
     });
-    return GetExternalTorProxyStatusUsecase(repository, tor);
+    return ExternalTorProxyDiagnostic(repository, tor);
   }
 
   test('returns unavailable when the enabled proxy handshake fails', () async {
@@ -66,7 +60,7 @@ void main() {
         .thenAnswer((_) async => Ok(settings(useTorProxy: true)));
     final port = _FakeExternalTorPort(false);
 
-    final status = await usecase(repository, port).execute();
+    final status = await usecase(repository, port).check();
 
     expect(status, ExternalTorProxyStatus.unavailable);
   });
@@ -77,7 +71,7 @@ void main() {
         .thenAnswer((_) async => Ok(settings(useTorProxy: true)));
     final port = _FakeExternalTorPort(true);
 
-    final status = await usecase(repository, port).execute();
+    final status = await usecase(repository, port).check();
 
     expect(status, ExternalTorProxyStatus.available);
   });
@@ -88,7 +82,7 @@ void main() {
         .thenAnswer((_) async => Ok(settings(useTorProxy: false)));
     final port = _FakeExternalTorPort(true);
 
-    final status = await usecase(repository, port).execute();
+    final status = await usecase(repository, port).check();
 
     expect(status, ExternalTorProxyStatus.disabled);
     expect(port.verificationCount, 0);
@@ -100,9 +94,21 @@ void main() {
         .thenAnswer((_) async => Ok(settings(useTorProxy: true, port: 0)));
     final port = _FakeExternalTorPort(true);
 
-    final status = await usecase(repository, port).execute();
+    final status = await usecase(repository, port).check();
 
     expect(status, ExternalTorProxyStatus.unavailable);
+    expect(port.verificationCount, 0);
+  });
+
+  test('unreadable preferences are distinct from a failed handshake', () async {
+    final repository = _MockSettingsRepository();
+    when(repository.readTorProxyPreferences)
+        .thenAnswer((_) async => const Err(PreferencesReadFailure()));
+    final port = _FakeExternalTorPort(true);
+    expect(
+      await usecase(repository, port).check(),
+      ExternalTorProxyStatus.unreadable,
+    );
     expect(port.verificationCount, 0);
   });
 }

@@ -17,7 +17,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_u
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
+import 'package:network/network.dart'
+    show ExternalTorProxyDiagnostic, ExternalTorProxyStatus;
 import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
 import 'package:swaps/swaps.dart' show Swap;
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
@@ -43,7 +44,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._syncWalletsUsecase,
     required this._ongoingSwaps,
     required this._readBackupWarning,
-    required this._getExternalTorProxyStatusUsecase,
+    required this._externalTorProxy,
     required this._silentHome,
   }) : super(const WalletState()) {
     on<_WalletAmountDisplayChanged>((event, emit) {
@@ -86,7 +87,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final OngoingSwaps _ongoingSwaps;
   final CheckSwapServerUsecase? _checkSwapServerUsecase;
   final Future<bool?> Function() _readBackupWarning;
-  final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
+  final ExternalTorProxyDiagnostic _externalTorProxy;
   final SilentHomeObservation _silentHome;
 
   StreamSubscription? _revisionsSubscription;
@@ -479,14 +480,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         _ => ElectrumServerDown.liquid,
       };
       final externalTorStatus = bitcoinServerDown
-          ? await _getExternalTorProxyStatusUsecase.execute()
+          ? await _externalTorProxy.check()
           : ExternalTorProxyStatus.disabled;
       if (isClosed || generation != _electrumWarningGeneration) return;
       final warning = WalletWarning(
         reason: reason,
         action:
             bitcoinServerDown &&
-                externalTorStatus == ExternalTorProxyStatus.unavailable
+                (externalTorStatus == ExternalTorProxyStatus.unavailable ||
+                    externalTorStatus == ExternalTorProxyStatus.unreadable)
             ? WalletWarningAction.torSettings
             : WalletWarningAction.electrumSettings,
         type: WarningType.error,
