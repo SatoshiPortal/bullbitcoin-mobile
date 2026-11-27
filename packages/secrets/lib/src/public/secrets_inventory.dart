@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:legacy_storage/coordination.dart';
 import 'package:meta/meta.dart';
@@ -240,7 +241,17 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// name. The memory is read only here, after an authentication, and a view
   /// this authentication did not open is never chosen.
   Future<ViewSummary> _choose(List<ViewSummary> opened) async {
-    final remembered = await _access.lastView();
+    final remembered = switch (await _access.lastView()) {
+      Ok(:final value) => value,
+      // A memory that cannot be read changes which view opens first, nothing
+      // else: it is logged, not hidden, and never decides an access.
+      Err(:final failure) => () {
+        log.warning(
+          'secrets.views.last_view_unreadable ${failure.runtimeType}',
+        );
+        return null;
+      }(),
+    };
     return opened.firstWhere(
       (view) => view.id.value == remembered,
       orElse: () => opened.first,
@@ -249,9 +260,11 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
 
   /// Opens the session on [view]: the grant is synchronous, so nothing can
   /// interleave between the checks that precede it and the token.
-  Future<void> _startSession(ViewSummary view) {
+  Future<void> _startSession(ViewSummary view) async {
     _authority.grant(view.id.value);
-    return _access.rememberView(view.id.value);
+    if (await _access.rememberView(view.id.value) case Err(:final failure)) {
+      log.warning('secrets.views.last_view_unwritten ${failure.runtimeType}');
+    }
   }
 
   /// [session] is the generation read before anything was awaited: a lock

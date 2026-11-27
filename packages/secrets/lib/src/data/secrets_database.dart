@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
+import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import 'secrets_database.drift.dart';
 
@@ -123,6 +124,32 @@ final class SecretsDatabase extends $SecretsDatabase {
         await migrator.createTable(table);
       }
     }),
-    beforeOpen: (_) => customStatement('PRAGMA foreign_keys = ON'),
+    beforeOpen: (_) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+      await _adaptEarlyV1();
+    },
   );
+
+  /// Schema v1 is unpublished, and the files written before `last_view_id`
+  /// (D102) keep `user_version` 1 without the column. Add it once, only when
+  /// missing, under the admission the opener already holds; nothing is reset.
+  /// A second connection that adds it first leaves the guard satisfied.
+  Future<void> _adaptEarlyV1() async {
+    final table = await customSelect(
+      "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'access_state'",
+    ).get();
+    if (table.isEmpty) return;
+    final column = await customSelect(
+      "SELECT 1 FROM pragma_table_info('access_state') "
+      "WHERE name = 'last_view_id'",
+    ).get();
+    if (column.isNotEmpty) return;
+    try {
+      await customStatement(
+        'ALTER TABLE access_state ADD COLUMN last_view_id TEXT',
+      );
+    } on SqliteException catch (error) {
+      if (!error.message.contains('duplicate column')) rethrow;
+    }
+  }
 }
