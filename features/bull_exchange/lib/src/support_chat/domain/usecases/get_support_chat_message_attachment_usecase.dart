@@ -16,7 +16,7 @@ class GetSupportChatMessageAttachmentUsecase {
         null => const Err<SupportChatMessageAttachment, ExchangeFailure>(
           ExchangeNotAuthenticatedFailure(),
         ),
-        final session => await _exchange.getSupportAttachment(
+        final ExchangeSession session => await _exchange.getSupportAttachment(
           session,
           attachmentId,
         ),

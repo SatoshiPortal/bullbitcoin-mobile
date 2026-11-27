@@ -25,9 +25,13 @@ final class BbxApiFundingRails {
   const BbxApiFundingRails(this._api, {required this.paymentReturnUrl});
 
   Future<Result<FundingAccount, ExchangeReadFailure>> account() async {
-    final summary = await readUserSummary(_api);
-    if (summary is! Ok<UserSummary, ExchangeReadFailure>) return _same(summary);
-    final user = summary.value;
+    final UserSummary user;
+    switch (await readUserSummary(_api)) {
+      case Ok(:final value):
+        user = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
     final Result<ConfidentialSepaAvailability, ExchangeReadFailure>
     confidentialSepa = user.isEligibleForConfidentialSepa
         ? switch (await BbxApiVirtualIbansRepository.findOn(_api)) {
@@ -53,14 +57,14 @@ final class BbxApiFundingRails {
           confidentialSepa: availability,
         ),
       ),
-      _ => _same(confidentialSepa),
+      Err(:final failure) => Err(failure),
     };
   }
 
   Future<Result<bool, ExchangeReadFailure>> consentOnAccount() async =>
       switch (await readUserSummary(_api)) {
         Ok(:final value) => Ok(value.hasConsentedScamWarning),
-        final other => _same(other),
+        Err(:final failure) => Err(failure),
       };
 
   /// Only `success: true` is a consent; any other answer may or may not
@@ -127,15 +131,16 @@ final class BbxApiFundingRails {
           () async => answer,
           (details) => details,
         );
-    if (read is! Ok<bbx.PaymentProcessorDetails, ExchangeReadFailure>) {
-      return _same(read);
+    final bbx.PaymentProcessorDetails details;
+    switch (read) {
+      case Ok(:final value):
+        details = value;
+      case Err(:final failure):
+        return Err(failure);
     }
     final rows = <InstructionRow>[];
     for (final field in rail.fields) {
-      final value = switch (field) {
-        InstructionField.secretAnswer => '${request.userNumber}',
-        _ => _wireValue(read.value, field),
-      };
+      final value = _wireValue(details, field, request.userNumber);
       if (value == null || value.trim().isEmpty) {
         log.warning(
           'getUserPaymentProcessorCode: ${rail.name} answer has no '
@@ -164,8 +169,14 @@ final class BbxApiFundingRails {
       () async => answer,
       (link) => link,
     );
-    if (read is! Ok<String, ExchangeReadFailure>) return _same(read);
-    final link = Uri.tryParse(read.value.trim());
+    final String answered;
+    switch (read) {
+      case Ok(:final value):
+        answered = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    final link = Uri.tryParse(answered.trim());
     if (link == null ||
         !(link.isScheme('https') || link.isScheme('http')) ||
         link.host.isEmpty) {
@@ -196,12 +207,13 @@ final class BbxApiFundingRails {
   static String? _wireValue(
     bbx.PaymentProcessorDetails details,
     InstructionField field,
+    int userNumber,
   ) => switch (field) {
     InstructionField.beneficiaryName => details.beneficiaryName,
     InstructionField.beneficiaryEmail => details.beneficiaryEmail,
     InstructionField.secretQuestion ||
     InstructionField.transferCode => details.code,
-    InstructionField.secretAnswer => null,
+    InstructionField.secretAnswer => '$userNumber',
     InstructionField.bankAccountDetails => details.bankAccountDetails,
     InstructionField.swift => details.swift,
     InstructionField.institutionNumber => details.institutionNumber,
@@ -234,24 +246,6 @@ final class BbxApiFundingRails {
     }
   }
 }
-
-/// [read] with no value, retyped. Only for reads that are not [Ok].
-Result<T, ExchangeReadFailure> _same<T>(
-  Result<Object?, ExchangeReadFailure> read,
-) => switch (read) {
-  Ok() => throw StateError('a read with a value is not retyped'),
-  Err(failure: ExchangeMissingFailure()) => Err<T, ExchangeReadFailure>(
-    ExchangeMissingFailure(),
-  ),
-  Err(failure: ExchangeUnreachableFailure(:final reason, :final isNetwork)) =>
-    Err<T, ExchangeReadFailure>(
-      ExchangeUnreachableFailure(reason, isNetwork: isNetwork),
-    ),
-  Err(failure: ExchangeSessionRejectedFailure(:final why)) =>
-    Err<T, ExchangeReadFailure>(ExchangeSessionRejectedFailure(why)),
-  Err(failure: ExchangeMalformedFailure(:final reason)) =>
-    Err<T, ExchangeReadFailure>(ExchangeMalformedFailure(reason)),
-};
 
 /// The read result of a call that failed before or around the server: the
 /// session check of `withClient`, or a repository that still answers

@@ -24,7 +24,7 @@ class ConfirmBuyOrderUsecase {
         .orders(session.environment)
         .confirmBuyOrder(target.order.orderId)) {
       Ok(:final value) => Ok(_uris.withBip21(value)),
-      final other => other,
+      Err(:final failure) => Err(failure),
     },
   );
 }

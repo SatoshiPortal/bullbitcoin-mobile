@@ -308,7 +308,17 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
       fallback,
       description,
     ),
-    _ => ExchangeUnexpectedFailure(description),
+    bbx.BbxMissingCredentialFailure() ||
+    bbx.BbxCredentialUnavailableFailure() ||
+    bbx.BbxOrderLimitFailure() ||
+    bbx.BbxConfidentialSepaInactiveFailure() ||
+    bbx.BbxTimeoutFailure() ||
+    bbx.BbxConnectionFailure() ||
+    bbx.BbxBadCertificateFailure() ||
+    bbx.BbxRequestCancelledFailure() ||
+    bbx.BbxTransformTimeoutFailure() ||
+    bbx.BbxTransportFailure() ||
+    bbx.BbxOutcomeUnknownFailure() => ExchangeUnexpectedFailure(description),
   };
 }
 

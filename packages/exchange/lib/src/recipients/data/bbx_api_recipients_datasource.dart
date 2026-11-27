@@ -481,7 +481,14 @@ final class BbxApiRecipientsDatasource {
       case bbx.BbxConnectionFailure():
         log.warning('Could not reach the API to $operation: connectionError');
         return const RecipientsNetworkFailure();
-      default:
+      case bbx.BbxOrderLimitFailure() ||
+          bbx.BbxConfidentialSepaInactiveFailure() ||
+          bbx.BbxBadCertificateFailure() ||
+          bbx.BbxRequestCancelledFailure() ||
+          bbx.BbxTransformTimeoutFailure() ||
+          bbx.BbxTransportFailure() ||
+          bbx.BbxOutcomeUnknownFailure() ||
+          bbx.BbxResponseFormatFailure():
         log.warning('Failed to $operation — $failure');
         return onApiFailure();
     }

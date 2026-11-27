@@ -19,7 +19,7 @@ class SendSupportChatMessageUsecase {
         null => const Err<void, ExchangeFailure>(
           ExchangeNotAuthenticatedFailure(),
         ),
-        final session => await _exchange.sendSupportMessage(
+        final ExchangeSession session => await _exchange.sendSupportMessage(
           session,
           text: text,
           attachments: attachments.isEmpty ? null : attachments,

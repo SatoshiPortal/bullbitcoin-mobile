@@ -19,7 +19,7 @@ class FindCreatedOrderUsecase {
       .getOrders(type: journal.type)) {
     Ok(:final value) => switch (findCreatedOrder(journal, sentAt, value)) {
       final O order => Ok(order),
-      _ => const Err(ExchangeMissingFailure()),
+      Order() || null => const Err(ExchangeMissingFailure()),
     },
     Err(:final failure) => readOfExchangeFailure(failure),
   };

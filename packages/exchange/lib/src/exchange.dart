@@ -330,7 +330,7 @@ final class Exchange {
               switch (await sessionSnapshot()) {
                 case Ok(value: final current) when current == value:
                   break;
-                case _:
+                case Ok() || Err():
                   return const Err(ExchangeOperationStaleFailure());
               }
             }
@@ -723,7 +723,7 @@ final class Exchange {
   Future<bool> networkUnavailable() async =>
       switch (await loadWebPreferences()) {
         Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
-        _ => false,
+        Ok() || Err() => false,
       };
 
   /// Decides whether a trading route may open now.
@@ -1019,7 +1019,7 @@ final class Exchange {
   Future<int?> _epochOf(ExchangeEnvironment environment) async =>
       switch (await _readSessionPoint()) {
         Ok(:final value) when value.environment == environment => value.epoch,
-        _ => null,
+        Ok() || Err() => null,
       };
 
   /// Binds operations to the caller's selected backend, not to a credential.
@@ -1279,12 +1279,12 @@ RecipientsRepository _journalRecipients(
   Future<Result<_SessionPoint, ExchangeFailure>> Function() readSessionPoint,
 ) => switch (recorder) {
   null => recipients,
-  final recorder => JournalingRecipientsRepository(
+  final UnknownWriteRecorder recorder => JournalingRecipientsRepository(
     recipients,
     recorder,
     readEpoch: (environment) async => switch (await readSessionPoint()) {
       Ok(:final value) when value.environment == environment => value.epoch,
-      _ => null,
+      Ok() || Err() => null,
     },
   ),
 };

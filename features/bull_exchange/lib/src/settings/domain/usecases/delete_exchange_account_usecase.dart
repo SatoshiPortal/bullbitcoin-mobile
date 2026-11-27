@@ -13,6 +13,6 @@ class DeleteExchangeAccountUsecase {
     ExchangeSession? session,
   ) async => switch (session) {
     null => const Err(ExchangeNotAuthenticatedFailure()),
-    final session => await _exchange.deleteAccount(session),
+    final ExchangeSession session => await _exchange.deleteAccount(session),
   };
 }

@@ -30,7 +30,7 @@ class UpdateExchangePreferencesUsecase {
     required ExchangePreferences edited,
   }) async => switch (session) {
     null => const GateAdmitted(Err(ExchangeNotAuthenticatedFailure())),
-    final session => await _writeGate.run(
+    final ExchangeSession session => await _writeGate.run(
       session,
       FinancialWriteKind.preferenceWrite,
       () => _send(session, loaded: loaded, edited: edited),

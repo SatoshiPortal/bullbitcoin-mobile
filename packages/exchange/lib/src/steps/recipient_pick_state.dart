@@ -538,7 +538,7 @@ RecipientPickNext _submit(
   }
   final owned = switch (filter.owner) {
     null => input,
-    final owner => input.withOwner(owner.isOwner),
+    final RecipientOwnership owner => input.withOwner(owner.isOwner),
   };
   return switch (owned.tryToDomain()) {
     final RecipientDetails details => StepNext(
@@ -670,7 +670,7 @@ RecipientPickNext _fromBrowsing(
 ) => switch (event) {
   RecipientPickMoreRequested() => switch (state.nextPage) {
     null => StepNext.stay(state),
-    final page => StepNext(
+    final int page => StepNext(
       RecipientPickLoadingMore(
         state.query,
         state.attempt + 1,

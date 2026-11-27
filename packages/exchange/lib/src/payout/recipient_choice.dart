@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../recipients/domain/entities/recipient.dart';
+import '../recipients/domain/entities/recipient_details.dart';
 import 'payout_rail.dart';
 import 'payout_requirement.dart';
 
@@ -20,7 +21,7 @@ final class RecipientFilter {
       rails.contains(recipient.rail) &&
       switch (owner) {
         null => true,
-        final owner => recipient.isOwner == owner.isOwner,
+        final RecipientOwnership owner => recipient.isOwner == owner.isOwner,
       };
 
   /// [recipient] chosen under this filter, or null when the filter doesn't
@@ -64,7 +65,9 @@ final class ChosenRecipient {
   /// null when the rail has none.
   ChosenRecipient? get fallback => switch (recipient.onRail.fallback) {
     null => null,
-    final details => ChosenRecipient._(recipient.withDetails(details)),
+    final RecipientDetails details => ChosenRecipient._(
+      recipient.withDetails(details),
+    ),
   };
 
   @override

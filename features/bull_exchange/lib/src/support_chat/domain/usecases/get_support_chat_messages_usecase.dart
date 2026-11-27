@@ -17,7 +17,7 @@ class GetSupportChatMessagesUsecase {
         null => const Err<List<SupportChatMessage>, ExchangeFailure>(
           ExchangeNotAuthenticatedFailure(),
         ),
-        final session => await _exchange.getSupportMessages(
+        final ExchangeSession session => await _exchange.getSupportMessages(
           session,
           page: page,
           pageSize: pageSize,

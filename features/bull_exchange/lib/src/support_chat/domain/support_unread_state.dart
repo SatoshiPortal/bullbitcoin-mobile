@@ -24,13 +24,13 @@ sealed class SupportUnreadState {
       (UnreadSignedOut(), UnreadAccessChanged(:final access)) =>
         switch (access.signedInSession) {
           null => state,
-          final session => UnreadReading(session, 0),
+          final ExchangeSession session => UnreadReading(session, 0),
         },
       (UnreadSession(:final session), UnreadAccessChanged(:final access)) =>
         switch (access.signedInSession) {
           null => const UnreadSignedOut(),
-          final next when next == session => state,
-          final next => UnreadReading(next, 0),
+          final ExchangeSession next when next == session => state,
+          final ExchangeSession next => UnreadReading(next, 0),
         },
 
       (UnreadSignedOut(), UnreadRecheckRequested()) => state,

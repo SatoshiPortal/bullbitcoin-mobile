@@ -144,7 +144,16 @@ final class BbxApiUserDatasource {
         return ExchangeNetworkFailure(
           '$operation unreachable: connectionError',
         );
-      default:
+      case bbx.BbxHttpFailure() ||
+          bbx.BbxRpcFailure() ||
+          bbx.BbxOrderLimitFailure() ||
+          bbx.BbxConfidentialSepaInactiveFailure() ||
+          bbx.BbxBadCertificateFailure() ||
+          bbx.BbxRequestCancelledFailure() ||
+          bbx.BbxTransformTimeoutFailure() ||
+          bbx.BbxTransportFailure() ||
+          bbx.BbxOutcomeUnknownFailure() ||
+          bbx.BbxResponseFormatFailure():
         final description = '$operation failed: $failure';
         log.warning(description, trace: st);
         return onFailure(description);

@@ -18,6 +18,6 @@ class RefreshBuyOrderUsecase {
     await _exchange.orders(session.environment).refreshBuyOrder(orderId),
   )) {
     Ok(:final value) => Ok(_uris.withBip21(value)),
-    final other => other,
+    Err(:final failure) => Err(failure),
   };
 }

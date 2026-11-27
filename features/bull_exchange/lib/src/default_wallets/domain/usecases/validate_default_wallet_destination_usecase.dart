@@ -16,7 +16,7 @@ class ValidateDefaultWalletDestinationUsecase {
     try {
       return switch (await _validate(network, text)) {
         null => const WalletAddressInvalid(),
-        final address => WalletAddressValid(address),
+        final String address => WalletAddressValid(address),
       };
     } on Exception catch (error) {
       log.warning('Failed to validate a default wallet: ${error.runtimeType}');

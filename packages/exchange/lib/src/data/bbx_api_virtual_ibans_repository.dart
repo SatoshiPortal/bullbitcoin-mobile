@@ -109,7 +109,14 @@ final class BbxApiVirtualIbansRepository implements VirtualIbansRepository {
       case bbx.BbxConnectionFailure():
         log.warning('Could not reach the API to $operation: connectionError');
         return const ExchangeNetworkFailure();
-      default:
+      case bbx.BbxOrderLimitFailure() ||
+          bbx.BbxConfidentialSepaInactiveFailure() ||
+          bbx.BbxBadCertificateFailure() ||
+          bbx.BbxRequestCancelledFailure() ||
+          bbx.BbxTransformTimeoutFailure() ||
+          bbx.BbxTransportFailure() ||
+          bbx.BbxOutcomeUnknownFailure() ||
+          bbx.BbxResponseFormatFailure():
         log.warning(
           'Failed to $operation',
           error: failure.runtimeType,

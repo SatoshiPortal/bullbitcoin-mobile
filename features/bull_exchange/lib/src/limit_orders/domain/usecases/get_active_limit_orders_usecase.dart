@@ -14,6 +14,8 @@ class GetActiveLimitOrdersUsecase {
     ExchangeSession? session,
   ) async => readOfResult(switch (session) {
     null => const Err(ExchangeNotAuthenticatedFailure()),
-    final session => await _exchange.limitOrders.listActive(session),
+    final ExchangeSession session => await _exchange.limitOrders.listActive(
+      session,
+    ),
   });
 }

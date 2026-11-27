@@ -153,7 +153,18 @@ final class BbxApiSupportChatDatasource {
         return const ExchangeNotAuthenticatedFailure();
       case bbx.BbxCredentialUnavailableFailure():
         return onFailure('Exchange credential unavailable');
-      default:
+      case bbx.BbxHttpFailure() ||
+          bbx.BbxRpcFailure() ||
+          bbx.BbxOrderLimitFailure() ||
+          bbx.BbxConfidentialSepaInactiveFailure() ||
+          bbx.BbxTimeoutFailure() ||
+          bbx.BbxConnectionFailure() ||
+          bbx.BbxBadCertificateFailure() ||
+          bbx.BbxRequestCancelledFailure() ||
+          bbx.BbxTransformTimeoutFailure() ||
+          bbx.BbxTransportFailure() ||
+          bbx.BbxOutcomeUnknownFailure() ||
+          bbx.BbxResponseFormatFailure():
         log.warning(
           'Failed to $operation support chat data',
           error: '$failure',

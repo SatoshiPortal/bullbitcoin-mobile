@@ -16,7 +16,7 @@ class GetExchangePreferencesUsecase {
     ExchangeSession? session,
   ) async => switch (session) {
     null => const Err(ExchangeNotAuthenticatedFailure()),
-    final session => _read(session),
+    final ExchangeSession session => _read(session),
   };
 
   Future<Result<ExchangePreferences, ExchangeFailure>> _read(

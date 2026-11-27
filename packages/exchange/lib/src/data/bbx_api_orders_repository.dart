@@ -333,7 +333,7 @@ final class BbxApiOrdersRepository implements OrdersRepository {
         () => call(api),
         (summary) => switch (orderFromBbxApi(summary, isTestnet: _isTestnet)) {
           final T order => order,
-          final other => throw _UnexpectedOrderType(other.runtimeType),
+          final Order other => throw _UnexpectedOrderType(other.runtimeType),
         },
       );
       if (write is Ok<T, ExchangeWriteFailure>) await afterDone?.call(api);
@@ -406,10 +406,26 @@ final class BbxApiOrdersRepository implements OrdersRepository {
         case Err(failure: bbx.BbxMissingCredentialFailure()) when page == 1:
           return const Ok((orders: [], match: null, rejected: false));
         case Err(:final failure):
-          return Err(switch (_mapFailure(failure)) {
-            final ExchangeCredentialReadFailure failure => failure,
-            final ExchangeSessionRejectedFailure failure => failure,
-            _ => const ExchangeOrderLoadFailure(),
+          return Err(switch (failure) {
+            bbx.BbxCredentialUnavailableFailure() =>
+              const ExchangeCredentialReadFailure(),
+            bbx.BbxHttpFailure(status: 401) =>
+              const ExchangeSessionRejectedFailure(
+                ExchangeSessionRejection.server,
+              ),
+            bbx.BbxMissingCredentialFailure() ||
+            bbx.BbxHttpFailure() ||
+            bbx.BbxRpcFailure() ||
+            bbx.BbxOrderLimitFailure() ||
+            bbx.BbxConfidentialSepaInactiveFailure() ||
+            bbx.BbxTimeoutFailure() ||
+            bbx.BbxConnectionFailure() ||
+            bbx.BbxBadCertificateFailure() ||
+            bbx.BbxRequestCancelledFailure() ||
+            bbx.BbxTransformTimeoutFailure() ||
+            bbx.BbxTransportFailure() ||
+            bbx.BbxOutcomeUnknownFailure() ||
+            bbx.BbxResponseFormatFailure() => const ExchangeOrderLoadFailure(),
           });
       }
     }

@@ -21,7 +21,7 @@ sealed class ExchangeState {
       (ExchangeSignedOut(), ExchangeAccessChanged(:final access)) =>
         switch (access.signedInSession) {
           null => state,
-          final session => ExchangeLoading(session),
+          final ExchangeSession session => ExchangeLoading(session),
         },
       (
         ExchangeLoading(:final session) ||
@@ -31,8 +31,8 @@ sealed class ExchangeState {
       ) =>
         switch (access.signedInSession) {
           null => const ExchangeSignedOut(),
-          final next when next == session => state,
-          final next => ExchangeLoading(next),
+          final ExchangeSession next when next == session => state,
+          final ExchangeSession next => ExchangeLoading(next),
         },
 
       // Refresh: a retry after a failed load, or one refresh at a time.

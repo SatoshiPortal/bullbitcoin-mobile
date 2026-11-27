@@ -533,7 +533,7 @@ typedef DefaultWalletsNext =
 DefaultWalletsNext defaultWalletsStart(ExchangeSession? session) =>
     switch (session) {
       null => StepNext(const WalletsSessionEnded()),
-      final session => StepNext(WalletsLoading(session, 1), [
+      final ExchangeSession session => StepNext(WalletsLoading(session, 1), [
         FetchDefaultWallets(session, 1),
       ]),
     };

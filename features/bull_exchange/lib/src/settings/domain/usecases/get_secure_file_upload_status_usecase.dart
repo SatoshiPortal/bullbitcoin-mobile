@@ -16,7 +16,7 @@ class GetSecureFileUploadStatusUsecase {
     ExchangeSession? session,
   ) async => switch (session) {
     null => const Err(ExchangeUploadStatusUnavailableFailure()),
-    final session => _read(session),
+    final ExchangeSession session => _read(session),
   };
 
   Future<Result<SecureFileUpload, ExchangeFailure>> _read(

@@ -107,7 +107,16 @@ final class BbxApiDefaultWalletsDatasource {
         ),
         bbx.BbxTimeoutFailure() ||
         bbx.BbxConnectionFailure() => const ExchangeNetworkFailure(),
-        _ => ExchangeUnexpectedFailure(
+        bbx.BbxHttpFailure() ||
+        bbx.BbxRpcFailure() ||
+        bbx.BbxOrderLimitFailure() ||
+        bbx.BbxConfidentialSepaInactiveFailure() ||
+        bbx.BbxBadCertificateFailure() ||
+        bbx.BbxRequestCancelledFailure() ||
+        bbx.BbxTransformTimeoutFailure() ||
+        bbx.BbxTransportFailure() ||
+        bbx.BbxOutcomeUnknownFailure() ||
+        bbx.BbxResponseFormatFailure() => ExchangeUnexpectedFailure(
           'Exchange destination request failed: $failure',
         ),
       };
