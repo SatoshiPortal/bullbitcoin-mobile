@@ -368,6 +368,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseFileUnavailable',
       'DatabaseCipherUnavailable',
       'DatabaseNotReady',
+      'DatabaseViewsUnsupported',
       // the failure family
       'SecretFailure',
       'BackupRequiredFailure',

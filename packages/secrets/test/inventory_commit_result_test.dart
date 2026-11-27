@@ -196,7 +196,7 @@ void main() {
         () => AccessRepository(
           database,
           BackupGuard(null, database),
-        ).setBackgroundEnabled(true),
+        ).setBackgroundEnabled(true, 'all'),
       );
       final rows = await database
           .customSelect('SELECT background_enabled AS b FROM views')

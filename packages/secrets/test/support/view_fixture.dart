@@ -5,6 +5,7 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
+import 'package:secrets/storage.dart' show RegisteredWallet;
 import 'package:secrets/src/data/inventory_store.dart';
 import 'package:secrets/testing.dart';
 
@@ -59,4 +60,31 @@ final class ViewFixture {
     await admission.close();
     await directory.delete(recursive: true);
   }
+}
+
+/// A wallet row named [name]; its id carries the origin the decoder needs.
+/// A `local` wallet belongs to its own secret [fingerprint]; any
+/// other signer is a public wallet owned by the view alone.
+RegisteredWallet viewWallet(
+  String name, {
+  String fingerprint = '01234567',
+  String signer = 'none',
+  String network = 'bitcoinTestnet',
+}) => RegisteredWallet(
+  id: '$name[$fingerprint/84h/1h/0h]',
+  secretFingerprint: signer == 'local' ? fingerprint : null,
+  masterFingerprint: signer == 'none' ? '' : fingerprint,
+  signer: signer,
+  network: network,
+  xpub: 'public-key-marker',
+  externalDescriptor: "wpkh([$fingerprint/84'/1'/7']public-key-marker/0/*)",
+  internalDescriptor: "wpkh(public-key-marker/1/*)",
+  label: 'label-$name',
+  birthday: '2026-11-21T00:00:00Z',
+  isDefault: false,
+);
+
+T ok<T, F extends Failure>(Result<T, F> result) {
+  expect(result, isA<Ok<T, F>>());
+  return (result as Ok<T, F>).value;
 }
