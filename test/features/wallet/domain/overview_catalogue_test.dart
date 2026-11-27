@@ -200,7 +200,7 @@ void main() {
 
       change(expired, _stamp(_btc, revision: 2));
       change(grant, _stamp(_main, revision: 2));
-      change(grant, _stamp(_btc, generation: 5, revision: 2));
+      change(grant, _stamp(_btc, generation: 3, revision: 2));
       change(grant, _stamp(_btc));
       expect(reader.reads, hasLength(2));
       final current = _stamp(_btc, revision: 2);
@@ -229,4 +229,41 @@ void main() {
       expect(reader.reads, hasLength(3));
     },
   );
+
+  test('pending and next-generation deletion retire rows before native reads settle', () async {
+    final grant = replace();
+    publish(grant, [_entry(_btc), _entry(_liquid)]);
+    final before = catalogue.snapshot.rows;
+    catalogue.revised(
+      grant,
+      WalletRevisionState(
+        stamp: _stamp(_btc),
+        lifecycle: WalletLifecycle.pendingWrite,
+      ),
+    );
+    catalogue.revised(
+      grant,
+      WalletRevisionState(
+        stamp: _stamp(_liquid, generation: 5),
+        lifecycle: WalletLifecycle.deleted,
+      ),
+    );
+    expect(catalogue.snapshot.rows, isEmpty);
+    for (final row in before) {
+      expect(catalogue.selectLocal(row), isNull);
+      catalogue.revised(
+        grant,
+        WalletRevisionState(
+          stamp: _stamp(row.entry.revision.key, generation: 5, revision: 2),
+          lifecycle: WalletLifecycle.active,
+        ),
+      );
+    }
+    reader.reply(0, 1);
+    reader.reply(1, 2);
+    await pumpEventQueue();
+    expect(reader.reads, hasLength(2));
+    expect(catalogue.snapshot.rows, isEmpty);
+    expect(catalogue.snapshot.status, OverviewCatalogueStatus.partial);
+  });
 }
