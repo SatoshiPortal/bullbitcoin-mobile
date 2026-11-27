@@ -80,7 +80,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "启用后，当应用程序发生问题时，我们会自动发送错误报告。",
+  "errorReportingProgramDescriptionP2": "启用后，当应用程序发生问题时，我们会自动发送错误报告。也可能会发送诊断日志。",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

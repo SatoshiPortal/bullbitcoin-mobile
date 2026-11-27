@@ -280,7 +280,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Jab kuch break hota hai toh Bull Bitcoin anonymized error reports bhejta hai.",
+  "errorReportingProgramDescriptionP2": "Jab kuch break hota hai toh Bull Bitcoin anonymized error reports bhejta hai. Diagnostic logs bhi bheje ja sakte hain.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

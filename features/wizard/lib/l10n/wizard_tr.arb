@@ -26,7 +26,7 @@
   "wizardCustomizeBody": "Bu ayarlarla BULL'u kendi şartlarınla kullan.",
   "wizardCustomizeDefaultCurrency": "Varsayılan para birimi",
   "wizardMissionTitle": "Bull misyonunu destekle",
-  "wizardMissionBody1": "Yazılımımızı geliştirmemize ve en yüksek düzeyde güvenlik, gizlilik ve kullanılabilirlik sunmamıza yardımcı olmak için uygulamanız bize hata günlükleri gönderebilir. Bu, sorunları tespit etmemizi ve sonraki güncellemelerimizde hızlıca düzeltmemizi sağlar.",
+  "wizardMissionBody1": "Yazılımımızı geliştirmemize ve en yüksek düzeyde güvenlik, gizlilik ve kullanılabilirlik sunmamıza yardımcı olmak için uygulamanız bize hata raporları gönderebilir. Bu, sorunları tespit etmemizi ve sonraki güncellemelerimizde hızlıca düzeltmemizi sağlar. Tanılama günlükleri de gönderilebilir.",
   "wizardMissionBody2": "Bu günlükler anonimleştirilmiştir, IP adresinize bağlı değildir ve işlemleriniz veya kimliğiniz hakkında asla bilgi paylaşmaz. Tamamen tekniktir ve sizi hiçbir riske maruz bırakmaz. Bizim için çok yararlıdır ve size hiçbir maliyeti yoktur.",
   "wizardMissionQuestion": "Otomatik sorun bildirim programımıza katılmayı kabul ediyor musunuz?",
   "wizardMissionYes": "Evet",

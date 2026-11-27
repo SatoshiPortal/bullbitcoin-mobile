@@ -56,7 +56,7 @@
   "@wizardMissionTitle": {
     "description": "Title of the wizard's error-reporting consent page"
   },
-  "wizardMissionBody1": "To help us improve our software and make sure we offer the highest level of security, privacy and usability, your app can send us error logs that allow us to detect issues and fix them quickly in our next updates.",
+  "wizardMissionBody1": "To help us improve our software and make sure we offer the highest level of security, privacy and usability, your app can send us error reports that allow us to detect issues and fix them quickly in our next updates. The app may also send diagnostic logs.",
   "@wizardMissionBody1": {
     "description": "First explanatory paragraph on the wizard error-reporting page"
   },

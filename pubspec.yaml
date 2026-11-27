@@ -216,7 +216,7 @@ dependencies:
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
-  sentry_flutter: ^9.26.0
+  sentry_flutter: ^10.7.0
   transactions:
 
 dev_dependencies:

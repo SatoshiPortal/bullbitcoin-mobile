@@ -125,7 +125,7 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
-  "errorReportingProgramDescriptionP2": "কিবা ভুল হ'লে Bull Bitcoin-এ বেনামী ত্ৰুটি প্ৰতিবেদন পঠিয়ায়।",
+  "errorReportingProgramDescriptionP2": "কিবা ভুল হ'লে Bull Bitcoin-এ বেনামী ত্ৰুটি প্ৰতিবেদন পঠিয়ায়। ডায়েগনষ্টিক লগসমূহো পঠিওৱা হ’ব পাৰে।",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },
