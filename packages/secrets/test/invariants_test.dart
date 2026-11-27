@@ -100,6 +100,7 @@ void main() {
       'UnreadableWalletFailure',
       'WalletRegistrationNotFoundFailure',
       'WalletAlreadyRegisteredFailure',
+      'SecretOwnedByAnotherViewFailure',
     };
     final offenders = <String>[];
     for (final file in sources) {
@@ -375,6 +376,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'BackupStateUnavailableFailure',
       'BackupVerifierUnboundFailure',
       'SecretAlreadyExistsFailure',
+      'SecretOwnedByAnotherViewFailure',
       'SecretNotFoundFailure',
       'FetchSecretFailure',
       'StoreSecretFailure', 'TrashSecretFailure', 'KeystoreLockedFailure',
