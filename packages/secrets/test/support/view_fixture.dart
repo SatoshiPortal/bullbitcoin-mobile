@@ -63,6 +63,20 @@ final class ViewFixture {
     List<String> statements,
   ) => sql(statements);
 
+  /// The remembered view, read straight from the file.
+  Future<String?> lastView(SecretsInventory inventory) async {
+    final opened = await InventoryStore.open(file, admission, existing: true);
+    final store = (opened as Ok<InventoryStore, Failure>).value;
+    try {
+      final row = await store.database
+          .customSelect('SELECT last_view_id AS v FROM access_state')
+          .getSingle();
+      return row.read<String?>('v');
+    } finally {
+      await store.close();
+    }
+  }
+
   Future<void> close() async {
     await admission.close();
     await directory.delete(recursive: true);
