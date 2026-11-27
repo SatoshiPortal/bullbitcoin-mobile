@@ -5,7 +5,7 @@ import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/migration.dart';
-import 'package:secrets/storage.dart' show RegisteredWallet;
+import 'package:secrets/storage.dart' show RegisteredWallet, SecretsInventory;
 import 'package:secrets/src/data/inventory_store.dart';
 import 'package:secrets/testing.dart';
 
@@ -55,6 +55,13 @@ final class ViewFixture {
       await store.close();
     }
   }
+
+  /// Raw SQL on the file while [inventory] holds it open, for the tests that
+  /// build a layout no operation produces yet.
+  Future<void> sqlWhileOpen(
+    SecretsInventory inventory,
+    List<String> statements,
+  ) => sql(statements);
 
   Future<void> close() async {
     await admission.close();

@@ -314,6 +314,7 @@ void main() {
         marked,
         unorderedEquals([
           'setCredential',
+          'dissociateView',
           'removeCredential',
           'setBackgroundEnabled',
           'removeWallet',
@@ -324,7 +325,7 @@ void main() {
       );
       expect(
         'preserveCommittedCommand: true'.allMatches(source).length,
-        7,
+        8,
         reason: 'a read, a reveal or a projection must never be preserved',
       );
       // A reservation hands a value back and may be derived next: it stays

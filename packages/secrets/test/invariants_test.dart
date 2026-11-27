@@ -101,6 +101,7 @@ void main() {
       'WalletRegistrationNotFoundFailure',
       'WalletAlreadyRegisteredFailure',
       'SecretOwnedByAnotherViewFailure',
+      'ViewNotOpenFailure',
     };
     final offenders = <String>[];
     for (final file in sources) {
@@ -370,6 +371,10 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseCipherUnavailable',
       'DatabaseNotReady',
       'DatabaseViewsUnsupported',
+      // views
+      'ViewId',
+      'ViewSummary',
+      'ViewNotOpenFailure',
       // the failure family
       'SecretFailure',
       'BackupRequiredFailure',
