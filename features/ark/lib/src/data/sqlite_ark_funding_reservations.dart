@@ -507,8 +507,9 @@ final class SqliteArkFundingReservations
         transaction = false;
         return const Err(SyncStorageFailure());
       }
-      final BitcoinPsbtFacts before;
-      final BitcoinPsbtFacts after;
+      // Not final: Dart 3.14.0 AOT crashes on switch-assigned finals captured by a closure (dart-lang/sdk#64917).
+      BitcoinPsbtFacts before;
+      BitcoinPsbtFacts after;
       switch (inspectBitcoinPsbt(original)) {
         case Err(:final failure):
           return Err(failure);
