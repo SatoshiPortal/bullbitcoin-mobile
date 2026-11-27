@@ -1,16 +1,14 @@
-import 'package:bull_ui/app_theme.dart';
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:backups/backups.dart';
 import 'package:network/network.dart';
+import 'package:overview/overview.dart';
 import 'package:swap_feature/swap_feature.dart' show SwapNavigation;
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_failure_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bull_ui/bull_ui.dart'
-    show BullCarousel, BullInfoCard, BullSizes, Gap;
 
 class HomeWarnings extends StatelessWidget {
   const HomeWarnings({super.key});
@@ -24,90 +22,51 @@ class HomeWarnings extends StatelessWidget {
           previous.warnings != current.warnings ||
           previous.swapServerUnreachable != current.swapServerUnreachable,
       builder: (context, state) {
-        // The legacy-storage cohort used to suppress this warning, since
-        // they were shown a blocking overlay instead. That cohort and
-        // its overlay are gone.
-        final showBackupWarning = state.hasNoBackup();
         final loadFailure = state.loadFailure;
-
-        // Every error is shown, swipeable, instead of one hiding another.
-        // A sync failure and a server warning often come together (offline,
-        // an unreachable server) but say different things: the balances are
-        // stale, and which server failed with its own remedy.
-        final errorCards = [
-          for (final warning in state.warnings)
-            BullInfoCard(
-              title: homeWarningTitle(context, warning),
-              description: homeWarningDescription(context, warning),
-              tagColor: context.appColors.error,
-              bgColor: context.appColors.errorContainer,
-              onTap: () => NetworkNavigation.open(
-                context,
-                section: switch (warning.action) {
+        return HomeWarningCarousel(
+          network: [
+            for (final warning in state.warnings)
+              (
+                copy: (
+                  title: homeWarningTitle(context, warning),
+                  description: homeWarningDescription(context, warning),
+                ),
+                destination: switch (warning.action) {
                   WalletWarningAction.electrumSettings =>
-                    NetworkSection.electrum,
-                  WalletWarningAction.torSettings => NetworkSection.tor,
+                    HomeWarningDestination.electrum,
+                  WalletWarningAction.torSettings => HomeWarningDestination.tor,
                 },
               ),
-            ),
-          // A failed load used to be silent: the skeleton simply vanished
-          // and the home screen showed 0 sats and no wallets, which reads
-          // as an empty wallet rather than an error (#1895).
-          // No settings link: a sync can fail in swaps or Silent Payments as
-          // well as on a server, and a storage failure is local, so pointing
-          // at the electrum settings could not help. A server outage has its
-          // own card above, with its remedy.
-          if (state.swapServerUnreachable)
-            BullInfoCard(
-              title: context.loc.walletWarningSwapServerUnreachable,
-              description: context.loc.walletWarningSwapServerAction,
-              tagColor: context.appColors.error,
-              bgColor: context.appColors.errorContainer,
-              onTap: () => SwapNavigation.openSettings(context),
-            ),
-          if (loadFailure != null)
-            BullInfoCard(
-              title: loadFailure.toTranslated(context),
-              description: context.loc.walletLoadFailedRetryHint,
-              tagColor: context.appColors.error,
-              bgColor: context.appColors.errorContainer,
-            ),
-        ];
-
-        if (!showBackupWarning && errorCards.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Padding(
-          padding: const EdgeInsets.only(
-            left: 13.0,
-            right: 13,
-            top: BullSizes.homeCardGap,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (errorCards.isNotEmpty)
-                BullCarousel(
-                  children: [
-                    for (final card in errorCards)
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          minHeight: BullSizes.homeCard,
-                        ),
-                        child: card,
-                      ),
-                  ],
+          ],
+          swap: state.swapServerUnreachable
+              ? (
+                  title: context.loc.walletWarningSwapServerUnreachable,
+                  description: context.loc.walletWarningSwapServerAction,
+                )
+              : null,
+          load: loadFailure == null
+              ? null
+              : (
+                  title: loadFailure.toTranslated(context),
+                  description: context.loc.walletLoadFailedRetryHint,
                 ),
-              if (showBackupWarning) ...[
-                if (errorCards.isNotEmpty) const Gap(BullSizes.homeCardGap),
-                BackupCard(
+          backup: state.hasNoBackup()
+              ? BackupCard(
                   icon: AssetImage(Assets.misc.passwordbook.path),
                   onTap: () => BackupsNavigation.start(context),
-                ),
-              ],
-            ],
-          ),
+                )
+              : null,
+          onOpen: (destination) => switch (destination) {
+            HomeWarningDestination.electrum => NetworkNavigation.open(
+              context,
+              section: NetworkSection.electrum,
+            ),
+            HomeWarningDestination.tor => NetworkNavigation.open(
+              context,
+              section: NetworkSection.tor,
+            ),
+            HomeWarningDestination.swap => SwapNavigation.openSettings(context),
+          },
         );
       },
     );

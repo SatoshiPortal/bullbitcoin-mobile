@@ -2,6 +2,12 @@ library;
 
 export 'src/ui/widgets/wallet_card.dart';
 export 'src/ui/widgets/eye_toggle.dart' show EyeToggle;
+export 'src/ui/widgets/home_warning_carousel.dart'
+    show
+        HomeNetworkWarning,
+        HomeWarningCarousel,
+        HomeWarningCopy,
+        HomeWarningDestination;
 export 'src/ui/widgets/silent_wallet_balance.dart' show SilentWalletBalance;
 export 'src/ui/widgets/wallet_home_app_bar.dart' show WalletHomeAppBar;
 export 'src/ui/widgets/wallet_detail_balance_amount.dart';
