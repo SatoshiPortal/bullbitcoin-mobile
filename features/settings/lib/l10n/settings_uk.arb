@@ -80,7 +80,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Коли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми.",
+  "errorReportingProgramDescriptionP2": "Коли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми. Також можуть надсилатися діагностичні журнали.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

@@ -14,6 +14,8 @@ import 'package:sync/write.dart';
 
 import 'public_bitcoin_fixture.dart';
 
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
+
 void main() {
   late Directory directory;
   late MemoryFreezeStore freezes;
@@ -45,7 +47,10 @@ void main() {
     );
     spend = Spend.open(
       sync: runtime,
-      secrets: Secrets(scratchDirectory: () async => directory.path),
+      secrets: Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      ),
       arkFunding: const ArkFundingSigningGuard(authority: null),
       catalog: _NoSpendCatalog(),
     );
@@ -90,7 +95,10 @@ void main() {
     () async {
       final unavailableSpend = Spend.open(
         sync: runtime,
-        secrets: Secrets(scratchDirectory: () async => directory.path),
+        secrets: Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        ),
         arkFunding: const ArkFundingSigningGuard(authority: null),
         catalog: _UnavailableSpendCatalog(),
       );

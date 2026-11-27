@@ -36,7 +36,10 @@ class ReceiveNetworkSelection extends StatelessWidget {
           final type = availableNetworks.firstWhere(
             (t) => _label(context, t) == label,
           );
-          context.goNamed(_route(type).name, extra: wallet);
+          // Replace the receive page in place: `go` would rebuild the stack
+          // from this location alone and drop the hub under the receiver, so
+          // the next system back would leave the app instead of returning home.
+          context.replaceNamed(_route(type).name, extra: wallet);
         },
       ),
     );

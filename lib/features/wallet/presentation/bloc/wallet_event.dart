@@ -4,6 +4,10 @@ sealed class WalletEvent {
   const WalletEvent();
 }
 
+class SwapServerCheckRequested extends WalletEvent {
+  const SwapServerCheckRequested();
+}
+
 class WalletStarted extends WalletEvent {
   const WalletStarted();
 }

@@ -10,6 +10,7 @@ import '../data/frozen_utxos_freeze_store.dart';
 import '../data/label_backup_repository.dart';
 import '../data/reserved_address_port_impl.dart';
 import '../domain/label_backup_scope.dart';
+import '../domain/wallet_freeze_port.dart';
 import '../domain/labels_merge.dart';
 import '../domain/labels_snapshot.dart';
 
@@ -252,4 +253,12 @@ Labels createLabelsForTesting({
   database: database,
   sync: sync,
   openWallet: openWallet,
+);
+
+/// The test seam behind `package:labels/testing.dart`.
+LabelBackups createLabelBackupsForTesting({
+  required GeneratedDatabase database,
+  required WalletFreezePort walletFreeze,
+}) => LabelBackups._(
+  LabelBackupRepository(database: database, walletFreeze: walletFreeze),
 );

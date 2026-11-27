@@ -8,13 +8,12 @@ import 'dart:typed_data';
 import 'package:exchange/exchange.dart';
 import 'package:preferences/preferences.dart';
 import 'package:swaps/swaps.dart' hide Environment;
+import 'package:swaps/swaps.dart' as swaps show Environment;
 import 'package:transactions/testing.dart';
 import 'package:primitives/primitives.dart' as bb;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, BitcoinUnit, Err, Ok;
 
 class _MockSettingsRepository extends Mock implements Preferences {}
 
@@ -395,6 +394,221 @@ void main() {
     expect(transactions.single.orderSwap?.localId, 'chain-order');
   });
 
+  group('Boltz swaps', () {
+    void history({
+      required List<WalletTransaction> walletTransactions,
+      required List<Swap> swaps,
+    }) {
+      when(
+        () => walletTransactionRepository.getWalletTransactions(
+          walletId: any(named: 'walletId'),
+          sync: any(named: 'sync'),
+          environment: any(named: 'environment'),
+        ),
+      ).thenAnswer((_) async => Ok(walletTransactions));
+      when(() => swapStore.all(walletId: any(named: 'walletId')))
+          .thenAnswer((_) async => bb.Ok(swaps));
+      when(() => payjoinSessions.list(any()))
+          .thenAnswer((_) async => const Ok([]));
+    }
+
+    final lockup = _walletTransaction(
+      txId: 'lockup-tx',
+      walletId: 'bitcoin-wallet',
+      isIncoming: false,
+      amountSat: 50000,
+      address: 'bc1qlockup',
+    );
+    final claim = _walletTransaction(
+      txId: 'claim-tx',
+      walletId: 'liquid-wallet',
+      isIncoming: true,
+      amountSat: 49500,
+      network: LiquidNetwork.mainnet,
+    );
+
+    test('lists a chain swap between two wallets once', () async {
+      history(walletTransactions: [lockup, claim], swaps: [_chainSwap()]);
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(transactions, hasLength(1));
+      expect(transactions.single.swap?.id, 'chain-swap');
+      expect(transactions.single.walletTransaction?.txId, 'lockup-tx');
+    });
+
+    test('shows the receiving wallet its claim as the swap', () async {
+      history(walletTransactions: [claim], swaps: [_chainSwap()]);
+
+      final transactions = unwrap(
+        await usecase.execute(walletId: 'liquid-wallet'),
+      );
+
+      expect(transactions, hasLength(1));
+      expect(transactions.single.swap?.id, 'chain-swap');
+      expect(transactions.single.walletTransaction?.txId, 'claim-tx');
+    });
+
+    test('shows the sending wallet its lockup as the swap', () async {
+      history(walletTransactions: [lockup], swaps: [_chainSwap()]);
+
+      final transactions = unwrap(
+        await usecase.execute(walletId: 'bitcoin-wallet'),
+      );
+
+      expect(transactions, hasLength(1));
+      expect(transactions.single.swap?.id, 'chain-swap');
+      expect(transactions.single.walletTransaction?.txId, 'lockup-tx');
+    });
+
+    test('lists a refunded chain swap once, on its lockup', () async {
+      final refund = _walletTransaction(
+        txId: 'refund-tx',
+        walletId: 'bitcoin-wallet',
+        isIncoming: true,
+        amountSat: 49800,
+        address: 'bc1qrefund',
+      );
+      history(
+        walletTransactions: [refund, lockup],
+        swaps: [
+          _chainSwap(
+            status: SwapStatus.refunded,
+            receiveTxid: null,
+            refundTxid: 'refund-tx',
+          ),
+        ],
+      );
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(transactions, hasLength(1));
+      expect(transactions.single.swap?.id, 'chain-swap');
+      expect(transactions.single.walletTransaction?.txId, 'lockup-tx');
+    });
+
+    test('keeps a claim txid away from a wallet outside the swap', () async {
+      final unrelated = _walletTransaction(
+        txId: 'claim-tx',
+        walletId: 'other-wallet',
+        isIncoming: true,
+        amountSat: 49500,
+        network: LiquidNetwork.mainnet,
+      );
+      history(walletTransactions: [unrelated], swaps: [_chainSwap()]);
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(
+        transactions.singleWhere((tx) => tx.walletTransaction != null).swap,
+        isNull,
+      );
+    });
+
+    test('keeps a claim txid away from the sending wallet', () async {
+      final misplaced = _walletTransaction(
+        txId: 'claim-tx',
+        walletId: 'bitcoin-wallet',
+        isIncoming: true,
+        amountSat: 49500,
+        address: 'bc1qclaim',
+      );
+      history(walletTransactions: [misplaced], swaps: [_chainSwap()]);
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(
+        transactions.singleWhere((tx) => tx.walletTransaction != null).swap,
+        isNull,
+      );
+    });
+
+    test('keeps a swap away from a transaction larger than it', () async {
+      final larger = _walletTransaction(
+        txId: 'lockup-tx',
+        walletId: 'bitcoin-wallet',
+        isIncoming: false,
+        amountSat: 50001,
+        address: 'bc1qlockup',
+      );
+      history(walletTransactions: [larger], swaps: [_chainSwap()]);
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(
+        transactions.singleWhere((tx) => tx.walletTransaction != null).swap,
+        isNull,
+      );
+    });
+
+    test('lists a Lightning send once, on its lockup', () async {
+      final swap = _lnSendSwap();
+      expect(swap.amountSat, 1000);
+      final lnLockup = _walletTransaction(
+        txId: 'ln-lockup-tx',
+        walletId: 'liquid-wallet',
+        isIncoming: false,
+        amountSat: 1025,
+        network: LiquidNetwork.mainnet,
+      );
+      history(walletTransactions: [lnLockup], swaps: [swap]);
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(transactions, hasLength(1));
+      expect(transactions.single.swap?.id, 'ln-send-swap');
+      expect(transactions.single.walletTransaction?.txId, 'ln-lockup-tx');
+    });
+
+    test('lists a refunded Lightning send once, on its lockup', () async {
+      final lnLockup = _walletTransaction(
+        txId: 'ln-lockup-tx',
+        walletId: 'liquid-wallet',
+        isIncoming: false,
+        amountSat: 1025,
+        network: LiquidNetwork.mainnet,
+      );
+      final lnRefund = _walletTransaction(
+        txId: 'ln-refund-tx',
+        walletId: 'liquid-wallet',
+        isIncoming: true,
+        amountSat: 1010,
+        network: LiquidNetwork.mainnet,
+      );
+      history(
+        walletTransactions: [lnRefund, lnLockup],
+        swaps: [
+          _lnSendSwap(status: SwapStatus.refunded, refundTxid: 'ln-refund-tx'),
+        ],
+      );
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(transactions, hasLength(1));
+      expect(transactions.single.swap?.id, 'ln-send-swap');
+      expect(transactions.single.walletTransaction?.txId, 'ln-lockup-tx');
+    });
+
+    test('lists a Lightning receive once, on its claim', () async {
+      final swap = _lnReceiveSwap();
+      expect(swap.amountSat, 1000);
+      final lnClaim = _walletTransaction(
+        txId: 'ln-claim-tx',
+        walletId: 'liquid-wallet',
+        isIncoming: true,
+        amountSat: 975,
+        network: LiquidNetwork.mainnet,
+      );
+      history(walletTransactions: [lnClaim], swaps: [swap]);
+
+      final transactions = unwrap(await usecase.execute());
+
+      expect(transactions, hasLength(1));
+      expect(transactions.single.swap?.id, 'ln-receive-swap');
+      expect(transactions.single.walletTransaction?.txId, 'ln-claim-tx');
+    });
+  });
+
   test(
     'matches unique order txids with linearly bounded source accesses',
     () async {
@@ -567,10 +781,11 @@ WalletTransaction _walletTransaction({
   required bool isIncoming,
   int amountSat = 1000,
   String? address,
+  bb.Network network = BitcoinNetwork.mainnet,
 }) {
   return WalletTransaction(
     walletId: walletId,
-    network: BitcoinNetwork.mainnet,
+    network: network,
     direction: isIncoming
         ? WalletTransactionDirection.incoming
         : WalletTransactionDirection.outgoing,
@@ -593,6 +808,66 @@ WalletTransaction _walletTransaction({
     isRbf: false,
   );
 }
+
+const _invoiceFor1000Sats =
+    'lnbc10u1p59tufasp53yuqahahgct058zglxvhezp9nyz5fvt2kn2lsl6mg9qgsts8c72spp56hym2dpcyy0878h7q5h4t30cwclp9vd0tqpn4dns0a3mmspzkh9qdqqxqyp2xqcqz95rzjqg2n4jluz7ty6mn96krzje43zm7ylttjvcxcccg99tmm30s6lm4d6zzxeyqq28qqqqqqqqqqqqqqq9gq2y9qyysgqpmw883kkclyxpr2u8mg9pl47909yhtt83pjvt3qz3s9puyf39vdp4ar7zu47r4mfawkc2s99vm292udx9n3s5fnrjyngnsxkxn2l60qpn65s0t';
+
+Swap _chainSwap({
+  SwapStatus status = SwapStatus.completed,
+  String? receiveTxid = 'claim-tx',
+  String? refundTxid,
+}) => Swap.chain(
+  id: 'chain-swap',
+  keyIndex: 0,
+  type: SwapType.bitcoinToLiquid,
+  status: status,
+  environment: swaps.Environment.mainnet,
+  creationTime: DateTime.utc(2026),
+  completionTime: DateTime.utc(2026, 1, 1, 1),
+  sendWalletId: 'bitcoin-wallet',
+  paymentAddress: 'bc1qlockup',
+  paymentAmount: 50000,
+  sendTxid: 'lockup-tx',
+  receiveWalletId: 'liquid-wallet',
+  receiveAddress: 'lq1claim',
+  receiveTxid: receiveTxid,
+  refundAddress: 'bc1qrefund',
+  refundTxid: refundTxid,
+);
+
+Swap _lnSendSwap({
+  SwapStatus status = SwapStatus.completed,
+  String? refundTxid,
+}) => Swap.lnSend(
+  id: 'ln-send-swap',
+  keyIndex: 1,
+  type: SwapType.liquidToLightning,
+  status: status,
+  environment: swaps.Environment.mainnet,
+  creationTime: DateTime.utc(2026),
+  completionTime: DateTime.utc(2026, 1, 1, 1),
+  sendWalletId: 'liquid-wallet',
+  invoice: _invoiceFor1000Sats,
+  paymentAddress: 'lq1lockup',
+  paymentAmount: 1025,
+  sendTxid: 'ln-lockup-tx',
+  refundAddress: 'lq1refund',
+  refundTxid: refundTxid,
+);
+
+Swap _lnReceiveSwap() => Swap.lnReceive(
+  id: 'ln-receive-swap',
+  keyIndex: 2,
+  type: SwapType.lightningToLiquid,
+  status: SwapStatus.completed,
+  environment: swaps.Environment.mainnet,
+  creationTime: DateTime.utc(2026),
+  completionTime: DateTime.utc(2026, 1, 1, 1),
+  receiveWalletId: 'liquid-wallet',
+  invoice: _invoiceFor1000Sats,
+  receiveAddress: 'lq1claim',
+  receiveTxid: 'ln-claim-tx',
+);
 
 Order _buyOrder({
   required String? txId,

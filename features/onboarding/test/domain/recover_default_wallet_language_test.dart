@@ -95,7 +95,10 @@ void main() {
 
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = s.Secrets(scratchDirectory: () async => '/tmp');
+    secrets = s.Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final inventory = _Inventory();
     final registrations = <s.WalletRegistration>[];
     registerFallbackValue(p.BitcoinNetwork.mainnet);

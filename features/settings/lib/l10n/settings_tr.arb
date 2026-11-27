@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "Hata bildirimi",
   "errorReportingProgramTitle": "Hata Bildirimi Programı",
   "errorReportingProgramDescriptionP1": "Hata bildirimi programımıza katkıda bulunarak Bull'u geliştirmemize yardımcı olun.",
-  "errorReportingProgramDescriptionP2": "Bir şeyler bozulduğunda Bull Bitcoin anonimleştirilmiş hata raporları gönderir.",
+  "errorReportingProgramDescriptionP2": "Bir şeyler bozulduğunda Bull Bitcoin anonimleştirilmiş hata raporları gönderir. Tanılama günlükleri de gönderilebilir.",
   "errorReportingProgramDescriptionP3": "Bu, her bir hatanın kaç kullanıcıyı etkilediğini görmemizi ve buna göre düzeltmelere öncelik vermemizi sağlar; bu olmadan etkiyi ölçmenin bir yolu yoktur.",
   "errorReportingProgramDescriptionP4": "Raporlar yalnızca Bull'un sunucusuna gider, asla üçüncü taraflara gönderilmez.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin açık kaynaklıdır, bu yüzden nelerin gönderildiğini doğrulayabilirsiniz.",

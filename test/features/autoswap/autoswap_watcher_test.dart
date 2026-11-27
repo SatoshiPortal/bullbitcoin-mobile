@@ -56,4 +56,35 @@ void main() {
     verify(() => executeAutoswap.execute()).called(1);
     execution.complete(const Ok('order'));
   });
+
+  test('can restart after its subscription has stopped', () async {
+    when(() => executeAutoswap.execute())
+        .thenAnswer((_) async => const Ok('order'));
+    await watcher.dispose();
+    watcher.start();
+    syncs.add(_wallet(liquid: true));
+    await pumpEventQueue();
+    verify(() => executeAutoswap.execute()).called(1);
+  });
+
+  test('does not restart while an admitted execution is draining', () async {
+    final execution = Completer<Result<String, AutoswapFailure>>();
+    when(() => executeAutoswap.execute()).thenAnswer((_) => execution.future);
+    syncs.add(_wallet(liquid: true));
+    await pumpEventQueue();
+    verify(() => executeAutoswap.execute()).called(1);
+
+    final stopping = watcher.dispose();
+    watcher.start();
+    syncs.add(_wallet(liquid: true));
+    await pumpEventQueue();
+    verifyNever(() => executeAutoswap.execute());
+
+    execution.complete(const Ok('order'));
+    await stopping;
+    watcher.start();
+    syncs.add(_wallet(liquid: true));
+    await pumpEventQueue();
+    verify(() => executeAutoswap.execute()).called(1);
+  });
 }

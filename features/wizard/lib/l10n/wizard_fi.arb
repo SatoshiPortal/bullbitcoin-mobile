@@ -15,7 +15,7 @@
   "wizardCustomizeBody": "Käytä BULL-sovellusta omilla ehdoillasi näillä asetuksilla.",
   "wizardCustomizeDefaultCurrency": "Oletusvaluutta",
   "wizardMissionTitle": "Tue Bullin missiota",
-  "wizardMissionBody1": "Auttaaksesi meitä parantamaan ohjelmistoamme ja varmistamaan korkeimman turvallisuuden, yksityisyyden ja käytettävyyden tason, sovelluksesi voi lähettää meille virhelokeja, joiden avulla voimme havaita ongelmia ja korjata ne nopeasti seuraavissa päivityksissä.",
+  "wizardMissionBody1": "Auttaaksesi meitä parantamaan ohjelmistoamme ja varmistamaan korkeimman turvallisuuden, yksityisyyden ja käytettävyyden tason, sovelluksesi voi lähettää meille virheraportteja, joiden avulla voimme havaita ongelmia ja korjata ne nopeasti seuraavissa päivityksissä. Myös diagnostiikkalokeja saatetaan lähettää.",
   "wizardMissionBody2": "Nämä lokit on anonymisoitu, niitä ei ole liitetty IP-osoitteeseesi eivätkä ne koskaan jaa tietoja tapahtumistasi tai henkilöllisyydestäsi. Ne ovat puhtaasti teknisiä eivätkä aseta sinua mihinkään riskiin. Se on meille erittäin hyödyllistä eikä maksa sinulle mitään.",
   "wizardMissionQuestion": "Hyväksytkö osallistumisen automaattiseen ongelmaraportointiohjelmaamme?",
   "wizardMissionYes": "Kyllä",

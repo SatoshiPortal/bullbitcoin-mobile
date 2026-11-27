@@ -231,11 +231,13 @@ class _EmailNotificationsToggle extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BullText(
-                  context.loc.exchangeAppSettingsEmailNotificationsLabel,
-                  style: context.bullType.caption.copyWith(
-                    color: context.bull.onSurface,
-                    fontWeight: FontWeight.w500,
+                ExcludeSemantics(
+                  child: BullText(
+                    context.loc.exchangeAppSettingsEmailNotificationsLabel,
+                    style: context.bullType.caption.copyWith(
+                      color: context.bull.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 const Gap(BullSpacing.xxs),
@@ -248,10 +250,15 @@ class _EmailNotificationsToggle extends StatelessWidget {
               ],
             ),
           ),
-          BullSwitch(
-            value: preferences.emailNotificationsEnabled,
-            onChanged: (value) => context.read<ExchangePreferencesBloc>().add(
-              PreferencesEmailToggled(value),
+          MergeSemantics(
+            child: Semantics(
+              label: context.loc.exchangeAppSettingsEmailNotificationsLabel,
+              child: BullSwitch(
+                value: preferences.emailNotificationsEnabled,
+                onChanged: (value) => context
+                    .read<ExchangePreferencesBloc>()
+                    .add(PreferencesEmailToggled(value)),
+              ),
             ),
           ),
         ],

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import '../domain/payjoin_failure.dart';
+import 'payjoin_admission.dart';
 import '../domain/payjoin_policy.dart';
 import '../domain/payjoin_requests.dart';
 import '../domain/payjoin_session.dart';
@@ -49,6 +52,12 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   Future<Result<void, PayjoinFailure>>? _resuming;
   bool _openAttempted = false;
   bool _disposed = false;
+  bool _suspended = false;
+  Future<void>? _suspension;
+  // Bumped by every revocation. Open, resume and role calls capture it before
+  // their first await and give up when it moved.
+  int _generation = 0;
+  final _sensitive = <Future<void>>{};
 
   RecoverablePayjoin(this._open, {this._isCurrent});
 
@@ -72,28 +81,42 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   }
 
   Future<Result<void, PayjoinFailure>> _resume() async {
-    if (_disposed) return Err(_failure);
+    if (_disposed || _suspended) return Err(_failure);
+    final generation = _generation;
 
     // Unlike a role call, a resume retries an open that already failed: it is
     // the app's periodic recovery point (startup and every foreground return).
     await _ensureOpened();
+    if (!_live(generation)) return Err(_revoked);
     final current = _isCurrent;
     if (current != null && !await current()) {
       return const Err(
         PayjoinUnavailableFailure('Payjoin runtime family changed'),
       );
     }
+    // A lock during either await revokes this resume before it replays.
+    if (!_live(generation)) return Err(_revoked);
     final lifecycle = _lifecycle;
     if (lifecycle == null) return Err(_failure);
     return lifecycle.resume();
   }
 
+  bool _live(int generation) =>
+      !_disposed && !_suspended && generation == _generation;
+
+  static const _revoked = PayjoinUnavailableFailure('Payjoin is suspended');
+
   /// Awaited by every role call, so a feature that runs while the app is still
   /// starting gets the real answer instead of the fail-closed placeholder.
   /// Returns immediately once an open has been attempted and failed — retrying
   /// per call would hammer unreadable storage; [resume] owns the retry.
-  Future<void> _readyForRoleCall() async {
-    if (_disposed) return;
+  ///
+  /// The answer is the role set of the generation the call began in. It is
+  /// never stored: a lock during any await returns the unavailable set, so a
+  /// revoked generation cannot reinstall a delegate.
+  Future<Payjoin> _admit() async {
+    final generation = _generation;
+    if (_disposed || _suspended) return Payjoin.unavailable(_failure);
     if (_lifecycle == null) {
       final opening = _opening;
       if (opening != null) {
@@ -102,18 +125,49 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
         await _ensureOpened();
       }
     }
+    if (!_live(generation)) return Payjoin.unavailable(_revoked);
     final lifecycle = _lifecycle;
-    if (lifecycle == null) return;
+    if (lifecycle == null) return _delegate;
     final current = _isCurrent;
-    _delegate = current != null && !await current()
+    final stale = current != null && !await current();
+    if (!_live(generation)) return Payjoin.unavailable(_revoked);
+    return stale
         ? Payjoin.unavailable(
             const PayjoinUnavailableFailure('Payjoin runtime family changed'),
           )
         : lifecycle.payjoin;
   }
 
+  /// A call that signs or publishes. It is registered before its first await,
+  /// so a lock cannot confirm the stop beneath it. Admission is the moment it
+  /// reaches the engine: a lock before that blocks it, a lock after leaves the
+  /// engine's real result to the caller.
+  Future<Result<T, PayjoinFailure>> _effect<T>(
+    Future<Result<T, PayjoinFailure>> Function(Payjoin payjoin) run,
+  ) {
+    if (_disposed || _suspended) return Future.value(Err(_failure));
+    final generation = _generation;
+    final settled = Completer<void>();
+    _sensitive.add(settled.future);
+    return () async {
+      try {
+        final payjoin = await _admit();
+        if (!_live(generation)) return Err<T, PayjoinFailure>(_revoked);
+        return await runUnderPayjoinAdmission(
+          () => _live(generation),
+          () => run(payjoin),
+        );
+      } finally {
+        _sensitive.remove(settled.future);
+        settled.complete();
+      }
+    }();
+  }
+
   Future<void> _ensureOpened() {
-    if (_disposed || _lifecycle != null) return Future<void>.value();
+    if (_disposed || _suspended || _lifecycle != null) {
+      return Future<void>.value();
+    }
     final inFlight = _opening;
     if (inFlight != null) return inFlight;
 
@@ -121,10 +175,11 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
   }
 
   Future<void> _openAndClear() async {
+    final generation = _generation;
     try {
       switch (await _tryOpen()) {
         case Ok(:final value):
-          if (_disposed) {
+          if (!_live(generation)) {
             await value.dispose();
             return;
           }
@@ -161,6 +216,48 @@ final class RecoverablePayjoin implements PayjoinLifecycle {
     _lifecycle = null;
     _delegate = Payjoin.unavailable(_failure);
   }
+
+  @override
+  Future<void> suspend() {
+    if (_disposed) return Future<void>.value();
+    _suspended = true;
+    _generation++;
+    _failure = _revoked;
+    _delegate = Payjoin.unavailable(_failure);
+    return _suspension ??= _suspendAndClear();
+  }
+
+  Future<void> _suspendAndClear() async {
+    try {
+      // An open or resume already started owns the lifecycle it will produce:
+      // let it settle so the storage is closed rather than leaked.
+      await _opening;
+      await _resuming;
+      // Effects already admitted settle before the storage closes.
+      while (_sensitive.isNotEmpty) {
+        await Future.wait(_sensitive.toList());
+      }
+      final lifecycle = _lifecycle;
+      _lifecycle = null;
+      _delegate = Payjoin.unavailable(_failure);
+      await lifecycle?.dispose();
+    } finally {
+      _suspension = null;
+    }
+  }
+
+  @override
+  void reopen() {
+    // Only a confirmed stop lifts the suspension; no second instance opens
+    // beside one that is still closing.
+    if (!_suspended || _suspension != null) return;
+    _suspended = false;
+    _openAttempted = false;
+    _failure = const PayjoinUnavailableFailure(
+      'Payjoin storage is still opening',
+    );
+    _delegate = Payjoin.unavailable(_failure);
+  }
 }
 
 final class _RecoverablePayjoinSender implements PayjoinSender {
@@ -172,32 +269,31 @@ final class _RecoverablePayjoinSender implements PayjoinSender {
   Future<Result<PayjoinSession, PayjoinFailure>> retryProposal(
     String sessionId,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sender.retryProposal(sessionId);
+    return _owner._effect((payjoin) => payjoin.sender.retryProposal(sessionId));
   }
 
   @override
   Future<Result<PayjoinSenderSession, PayjoinFailure>> start(
     StartPayjoinSender request,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sender.start(request);
+    return _owner._effect((payjoin) => payjoin.sender.start(request));
   }
 
   @override
   Future<Result<PayjoinSession, PayjoinFailure>> broadcastOriginal(
     String sessionId,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sender.broadcastOriginal(sessionId);
+    return _owner._effect(
+      (payjoin) => payjoin.sender.broadcastOriginal(sessionId),
+    );
   }
 
   @override
   Future<Result<bool, PayjoinFailure>> canBroadcastOriginal(
     String sessionId,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sender.canBroadcastOriginal(sessionId);
+    final payjoin = await _owner._admit();
+    return payjoin.sender.canBroadcastOriginal(sessionId);
   }
 }
 
@@ -210,20 +306,19 @@ final class _RecoverablePayjoinReceiver implements PayjoinReceiver {
   Future<Result<PayjoinReceiverSession, PayjoinFailure>> start(
     StartPayjoinReceiver request,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.receiver.start(request);
+    return _owner._effect((payjoin) => payjoin.receiver.start(request));
   }
 
   @override
   Future<Result<void, PayjoinFailure>> cancel(String sessionId) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.receiver.cancel(sessionId);
+    final payjoin = await _owner._admit();
+    return payjoin.receiver.cancel(sessionId);
   }
 
   @override
   Future<Result<void, PayjoinFailure>> disableAll() async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.receiver.disableAll();
+    final payjoin = await _owner._admit();
+    return payjoin.receiver.disableAll();
   }
 }
 
@@ -234,53 +329,53 @@ final class _RecoverablePayjoinSessions implements PayjoinSessions {
 
   @override
   Future<Result<PayjoinSession?, PayjoinFailure>> byId(String sessionId) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sessions.byId(sessionId);
+    final payjoin = await _owner._admit();
+    return payjoin.sessions.byId(sessionId);
   }
 
   @override
   Future<Result<List<PayjoinSession>, PayjoinFailure>> byTransactionId(
     String transactionId,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sessions.byTransactionId(transactionId);
+    final payjoin = await _owner._admit();
+    return payjoin.sessions.byTransactionId(transactionId);
   }
 
   @override
   Future<Result<List<PayjoinSession>, PayjoinFailure>> list(
     PayjoinSessionFilter filter,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sessions.list(filter);
+    final payjoin = await _owner._admit();
+    return payjoin.sessions.list(filter);
   }
 
   @override
   Stream<Result<PayjoinSession, PayjoinFailure>> watch({
     Set<String>? sessionIds,
   }) async* {
-    await _owner._readyForRoleCall();
-    yield* _owner._delegate.sessions.watch(sessionIds: sessionIds);
+    final payjoin = await _owner._admit();
+    yield* payjoin.sessions.watch(sessionIds: sessionIds);
   }
 
   @override
   Future<Result<Set<Outpoint>, PayjoinFailure>> reservedOutpoints() async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sessions.reservedOutpoints();
+    final payjoin = await _owner._admit();
+    return payjoin.sessions.reservedOutpoints();
   }
 
   @override
   Future<Result<String?, PayjoinFailure>> visibleTransaction(
     String sessionId,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sessions.visibleTransaction(sessionId);
+    final payjoin = await _owner._admit();
+    return payjoin.sessions.visibleTransaction(sessionId);
   }
 
   @override
   Future<Result<List<PayjoinInputReservation>, PayjoinFailure>>
   inputReservations() async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.sessions.inputReservations();
+    final payjoin = await _owner._admit();
+    return payjoin.sessions.inputReservations();
   }
 }
 
@@ -291,14 +386,14 @@ final class _RecoverablePayjoinPolicy implements PayjoinPolicyAccess {
 
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> load() async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.policy.load();
+    final payjoin = await _owner._admit();
+    return payjoin.policy.load();
   }
 
   @override
   Stream<Result<PayjoinPolicy, PayjoinFailure>> watch() async* {
-    await _owner._readyForRoleCall();
-    yield* _owner._delegate.policy.watch();
+    final payjoin = await _owner._admit();
+    yield* payjoin.policy.watch();
   }
 
   @override
@@ -306,24 +401,24 @@ final class _RecoverablePayjoinPolicy implements PayjoinPolicyAccess {
     PayjoinAction action, {
     required bool enabled,
   }) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.policy.setActionEnabled(action, enabled: enabled);
+    final payjoin = await _owner._admit();
+    return payjoin.policy.setActionEnabled(action, enabled: enabled);
   }
 
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setMinimumAmount(
     Sats amount,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.policy.setMinimumAmount(amount);
+    final payjoin = await _owner._admit();
+    return payjoin.policy.setMinimumAmount(amount);
   }
 
   @override
   Future<Result<PayjoinPolicy, PayjoinFailure>> setSessionLifetime(
     Duration lifetime,
   ) async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.policy.setSessionLifetime(lifetime);
+    final payjoin = await _owner._admit();
+    return payjoin.policy.setSessionLifetime(lifetime);
   }
 }
 
@@ -334,7 +429,7 @@ final class _RecoverablePayjoinDiagnostics implements PayjoinDiagnostics {
 
   @override
   Future<Result<PayjoinRelayHealth, PayjoinFailure>> relayHealth() async {
-    await _owner._readyForRoleCall();
-    return _owner._delegate.diagnostics.relayHealth();
+    final payjoin = await _owner._admit();
+    return payjoin.diagnostics.relayHealth();
   }
 }

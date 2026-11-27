@@ -63,7 +63,7 @@ void main() {
     client = build(ArkExecutionMode.backgroundExisting);
     final stages = <String>[];
     native.afterStage = stages.add;
-    final pass = requireOk(await client.synchronize(account, renew: false));
+    final pass = requireOk(await client.synchronize(account, renew: true));
     expect(pass.failedStages, isEmpty);
     expect(stages, isNot(contains('offboards')));
   });
@@ -79,7 +79,7 @@ void main() {
     await client.close();
     client = build(ArkExecutionMode.backgroundExisting);
     final background = requireOk(
-      await client.synchronize(account, renew: false),
+      await client.synchronize(account, renew: true),
     );
     expect(background.snapshot.stale, isTrue);
 

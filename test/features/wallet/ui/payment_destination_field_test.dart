@@ -74,6 +74,9 @@ void main() {
     expect(find.text('Enter or scan a valid Bitcoin address.'), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'bitcoin:changed');
+    expect(changed, 'bitcoin:', reason: 'typing is checked when left');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
     expect(changed, 'bitcoin:changed');
   });
 

@@ -11,6 +11,9 @@ const MAX_PAY_RESPONSE_BYTES: usize = 256 * 1024;
 pub struct LnurlPayBounds {
     pub min_sendable_msat: u64,
     pub max_sendable_msat: u64,
+    /// The recipient's plain-text description from the LUD-06 metadata. The
+    /// invoice carries only its hash.
+    pub description: Option<String>,
 }
 
 fn pay_error(kind: &str) -> BoltzError {
@@ -52,6 +55,21 @@ struct PayLimitsResponse {
     min_sendable: u64,
     #[serde(rename = "maxSendable")]
     max_sendable: u64,
+    metadata: Option<String>,
+}
+
+fn plain_text_description(metadata: &str) -> Option<String> {
+    let entries: Vec<serde_json::Value> = serde_json::from_str(metadata).ok()?;
+    entries
+        .iter()
+        .find_map(|entry| match entry.as_array()?.as_slice() {
+            [kind, text] if kind.as_str() == Some("text/plain") => text
+                .as_str()
+                .map(str::trim)
+                .filter(|text| !text.is_empty())
+                .map(str::to_owned),
+            _ => None,
+        })
 }
 
 fn parse_pay_bounds(bytes: &[u8]) -> Result<LnurlPayBounds, BoltzError> {
@@ -70,6 +88,10 @@ fn parse_pay_bounds(bytes: &[u8]) -> Result<LnurlPayBounds, BoltzError> {
     Ok(LnurlPayBounds {
         min_sendable_msat: response.min_sendable,
         max_sendable_msat: response.max_sendable,
+        description: response
+            .metadata
+            .as_deref()
+            .and_then(plain_text_description),
     })
 }
 
@@ -178,13 +200,33 @@ mod tests {
     }
 
     #[test]
+    fn reads_the_plain_text_description_from_the_metadata() {
+        let response = br#"{"tag":"payRequest","minSendable":1000,"maxSendable":2000,"callback":"ignored","metadata":"[[\"text/plain\",\"Wallet of Satoshi: ishi\"],[\"text/identifier\",\"ishi@walletofsatoshi.com\"]]"}"#;
+        assert_eq!(
+            parse_pay_bounds(response).unwrap().description.as_deref(),
+            Some("Wallet of Satoshi: ishi")
+        );
+        for metadata in [
+            r#"[[\"text/identifier\",\"a@b.com\"]]"#,
+            r#"[[\"text/plain\",\"  \"]]"#,
+            r#"not json"#,
+        ] {
+            let body = format!(
+                r#"{{"tag":"payRequest","minSendable":1,"maxSendable":2,"metadata":"{metadata}"}}"#
+            );
+            assert_eq!(parse_pay_bounds(body.as_bytes()).unwrap().description, None);
+        }
+    }
+
+    #[test]
     fn parses_only_valid_pay_bounds() {
         let valid = br#"{"tag":"payRequest","minSendable":1001,"maxSendable":5000,"callback":"ignored","metadata":"ignored"}"#;
         assert_eq!(
             parse_pay_bounds(valid).unwrap(),
             LnurlPayBounds {
                 min_sendable_msat: 1001,
-                max_sendable_msat: 5000
+                max_sendable_msat: 5000,
+                description: None,
             }
         );
         for invalid in [

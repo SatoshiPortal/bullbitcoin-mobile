@@ -212,6 +212,12 @@ final class StorageCutover {
   Future<Result<RuntimeAdmission, LegacyImportFailure>> prepare({
     Duration timeout = const Duration(seconds: 2),
   }) async {
+    // Validate ready stores under a shared lease, even while WorkManager is
+    // running. An unsuccessful probe can still need exclusive recovery, such
+    // as an unpublished marker or a legacy schema that needs migration.
+    final ready = await admit(timeout: Duration.zero);
+    if (ready is Ok<RuntimeAdmission, LegacyImportFailure>) return ready;
+
     LifecycleAdmission? held;
     try {
       final LifecycleAdmission exclusive;

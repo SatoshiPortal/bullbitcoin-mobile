@@ -22,6 +22,11 @@ final class MemoryBackupStorage implements BackupStorage {
   bool failAfterCreate = false;
   bool corruptRead = false;
 
+  /// Runs at the start of every read / listing: a test ends a session here.
+  Future<void> Function()? onRead;
+  Future<void> Function()? onList;
+  Future<void> Function()? onAuthorize;
+
   @override
   final BackupDestination destination;
 
@@ -37,6 +42,7 @@ final class MemoryBackupStorage implements BackupStorage {
   Future<Result<StorageSession, BackupStorageFailure>> authorize({
     required bool interactive,
   }) async {
+    await onAuthorize?.call();
     if (interactive) {
       interactiveAuthorizations++;
       accountId = discoveryAccountId;
@@ -92,13 +98,17 @@ final class _Session implements StorageSession {
   Future<Result<List<StoredObject>, BackupStorageFailure>> list({
     required String mimeType,
     String? namePrefix,
-  }) async => Ok(objects.keys.toList());
+  }) async {
+    await storage.onList?.call();
+    return Ok(objects.keys.toList());
+  }
 
   @override
   Future<Result<Uint8List, BackupStorageFailure>> read(
     StoredObject object, {
     required int maxBytes,
   }) async {
+    await storage.onRead?.call();
     if (storage.unavailableReads.contains(object.id)) {
       return const Err(BackupStorageUnavailableFailure());
     }

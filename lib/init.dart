@@ -21,7 +21,6 @@ import 'package:signers/storage.dart';
 import 'package:sync/storage.dart';
 import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:legacy_storage/legacy_storage.dart';
-import 'package:mempool/mempool.dart';
 import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
@@ -190,8 +189,13 @@ class Bull {
     final preferencesFile = File(
       p.join(support.path, 'databases', 'preferences.sqlite'),
     );
+    // One authority for the isolate: the inventory grants and revokes it,
+    // `Secrets` and every handle it issues follow it.
+    final sessionAuthority = SessionAuthority();
+    locator.registerSingleton<SessionAuthority>(sessionAuthority);
     final secrets = Secrets(
       scratchDirectory: () async => (await getTemporaryDirectory()).path,
+      authority: sessionAuthority,
     );
     final signerKeys = secrets.databaseKeys(module: 'signers');
     final syncKeys = secrets.databaseKeys(module: 'sync');
@@ -199,6 +203,16 @@ class Bull {
     final signersFile = destination('signers');
     final syncFile = destination('sync');
     final exchangeFile = destination('exchange');
+    final mempoolImport = MempoolImport(
+      file: mempoolFile,
+      defaultServers: [
+        MempoolLegacyDefaults.bbMempoolUrlPath,
+        MempoolLegacyDefaults.testnetMempoolUrlPath,
+        MempoolLegacyDefaults.bbLiquidMempoolUrlPath,
+        MempoolLegacyDefaults.bbLiquidMempoolTestnetUrlPath,
+      ],
+      retainRuntimeStore: true,
+    );
     final cutover = StorageCutover(
       directory: Directory(p.join(support.path, 'storage-coordination')),
       legacy: legacy,
@@ -226,15 +240,7 @@ class Bull {
               (await readLegacyRecoverBullPermission(recoverBull.standalone))
                   .mapErr((_) => const LegacyImportUnavailable()),
         ),
-        MempoolImport(
-          file: mempoolFile,
-          defaultServers: [
-            MempoolLegacyDefaults.bbMempoolUrlPath,
-            MempoolLegacyDefaults.testnetMempoolUrlPath,
-            MempoolLegacyDefaults.bbLiquidMempoolUrlPath,
-            MempoolLegacyDefaults.bbLiquidMempoolTestnetUrlPath,
-          ],
-        ),
+        mempoolImport,
         ElectrumImport(file: electrumFile),
         LabelsImport(file: labelsFile),
         ExchangeCredentialImport(file: exchangeFile, secrets: secrets),
@@ -252,6 +258,7 @@ class Bull {
               locator,
               admission: admission,
               legacy: legacy.source,
+              authority: sessionAuthority,
               inventoryFile: secretsFile,
               signersFile: signersFile,
               syncFile: syncFile,
@@ -360,8 +367,8 @@ class Bull {
         ),
         openPreferences: () =>
             Preferences.open(file: preferencesFile, admission: admission),
-        openMempool: (tor, http) => Mempool.open(
-          file: mempoolFile,
+        openMempool: (tor, http) async => openAdmittedMempool(
+          participant: mempoolImport,
           admission: admission,
           tor: tor,
           torHttp: http,
@@ -413,6 +420,14 @@ class Bull {
         locator,
         databasePath: recoverBull.standalone.path,
       );
+      AppLocator.setupDataBackup(
+        locator,
+        journalPath: p.join(
+          support.path,
+          'databases',
+          'backup_metadata.sqlite',
+        ),
+      );
       if (!pinProtected) {
         unawaited(locator<RecoverBullFacade>().checkAtColdStart());
       }
@@ -429,11 +444,6 @@ class Bull {
       } on Exception {
         // Statistics are optional and must not block wallet startup.
       }
-      await prepareBackgroundWalletStores(
-        openNotifications: () => locator<PaymentNotificationStore>().open(),
-      );
-      await locator<BackgroundSchedule>().apply();
-
       await Report.recordMigration();
       initialized = true;
       return const Ok(null);
@@ -445,6 +455,21 @@ class Bull {
           await admission.close();
         }
       }
+    }
+  }
+
+  static Future<void> startBackgroundWork() async {
+    try {
+      await prepareBackgroundWalletStores(
+        openNotifications: () => locator<PaymentNotificationStore>().open(),
+      );
+    } on Exception {
+      log.warning('Background wallet store preparation failed');
+    }
+    try {
+      await locator<BackgroundSchedule>().apply();
+    } on Exception {
+      log.warning('Background schedule initialization failed');
     }
   }
 }

@@ -10,6 +10,7 @@ import 'package:spend/spend.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/testing.dart';
 import 'package:sync/write.dart';
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 // Public BIP84 descriptors of the published BIP39 vector "abandon ... about"
 // (account m/84'/1'/0'): no private key, no application custody material.
@@ -63,7 +64,10 @@ void main() {
     );
     spend = Spend.open(
       sync: runtime,
-      secrets: Secrets(scratchDirectory: () async => directory.path),
+      secrets: Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      ),
       arkFunding: const ArkFundingSigningGuard(authority: null),
       catalog: _WatchOnlyCatalog(),
     );

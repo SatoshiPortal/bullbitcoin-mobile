@@ -74,6 +74,7 @@ openArkForegroundMaintenance({
   required ArkClient client,
   required ArkAccountRegistryRepository accounts,
   required bool initializeNew,
+  required Future<bool> Function(Fingerprint parent) permitsParent,
   ArkReserveTopUpPort? exitTopUp,
   ArkExitFunding? exitFunding,
 }) async {
@@ -90,6 +91,7 @@ openArkForegroundMaintenance({
     body: copy.body,
     foreground: true,
     initializeNew: initializeNew,
+    permitsParent: permitsParent,
   );
   SqliteArkReminderRepository? store;
   ArkReminderRepository reminders = const _UnavailableReminders();

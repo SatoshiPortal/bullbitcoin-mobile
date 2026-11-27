@@ -14,6 +14,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullAmountScope,
         BullAmountSnapshot,
+        BullHeaderBackground,
         BullQuickActionBar,
         bullUiLocalizationsDelegate;
 import 'package:material_ui/material_ui.dart';
@@ -33,7 +34,6 @@ Future<void> _pumpTopSection(
   required double textScale,
   bool hideAmounts = true,
   double? actionsHeight,
-  required int unconfirmedIncomingBalance,
 }) async {
   final wallet = _Wallet();
   final settings = _Settings();
@@ -49,7 +49,6 @@ Future<void> _pumpTopSection(
     initialState: WalletState(
       amountDisplay: amountDisplay,
       status: WalletStatus.success,
-      unconfirmedIncomingBalance: unconfirmedIncomingBalance,
     ),
   );
   whenListen(
@@ -125,12 +124,7 @@ Future<void> _pumpTopSection(
 
 void main() {
   testWidgets('home balance has no eye toggle', (tester) async {
-    await _pumpTopSection(
-      tester,
-      textScale: 1,
-      actionsHeight: 100,
-      unconfirmedIncomingBalance: 0,
-    );
+    await _pumpTopSection(tester, textScale: 1, actionsHeight: 100);
     expect(find.byType(EyeToggle), findsNothing);
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.byTooltip(l10n.walletShowAmountsTooltip), findsNothing);
@@ -138,49 +132,14 @@ void main() {
   });
 
   testWidgets(
-    'balance grows for unconfirmed amount at 200 percent text scale',
-    (tester) async {
-      await _pumpTopSection(
-        tester,
-        textScale: 2,
-        actionsHeight: 100,
-        unconfirmedIncomingBalance: 100,
-      );
-      expect(tester.takeException(), isNull);
-      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-      final unconfirmed = find.text(l10n.walletBalanceUnconfirmedIncoming);
-      expect(unconfirmed, findsOneWidget);
-      expect(
-        tester.getTopLeft(find.byKey(_actionKey)).dy,
-        greaterThanOrEqualTo(tester.getBottomLeft(unconfirmed).dy + 12),
-      );
-      expect(tester.getTopLeft(find.byKey(_actionKey)).dy, greaterThan(224));
-      // The actions straddle the bottom edge of the background image.
-      final backgroundBottom = tester.getBottomLeft(find.byType(Image)).dy;
-      expect(
-        backgroundBottom,
-        greaterThan(tester.getTopLeft(find.byKey(_actionKey)).dy),
-      );
-      expect(
-        backgroundBottom,
-        lessThan(tester.getBottomLeft(find.byKey(_actionKey)).dy),
-      );
-    },
-  );
-
-  testWidgets(
     'background image is minBackgroundHeight tall with the quick action bar',
     (tester) async {
       // The home screen sizes its overscroll backdrop from this constant; a
       // taller backdrop shows below the image.
-      await _pumpTopSection(
-        tester,
-        textScale: 1,
-        unconfirmedIncomingBalance: 0,
-      );
+      await _pumpTopSection(tester, textScale: 1);
       expect(tester.takeException(), isNull);
       expect(
-        tester.getSize(find.byType(Image)).height,
+        tester.getSize(find.byType(BullHeaderBackground)).height,
         WalletHomeTopSection.minBackgroundHeight(
           tester.element(find.byType(WalletHomeTopSection)),
         ),

@@ -9,11 +9,19 @@ final class BackupRunStatus {
   final List<UnsupportedWallet> unsupported;
   final int unattributedCount;
 
+  /// The account the user confirmed, as the storage names it. Shown on the
+  /// confirmation only; never logged.
+  final String? account;
+
+  /// Fields left out across the groups; the count only.
+  int get excluded => groups.fold(0, (sum, group) => sum + group.excluded);
+
   const BackupRunStatus({
     required this.destination,
     required this.groups,
     required this.unsupported,
     required this.unattributedCount,
+    this.account,
   });
 }
 
@@ -24,6 +32,9 @@ final class BackupGroupStatus {
   final bool previousVersionKept;
   final bool pendingChanges;
   final int skippedCount;
+
+  /// Free-text fields left out because they looked like secret material.
+  final int excluded;
   final BackupMetadataFailure? failure;
   final BackupActionReason? actionNeeded;
 
@@ -34,6 +45,7 @@ final class BackupGroupStatus {
     this.previousVersionKept = false,
     this.pendingChanges = false,
     this.skippedCount = 0,
+    this.excluded = 0,
     this.failure,
     this.actionNeeded,
   });
@@ -47,5 +59,7 @@ enum BackupActionReason {
   unavailable,
   incompleteCapture,
   tooLarge,
+  accountChanged,
+  ambiguous,
   unexpected,
 }

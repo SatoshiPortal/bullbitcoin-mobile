@@ -5,7 +5,7 @@ version: 0.1.0
 
 environment:
   sdk: "3.14.0"
-  flutter: "3.50.0"
+  flutter: "3.50.1"
 
 resolution: workspace
 
@@ -20,17 +20,21 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  material_ui: ^1.11.0
+  bip39_mnemonic: ^4.1.0
   crypto: ^3.0.7
+  unorm_dart: ^0.3.2
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
   meta: ^1.17.0
   primitives:
   backup_storage:
+  rust_bindings:
   labels:
   secrets:
   sqlite3: ^3.5.2
 
 dev_dependencies:
-  material_ui: ^1.11.0
+  legacy_storage:
   flutter_test:
     sdk: flutter

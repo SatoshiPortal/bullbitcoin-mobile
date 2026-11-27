@@ -223,14 +223,18 @@ class _EnabledToggle extends StatelessWidget {
         Row(
           mainAxisAlignment: .spaceBetween,
           children: [
-            BullText(
-              context.swapCopyForLocale.autoswapEnableToggleLabel,
-              style: context.bullType.body
-                  .copyWith(fontWeight: FontWeight.w500)
-                  .copyWith(color: context.appColors.text),
+            ExcludeSemantics(
+              child: BullText(
+                context.swapCopyForLocale.autoswapEnableToggleLabel,
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(color: context.appColors.text),
+              ),
             ),
             BullSwitch(
               value: enabled,
+              semanticLabel:
+                  context.swapCopyForLocale.autoswapEnableToggleLabel,
               onChanged: (value) {
                 context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(
                   value,
@@ -503,14 +507,17 @@ class _AlwaysBlockToggle extends StatelessWidget {
         Row(
           mainAxisAlignment: .spaceBetween,
           children: [
-            BullText(
-              context.swapCopyForLocale.autoswapAlwaysBlockLabel,
-              style: context.bullType.body
-                  .copyWith(fontWeight: FontWeight.w500)
-                  .copyWith(color: context.appColors.text),
+            ExcludeSemantics(
+              child: BullText(
+                context.swapCopyForLocale.autoswapAlwaysBlockLabel,
+                style: context.bullType.body
+                    .copyWith(fontWeight: FontWeight.w500)
+                    .copyWith(color: context.appColors.text),
+              ),
             ),
             BullSwitch(
               value: alwaysBlock,
+              semanticLabel: context.swapCopyForLocale.autoswapAlwaysBlockLabel,
               onChanged: (value) {
                 context
                     .read<AutoSwapSettingsCubit>()

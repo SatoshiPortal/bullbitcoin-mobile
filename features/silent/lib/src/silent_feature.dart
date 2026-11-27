@@ -27,6 +27,10 @@ final class SilentFeature {
   final SilentRouteAccess Function(BuildContext) _readRouteAccess;
   final List<RouteBase> routes;
   bool _foregroundWatchers = false;
+  bool _suspended = false;
+  bool _stopFailed = false;
+  bool _restartWatchers = false;
+  Future<void>? _suspending;
 
   SilentFeature._(
     this._services,
@@ -34,6 +38,10 @@ final class SilentFeature {
     this._readRouteAccess,
     this.routes,
   );
+
+  @visibleForTesting
+  SilentFeature.forTesting(GetIt services)
+    : this._(services, '/', (_) => throw UnimplementedError(), const []);
 
   static SilentFeature mount({
     required Preferences preferences,
@@ -95,6 +103,50 @@ final class SilentFeature {
       isSpWalletSetup: _services<SilentCapability>().isSetUpNow,
       gateClosedRedirectPath: _walletHomePath,
     );
+  }
+
+  /// Revokes the signing account now: nothing new opens, then the foreground
+  /// watchers and the native account stop. Completes once the account is
+  /// confirmed closed; a stop that fails throws and the account stays closed.
+  Future<void> suspend() {
+    final stopping = _suspending;
+    if (stopping != null) return stopping;
+    if (_suspended) return Future<void>.value();
+    _suspended = true;
+    _restartWatchers = _foregroundWatchers;
+    final account = _services<BwkSpAccountRepository>();
+    account.beginTeardown();
+    return _suspending = _stop(account);
+  }
+
+  Future<void> _stop(BwkSpAccountRepository account) async {
+    try {
+      if (_foregroundWatchers) {
+        _foregroundWatchers = false;
+        await Future.wait([
+          _services<SpTipWatcher>().dispose(),
+          _services<SpElectrumReconnectWatcher>().dispose(),
+        ]);
+      }
+      final outcome = await account.dispose();
+      if (outcome case Err(:final failure)) {
+        throw StateError('Silent account did not stop: ${failure.runtimeType}');
+      }
+    } catch (_) {
+      _stopFailed = true;
+      rethrow;
+    } finally {
+      _suspending = null;
+    }
+  }
+
+  /// Lets the account open again and restarts the watchers [suspend] stopped.
+  /// Does nothing until the stop is confirmed, or after a failed stop.
+  void resume() {
+    if (!_suspended || _suspending != null || _stopFailed) return;
+    _suspended = false;
+    _services<BwkSpAccountRepository>().endTeardown();
+    if (_restartWatchers) startForegroundWatchers();
   }
 
   Future<Result<void, SilentFailure>> close() async {

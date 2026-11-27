@@ -34,4 +34,9 @@ abstract interface class ArkChildProviderPort {
     )
     action,
   );
+
+  /// Admission for one renewal batch of an open that is already running. It
+  /// is asked before every batch, never remembered from the open, so a policy
+  /// change between two batches refuses the later one. It derives nothing.
+  Future<Result<void, ArkWalletFailure>> admitBatch(ArkAccountId account);
 }

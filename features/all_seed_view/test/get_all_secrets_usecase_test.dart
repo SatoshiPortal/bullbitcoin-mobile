@@ -40,7 +40,10 @@ void main() {
 
   setUp(() {
     FakeSecureStoragePlatform().install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     usecase = GetAllSecretsUsecase(secrets: secrets);
   });
 
@@ -70,7 +73,10 @@ void main() {
       // keystore. One good entry, one value under the prefix that is not ours.
       FakeSecureStoragePlatform(entries: {'seed_deadbeef': 'not json at all'})
           .install();
-      secrets = Secrets(scratchDirectory: () async => '/tmp');
+      secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      );
       usecase = GetAllSecretsUsecase(secrets: secrets);
       expect(
         await secrets.import(words: words, language: Language.english),

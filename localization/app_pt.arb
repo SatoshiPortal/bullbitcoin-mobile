@@ -353,7 +353,6 @@
   "autoswapRecipientRequired": "*",
   "backupWalletGoogleDrivePermissionWarning": "O Google irá pedir-lhe para partilhar informações pessoais com este aplicativo.",
   "testCompletedSuccessMessage": "Você é capaz de recuperar o acesso a uma carteira Bitcoin perdida",
-  "walletBalanceUnconfirmedIncoming": "Em progresso",
   "selectAmountTitle": "Selecione o valor",
   "routeErrorMessage": "Página não encontrada",
   "connectHardwareWalletPassport": "Passaporte da Fundação",

@@ -152,6 +152,18 @@ void main() {
     },
   );
 
+  test('a prepared store admits another runtime in the same isolate', () async {
+    final first = await prepare();
+    try {
+      final next = await fixtureCutover(directory)
+          .prepare(timeout: Duration.zero);
+      if (next case Ok(:final value)) await value.close();
+      expect(next, isA<Ok<RuntimeAdmission, LegacyImportFailure>>());
+    } finally {
+      await first.close();
+    }
+  });
+
   test(
     'foreground can prepare while a background isolate is admitted',
     () async {

@@ -69,7 +69,7 @@ class _ConsolidationBannerViewState extends State<_ConsolidationBannerView> {
       builder: (context, required) {
         if (!required) return const SizedBox.shrink();
         return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.fromLTRB(16, BullSizes.homeCardGap, 16, 0),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: BullSizes.homeCard),
             child: BullAlertCard(

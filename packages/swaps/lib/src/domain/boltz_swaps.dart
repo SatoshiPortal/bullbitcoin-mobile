@@ -30,6 +30,10 @@ abstract interface class BoltzSwaps {
     SwapType type,
   );
 
+  /// Asks the server for its fees now, past any cached answer, the way a
+  /// swap would: it succeeds only when the address and the credentials work.
+  Future<Result<void, SwapsFailure>> checkServer();
+
   /// Pays [invoice] from a Bitcoin wallet. Reuses the swap already created
   /// for the same invoice while nothing was locked into it.
   Future<Result<LnSendSwap, SwapsFailure>> createBitcoinToLightningSwap({

@@ -61,43 +61,67 @@ class SecretRepository {
   /// Runs [body] on the secret's material, which exists only for the call.
   ///
   /// A read that fails is a [FetchSecretFailure]; [body] raising is a [UseSecretFailure], so a bad PSBT never reads as an unreadable seed.
+  ///
+  /// With a [scope], the session is checked before the material is read, again once it is loaded and before [body] sees it, and once more before the result is handed back: a handle of a past session never reaches key material and never delivers a result. A value dropped after [body] ran goes through [discard], which releases anything it holds natively.
   Future<Result<T, SecretFailure>> use<T>(
     SecretInfo info,
-    FutureOr<T> Function(SecretMaterial material) body,
-  ) async {
+    FutureOr<T> Function(SecretMaterial material) body, {
+    SessionScope? scope,
+    FutureOr<void> Function(T value)? discard,
+  }) async {
+    if (scope != null && !scope.isCurrent) {
+      return const Err(inventorySessionChangedFailure);
+    }
     final id = info.id;
     final loaded = await _read(
       id,
       (model) => _readOffIsolate(() => materialize(id, model)),
     );
-    return switch (loaded) {
-      Err(:final failure) => Err(failure),
-      Ok(:final value) => await boundary(
-        () async => await body(value),
-        orElse: UseSecretFailure.new,
-      ),
-    };
+    switch (loaded) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (scope != null && !scope.isCurrent) {
+          return const Err(inventorySessionChangedFailure);
+        }
+        final result = await boundary(
+          () async => await body(value),
+          orElse: UseSecretFailure.new,
+        );
+        if (scope != null && !scope.isCurrent) {
+          if (result case Ok(:final value)) await discard?.call(value);
+          return const Err(inventorySessionChangedFailure);
+        }
+        return result;
+    }
   }
 
   /// [use], for operations that need BIP39 words. A seed-only secret is refused from [info] alone, before any PBKDF2.
   Future<Result<T, SecretFailure>> useMnemonic<T>(
     SecretInfo info,
-    FutureOr<T> Function(Mnemonic material) body,
-  ) {
+    FutureOr<T> Function(Mnemonic material) body, {
+    SessionScope? scope,
+    FutureOr<void> Function(T value)? discard,
+  }) {
     if (!info.isMnemonic) {
       return Future.value(
         const Err(MnemonicRequiredFailure('operation requires a mnemonic')),
       );
     }
-    return use(info, (material) {
-      // Unreachable while `materialize` checks the key: a seed-only model cannot derive to a mnemonic's fingerprint.
-      if (material is! Mnemonic) {
-        throw const FingerprintMismatchException(
-          'stored secret carries no words',
-        );
-      }
-      return body(material);
-    });
+    return use(
+      info,
+      (material) {
+        // Unreachable while `materialize` checks the key: a seed-only model cannot derive to a mnemonic's fingerprint.
+        if (material is! Mnemonic) {
+          throw const FingerprintMismatchException(
+            'stored secret carries no words',
+          );
+        }
+        return body(material);
+      },
+      scope: scope,
+      discard: discard,
+    );
   }
 
   /// Whether a secret exists, best-effort. See [FlutterSecureStorageDatasource.secretExists].

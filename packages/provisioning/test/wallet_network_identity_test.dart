@@ -44,7 +44,10 @@ void main() {
   setUp(() async {
     FakeSecureStoragePlatform().install();
     directory = await Directory.systemTemp.createTemp('wallet-identity-');
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     fixture = await InventoryFixture.open(directory);
     accounts = WalletProvisioning.open(
       inventory: fixture.inventory,

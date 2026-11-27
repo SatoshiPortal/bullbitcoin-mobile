@@ -2,7 +2,11 @@
 abstract final class BullSizes {
   /// Minimum height shared by the cards stacked on a home screen: the quick
   /// action bar, a wallet card and the banners above them.
-  static const double homeCard = 90;
+  static const double homeCard = 80;
+
+  /// Space between the cards stacked on a home screen, and between the
+  /// quick action bar and the first card.
+  static const double homeCardGap = 8;
 }
 
 /// Brightness-invariant spacing scale (px).

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -43,7 +44,11 @@ void main() {
       timeout: Duration.zero,
     ) as RuntimeAdmission;
     inventory = _value(
-      await SecretsInventory.open(file: file, admission: admission),
+      await SecretsInventory.open(
+        authority: SessionAuthority(),
+        file: file,
+        admission: admission,
+      ),
     );
     background = _value(
       await BackgroundWalletDescriptors.open(file: file, admission: admission),
@@ -58,7 +63,10 @@ void main() {
   test(
     'metadata backup excludes confidential descriptors and missing seeds',
     () async {
-      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
       final reference = _value(await secrets.generate()).id.hex;
       final bitcoin = 'wpkh([$reference/84h/0h/0h])';
       final liquid = 'elwpkh([$reference/84h/1776h/0h])';
@@ -147,6 +155,27 @@ void main() {
       expect(_value(await background.list()).single.id, id);
     },
   );
+
+  test('a joined read cannot cross into a reopened session', () async {
+    final started = Completer<void>();
+    final release = Completer<void>();
+    final oldRead = inventory.readInSession(() async {
+      started.complete();
+      await release.future;
+      return 'old session';
+    });
+    await started.future;
+    inventory.lock();
+    expect(await inventory.readInSession(() async => 'locked'), isA<Err>());
+    expect(await inventory.resumeUnprotected(), isA<Ok>());
+    expect(
+      await inventory.readInSession(() async => 'new session'),
+      isA<Ok<String, SecretFailure>>(),
+    );
+    release.complete();
+    final result = await oldRead;
+    expect(result, isA<Err<String, SecretFailure>>());
+  });
 
   test('targeted lookup keeps testnet and regtest distinct', () async {
     const testId = 'wpkh([01234567/84h/1h/0h])';
@@ -527,7 +556,11 @@ void main() {
       await store.close();
 
       final reopened = _value(
-        await SecretsInventory.open(file: file, admission: admission),
+        await SecretsInventory.open(
+          authority: SessionAuthority(),
+          file: file,
+          admission: admission,
+        ),
       );
       final status = _value(await reopened.accessStatus());
       expect(status.remaining.inSeconds, inInclusiveRange(59, 60));
@@ -566,7 +599,10 @@ void main() {
   );
 
   test('ordinary module key handles cannot open the inventory', () {
-    final keys = Secrets(scratchDirectory: () async => directory.path);
+    final keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     expect(() => keys.databaseKeys(module: 'secrets'), throwsArgumentError);
   });
 }

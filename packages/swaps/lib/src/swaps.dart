@@ -86,7 +86,9 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
     walletTx,
     required Future<List<SwapWalletTx>> Function(String, {bool sync}) walletTxs,
   }) async {
-    final servers = SwapServerSettingRepositoryImpl();
+    final servers = SwapServerSettingRepositoryImpl(
+      secrets: secrets.swapKeychain,
+    );
     final storage = SwapStorage(
       rows: DriftSwapRowStore(database),
       secrets: secrets.swapKeychain,
@@ -112,16 +114,22 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
       }
       final profile = RegtestBoltzProfile.forNetwork(environment);
       final isTestnet = environment == NetworkEnv.testnet;
-      final url =
-          profile?.api.toString() ??
-          (await servers.fetch(isTestnet: isTestnet))
-              .forEnvironment(isTestnet: isTestnet)
-              .host;
+      final String url;
+      SwapServerCredentials? credentials;
+      if (profile == null) {
+        final server = (await servers.fetch(isTestnet: isTestnet))
+            .forEnvironment(isTestnet: isTestnet);
+        url = server.host;
+        credentials = server.credentials;
+      } else {
+        url = profile.api.toString();
+      }
       final rows = environment == NetworkEnv.regtest ? regtest : storage;
       return (
         store: SwapStoreImpl(storage: rows, environment: environment),
         boltz: BoltzSwapRepository.connect(
           url: url,
+          credentials: credentials,
           storage: rows,
           environment: environment,
           webSocketUrl: profile?.webSocket.toString(),
@@ -193,6 +201,13 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
   /// Starts listening for environment changes; does not start polling.
   void followEnvironment() => _switcher.start();
 
+  /// Revokes the swap driver for a locked session. Completes once it is
+  /// confirmed stopped; see [SwapEngineSwitcher.suspendSession].
+  Future<void> suspend() => _switcher.suspendSession();
+
+  /// Starts the driver again, once, after [suspend] completed.
+  void resume() => _switcher.resumeSession();
+
   Future<void> close() => _closing ??= _switcher.dispose();
 
   @override
@@ -221,8 +236,10 @@ final class Swaps implements SwapServerSettings, AutoSwapSettings, SwapRouting {
 
   @override
   @useResult
-  Future<Result<SwapServer, SwapsFailure>> setServer(String input) =>
-      _servers.setServer(input);
+  Future<Result<SwapServer, SwapsFailure>> setServer(
+    String input, {
+    SwapServerCredentials? credentials,
+  }) => _servers.setServer(input, credentials: credentials);
 
   @override
   @useResult

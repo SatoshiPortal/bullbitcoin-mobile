@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "การรายงานข้อผิดพลาด",
   "errorReportingProgramTitle": "โปรแกรมรายงานข้อผิดพลาด",
   "errorReportingProgramDescriptionP1": "ช่วยเราปรับปรุง Bull ให้ดีขึ้นด้วยการเข้าร่วมโปรแกรมรายงานข้อผิดพลาดของเรา",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin ส่งรายงานข้อผิดพลาดแบบไม่ระบุตัวตนเมื่อเกิดปัญหาขึ้น",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin ส่งรายงานข้อผิดพลาดแบบไม่ระบุตัวตนเมื่อเกิดปัญหาขึ้น ระบบอาจส่งบันทึกการวินิจฉัยด้วย",
   "errorReportingProgramDescriptionP3": "ข้อมูลนี้ช่วยให้เราทราบว่าแต่ละบั๊กส่งผลกระทบต่อผู้ใช้กี่คน และจัดลำดับความสำคัญในการแก้ไขได้อย่างเหมาะสม หากไม่มีข้อมูลนี้ เราจะไม่มีทางวัดผลกระทบได้",
   "errorReportingProgramDescriptionP4": "รายงานจะถูกส่งไปยังเซิร์ฟเวอร์ของ Bull เท่านั้น ไม่ส่งให้บุคคลที่สาม",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin เป็นโอเพนซอร์ส คุณจึงสามารถตรวจสอบได้ว่ามีการส่งข้อมูลอะไรบ้าง",

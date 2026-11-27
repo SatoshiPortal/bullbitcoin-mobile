@@ -8,7 +8,8 @@ import 'package:swaps/swaps.dart';
 
 class _SwapFeeBreakdown extends StatefulWidget {
   final SwapFees? fees;
-  const _SwapFeeBreakdown({required this.fees});
+  final String? Function(int sats) fiatOf;
+  const _SwapFeeBreakdown({required this.fees, required this.fiatOf});
   @override
   State<_SwapFeeBreakdown> createState() => _SwapFeeBreakdownState();
 }
@@ -28,11 +29,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                 .copyWith(color: context.appColors.secondary),
           ),
           const Spacer(),
-          BullAmount.signedSats(
+          _AmountWithFiat(
             amt,
+            fiat: widget.fiatOf(amt),
             style: context.bullType.label.copyWith(fontWeight: FontWeight.w400),
             color: context.appColors.secondary,
-            interactive: false,
           ),
         ],
       ),
@@ -75,11 +76,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
                             ),
                       ),
                       const Spacer(),
-                      BullAmount.signedSats(
+                      _AmountWithFiat(
                         total,
+                        fiat: widget.fiatOf(total),
                         style: context.bullType.body,
                         color: context.appColors.text,
-                        interactive: false,
                       ),
                       const Gap(4),
                       Icon(
@@ -143,11 +144,15 @@ class SwapConfirmationDetails extends StatelessWidget {
     this.receiveWalletLabel,
     required this.formattedBitcoinAmount,
     required this.swap,
+    required this.fiatOf,
   });
   final String sendWalletLabel;
   final String? receiveWalletLabel;
   final String formattedBitcoinAmount;
   final Swap swap;
+
+  /// The fiat equivalent of an amount of sats, or null without a price.
+  final String? Function(int sats) fiatOf;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.border);
   }
@@ -200,7 +205,6 @@ class SwapConfirmationDetails extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Gap(4),
                       _CopyButton(value: externalAddress),
                     ],
                   )
@@ -233,7 +237,6 @@ class SwapConfirmationDetails extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Gap(4),
                 _CopyButton(value: swap.id),
               ],
             ),
@@ -244,21 +247,14 @@ class SwapConfirmationDetails extends StatelessWidget {
             details: Column(
               crossAxisAlignment: .end,
               children: [
-                if (swap case ChainSwap(:final paymentAmount))
-                  BullAmount.signedSats(
+                if (swap
+                    case ChainSwap(:final paymentAmount) ||
+                        LnSendSwap(:final paymentAmount))
+                  _AmountWithFiat(
                     paymentAmount,
-                    style: context.bullType.body.copyWith(
-                      color: context.appColors.text,
-                    ),
-                    interactive: false,
-                  )
-                else if (swap case LnSendSwap(:final paymentAmount))
-                  BullAmount.signedSats(
-                    paymentAmount,
-                    style: context.bullType.body.copyWith(
-                      color: context.appColors.text,
-                    ),
-                    interactive: false,
+                    fiat: fiatOf(paymentAmount),
+                    style: context.bullType.body,
+                    color: context.appColors.text,
                   )
                 else
                   BullText(
@@ -277,11 +273,11 @@ class SwapConfirmationDetails extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  BullAmount.signedSats(
+                  _AmountWithFiat(
                     receiveAmount,
+                    fiat: fiatOf(receiveAmount),
                     style: context.bullType.body,
                     color: context.appColors.text,
-                    interactive: false,
                   ),
                 ],
               ),
@@ -293,23 +289,52 @@ class SwapConfirmationDetails extends StatelessWidget {
               details: Column(
                 crossAxisAlignment: .end,
                 children: [
-                  BullAmount.signedSats(
+                  _AmountWithFiat(
                     lockupFee,
+                    fiat: fiatOf(lockupFee),
                     style: context.bullType.body,
                     color: context.appColors.text,
-                    interactive: false,
                   ),
                 ],
               ),
             ),
           if (lockupFee != null) _divider(context),
-          _SwapFeeBreakdown(fees: swap.fees),
+          _SwapFeeBreakdown(fees: swap.fees, fiatOf: fiatOf),
 
           _divider(context),
         ],
       ),
     );
   }
+}
+
+class _AmountWithFiat extends StatelessWidget {
+  final int sats;
+  final String? fiat;
+  final TextStyle style;
+  final Color color;
+
+  const _AmountWithFiat(
+    this.sats, {
+    required this.fiat,
+    required this.style,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: .end,
+    mainAxisSize: .min,
+    children: [
+      BullAmount.signedSats(
+        sats,
+        style: style,
+        color: color,
+        interactive: false,
+      ),
+      BullFiatEquivalent(fiat),
+    ],
+  );
 }
 
 class _CopyButton extends StatelessWidget {
@@ -319,12 +344,29 @@ class _CopyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: MaterialLocalizations.of(context).copyButtonLabel,
-      constraints: const BoxConstraints.tightFor(width: 48, height: 48),
-      padding: EdgeInsets.zero,
-      icon: Icon(Icons.copy, color: context.appColors.primary, size: 16),
-      onPressed: () => Clipboard.setData(ClipboardData(text: value)),
+    final label = MaterialLocalizations.of(context).copyButtonLabel;
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        button: true,
+        label: label,
+        child: InkResponse(
+          onTap: () => Clipboard.setData(ClipboardData(text: value)),
+          radius: 20,
+          child: SizedBox(
+            width: 28,
+            height: 48,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Icon(
+                Icons.copy,
+                color: context.appColors.primary,
+                size: 16,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

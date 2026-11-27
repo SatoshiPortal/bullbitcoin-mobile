@@ -178,10 +178,7 @@ jobs:
 
       # Diagnostic, compared with the same step in unit shard 1: hooks_runner reruns a hook when one of these variables changes, so print a short hash of each value, never the value.
       - name: Fingerprint the Native Assets hook environment
-        shell: bash
-        run: |
-          env | cut -d= -f1 | LC_ALL=C sort | grep -E '^(ANDROID_HOME|ANDROID_NDK.*|HOME|LIBCLANG_PATH|PATH|TEMP|TMP|TMPDIR|HTTPS?_PROXY|NO_PROXY|no_proxy|CARGO_.*|RUSTUP_.*|CCACHE_.*|NIX_.*)$' |
-            while IFS= read -r name; do printf '%s %s\n' "$name" "$(printenv "$name" | sha256sum | cut -c1-12)"; done
+        run: python3 tools/trace_access_hooks.py --fingerprint
 
       - name: Pack generated code and Native Assets
         shell: bash
@@ -327,10 +324,17 @@ jobs:
         with:
           codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
+      - name: Fingerprint the Native Assets hook environment
+        if: matrix.shard == 1
+        run: python3 tools/trace_access_hooks.py --fingerprint
+
       - name: Unit tests must pass
         env:
           TRACE_ACCESS_SHARD: ${{ matrix.shard == 1 && '1' || '0' }}
-        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
+          TRACE_ACCESS_HOOKS: '1'
+        # FVM adds its SDK directory to PATH for each nested invocation.
+        # Keep Access aligned with the single FVM invocation in prepare-x64.
+        run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
 
   integration:
     needs: [classification, action-pins, readiness]
@@ -390,9 +394,6 @@ jobs:
           # delivery gate on PRs to main, rather than for every develop PR in a
           # stack, and can still be run manually for an arbitrary branch.
           RUN_FUNDED_PAYJOIN_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
-          # Same gate for the RecoverBull restore test, which depends on the
-          # production key server being reachable over Tor.
-          RUN_LIVE_KEYSERVER_TEST: ${{ github.base_ref == 'main' || github.event_name == 'workflow_dispatch' }}
         run: |
           xvfb-run -a dbus-run-session -- bash -c '
             echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets

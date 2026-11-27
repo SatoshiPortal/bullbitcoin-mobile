@@ -182,7 +182,7 @@ BoltzDatasource _datasource(_Rows rows) => BoltzDatasource(
     rows: rows,
     secrets: ReproKeychainBackend().capability,
   ),
-  webSocketFactory: (url, {onDone, onError}) =>
+  webSocketFactory: (url, {headers, onDone, onError}) =>
       throw StateError('Websocket must stay off'),
 );
 

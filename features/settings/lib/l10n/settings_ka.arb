@@ -76,7 +76,7 @@
   "settingsErrorReportingTitle": "შეცდომების შესახებ ანგარიშგება",
   "errorReportingProgramTitle": "შეცდომების ანგარიშგების პროგრამა",
   "errorReportingProgramDescriptionP1": "დაგვეხმარეთ Bull-ის გაუმჯობესებაში, შეცდომების ანგარიშგების პროგრამაში ჩართვით.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin აგზავნის ანონიმიზებულ შეცდომების ანგარიშებს, როცა რაიმე გაფუჭდება.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin აგზავნის ანონიმიზებულ შეცდომების ანგარიშებს, როცა რაიმე გაფუჭდება. შესაძლოა დიაგნოსტიკის ჟურნალებიც გაიგზავნოს.",
   "errorReportingProgramDescriptionP3": "ეს გვაძლევს საშუალებას ვნახოთ, რამდენ მომხმარებელზე მოქმედებს თითოეული ხარვეზი და შესაბამისად დავანიშნოთ პრიორიტეტები გამოსწორებისთვის — ამის გარეშე ჩვენ არ გვაქვს გავლენის შეფასების საშუალება.",
   "errorReportingProgramDescriptionP4": "ანგარიშები მიდის მხოლოდ Bull-ის სერვერზე და არასდროს — მესამე მხარეებთან.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin ღია კოდის პროექტია, ასე რომ შეგიძლიათ დაადასტუროთ, რა იგზავნება.",

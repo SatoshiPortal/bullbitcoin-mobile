@@ -36,6 +36,17 @@ void main() {
     );
   });
 
+  test('legacy Exchange credentials are not a runtime Secrets capability', () {
+    expect(
+      read('packages/secrets/lib/src/public/secrets.dart'),
+      isNot(contains('get exchangeKeychain')),
+    );
+    expect(
+      read('packages/secrets/lib/secrets.dart'),
+      isNot(contains('ExchangeKeychain')),
+    );
+  });
+
   test('no production code writes or reads the legacy credential sources', () {
     final offenders = <String>[];
     for (final directory in ['lib', 'features', 'packages']) {

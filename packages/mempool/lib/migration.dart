@@ -1,4 +1,5 @@
 export 'src/data/mempool_import.dart' show MempoolImport;
+export 'src/mempool.dart' show openAdmittedMempool;
 
 /// Endpoint values shared by the published legacy migrations and import.
 abstract final class MempoolLegacyDefaults {

@@ -12,7 +12,10 @@ void main() {
   setUp(() {
     storage = FakeSecureStoragePlatform(locked: true, writesFail: true)
       ..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
   });
 
   test('public zero-entropy vector keeps the Bark purpose identity', () async {

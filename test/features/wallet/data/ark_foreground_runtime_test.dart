@@ -236,6 +236,7 @@ void main() {
       final references = SeedReferences(
         _WalletCatalog(),
         admission: _Admission(),
+        backupVerification: const FakeInventoryBackups(),
       );
       locator.registerSingleton<SeedReferences>(references);
       addTearDown(() async {
@@ -297,6 +298,7 @@ void main() {
     final references = SeedReferences(
       _WalletCatalog(),
       admission: _Admission(),
+      backupVerification: const FakeInventoryBackups(),
     );
     locator.registerSingleton<SeedReferences>(references);
     final arkDirectory = Directory('${directory.path}/ark');
@@ -334,6 +336,7 @@ void main() {
       final references = SeedReferences(
         _WalletCatalog(),
         admission: _Admission(),
+        backupVerification: const FakeInventoryBackups(),
       );
       locator.registerSingleton<SeedReferences>(references);
       final arkDirectory = Directory('${directory.path}/ark');
@@ -396,13 +399,17 @@ void main() {
       locator.registerSingleton<Bip85Derivations>(_Bip85());
       FakeSecureStoragePlatform().install();
       locator.registerSingleton<Secrets>(
-        Secrets(scratchDirectory: () async => directory.path),
+        Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        ),
       );
       locator.registerSingleton<ParentCustodyAdmissionPort>(_Admission());
       locator.registerSingleton<SeedReferences>(
         SeedReferences(
           _WalletCatalog(),
           admission: locator<ParentCustodyAdmissionPort>(),
+          backupVerification: const FakeInventoryBackups(),
         ),
       );
     });
@@ -710,6 +717,86 @@ void main() {
       gate.complete();
       expect(await replacement, isA<Ok<ArkForegroundRuntime, ArkFailure>>());
       expect(bindings, hasLength(2));
+    });
+
+    ArkForegroundHost gated(List<_Binding> bindings, Completer<void> gate) =>
+        ArkForegroundHost(
+          locator,
+          inventory: locator<WalletInventory>(),
+          arkUrl: Uri.parse('http://127.0.0.1:3535'),
+          primaryEsploraUrl: Uri.parse('http://127.0.0.1:3000'),
+          initializeNew: true,
+          boardFunding: () {
+            final binding = _Binding();
+            if (bindings.isEmpty) binding.onClose = () => gate.future;
+            bindings.add(binding);
+            return binding.value;
+          },
+          preferences: _Preferences(),
+        );
+
+    test(
+      'a suspended host opens nothing until reopened, after the drain',
+      () async {
+        final gate = Completer<void>();
+        final bindings = <_Binding>[];
+        final subject = gated(bindings, gate);
+        addTearDown(() async {
+          if (!gate.isCompleted) gate.complete();
+          await subject.close();
+        });
+        expect(
+          await subject.current(),
+          isA<Ok<ArkForegroundRuntime, ArkFailure>>(),
+        );
+
+        var confirmed = false;
+        final suspending = subject.suspend().whenComplete(
+          () => confirmed = true,
+        );
+        expect(
+          await subject.current(),
+          isA<Err<ArkForegroundRuntime, ArkFailure>>(),
+          reason: 'revoked before the stop is confirmed',
+        );
+        await pumpEventQueue();
+        expect(confirmed, false, reason: 'the Board close is still running');
+        expect(bindings, hasLength(1));
+
+        gate.complete();
+        await suspending;
+        expect(bindings.first.closes, 1);
+        expect(
+          await subject.current(),
+          isA<Err<ArkForegroundRuntime, ArkFailure>>(),
+        );
+        expect(
+          bindings,
+          hasLength(1),
+          reason: 'no second instance while suspended',
+        );
+
+        subject.reopen();
+        expect(
+          await subject.current(),
+          isA<Ok<ArkForegroundRuntime, ArkFailure>>(),
+        );
+        expect(bindings, hasLength(2));
+      },
+    );
+
+    test('suspending while a runtime opens leaves none running', () async {
+      final bindings = <_Binding>[];
+      final subject = gated(bindings, Completer<void>()..complete());
+      addTearDown(subject.close);
+      final opening = subject.current();
+      await subject.suspend();
+      expect(await opening, isA<Err<ArkForegroundRuntime, ArkFailure>>());
+      expect(
+        bindings.every((binding) => binding.closes == binding.binds),
+        true,
+      );
+      expect(await subject.homeObservation(), isNull);
     });
 
     test(

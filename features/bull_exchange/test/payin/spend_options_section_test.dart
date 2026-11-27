@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' show Tristate;
 
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
@@ -119,6 +120,19 @@ void main() {
     );
     await _pump(tester, _ready, []);
     expect(find.text(labels.payjoinUseToggle), findsNothing);
+  });
+
+  testWidgets('the payjoin switch names itself and carries its state', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final labels = await _pump(tester, _ready, [], payjoin: true);
+
+    final node = tester.getSemantics(find.byType(Switch));
+    expect(node.label, labels.payjoinUseToggle);
+    expect(node.flagsCollection.isToggled, Tristate.isTrue);
+
+    handle.dispose();
   });
 
   testWidgets('advanced options: RBF and the coin selection', (tester) async {

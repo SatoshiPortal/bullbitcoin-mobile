@@ -24,7 +24,9 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_ongoing_swaps_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
+import 'package:swaps/swaps.dart' show Swap;
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -40,12 +42,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WatchWalletAmountDisplayUsecase? watchAmountDisplayUsecase,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._retrySwapsOnRefreshUsecase,
+    this._checkSwapServerUsecase,
     required this._getWalletsUsecase,
     required this._readWalletUsecase,
     required this._checkWalletSyncingUsecase,
     required this._watchWalletSyncEventsUsecase,
     required this._syncWalletsUsecase,
-    required this._getUnconfirmedIncomingBalanceUsecase,
+    required this._getOngoingSwapsUsecase,
     required this._checkBackupNeededUsecase,
     required this._getExternalTorProxyStatusUsecase,
     required this._checkSpWalletSetupForWalletUsecase,
@@ -69,6 +72,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     });
     on<WalletRevisionChanged>(_onRevisionChanged);
     on<WalletStarted>(_onStarted, transformer: restartable());
+    on<SwapServerCheckRequested>(
+      _onSwapServerCheckRequested,
+      transformer: droppable(),
+    );
     on<WalletRefreshed>(_onRefreshed, transformer: droppable());
     on<WalletSyncStarted>(_onWalletSyncStarted);
     on<WalletSyncFinished>(_onWalletSyncFinished);
@@ -87,8 +94,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WatchWalletSyncEventsUsecase _watchWalletSyncEventsUsecase;
   final SyncWalletsUsecase _syncWalletsUsecase;
   final RetrySwapsOnRefreshUsecase? _retrySwapsOnRefreshUsecase;
-  final GetUnconfirmedIncomingBalanceUsecase
-  _getUnconfirmedIncomingBalanceUsecase;
+  final GetOngoingSwapsUsecase _getOngoingSwapsUsecase;
+  final CheckSwapServerUsecase? _checkSwapServerUsecase;
   final CheckBackupNeededUsecase _checkBackupNeededUsecase;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
   final CheckSpWalletSetupForWalletUsecase _checkSpWalletSetupForWalletUsecase;
@@ -104,7 +111,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   StreamSubscription? _spUpdatesSubscription;
 
   int _catalogGeneration = 0;
-  int _incomingReadVersion = 0;
+  int _ongoingSwapsReadVersion = 0;
   final Map<String, int> _walletUpdateVersions = {};
   final Map<String, int> _walletReadVersions = {};
 
@@ -194,6 +201,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletStarted event,
     Emitter<WalletState> emit,
   ) async {
+    add(const SwapServerCheckRequested());
     final catalog = ++_catalogGeneration;
     _spPendingCatalogGeneration = catalog;
     final updates = Map<String, int>.of(_walletUpdateVersions);
@@ -344,12 +352,24 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     final _ = await _syncWalletsUsecase.execute(trigger: SyncTrigger.user);
   }
 
+  Future<void> _onSwapServerCheckRequested(
+    SwapServerCheckRequested event,
+    Emitter<WalletState> emit,
+  ) async {
+    final check = _checkSwapServerUsecase;
+    if (check == null) return;
+    final reachable = await check.execute();
+    if (emit.isDone) return;
+    emit(state.copyWith(swapServerUnreachable: !reachable));
+  }
+
   Future<void> _onRefreshed(
     WalletRefreshed event,
     Emitter<WalletState> emit,
   ) async {
     final catalog = _catalogGeneration;
     emit(state.copyWith(isRefreshing: true));
+    add(const SwapServerCheckRequested());
 
     // The sync schedules bitcoin → liquid → swaps → sp sequentially with per-kind dedup,
     // throttling, and a lifecycle gate. A user-triggered refresh
@@ -458,23 +478,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
     add(const VerifyBackupStatus());
     final catalog = _catalogGeneration;
-    final incomingVersion = ++_incomingReadVersion;
+    final ongoingVersion = ++_ongoingSwapsReadVersion;
     await _reloadWallet(event.wallet.id, emit);
     if (emit.isDone || catalog != _catalogGeneration || state.wallets.isEmpty) {
       return;
     }
 
-    // This aggregate reads the swap database, never another native wallet.
-    final incoming = await _getUnconfirmedIncomingBalanceUsecase.execute(
-      walletIds: state.wallets.map((wallet) => wallet.id).toList(),
-    );
+    // This reads the swap database, never another native wallet.
+    final ongoing = await _getOngoingSwapsUsecase.execute();
     if (emit.isDone ||
         catalog != _catalogGeneration ||
-        incomingVersion != _incomingReadVersion) {
+        ongoingVersion != _ongoingSwapsReadVersion) {
       return;
     }
-    if (incoming case Ok(:final value)) {
-      emit(state.copyWith(unconfirmedIncomingBalance: value));
+    if (ongoing case Ok(:final value)) {
+      emit(state.copyWith(ongoingSwaps: value));
     }
   }
 

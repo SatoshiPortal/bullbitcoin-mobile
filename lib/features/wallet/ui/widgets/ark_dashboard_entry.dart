@@ -143,7 +143,7 @@ class _ArkDashboardCardState extends State<_ArkDashboardCard>
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(
       BullSpacing.sm,
-      0,
+      BullSizes.homeCardGap,
       BullSpacing.sm,
       BullSpacing.md,
     ),

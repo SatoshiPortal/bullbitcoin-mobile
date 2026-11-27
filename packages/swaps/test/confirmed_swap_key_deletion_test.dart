@@ -20,6 +20,7 @@ void main() {
       final store = SwapStorage(
         rows: _Rows(),
         secrets: Secrets(
+          authority: unlockedSessionAuthority(),
           scratchDirectory: () async => Directory.systemTemp.path,
         ).swapKeychain,
       );

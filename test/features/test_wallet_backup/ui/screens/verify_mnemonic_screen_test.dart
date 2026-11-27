@@ -134,7 +134,10 @@ void main() {
       'backup-access-',
     );
     inventoryFixture = await InventoryFixture.open(inventoryDirectory);
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     _secretA = ((await secrets.import(
       words: _wordsA,
       language: Language.english,
@@ -326,7 +329,10 @@ void main() {
   testWidgets('asks for the passphrase before recording a backup', (
     tester,
   ) async {
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final result = await tester.runAsync(
       () => secrets.import(
         words: _wordsA,
@@ -451,7 +457,10 @@ void main() {
     tester,
   ) async {
     Device.screen = const Size(800, 600);
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     await tester.runAsync(() => mountAccess(secrets));
     final result = await tester.runAsync(
       () => secrets.import(
@@ -543,7 +552,10 @@ void main() {
   testWidgets(
     'all seeds offers explicit passphrase reveal and hides it on pause',
     (tester) async {
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      );
       await tester.runAsync(() => mountAccess(secrets));
       final result = await tester.runAsync(
         () => secrets.import(

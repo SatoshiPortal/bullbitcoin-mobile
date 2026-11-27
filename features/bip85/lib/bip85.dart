@@ -28,14 +28,16 @@ final class Bip85Feature {
     required Bip85Derivations derivations,
     required WalletInventory inventory,
     required ActiveEnvironmentReader preferences,
+    required Stream<bool> lockChanges,
   }) {
     final usecase = ManageBip85Usecase(derivations, inventory, preferences);
     return Bip85Feature._(
       GoRoute(
         name: Bip85Route._name,
         path: Bip85Route._path,
-        builder: (context, state) =>
-            Bip85HomePage(createCubit: () => Bip85EntropyCubit(usecase)),
+        builder: (context, state) => Bip85HomePage(
+          createCubit: () => Bip85EntropyCubit(usecase, lockChanges),
+        ),
       ),
     );
   }

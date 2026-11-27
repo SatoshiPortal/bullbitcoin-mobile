@@ -22,6 +22,7 @@ void main() {
       final original = await file.readAsBytes();
       final secure = FakeSecureStoragePlatform().install();
       final secrets = custody.Secrets(
+        authority: unlockedSessionAuthority(),
         scratchDirectory: () async => directory.path,
       );
       expect(

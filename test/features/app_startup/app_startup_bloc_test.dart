@@ -241,6 +241,7 @@ void main() {
       expect(await installation.inventory.setCredential(pin), isA<Ok>());
       await installation.inventory.close();
       final opened = await SecretsInventory.open(
+        authority: SessionAuthority(),
         file: File('${directory.path}/test-secrets.sqlite'),
         admission: installation.admission,
         backupVerification: installation.backup,

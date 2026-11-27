@@ -21,6 +21,8 @@ import 'package:transactions/src/ui/widgets/order_swap_status_description.dart';
 import 'package:transactions/src/ui/widgets/retry_swap_button.dart';
 import 'package:transactions/src/ui/widgets/swap_progress_indicator.dart';
 import 'package:transactions/src/ui/widgets/swap_status_description.dart';
+import 'package:swaps/swaps.dart' show SwapStatus;
+import 'package:transactions/src/ui/widgets/swap_warning_notice.dart';
 import 'package:transactions/src/ui/widgets/transaction_details_amount.dart';
 import 'package:transactions/src/ui/widgets/transaction_details_status_label.dart';
 import 'package:transactions/src/ui/widgets/transaction_details_table.dart';
@@ -36,7 +38,6 @@ import 'package:bull_ui/bull_ui.dart'
         BullPaymentNetwork,
         BullPaymentPhase,
         BullPaymentTransition,
-        BullPaymentViewSwitch,
         BullPaymentViews,
         BullShimmerLine,
         BullSnackBar,
@@ -73,6 +74,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   /// The status view is built once it is first shown, so that a user who keeps
   /// animations off never builds a scene.
   bool _statusBuilt = false;
+
+  /// The screen opened on the status, so leaving it closes the screen.
+  bool _openedOnStatus = false;
   int _broadcastSyncAttempts = 0;
   static const _maxBroadcastSyncAttempts = 3;
 
@@ -209,32 +213,34 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
         waiting ||
         detailsState.transaction != null ||
         detailsState.hasLoadError;
+    // The status is transient: it is offered only while the payment is still
+    // in progress, and never for a finished one.
+    final inProgress =
+        animation != null && animation.phase == BullPaymentPhase.sending;
+    final statusAvailable = inProgress && animationsEnabled == true;
     if (_view == null && loaded && animationsEnabled != null) {
       _view =
           TransactionDetailsView.fromQuery(query) ==
-                  TransactionDetailsView.details ||
-              !animationsEnabled ||
-              transactionHasPendingRecovery(detailsState.transaction)
-          ? TransactionDetailsView.details
-          : TransactionDetailsView.status;
+                  TransactionDetailsView.status &&
+              statusAvailable &&
+              !transactionHasPendingRecovery(detailsState.transaction)
+          ? TransactionDetailsView.status
+          : TransactionDetailsView.details;
+      _openedOnStatus = _view == TransactionDetailsView.status;
     }
-    // Animations off (or not known yet): the details alone, with no switch.
-    final switchable = animation != null && animationsEnabled == true;
-    final view = switchable
-        ? (_view ?? TransactionDetailsView.details)
+    // A status already on screen stays there when the payment finishes.
+    final view =
+        animation != null &&
+            animationsEnabled == true &&
+            _view == TransactionDetailsView.status
+        ? TransactionDetailsView.status
         : TransactionDetailsView.details;
     if (view == TransactionDetailsView.status) _statusBuilt = true;
-
-    final switcher = !switchable
-        ? null
-        : BullPaymentViewSwitch(
-            showingStatus: view == TransactionDetailsView.status,
-            statusLabel: context.loc.paymentStatusViewStatus,
-            detailsLabel: context.loc.paymentStatusViewDetails,
-            semanticsLabel: context.loc.paymentStatusViewsLabel,
-            onStatus: () => _show(TransactionDetailsView.status),
-            onDetails: () => _show(TransactionDetailsView.details),
-          );
+    final statusOverDetails =
+        view == TransactionDetailsView.status && !_openedOnStatus;
+    final leaveStatus = _openedOnStatus
+        ? closeScreen
+        : () => _show(TransactionDetailsView.details);
     final target = statusState.settlementTarget;
 
     return BlocListener<TransactionDetailsCubit, TransactionDetailsState>(
@@ -253,13 +259,17 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
         isLiquid: waiting ? broadcast.isLiquid : (target?.isLiquid ?? false),
         poll: waiting ? _syncBroadcast : widget.pollSettlement,
         child: PopScope(
-          canPop: canPopBack,
+          canPop: canPopBack && !statusOverDetails,
           onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) closeScreen();
+            if (didPop) return;
+            if (statusOverDetails) {
+              _show(TransactionDetailsView.details);
+            } else {
+              closeScreen();
+            }
           },
           child: BullPaymentViews(
             showingStatus: view == TransactionDetailsView.status,
-            switcher: switcher,
             views: IndexedStack(
               sizing: StackFit.expand,
               index: view == TransactionDetailsView.status ? 0 : 1,
@@ -277,7 +287,12 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                           status: animation.status,
                           statusTag: animation.status,
                           bottom: waiting ? retry : null,
-                          onBack: closeScreen,
+                          skipLabel: context.loc.transactionDetailViewDetails,
+                          onSkip: () {
+                            _openedOnStatus = false;
+                            _show(TransactionDetailsView.details);
+                          },
+                          onBack: leaveStatus,
                           onDone: () {},
                         ),
                 ),
@@ -308,6 +323,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                           context,
                           closeScreen: closeScreen,
                           canPopBack: canPopBack,
+                          onShowStatus: statusAvailable
+                              ? () => _show(TransactionDetailsView.status)
+                              : null,
                         ),
                 ),
               ],
@@ -322,6 +340,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     BuildContext context, {
     required VoidCallback closeScreen,
     required bool canPopBack,
+    required VoidCallback? onShowStatus,
   }) {
     final actions = widget.actions;
     final isLoading = context.select(
@@ -376,6 +395,18 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
           foregroundColor: context.bull.primary,
         ),
       ),
+      header: [
+        if (isOngoingSwap == true &&
+            swap != null &&
+            swap.status != SwapStatus.completed &&
+            swap.status != SwapStatus.refunded) ...[
+          SwapWarningNotice(isChainSwap: swap.isChainSwap),
+          const Gap(24),
+        ] else if (isOngoingSwap == true && orderSwap != null) ...[
+          SwapWarningNotice(isChainSwap: isChainSwap),
+          const Gap(24),
+        ],
+      ],
       status: const TransactionDetailsStatusLabel(),
       afterStatus: [
         if (isOngoingSwap == true && swap != null) ...[
@@ -455,6 +486,13 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                   },
           ),
         const Gap(16),
+        if (onShowStatus != null) ...[
+          BullButton.secondary(
+            label: context.loc.transactionDetailViewStatus,
+            onPressed: onShowStatus,
+          ),
+          const Gap(16),
+        ],
         if (isOutgoing == true &&
             walletTransaction != null &&
             !walletTransaction.isConfirmed &&

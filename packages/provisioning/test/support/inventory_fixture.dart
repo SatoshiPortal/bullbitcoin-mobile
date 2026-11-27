@@ -45,7 +45,11 @@ final class InventoryFixture {
       exclusive: false,
       timeout: Duration.zero,
     ) as RuntimeAdmission;
-    switch (await SecretsInventory.open(file: file, admission: admission)) {
+    switch (await SecretsInventory.open(
+      authority: SessionAuthority(),
+      file: file,
+      admission: admission,
+    )) {
       case Ok(:final value):
         return FixtureSession._(value, admission);
       case Err(:final failure):
@@ -85,7 +89,11 @@ final class InventoryFixture {
       timeout: Duration.zero,
     ) as RuntimeAdmission;
     try {
-      switch (await SecretsInventory.open(file: file, admission: admission)) {
+      switch (await SecretsInventory.open(
+        authority: SessionAuthority(),
+        file: file,
+        admission: admission,
+      )) {
         case Ok(:final value):
           return InventoryFixture._(
             file,

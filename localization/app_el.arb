@@ -876,10 +876,6 @@
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
   },
-  "walletBalanceUnconfirmedIncoming": "Σε εξέλιξη",
-  "@walletBalanceUnconfirmedIncoming": {
-    "description": "Label for unconfirmed incoming balance"
-  },
   "selectAmountTitle": "Επιλέξτε ποσό",
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"

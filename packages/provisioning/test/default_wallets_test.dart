@@ -85,6 +85,9 @@ final class _Accounts implements WalletProvisioning {
 
 /// The inventory reads the pair performs, counted for "no access" assertions.
 final class _Inventory implements WalletInventory {
+  @override
+  Future<bool> mayNotifyArk(Fingerprint parent) async => false;
+
   final List<WalletRegistration> registrations = [];
   final Set<Network> incomplete = {};
   int reads = 0;
@@ -142,7 +145,10 @@ void main() {
 
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     inventory = _Inventory();
     accounts = _Accounts();
     environment = _Environment(NetworkEnv.mainnet);

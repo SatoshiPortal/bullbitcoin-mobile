@@ -111,7 +111,10 @@ void main() {
 
   setUp(() async {
     storage = FakeSecureStoragePlatform().install();
-    secrets = custody.Secrets(scratchDirectory: () async => '.');
+    secrets = custody.Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '.',
+    );
     final imported = await secrets.import(
       words: words,
       passphrase: passphrase,

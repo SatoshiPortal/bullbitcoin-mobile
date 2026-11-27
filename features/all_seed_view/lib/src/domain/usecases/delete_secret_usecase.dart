@@ -36,6 +36,19 @@ class DeleteSecretUsecase {
       case Err(failure: ParentCustodyMetadataFailure()):
         log.warning('Seed delete refused reason=custody_metadata');
         return const Err(AllSeedViewCustodyMetadataFailure());
+      case Err(failure: ParentCustodyBackupRequiredFailure()):
+        // Without a tested backup the words exist nowhere else: refuse rather
+        // than destroy the only copy.
+        log.warning('Seed delete refused reason=backup_required');
+        return const Err(
+          AllSeedViewDeleteFailure('a tested backup is required to delete it'),
+        );
+      case Err(failure: ParentCustodyBackupUnavailableFailure()):
+        // Unknown is not absent: a backup that could not be read may exist.
+        log.warning('Seed delete refused reason=backup_unavailable');
+        return const Err(
+          AllSeedViewDeleteFailure('could not read the backup state'),
+        );
       case Err(failure: ParentCustodyDeletionFailure()):
         log.warning('Seed delete incomplete reason=custody_state');
         return const Err(AllSeedViewDeleteFailure('could not finish deletion'));

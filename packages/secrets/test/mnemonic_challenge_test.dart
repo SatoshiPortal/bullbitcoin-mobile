@@ -48,7 +48,10 @@ void main() {
 
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
   });
 
   Future<Secret> store(WidgetTester tester, List<String> words) async {
@@ -309,8 +312,10 @@ void main() {
     late Secret secret;
     await tester.runAsync(() async {
       secret = ok(
-        await Secrets(scratchDirectory: () async => '/tmp')
-            .fetch(Fingerprint('00000000')),
+        await Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => '/tmp',
+        ).fetch(Fingerprint('00000000')),
       );
     });
 

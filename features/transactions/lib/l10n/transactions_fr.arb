@@ -271,5 +271,7 @@
   "transactionPayjoinFallbackProcessing": "Traitement sous forme de transaction classique…",
   "transactionListPending": "En attente",
   "viewerCopyLinkDisclosePayjoin": "Copier le lien (révèle le Payjoin)",
-  "viewerViewInExplorerDisclosePayjoin": "Voir dans l’explorateur (révèle le Payjoin)"
+  "viewerViewInExplorerDisclosePayjoin": "Voir dans l’explorateur (révèle le Payjoin)",
+  "transactionDetailViewStatus": "Voir le statut",
+  "transactionDetailViewDetails": "Voir les détails"
 }

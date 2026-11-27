@@ -20,6 +20,8 @@ import 'package:overview/overview.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
+import 'package:swaps/swaps.dart'
+    show Swap, SwapEnvironment, SwapStatus, SwapType;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
@@ -35,7 +37,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_ongoing_swaps_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
@@ -55,8 +58,8 @@ class _MockWatchWalletSyncEventsUsecase extends Mock
 
 class _MockSyncWalletsUsecase extends Mock implements SyncWalletsUsecase {}
 
-class _MockGetUnconfirmedIncomingBalanceUsecase extends Mock
-    implements GetUnconfirmedIncomingBalanceUsecase {}
+class _MockGetOngoingSwapsUsecase extends Mock
+    implements GetOngoingSwapsUsecase {}
 
 class _MockCheckBackupNeededUsecase extends Mock
     implements CheckBackupNeededUsecase {
@@ -87,18 +90,19 @@ WalletBloc createBloc(
   GetWalletsUsecase? getWallets,
   SyncWalletsUsecase? refreshSync,
   ReadWalletUsecase? readWallet,
-  GetUnconfirmedIncomingBalanceUsecase? getUnconfirmed,
+  GetOngoingSwapsUsecase? getUnconfirmed,
   RetrySwapsOnRefreshUsecase? retrySwaps,
+  CheckSwapServerUsecase? checkSwapServer,
 }) {
   return WalletBloc(
     retrySwapsOnRefreshUsecase: retrySwaps,
+    checkSwapServerUsecase: checkSwapServer,
     readWalletUsecase: readWallet ?? _stubbedReadWallet(),
     getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: refreshSync ?? _stubbedSync(),
-    getUnconfirmedIncomingBalanceUsecase:
-        getUnconfirmed ?? _MockGetUnconfirmedIncomingBalanceUsecase(),
+    getOngoingSwapsUsecase: getUnconfirmed ?? _MockGetOngoingSwapsUsecase(),
     checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
     getExternalTorProxyStatusUsecase: externalStatus,
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
@@ -116,7 +120,30 @@ class _ViewWalletBloc extends Mock implements WalletBloc {}
 class _MockRetrySwapsOnRefreshUsecase extends Mock
     implements RetrySwapsOnRefreshUsecase {}
 
+class _MockCheckSwapServerUsecase extends Mock
+    implements CheckSwapServerUsecase {}
+
 void main() {
+  test('an unreachable swap server raises the home warning', () async {
+    final check = _MockCheckSwapServerUsecase();
+    var reachable = false;
+    when(check.execute).thenAnswer((_) async => reachable);
+    final bloc = createBloc(
+      _MockExternalTorStatusUsecase(),
+      checkSwapServer: check,
+    );
+    addTearDown(bloc.close);
+
+    bloc.add(const SwapServerCheckRequested());
+    await pumpEventQueue();
+    expect(bloc.state.swapServerUnreachable, isTrue);
+
+    reachable = true;
+    bloc.add(const SwapServerCheckRequested());
+    await pumpEventQueue();
+    expect(bloc.state.swapServerUnreachable, isFalse);
+  });
+
   test('a manual refresh retries ongoing swaps at once', () async {
     final retrySwaps = _MockRetrySwapsOnRefreshUsecase();
     when(retrySwaps.execute).thenAnswer((_) async {});
@@ -144,11 +171,10 @@ void main() {
         final sync = _MockSyncWalletsUsecase();
         when(() => sync.execute(trigger: SyncTrigger.user))
             .thenAnswer((_) => syncGate.future);
-        final pending = Completer<Result<int, WalletFailure>>();
-        final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+        final pending = Completer<Result<List<Swap>, WalletFailure>>();
+        final balance = _MockGetOngoingSwapsUsecase();
         final wallets = _MockGetWalletsUsecase();
-        when(() => balance.execute(walletIds: any(named: 'walletIds')))
-            .thenAnswer((_) => pending.future);
+        when(() => balance.execute()).thenAnswer((_) => pending.future);
         when(() => wallets.execute()).thenAnswer(
           (_) async => Ok(catalogueChanged ? <Wallet>[] : [_syncedWallet]),
         );
@@ -160,25 +186,22 @@ void main() {
         );
         addTearDown(bloc.close);
         bloc.emit(
-          WalletState(
-            wallets: [_syncedWallet],
-            unconfirmedIncomingBalance: 1000,
-          ),
+          WalletState(wallets: [_syncedWallet], ongoingSwaps: [_swap('held')]),
         );
         bloc.add(const WalletRefreshed(trigger: SyncTrigger.user));
         await pumpEventQueue();
         expect(bloc.state.isRefreshing, isTrue);
         bloc.add(WalletSyncFinished(_syncedWallet));
         await pumpEventQueue();
-        verify(() => balance.execute(walletIds: [_syncedWallet.id])).called(1);
+        verify(() => balance.execute()).called(1);
         syncGate.complete(const Ok(null));
         await pumpEventQueue();
         expect(bloc.state.isRefreshing, isFalse);
-        pending.complete(const Ok(0));
+        pending.complete(const Ok(<Swap>[]));
         await pumpEventQueue();
         expect(
-          bloc.state.unconfirmedIncomingBalance,
-          catalogueChanged ? 1000 : 0,
+          bloc.state.ongoingSwaps,
+          catalogueChanged ? [_swap('held')] : isEmpty,
         );
       },
     );
@@ -191,11 +214,11 @@ void main() {
     () async {
       final wallets = _MockGetWalletsUsecase();
       final readWallet = _stubbedReadWallet();
-      final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+      final balance = _MockGetOngoingSwapsUsecase();
       when(() => wallets.execute())
           .thenAnswer((_) async => Ok([_syncedWallet]));
-      when(() => balance.execute(walletIds: [_syncedWallet.id]))
-          .thenAnswer((_) async => const Ok(42));
+      when(() => balance.execute())
+          .thenAnswer((_) async => Ok([_swap('read')]));
       final bloc = createBloc(
         _MockExternalTorStatusUsecase(),
         getWallets: wallets,
@@ -219,25 +242,24 @@ void main() {
       await finished;
       await pumpEventQueue();
       expect(bloc.state.wallets, [_syncedWallet]);
-      expect(bloc.state.unconfirmedIncomingBalance, 42);
+      expect(bloc.state.ongoingSwaps, [_swap('read')]);
       verifyNever(() => wallets.execute());
       verify(() => readWallet.execute(_syncedWallet.id)).called(1);
-      verify(() => balance.execute(walletIds: [_syncedWallet.id])).called(1);
+      verify(() => balance.execute()).called(1);
     },
   );
 
   test('finishing A never admits a reader for B', () async {
     final read = _stubbedReadWallet();
     final wallets = _MockGetWalletsUsecase();
-    final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+    final balance = _MockGetOngoingSwapsUsecase();
     final other = _syncedWallet.copyWith(
       origin: 'other',
       balanceSat: BigInt.from(7),
     );
     when(() => wallets.execute())
         .thenAnswer((_) async => Ok([_syncedWallet, other]));
-    when(() => balance.execute(walletIds: any(named: 'walletIds')))
-        .thenAnswer((_) async => const Ok(42));
+    when(() => balance.execute()).thenAnswer((_) async => Ok([_swap('read')]));
     final bloc = createBloc(
       _MockExternalTorStatusUsecase(),
       getWallets: wallets,
@@ -396,11 +418,11 @@ void main() {
   test(
     'older incoming balance reads cannot overwrite newer finishes',
     () async {
-      final first = Completer<Result<int, WalletFailure>>();
-      final second = Completer<Result<int, WalletFailure>>();
-      final balance = _MockGetUnconfirmedIncomingBalanceUsecase();
+      final first = Completer<Result<List<Swap>, WalletFailure>>();
+      final second = Completer<Result<List<Swap>, WalletFailure>>();
+      final balance = _MockGetOngoingSwapsUsecase();
       var count = 0;
-      when(() => balance.execute(walletIds: any(named: 'walletIds')))
+      when(() => balance.execute())
           .thenAnswer((_) => count++ == 0 ? first.future : second.future);
       final bloc = createBloc(
         _MockExternalTorStatusUsecase(),
@@ -412,11 +434,11 @@ void main() {
       await pumpEventQueue();
       bloc.add(WalletSyncFinished(_syncedWallet));
       await pumpEventQueue();
-      second.complete(const Ok(20));
+      second.complete(Ok([_swap('second')]));
       await pumpEventQueue();
-      first.complete(const Ok(10));
+      first.complete(Ok([_swap('first')]));
       await pumpEventQueue();
-      expect(bloc.state.unconfirmedIncomingBalance, 20);
+      expect(bloc.state.ongoingSwaps, [_swap('second')]);
     },
   );
 
@@ -461,8 +483,7 @@ void main() {
           checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
           watchWalletSyncEventsUsecase: _stubbedWatchers(),
           syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
-          getUnconfirmedIncomingBalanceUsecase:
-              _MockGetUnconfirmedIncomingBalanceUsecase(),
+          getOngoingSwapsUsecase: _MockGetOngoingSwapsUsecase(),
           checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
           checkSpScanningForWalletUsecase: _stubbedSpScanning(),
           refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -575,8 +596,7 @@ void main() {
         checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
         watchWalletSyncEventsUsecase: _stubbedWatchers(),
         syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
-        getUnconfirmedIncomingBalanceUsecase:
-            _MockGetUnconfirmedIncomingBalanceUsecase(),
+        getOngoingSwapsUsecase: _MockGetOngoingSwapsUsecase(),
         checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
         checkSpScanningForWalletUsecase: _stubbedSpScanning(),
         refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -884,8 +904,7 @@ WalletBloc _blocWithFailingLoad(
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: sync ?? _stubbedSync(),
-    getUnconfirmedIncomingBalanceUsecase:
-        _MockGetUnconfirmedIncomingBalanceUsecase(),
+    getOngoingSwapsUsecase: _MockGetOngoingSwapsUsecase(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -991,8 +1010,7 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     checkWalletSyncingUsecase: syncing,
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: sync,
-    getUnconfirmedIncomingBalanceUsecase:
-        _MockGetUnconfirmedIncomingBalanceUsecase(),
+    getOngoingSwapsUsecase: _MockGetOngoingSwapsUsecase(),
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
@@ -1008,3 +1026,16 @@ ReadWalletUsecase _stubbedReadWallet() {
   when(() => read.execute(any())).thenAnswer((_) async => Ok(_syncedWallet));
   return read;
 }
+
+Swap _swap(String id) => Swap.chain(
+  id: id,
+  keyIndex: 0,
+  type: SwapType.bitcoinToLiquid,
+  status: SwapStatus.paid,
+  environment: SwapEnvironment.mainnet,
+  creationTime: DateTime.utc(2026),
+  sendWalletId: 'w1',
+  paymentAddress: 'bc1qexampleaddress',
+  paymentAmount: 1000,
+  sendTxid: 'lockup',
+);

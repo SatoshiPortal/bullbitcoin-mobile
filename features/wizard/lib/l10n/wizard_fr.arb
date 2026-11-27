@@ -15,7 +15,7 @@
   "wizardCustomizeBody": "Utilisez BULL selon vos préférences avec ces paramètres.",
   "wizardCustomizeDefaultCurrency": "Devise par défaut",
   "wizardMissionTitle": "Aidez la mission Bull",
-  "wizardMissionBody1": "Pour nous aider à améliorer notre logiciel et garantir le meilleur niveau de sécurité, de confidentialité et d'utilisabilité, votre application peut nous envoyer des journaux d'erreurs qui nous permettent de détecter et corriger les problèmes rapidement dans nos prochaines mises à jour.",
+  "wizardMissionBody1": "Pour nous aider à améliorer notre logiciel et garantir le meilleur niveau de sécurité, de confidentialité et d'utilisabilité, votre application peut nous envoyer des rapports d'erreur qui nous permettent de détecter et corriger les problèmes rapidement dans nos prochaines mises à jour. L’application peut aussi envoyer des journaux de diagnostic.",
   "wizardMissionBody2": "Ces journaux sont anonymisés, ne sont pas liés à votre adresse IP, et ne partagent jamais d'informations sur vos transactions ou votre identité. Ils sont purement techniques et ne vous exposent à aucun risque. Cela nous aide énormément, et ne vous coûte rien.",
   "wizardMissionQuestion": "Acceptez-vous de participer à notre programme de signalement automatique des problèmes ?",
   "wizardMissionYes": "Oui",

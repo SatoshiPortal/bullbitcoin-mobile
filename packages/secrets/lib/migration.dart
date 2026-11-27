@@ -2,6 +2,8 @@
 library;
 
 export 'src/data/inventory_import.dart' show SecretsImport;
+export 'src/data/legacy_exchange_credentials.dart'
+    show readLegacyExchangeCredentials;
 export 'src/data/legacy_fingerprint_verification.dart'
     show verifyLegacyXpubFingerprints;
 export 'src/data/legacy_retirement.dart' show SecretsRetirement;

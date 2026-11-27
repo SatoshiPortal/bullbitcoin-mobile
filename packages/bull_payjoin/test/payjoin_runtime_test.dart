@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -131,6 +132,34 @@ final class _CountingLegacy implements PayjoinLegacyDataPort {
       senders: [],
       receivers: [],
     );
+  }
+}
+
+final class _SigningWallet extends _WalletPort {
+  int signs = 0;
+  final entered = Completer<void>();
+  Completer<void>? hold;
+
+  @override
+  Future<String> signPsbt({
+    required String walletId,
+    required BitcoinNetwork network,
+    required String psbt,
+  }) async {
+    signs++;
+    if (!entered.isCompleted) entered.complete();
+    await hold?.future;
+    return psbt;
+  }
+}
+
+final class _GatedFees extends _FeesPort {
+  final gate = Completer<void>();
+
+  @override
+  Future<FeeRate> fastestFeeRate({required BitcoinNetwork network}) async {
+    await gate.future;
+    return FeeRate(10);
   }
 }
 
@@ -621,5 +650,130 @@ void main() {
       Err(:final failure) => failure,
     }, isA<PayjoinInvalidInputFailure>());
     await lifecycle.dispose();
+  });
+
+  group('a lock across the first signature or publication', () {
+    StartPayjoinSender senderRequest() => StartPayjoinSender(
+      walletId: 'wallet-1',
+      network: BitcoinNetwork.testnet,
+      bip21Uri: 'bitcoin:tb1qnopayjoinendpoint?amount=0.001',
+      unsignedOriginalPsbt: 'cHNidP8=',
+      amount: Sats.fromInt(100000),
+      feeRate: FeeRate(2),
+    );
+
+    Future<RecoverablePayjoin> wrapped({
+      PayjoinWalletPort? wallet,
+      Future<bool> Function()? isCurrent,
+      PayjoinFeesPort? fees,
+    }) async {
+      final lifecycle = switch (await openPayjoinForTesting(
+        isCurrent: isCurrent,
+        codec: const TestPayjoinCodec(),
+        databasePath: '${directory.path}/payjoin.sqlite',
+        wallet: wallet ?? _WalletPort(),
+        blockchain: _BlockchainPort(),
+        fees: fees ?? _FeesPort(),
+        transactions: _TransactionPort(),
+        labels: _LabelsPort(),
+        legacyData: const _LegacyData(),
+        log: _LogPort(),
+      )) {
+        Ok(:final value) => value,
+        Err(:final failure) => throw failure,
+      };
+      final runtime = RecoverablePayjoin(() async => Ok(lifecycle));
+      addTearDown(runtime.dispose);
+      return runtime;
+    }
+
+    test(
+      'a lock while the sender waits before signing signs nothing',
+      () async {
+        final family = Completer<bool>();
+        final wallet = _SigningWallet();
+        final runtime = await wrapped(
+          wallet: wallet,
+          isCurrent: () => family.future,
+        );
+
+        final starting = runtime.payjoin.sender.start(senderRequest());
+        await pumpEventQueue();
+        final suspending = runtime.suspend();
+        family.complete(true);
+
+        final result = await starting;
+        expect(
+          (result as Err<PayjoinSenderSession, PayjoinFailure>).failure,
+          isA<PayjoinUnavailableFailure>(),
+        );
+        await suspending;
+        expect(wallet.signs, 0, reason: 'revoked before the first signature');
+      },
+    );
+
+    test(
+      'a signature already engaged returns its real result and defers the stop',
+      () async {
+        final wallet = _SigningWallet()..hold = Completer<void>();
+        final runtime = await wrapped(wallet: wallet);
+
+        final starting = runtime.payjoin.sender.start(senderRequest());
+        await wallet.entered.future.timeout(const Duration(seconds: 5));
+        var confirmed = false;
+        final suspending = runtime.suspend().whenComplete(
+          () => confirmed = true,
+        );
+        await pumpEventQueue();
+        expect(confirmed, isFalse, reason: 'the signature is still running');
+
+        wallet.hold?.complete();
+        final result = await starting;
+        expect(
+          (result as Err<PayjoinSenderSession, PayjoinFailure>).failure,
+          isNot(
+            isA<PayjoinUnavailableFailure>().having(
+              (failure) => failure.logMessage,
+              'revocation',
+              contains('suspended'),
+            ),
+          ),
+          reason: 'the engine answered, not the lock',
+        );
+        await suspending;
+        expect(confirmed, isTrue);
+        expect(wallet.signs, 1);
+      },
+    );
+
+    test(
+      'a lock while the receiver waits for fees creates no session',
+      () async {
+        final fees = _GatedFees();
+        final runtime = await wrapped(fees: fees);
+
+        final starting = runtime.payjoin.receiver.start(
+          StartPayjoinReceiver(
+            walletId: 'wallet-1',
+            network: BitcoinNetwork.testnet,
+            address: 'tb1qnopayjoinendpoint',
+          ),
+        );
+        await pumpEventQueue();
+        final suspending = runtime.suspend();
+        fees.gate.complete();
+
+        final result = await starting;
+        expect(
+          (result as Err<PayjoinReceiverSession, PayjoinFailure>).failure,
+          isA<PayjoinUnavailableFailure>().having(
+            (failure) => failure.logMessage,
+            'revocation',
+            contains('suspended'),
+          ),
+        );
+        await suspending;
+      },
+    );
   });
 }

@@ -564,6 +564,62 @@ void main() {
     });
   });
 
+  group('checkServer', () {
+    test('asks the server for fresh fees every time', () async {
+      when(() => boltz.updateFees(swapType: any(named: 'swapType')))
+          .thenAnswer((_) async {});
+
+      expect(
+        await repo(fastest: 1).checkServer(),
+        isA<Ok<void, SwapsFailure>>(),
+      );
+      expect(
+        await repo(fastest: 1).checkServer(),
+        isA<Ok<void, SwapsFailure>>(),
+      );
+
+      verify(() => boltz.updateFees(swapType: SwapType.bitcoinToLightning))
+          .called(2);
+    });
+
+    test(
+      'a refused request is a rejection, an unanswered one is not',
+      () async {
+        when(() => boltz.updateFees(swapType: any(named: 'swapType')))
+            .thenThrow(
+              BoltzApiException(
+                kind: 'HTTPStatusNotSuccess',
+                message: 'HTTP Status Not Success: 401 Unauthorized, ',
+              ),
+            );
+        expect(
+          (await repo(fastest: 1).checkServer()),
+          isA<Err<void, SwapsFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SwapsBoltzRejectedFailure>(),
+          ),
+        );
+
+        when(() => boltz.updateFees(swapType: any(named: 'swapType')))
+            .thenThrow(
+              BoltzApiException(
+                kind: 'HTTPStatusNotSuccess',
+                message: 'HTTP Status Not Success: 503 Service Unavailable, ',
+              ),
+            );
+        expect(
+          (await repo(fastest: 1).checkServer()),
+          isA<Err<void, SwapsFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<SwapsBoltzUnavailableFailure>(),
+          ),
+        );
+      },
+    );
+  });
+
   group('claim', () {
     void stubClaimBroadcast() {
       when(
@@ -687,9 +743,11 @@ void main() {
       ).called(1);
     });
 
-    test(
-      'a lockup not on the server yet makes no script-path attempt',
-      () async {
+    for (final message in [
+      'No Bitcoin UTXO detected for this script',
+      'Bitcoin lockup not yet confirmed for this script',
+    ]) {
+      void stubClaimSetup() {
         when(
           () => boltz.getChainClaimTxSize(
             swapId: any(named: 'swapId'),
@@ -700,16 +758,6 @@ void main() {
           ),
         ).thenAnswer((_) async => 200);
         when(
-          () => boltz.claimLbtcToBtcChainSwap(
-            swapId: any(named: 'swapId'),
-            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
-            absoluteFees: any(named: 'absoluteFees'),
-            tryCooperate: any(named: 'tryCooperate'),
-            counterpartyElectrum: any(named: 'counterpartyElectrum'),
-            electrum: any(named: 'electrum'),
-          ),
-        ).thenThrow(Exception('No Bitcoin UTXO detected for this script'));
-        when(
           () => boltz.checkLockupOutspends(
             swapId: any(named: 'swapId'),
             swapType: any(named: 'swapType'),
@@ -718,13 +766,28 @@ void main() {
             isClaim: any(named: 'isClaim'),
           ),
         ).thenAnswer((_) async => []);
+      }
+
+      test('a lockup not on the server yet is confirmed on the script path '
+          '($message)', () async {
+        stubClaimSetup();
+        when(
+          () => boltz.claimLbtcToBtcChainSwap(
+            swapId: any(named: 'swapId'),
+            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+            absoluteFees: any(named: 'absoluteFees'),
+            tryCooperate: any(named: 'tryCooperate'),
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
+            electrum: any(named: 'electrum'),
+          ),
+        ).thenThrow(Exception(message));
 
         await expectLater(
           repo(fastest: 1).claim(chainSwap(status: 'claimable')),
           throwsA(isA<SwapsException>()),
         );
 
-        verifyNever(
+        verify(
           () => boltz.claimLbtcToBtcChainSwap(
             swapId: any(named: 'swapId'),
             claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
@@ -733,9 +796,54 @@ void main() {
             counterpartyElectrum: any(named: 'counterpartyElectrum'),
             electrum: any(named: 'electrum'),
           ),
+        ).called(1);
+      });
+
+      test('a cooperative reply claiming no lockup cannot stop the script-path '
+          'claim ($message)', () async {
+        stubClaimSetup();
+        when(
+          () => boltz.claimLbtcToBtcChainSwap(
+            swapId: any(named: 'swapId'),
+            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+            absoluteFees: any(named: 'absoluteFees'),
+            tryCooperate: true,
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
+            electrum: any(named: 'electrum'),
+          ),
+        ).thenThrow(Exception('HTTP Status Not Success: 400, $message'));
+        when(
+          () => boltz.claimLbtcToBtcChainSwap(
+            swapId: any(named: 'swapId'),
+            claimBitcoinAddress: any(named: 'claimBitcoinAddress'),
+            absoluteFees: any(named: 'absoluteFees'),
+            tryCooperate: false,
+            counterpartyElectrum: any(named: 'counterpartyElectrum'),
+            electrum: any(named: 'electrum'),
+          ),
+        ).thenAnswer((_) async => 'claim-hex');
+        when(
+          () => boltz.broadcastChainSwapClaim(
+            swapId: any(named: 'swapId'),
+            signedTxHex: any(named: 'signedTxHex'),
+            broadcastViaBoltz: any(named: 'broadcastViaBoltz'),
+            electrum: any(named: 'electrum'),
+          ),
+        ).thenAnswer((_) async => 'claim-txid');
+
+        final result = await repo(fastest: 1)
+            .claim(chainSwap(status: 'claimable'));
+
+        expect(
+          result,
+          isA<Ok<String, SwapsFailure>>().having(
+            (result) => result.value,
+            'txid',
+            'claim-txid',
+          ),
         );
-      },
-    );
+      });
+    }
 
     test(
       'falls back to the stored fee when the claim cannot be sized',
@@ -1666,8 +1774,8 @@ void main() {
           index: any(named: 'index'),
           amountSat: any(named: 'amountSat'),
           environment: any(named: 'environment'),
-          btcElectrumUrl: any(named: 'btcElectrumUrl'),
-          lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
+          btcElectrum: any(named: 'btcElectrum'),
+          lbtcElectrum: any(named: 'lbtcElectrum'),
           receiveWalletId: any(named: 'receiveWalletId'),
           externalRecipientAddress: any(named: 'externalRecipientAddress'),
         ),
@@ -1688,8 +1796,8 @@ void main() {
               index: captureAny(named: 'index'),
               amountSat: any(named: 'amountSat'),
               environment: any(named: 'environment'),
-              btcElectrumUrl: any(named: 'btcElectrumUrl'),
-              lbtcElectrumUrl: any(named: 'lbtcElectrumUrl'),
+              btcElectrum: any(named: 'btcElectrum'),
+              lbtcElectrum: any(named: 'lbtcElectrum'),
               receiveWalletId: any(named: 'receiveWalletId'),
               externalRecipientAddress: any(named: 'externalRecipientAddress'),
             ),

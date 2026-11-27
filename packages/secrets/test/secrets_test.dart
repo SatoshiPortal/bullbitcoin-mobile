@@ -43,7 +43,10 @@ void main() {
   // never reached.
   Secrets secretsWith(FakeSecureStoragePlatform storage) {
     storage.install();
-    return Secrets(scratchDirectory: () async => Directory.systemTemp.path);
+    return Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => Directory.systemTemp.path,
+    );
   }
 
   test(
@@ -717,6 +720,7 @@ void main() {
     test('from an import, it is an invalid mnemonic', () async {
       FakeSecureStoragePlatform().install();
       final result = await Secrets(
+        authority: unlockedSessionAuthority(),
         scratchDirectory: () async => '/tmp',
       ).import(words: List.filled(11, 'abandon'), language: Language.english);
       expect(
@@ -735,9 +739,11 @@ void main() {
           ),
           backupKey: List.filled(32, 1),
         ).toJson();
-        final result = await Secrets(scratchDirectory: () async => '/tmp')
-            .recoverbull
-            .restore(
+        final result =
+            await Secrets(
+              authority: unlockedSessionAuthority(),
+              scratchDirectory: () async => '/tmp',
+            ).recoverbull.restore(
               vault: EncryptedVault(json: file),
               key: VaultKey('01' * 32),
             );

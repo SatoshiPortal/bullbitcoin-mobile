@@ -9,11 +9,32 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart'
+    show BackupProof, InventoryBackupVerification;
 import 'package:secrets/testing.dart';
 
 class _MockSeedOwner extends Mock implements SeedReferencePort {}
 
 class _MockWalletCatalog extends Mock implements SeedReferencePort {}
+
+/// The backup proofs manual deletion judges. A seed is missing unless this test
+/// states it is verified.
+final class _Proofs implements InventoryBackupVerification {
+  final Set<Fingerprint> verified = {};
+  bool unreadable = false;
+
+  @override
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async => unreadable
+      ? const Err(BackupStateUnavailableFailure())
+      : Ok(
+          verified.contains(secret)
+              ? BackupProof.verified
+              : BackupProof.missing,
+        );
+}
 
 /// Was `DeleteSeedUsecase`, inside the seeds package. The class moved out when the package stopped knowing what a wallet is — `Secrets.trash` is unconditional and documented as such — but the responsibility did not: something must still refuse to delete a secret a wallet depends on, and that something is here.
 ///
@@ -37,6 +58,7 @@ void main() {
   late FakeSecureStoragePlatform storage;
   late Secrets secrets;
   late _MockWalletCatalog walletRepository;
+  late _Proofs proofs;
   late SeedReferences references;
   late DeleteSecretUsecase usecase;
   late Fingerprint id;
@@ -54,19 +76,24 @@ void main() {
     logDirectory = await Directory.systemTemp.createTemp("seed-log-");
     log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final stored = (await secrets.import(
       words: words,
       language: Language.english,
     )) as Ok<Secret, SecretFailure>;
     id = stored.value.id;
     walletRepository = _MockWalletCatalog();
+    proofs = _Proofs()..verified.add(id);
     references = SeedReferences(
       walletRepository,
       admission: SqliteParentCustodyAdmission(
         directory: () async => logDirectory.path,
         mayCreate: true,
       ),
+      backupVerification: proofs,
     );
     usecase = DeleteSecretUsecase(secrets: secrets, seedReferences: references);
   });
@@ -175,6 +202,36 @@ void main() {
 
       expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
       expect(storedSecrets(), isEmpty);
+    });
+
+    test('refuses, and keeps the secret, without a tested backup', () async {
+      // The words exist nowhere else: an orphan is not a reason to destroy
+      // the only copy.
+      when(() => walletRepository.getCustodyFingerprints())
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+      proofs.verified.clear();
+
+      final result = await usecase.execute(id);
+
+      expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
+      expect(storedSecrets(), hasLength(1));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed delete refused reason=backup_required',
+      ]);
+    });
+
+    test('refuses when the backup state cannot be read', () async {
+      when(() => walletRepository.getCustodyFingerprints())
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+      proofs.unreadable = true;
+
+      final result = await usecase.execute(id);
+
+      expect((result as Err).failure, isA<AllSeedViewDeleteFailure>());
+      expect(storedSecrets(), hasLength(1));
+      expect((await log.readLogs()).map((row) => row.split('\t')[2]), [
+        'Seed delete refused reason=backup_unavailable',
+      ]);
     });
   });
 }

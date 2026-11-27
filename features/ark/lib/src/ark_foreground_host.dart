@@ -63,6 +63,7 @@ final class ArkForegroundHost {
   (Object, StackTrace)? _closeFailure;
   int _generation = 0;
   bool _closed = false;
+  bool _suspended = false;
 
   final _homeChanges = StreamController<void>.broadcast();
   StreamSubscription<Object?>? _watching;
@@ -198,7 +199,7 @@ final class ArkForegroundHost {
   /// Renew when the app returns to the foreground, if a runtime is open.
   Future<void> resume() async {
     final runtime = _runtime;
-    if (!_closed && runtime != null) await runtime.maintain();
+    if (!_closed && !_suspended && runtime != null) await runtime.maintain();
   }
 
   /// Read only an already-open account. Home never initializes a runtime.
@@ -298,7 +299,7 @@ final class ArkForegroundHost {
   Future<Result<ArkForegroundRuntime, ArkFailure>> _current(
     int generation,
   ) async {
-    if (_closed || generation != _generation) {
+    if (_closed || _suspended || generation != _generation) {
       return const Err(ArkServiceUnavailableFailure());
     }
     final existing = _runtime;
@@ -313,7 +314,7 @@ final class ArkForegroundHost {
     if (await _drain() != null) {
       return const Err(ArkServiceUnavailableFailure());
     }
-    if (_closed || generation != _generation) {
+    if (_closed || _suspended || generation != _generation) {
       return const Err(ArkServiceUnavailableFailure());
     }
     final opened = await openArkForeground(
@@ -329,7 +330,7 @@ final class ArkForegroundHost {
       services: _services,
     );
     if (opened case Ok(:final value)) {
-      if (_closed || generation != _generation) {
+      if (_closed || _suspended || generation != _generation) {
         _retire(value);
         return const Err(ArkServiceUnavailableFailure());
       }
@@ -337,6 +338,32 @@ final class ArkForegroundHost {
       _watch(value);
     }
     return opened;
+  }
+
+  /// Revokes the runtime now: it retires synchronously and nothing opens until
+  /// [reopen]. Completes once every retired runtime has drained, so the native
+  /// writer is confirmed closed; a close failure rethrows and, as for [close],
+  /// the host then refuses to open another runtime.
+  Future<void> suspend() async {
+    _suspended = true;
+    invalidate();
+    final pending = _pending;
+    if (pending != null) {
+      try {
+        await pending;
+      } catch (_) {
+        // Its own caller observes that failure.
+      }
+    }
+    final failure = await _drain();
+    if (failure != null) Error.throwWithStackTrace(failure.$1, failure.$2);
+  }
+
+  /// Lets the next navigation open a runtime again. Opens nothing itself.
+  void reopen() {
+    if (!_suspended) return;
+    _suspended = false;
+    _homeChanged();
   }
 
   /// Closes the current, opening and retired runtimes; rethrows the first

@@ -1,15 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:legacy_storage/coordination.dart';
-import 'package:legacy_storage/legacy_storage.dart'
-    show
-        LegacyImportDeferred,
-        LegacyImportFailure,
-        LegacyImportVerificationFailed,
-        LegacyOwnerFailure,
-        LegacyOwnerFailureCause;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/src/data/data.dart'
@@ -21,13 +15,18 @@ import 'package:secrets/src/data/data.dart'
         unreadableBip85RecordFailure;
 
 import '../data/access_repository.dart';
+import '../data/ark_notify_policy.dart';
 import '../data/backup_guard.dart';
 import '../data/derivation_repository.dart';
 import '../data/inventory_import.dart';
 import '../data/inventory_repository.dart';
+import '../data/inventory_session.dart';
 import '../data/inventory_store.dart';
+import '../data/ready_inventory_store.dart';
+export '../data/ready_inventory_store.dart' show inventoryReadinessFailure;
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
+import '../domain/backup_candidate.dart';
 import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
 import '../domain/metadata_backup_wallet.dart';
@@ -50,30 +49,39 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   final InventoryRepository _wallets;
   final DerivationRepository _derivations;
   final BackupGuard _guard;
-  bool _unlocked;
+  final SessionAuthority _authority;
   var _session = 0;
+  Future<void>? _pendingDrain;
 
   SecretsInventory._(
     this._store,
     this._access,
     this._guard,
+    this._authority,
     bool initiallyProtected,
   ) : _wallets = InventoryRepository(_store.database),
-      _derivations = DerivationRepository(_store.database),
-      _unlocked = !initiallyProtected;
+      _derivations = DerivationRepository(_store.database) {
+    if (!initiallyProtected) _authority.grant(defaultViewId);
+  }
+
+  bool get _unlocked => _authority.current != null;
 
   /// Open an existing, admitted inventory. A missing receipt blocks publication.
   ///
   /// [backupVerification] is the composition's one verifier, bound here before
   /// the capability exists. Without it the inventory refuses every decision that
   /// needs a backup proof; no operation lets a caller supply its own.
+  ///
+  /// [authority] is the session shared with `Secrets`. The inventory is the only
+  /// writer: an authentication grants a token, locking revokes it.
   @useResult
   static Future<Result<SecretsInventory, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
     InventoryBackupVerification? backupVerification,
+    required SessionAuthority authority,
   }) async {
-    final opened = await _openReady(file, admission);
+    final opened = await openReadyInventoryStore(file, admission);
     switch (opened) {
       case Err(:final failure):
         return Err(failure);
@@ -84,14 +92,16 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
           await value.close();
           return Err(inventoryReadinessFailure(failure));
         }
-        final guard = BackupGuard(backupVerification);
+        final guard = BackupGuard(backupVerification, value.database);
         final access = AccessRepository(value.database, guard);
         switch (await access.protectionAtOpen()) {
           case Err(:final failure):
             await value.close();
             return Err(failure);
           case Ok(value: final protected):
-            return Ok(SecretsInventory._(value, access, guard, protected));
+            return Ok(
+              SecretsInventory._(value, access, guard, authority, protected),
+            );
         }
     }
   }
@@ -103,35 +113,105 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   Future<Result<AccessAttempt, SecretFailure>> accessStatus() =>
       _access.status();
 
+  /// Whether Ark may notify for [parent] while the app is locked: the rule of
+  /// [ArkBackgroundAccess.mayNotify], asked in the foreground so an OS alarm is
+  /// scheduled by the same rule there. It reads no seed and is not gated by
+  /// the session: it answers a bool about the policy, never about a secret.
+  @override
+  @useResult
+  Future<bool> mayNotifyArk(Fingerprint parent) =>
+      arkNotifyPermitted(_store.database, parent);
+
+  /// Whether no session may use secrets right now.
+  bool get isLocked => !_unlocked;
+
+  /// True on every lock, false on every unlock, in order.
+  Stream<bool> get lockedChanges => _authority.changes.map((t) => t == null);
+
   @useResult
   Future<Result<AccessAttempt, SecretFailure>> unlock(String candidate) async {
+    if (_pendingDrain != null) return const Err(inventoryLockedFailure);
     final current = _session;
     final attempt = await _access.unlock(candidate);
-    if (current != _session) {
+    if (current != _session || _pendingDrain != null) {
       return const Err(inventorySessionChangedFailure);
     }
-    if (attempt case Ok(value: AccessAttempt(accepted: true))) _unlocked = true;
+    if (attempt case Ok(value: AccessAttempt(accepted: true))) {
+      // A re-authentication inside a live session keeps its handles; only a
+      // locked inventory opens a new generation.
+      if (!_unlocked) _authority.grant(defaultViewId);
+    }
     return attempt;
   }
 
-  void lock() {
+  /// Closes the inventory, in this order: the admission and the authority
+  /// close first, so nothing new starts and no handle reaches key material;
+  /// then work already admitted settles. A write that reaches its commit after
+  /// the lock is rolled back; one already committed reports its true result.
+  ///
+  /// What survives a lock after its commit: a command that returns no value
+  /// (a PIN change, a background grant, a wallet registration, removal or
+  /// property change, a derivation rename or revocation) reports its true
+  /// result, because the durable effect exists whatever the session did. It
+  /// never publishes a projection of the old view. The one exception is a BIP85
+  /// reservation (`reserveHexDerivation`, `reserveMnemonicDerivation`): it hands
+  /// a value back and may be derived next, so after a lock it is refused even
+  /// when its row committed; the reservation stays recorded and is never
+  /// reused.
+  ///
+  /// Returns false if admitted work had not settled within [drain]. It then
+  /// stays closed: the lock never reopens on a timeout, and the operation still
+  /// running reports [inventorySessionChangedFailure] when it ends.
+  Future<bool> lock({Duration drain = const Duration(seconds: 2)}) async {
     _session++;
-    _unlocked = false;
+    final pending = inventoryWritesSettled();
+    _pendingDrain = pending;
+    _authority.revoke();
+    unawaited(
+      pending.then((_) {
+        if (identical(_pendingDrain, pending)) _pendingDrain = null;
+      }),
+    );
+    try {
+      await pending.timeout(drain);
+      return true;
+    } on TimeoutException {
+      return false;
+    }
+  }
+
+  /// Waits for confirmed completion of any inventory writes admitted before
+  /// locking, including when the bounded lock call already timed out.
+  Future<void> waitForDrain() async {
+    while (true) {
+      final pending = _pendingDrain;
+      if (pending == null) return;
+      await pending;
+    }
   }
 
   @useResult
-  Future<Result<void, SecretFailure>> resumeUnprotected() =>
-      _inSession(requireUnlocked: false, (session) async {
-        switch (await _access.isProtected()) {
-          case Err(:final failure):
-            return Err(failure);
-          case Ok(value: true):
-            return const Err(inventoryCredentialRequiredFailure);
-          case Ok(value: false):
-            if (session == _session) _unlocked = true;
-            return const Ok(null);
-        }
-      });
+  Future<Result<void, SecretFailure>> resumeUnprotected() {
+    if (_pendingDrain != null) {
+      return Future.value(const Err(inventoryLockedFailure));
+    }
+    return _inSession(requireUnlocked: false, (session) async {
+      switch (await _access.isProtected()) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(value: true):
+          return const Err(inventoryCredentialRequiredFailure);
+        case Ok(value: false):
+          if (_pendingDrain != null) {
+            return const Err(inventoryLockedFailure);
+          }
+          if (session == _session && !_unlocked) {
+            _authority.grant(defaultViewId);
+          }
+          return const Ok(null);
+      }
+    });
+  }
 
   /// The secrets of the active view without a tested backup, by the same rule
   /// that protecting the view applies. Empty means the view can be protected;
@@ -147,17 +227,25 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// view holds, judged by the verifier bound at composition.
   @useResult
   Future<Result<void, SecretFailure>> setCredential(String candidate) =>
-      _inSession((_) => _access.replaceCredential(candidate));
+      _inSession(
+        (_) => _access.replaceCredential(candidate),
+        preserveCommittedCommand: true,
+      );
 
   /// Remove access protection from an authenticated foreground session.
   @useResult
-  Future<Result<void, SecretFailure>> removeCredential() =>
-      _inSession((_) => _access.replaceCredential(null));
+  Future<Result<void, SecretFailure>> removeCredential() => _inSession(
+    (_) => _access.replaceCredential(null),
+    preserveCommittedCommand: true,
+  );
 
   /// Permit background sync to read the active view's descriptors while locked.
   @useResult
   Future<Result<void, SecretFailure>> setBackgroundEnabled(bool enabled) =>
-      _inSession((_) => _access.setBackgroundEnabled(enabled));
+      _inSession(
+        (_) => _access.setBackgroundEnabled(enabled),
+        preserveCommittedCommand: true,
+      );
 
   @useResult
   Future<Result<List<RegisteredWallet>, SecretFailure>> listWallets() =>
@@ -203,6 +291,13 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   Future<Result<WalletRegistration, SecretFailure>> readWallet(String id) =>
       _inSession((_) => _wallets.read(defaultViewId, id));
 
+  /// Publishes a joined read only while the session that started it is live.
+  /// Exceptions from [read] propagate to the caller.
+  @useResult
+  Future<Result<T, SecretFailure>> readInSession<T>(
+    Future<T> Function() read,
+  ) => _inSession((_) async => Ok(await read()));
+
   @override
   @useResult
   Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
@@ -226,6 +321,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       guard: _guard,
       prepareProperties: prepareProperties,
     ),
+    preserveCommittedCommand: true,
   );
 
   @useResult
@@ -242,11 +338,14 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       birthday: birthday,
       isDefault: isDefault,
     ),
+    preserveCommittedCommand: true,
   );
 
   @useResult
-  Future<Result<void, SecretFailure>> removeWallet(String id) =>
-      _inSession((_) => _wallets.remove(view: defaultViewId, id: id));
+  Future<Result<void, SecretFailure>> removeWallet(String id) => _inSession(
+    (_) => _wallets.remove(view: defaultViewId, id: id),
+    preserveCommittedCommand: true,
+  );
 
   /// Operates on historical BIP85 children in the current foreground view.
   Bip85Derivations bip85(Secrets secrets) => Bip85Derivations._(this, secrets);
@@ -310,25 +409,86 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
       path: derivation.path,
       change: change,
     ),
+    preserveCommittedCommand: true,
   );
 
   Future<Result<T, SecretFailure>> _inSession<T>(
     Future<Result<T, SecretFailure>> Function(int session) run, {
     bool requireUnlocked = true,
+    bool preserveCommittedCommand = false,
   }) async {
     if (requireUnlocked && !_unlocked) {
       return const Err(inventoryLockedFailure);
     }
     final session = _session;
-    final result = await run(session);
-    return session == _session
-        ? result
-        : const Err(inventorySessionChangedFailure);
+    return runInventorySession(
+      () => run(session),
+      isCurrent: () => session == _session,
+      preserveCommittedCommand: preserveCommittedCommand,
+    );
   }
 
-  Future<void> close() {
-    lock();
-    return _store.close();
+  /// Test seam: a wallet row visible to [view] only, as a second view would
+  /// hold one. No public operation can create a view yet.
+  @visibleForTesting
+  Future<void> insertWalletInViewForTesting({
+    required String view,
+    required RegisteredWallet wallet,
+  }) async {
+    final database = _store.database;
+    await database.customStatement(
+      'INSERT OR IGNORE INTO views (id, name, background_enabled) VALUES (?, ?, 1)',
+      [view, view],
+    );
+    await database.customStatement(
+      '''INSERT INTO wallets (id, secret_fingerprint, master_fingerprint, signer,
+         network, xpub, external_descriptor, internal_descriptor, label, birthday,
+         is_default) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+      [
+        wallet.id,
+        wallet.secretFingerprint,
+        wallet.masterFingerprint,
+        wallet.signer,
+        wallet.network,
+        wallet.xpub,
+        wallet.externalDescriptor,
+        wallet.internalDescriptor,
+        wallet.label,
+        wallet.birthday,
+        wallet.isDefault ? 1 : 0,
+      ],
+    );
+    await database.customStatement(
+      'INSERT INTO view_members (view_id, member) VALUES (?, ?)',
+      [
+        view,
+        wallet.secretFingerprint == null
+            ? 'wallet:${wallet.id}'
+            : 'secret:${wallet.secretFingerprint}',
+      ],
+    );
+  }
+
+  /// Test seam: makes an existing wallet visible to [view] too.
+  @visibleForTesting
+  Future<void> shareWalletWithViewForTesting({
+    required String view,
+    required String walletId,
+  }) async {
+    final database = _store.database;
+    await database.customStatement(
+      'INSERT OR IGNORE INTO views (id, name, background_enabled) VALUES (?, ?, 1)',
+      [view, view],
+    );
+    await database.customStatement(
+      'INSERT INTO view_members (view_id, member) VALUES (?, ?)',
+      [view, 'wallet:$walletId'],
+    );
+  }
+
+  Future<void> close() async {
+    await lock();
+    await _store.close();
   }
 }
 
@@ -367,6 +527,126 @@ extension MetadataBackupInventory on SecretsInventory {
   });
 }
 
+/// One live session as a backup client sees it: the durable view it reads and
+/// whether the authority still holds the exact generation it was issued in.
+///
+/// A lock revokes it for good: reopening the same view later is a new
+/// generation, so an operation started before the lock can never continue
+/// after it. [view] is only an identity to partition state by; it grants
+/// nothing.
+final class BackupSession {
+  /// The durable identifier of the view; stable across sessions.
+  final String view;
+  final SecretsInventory _inventory;
+  final int _generation;
+
+  BackupSession._(this.view, this._inventory, this._generation);
+
+  /// False as soon as the session ended, including when the view was reopened.
+  bool get isCurrent =>
+      _inventory._unlocked && _inventory._session == _generation;
+}
+
+/// Metadata backup operations that cannot reach a seed or a descriptor
+/// outside the projection above. Every operation takes the [BackupSession] it
+/// belongs to and refuses to run once that session is no longer current.
+extension MetadataBackupRestore on SecretsInventory {
+  /// The live session. Backup state is partitioned by its [BackupSession.view]
+  /// and every effect re-checks [BackupSession.isCurrent] immediately before
+  /// it starts.
+  @useResult
+  Future<Result<BackupSession, SecretFailure>> backupSession() => _inSession(
+    (generation) async => Ok(BackupSession._(defaultViewId, this, generation)),
+  );
+
+  /// The Bitcoin wallets of [network] visible in this session's view, each with
+  /// a verdict of exclusivity decided by Secrets from the real memberships and
+  /// the BIP138 recipient keys (see `InventoryRepository.backupCandidates`).
+  /// Nothing of another view is ever returned.
+  @useResult
+  Future<Result<List<BackupCandidate>, SecretFailure>> backupCandidates(
+    BackupSession session,
+    BitcoinNetwork network,
+  ) => _inBackupSession(
+    session,
+    (view) => _wallets.backupCandidates(view, network),
+  );
+
+  /// The visible wallet whose network and two public descriptors equal the
+  /// given ones. Never matched by identifier.
+  @useResult
+  Future<Result<String, SecretFailure>> matchPublicWallet({
+    required BackupSession session,
+    required BitcoinNetwork network,
+    required String external,
+    required String internal,
+  }) => _inBackupSession(
+    session,
+    (view) => _wallets.matchPublicWallet(
+      view: view,
+      network: network,
+      external: external,
+      internal: internal,
+    ),
+  );
+
+  /// Attaches a label and a birthday to the matching public wallet, only
+  /// where the wallet has none. Signer, device and default flag are untouched.
+  @useResult
+  Future<Result<({bool label, bool birthday}), SecretFailure>>
+  restorePublicWalletProperties({
+    required BackupSession session,
+    required BitcoinNetwork network,
+    required String external,
+    required String internal,
+    required String? label,
+    required DateTime? birthday,
+  }) => _inBackupSession(
+    session,
+    (view) => _wallets.restorePublicProperties(
+      view: view,
+      network: network,
+      external: external,
+      internal: internal,
+      label: label,
+      birthday: birthday,
+    ),
+    isWrite: true,
+  );
+
+  /// Merges archived BIP85 records of one parent. All or nothing; it can
+  /// add rows and make a child more restricted, never fewer, so the next
+  /// index can only rise. It does not lift any recovery block and never
+  /// authorizes a new child.
+  @useResult
+  Future<Result<DerivationMergeReport, SecretFailure>> mergeDerivationArchive({
+    required BackupSession session,
+    required Fingerprint parent,
+    required List<RecordedDerivation> records,
+  }) => _inBackupSession(
+    session,
+    (view) => _derivations.merge(view: view, parent: parent, records: records),
+    isWrite: true,
+  );
+
+  Future<Result<T, SecretFailure>> _inBackupSession<T>(
+    BackupSession session,
+    Future<Result<T, SecretFailure>> Function(String view) run, {
+    bool isWrite = false,
+  }) async {
+    if (!session.isCurrent) {
+      return const Err(inventorySessionChangedFailure);
+    }
+    // A write whose transaction committed before the lock reports what
+    // happened: hiding a committed change behind a failure would let the
+    // caller retry or journal the wrong state.
+    return _inSession(
+      (_) => run(session.view),
+      preserveCommittedCommand: isWrite,
+    );
+  }
+}
+
 /// Scope for background sync. Only descriptors in views with an active
 /// background grant can leave this capability. It cannot read seeds or PINs.
 final class BackgroundWalletDescriptors {
@@ -380,8 +660,10 @@ final class BackgroundWalletDescriptors {
   static Future<Result<BackgroundWalletDescriptors, DatabaseOpenFailure>> open({
     required File file,
     required RuntimeAdmission admission,
-  }) async =>
-      (await _openReady(file, admission)).map(BackgroundWalletDescriptors._);
+  }) async => (await openReadyInventoryStore(
+    file,
+    admission,
+  )).map(BackgroundWalletDescriptors._);
 
   @useResult
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>> list() =>
@@ -389,60 +671,3 @@ final class BackgroundWalletDescriptors {
 
   Future<void> close() => _store.close();
 }
-
-Future<Result<InventoryStore, DatabaseOpenFailure>> _openReady(
-  File file,
-  RuntimeAdmission admission,
-) async {
-  final result = await InventoryStore.open(file, admission, existing: true);
-  switch (result) {
-    case Err():
-      return result;
-    case Ok(:final value):
-      switch (await readInventoryReadiness(value.database, admitted: true)) {
-        case Ok(value: OwnerReadiness.imported || OwnerReadiness.initialized):
-          return result;
-        case Ok():
-          await value.close();
-          return const Err(DatabaseNotReady());
-        case Err(:final failure):
-          await value.close();
-          return Err(inventoryReadinessFailure(failure));
-      }
-  }
-}
-
-/// What a failed readiness check on an admitted inventory means to the open.
-/// Each cause survives, so a caller can tell damaged data from a locked
-/// keystore, contention, a newer format or a plain access error. Only
-/// [DatabaseFileProblem.unreadable] and a missing key say the data is lost.
-@visibleForTesting
-DatabaseOpenFailure inventoryReadinessFailure(LegacyImportFailure failure) =>
-    switch (failure) {
-      LegacyImportDeferred() => const DatabaseKeyUnavailable(
-        DatabaseKeyProblem.locked,
-      ),
-      LegacyOwnerFailure(:final cause) => switch (cause) {
-        LegacyOwnerFailureCause.keystoreLocked => const DatabaseKeyUnavailable(
-          DatabaseKeyProblem.locked,
-        ),
-        LegacyOwnerFailureCause.keyLost => const DatabaseKeyUnavailable(
-          DatabaseKeyProblem.missing,
-        ),
-        LegacyOwnerFailureCause.contention => const DatabaseFileUnavailable(
-          DatabaseFileProblem.contended,
-        ),
-        LegacyOwnerFailureCause.unsupportedSchema =>
-          const DatabaseFileUnavailable(DatabaseFileProblem.schemaMismatch),
-        LegacyOwnerFailureCause.unreadable => const DatabaseFileUnavailable(
-          DatabaseFileProblem.unreadable,
-        ),
-        LegacyOwnerFailureCause.missingAfterAdmission =>
-          const DatabaseFileUnavailable(DatabaseFileProblem.missing),
-      },
-      // A receipt this build cannot read says nothing about the file.
-      LegacyImportVerificationFailed() => const DatabaseFileUnavailable(
-        DatabaseFileProblem.inconsistent,
-      ),
-      _ => const DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
-    };

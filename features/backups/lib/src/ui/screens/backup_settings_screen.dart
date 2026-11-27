@@ -21,11 +21,15 @@ class BackupSettingsScreen extends StatelessWidget {
   final VoidCallback? onOpenAutomaticBackup;
   final String? Function(BuildContext)? automaticBackupStatus;
 
+  /// Rebuilds the automatic backup entry when its status changes.
+  final Listenable? automaticBackupChanges;
+
   const BackupSettingsScreen({
     super.key,
     required this.onExportTransactions,
     this.onOpenAutomaticBackup,
     this.automaticBackupStatus,
+    this.automaticBackupChanges,
   });
 
   @override
@@ -93,13 +97,17 @@ class BackupSettingsScreen extends StatelessWidget {
                         title: context.loc.backupSettingsDataSection,
                       ),
                       if (onOpenAutomaticBackup case final open?)
-                        BullSettingsEntryItem(
-                          icon: Icons.cloud_upload,
-                          title: context.loc.backupSettingsAutomaticBackup,
-                          subtitle:
-                              automaticBackupStatus?.call(context) ??
-                              context.loc.coreScreensUnknown,
-                          onTap: open,
+                        ListenableBuilder(
+                          listenable:
+                              automaticBackupChanges ?? Listenable.merge([]),
+                          builder: (context, _) => BullSettingsEntryItem(
+                            icon: Icons.cloud_upload,
+                            title: context.loc.backupSettingsAutomaticBackup,
+                            subtitle:
+                                automaticBackupStatus?.call(context) ??
+                                context.loc.coreScreensUnknown,
+                            onTap: open,
+                          ),
                         ),
                       BullSettingsEntryItem(
                         icon: Icons.sell,

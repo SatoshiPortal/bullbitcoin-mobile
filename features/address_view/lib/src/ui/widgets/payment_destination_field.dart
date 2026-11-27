@@ -130,6 +130,7 @@ class _PaymentDestinationFieldState extends State<PaymentDestinationField> {
               ? TextInputType.emailAddress
               : TextInputType.text),
       onChanged: _change,
+      onCommitted: _change,
       pasteLabel: MaterialLocalizations.of(context).pasteButtonLabel,
       scanLabel: context.silentLoc.silentScan,
       clearLabel: context.silentLoc.silentClearButton,

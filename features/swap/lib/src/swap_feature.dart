@@ -54,6 +54,7 @@ import 'presentation/transfer_bloc.dart';
 import 'ui/swap_router.dart';
 
 import 'domain/usecases/get_swap_route_settings_usecase.dart';
+import 'domain/usecases/check_swap_server_usecase.dart';
 import 'domain/usecases/get_swap_server_usecase.dart';
 import 'domain/usecases/set_swap_exchange_fallback_usecase.dart';
 import 'domain/usecases/set_swap_route_override_usecase.dart';
@@ -65,6 +66,7 @@ import 'domain/usecases/get_swap_rescue_wallets_usecase.dart';
 import 'ui/swap_restore_screen.dart';
 import 'ui/swap_rescue_details_screen.dart';
 import 'swap_l10n.dart';
+import 'swap_watchers.dart';
 import 'ui/swap_settings_page.dart';
 
 const _settingsRoute = 'swapSettings';
@@ -93,6 +95,13 @@ abstract interface class SwapFeature implements SwapActivity {
   });
   void start({required bool watchOrders, required bool watchAutoswap});
   Future<void> dispose();
+
+  /// Revokes the order and autoswap watchers now. Completes once each is
+  /// confirmed stopped, an autoswap in progress included.
+  Future<void> suspend();
+
+  /// Restarts what [suspend] stopped, once, after it completed.
+  void resume();
 
   factory SwapFeature.mount({
     required Swaps swaps,
@@ -203,7 +212,7 @@ abstract interface class SwapFeature implements SwapActivity {
         ),
         pollSettlement: pollSettlement,
       ),
-      swapSettingsRoute(swaps, swaps),
+      swapSettingsRoute(swaps, swaps, swaps.boltz),
     ];
     return _SwapFeature(
       List.unmodifiable(routes),
@@ -304,10 +313,7 @@ final class _SwapFeature implements SwapFeature {
   final RefreshOrderSwapsUsecase _refresh;
   final RetryOngoingSwapsUsecase _retry;
   final CreateReceiveOrderSwapUsecase _createReceiveOrder;
-  final OrderSwapWatcher _ordersWatcher;
-  final AutoswapWatcher _autoswapWatcher;
-  bool _orderWatching = false;
-  bool _autoswapWatching = false;
+  final SwapWatchers _watchers;
 
   _SwapFeature(
     this.routes,
@@ -316,14 +322,14 @@ final class _SwapFeature implements SwapFeature {
     this._refresh,
     this._retry,
     this._createReceiveOrder,
-    this._ordersWatcher,
-    this._autoswapWatcher,
-  );
+    OrderSwapWatcher ordersWatcher,
+    AutoswapWatcher autoswapWatcher,
+  ) : _watchers = SwapWatchers(ordersWatcher, autoswapWatcher);
 
   @override
-  bool get isWatchingOrders => _orderWatching;
+  bool get isWatchingOrders => _watchers.isWatchingOrders;
   @override
-  bool get isWatchingAutoswap => _autoswapWatching;
+  bool get isWatchingAutoswap => _watchers.isWatchingAutoswap;
 
   @override
   Future<Result<OrderSwapRecord, ReceiveFailure>> createReceiveOrder({
@@ -337,28 +343,17 @@ final class _SwapFeature implements SwapFeature {
   );
 
   @override
-  void start({required bool watchOrders, required bool watchAutoswap}) {
-    if (watchOrders) {
-      _orderWatching = true;
-      _ordersWatcher.start();
-    }
-    if (watchAutoswap) {
-      _autoswapWatching = true;
-      _autoswapWatcher.start();
-    }
-  }
+  void start({required bool watchOrders, required bool watchAutoswap}) =>
+      _watchers.start(watchOrders: watchOrders, watchAutoswap: watchAutoswap);
 
   @override
-  Future<void> dispose() async {
-    if (_orderWatching) {
-      _orderWatching = false;
-      _ordersWatcher.dispose();
-    }
-    if (_autoswapWatching) {
-      _autoswapWatching = false;
-      await _autoswapWatcher.dispose();
-    }
-  }
+  Future<void> dispose() => _watchers.dispose();
+
+  @override
+  Future<void> suspend() => _watchers.suspend();
+
+  @override
+  void resume() => _watchers.resume();
 
   @override
   Future<void> retryOngoingSwaps() => _retry.execute();
@@ -388,20 +383,22 @@ abstract final class SwapNavigation {
       context.pushNamed<void>(_settingsRoute);
 }
 
-GoRoute swapSettingsRoute(SwapRouting routing, SwapServerSettings servers) =>
-    GoRoute(
-      name: _settingsRoute,
-      path: '/swap-settings',
-      builder: (_, _) => BlocProvider(
-        create: (_) => SwapSettingsCubit(
-          getSwapRouteSettingsUsecase: GetSwapRouteSettingsUsecase(routing),
-          setSwapExchangeFallbackUsecase: SetSwapExchangeFallbackUsecase(
-            routing,
-          ),
-          setSwapRouteOverrideUsecase: SetSwapRouteOverrideUsecase(routing),
-          getSwapServerUsecase: GetSwapServerUsecase(servers),
-          setSwapServerUsecase: SetSwapServerUsecase(servers),
-        )..load(),
-        child: const SwapSettingsPage(),
-      ),
-    );
+GoRoute swapSettingsRoute(
+  SwapRouting routing,
+  SwapServerSettings servers,
+  BoltzSwaps boltz,
+) => GoRoute(
+  name: _settingsRoute,
+  path: '/swap-settings',
+  builder: (_, _) => BlocProvider(
+    create: (_) => SwapSettingsCubit(
+      getSwapRouteSettingsUsecase: GetSwapRouteSettingsUsecase(routing),
+      setSwapExchangeFallbackUsecase: SetSwapExchangeFallbackUsecase(routing),
+      setSwapRouteOverrideUsecase: SetSwapRouteOverrideUsecase(routing),
+      getSwapServerUsecase: GetSwapServerUsecase(servers),
+      setSwapServerUsecase: SetSwapServerUsecase(servers),
+      checkSwapServerUsecase: CheckSwapServerUsecase(boltz),
+    )..load(),
+    child: const SwapSettingsPage(),
+  ),
+);

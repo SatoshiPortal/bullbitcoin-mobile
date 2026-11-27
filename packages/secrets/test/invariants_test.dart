@@ -337,13 +337,13 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'ParentCustodyMetadataFailure', 'ParentCustodySeedUnavailableFailure',
       'ParentCustodyReferencedFailure', 'ParentCustodyInventoryFailure',
       'ParentCustodyDeletionFailure',
+      'ParentCustodyBackupRequiredFailure',
+      'ParentCustodyBackupUnavailableFailure',
       // the grouped spelling: forwards, holds nothing
       'SecretExtension', 'SecretDerivation', 'SecretDescriptors', 'SecretBip85',
       'SecretSigning', 'SecretBackup', 'SecretVerification',
       'SecretSilentPayments', 'DatabaseKeys',
       'Recoverbull', 'SecretPreview',
-      'AccessKeychain',
-      'ExchangeKeychain',
       'SilentPaymentKeychain',
       'SwapKeychain',
       // sealed display: the only way words reach a screen, built via `secret.widgets`

@@ -9,7 +9,10 @@ void main() {
     'backup and restore diagnostics contain no identity or derivation path',
     () async {
       FakeSecureStoragePlatform().install();
-      final secrets = Secrets(scratchDirectory: () async => '.');
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '.',
+      );
       final secret = (await secrets.import(
         words: '${'abandon ' * 11}about'.split(' '),
         language: Language.english,

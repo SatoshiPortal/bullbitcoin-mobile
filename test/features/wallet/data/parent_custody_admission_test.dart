@@ -9,6 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart'
+    show BackupProof, InventoryBackupVerification;
 import 'package:secrets/testing.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -24,6 +26,16 @@ final class _References implements SeedReferencePort {
         ? const Err(SeedReferencesUnavailable())
         : Ok(Set.of(parents));
   }
+}
+
+final class _UnreadableBackups implements InventoryBackupVerification {
+  const _UnreadableBackups();
+
+  @override
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async => const Err(BackupStateUnavailableFailure());
 }
 
 final class _AfterDeleteStorage extends FakeSecureStoragePlatform {
@@ -309,14 +321,21 @@ void main() {
 
     setUp(() async {
       storage = FakeSecureStoragePlatform()..install();
-      secrets = Secrets(scratchDirectory: () async => directory.path);
+      secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
       final result = await secrets.import(
         language: Language.english,
         words: [...List.filled(11, 'abandon'), 'about'],
       );
       id = (result as Ok<Secret, SecretFailure>).value.id;
       owner = _References();
-      references = SeedReferences(owner, admission: admission);
+      references = SeedReferences(
+        owner,
+        admission: admission,
+        backupVerification: FakeInventoryBackups(verified: {id}),
+      );
     });
 
     test('provisioning wins before deletion inventory', () async {
@@ -371,6 +390,92 @@ void main() {
         (lease) async => lease.readState(),
       );
       expect((state as Ok).value, ParentCustodyState.ready);
+    });
+
+    test('a verified backup deletes the unreferenced seed', () async {
+      expect(await references.deleteUnreferenced(secrets, id), isA<Ok>());
+      expect(await secrets.fetch(id), isA<Err>());
+    });
+
+    test('a verified backup never deletes a seed still referenced', () async {
+      owner.parents.add(id);
+
+      expect(
+        (await references.deleteUnreferenced(secrets, id) as Err).failure,
+        isA<ParentCustodyReferencedFailure>(),
+      );
+      expect(await secrets.fetch(id), isA<Ok>());
+    });
+
+    test('a seed without a tested backup is never deleted', () async {
+      final guarded = SeedReferences(
+        owner,
+        admission: admission,
+        backupVerification: const FakeInventoryBackups(),
+      );
+
+      expect(
+        (await guarded.deleteUnreferenced(secrets, id) as Err).failure,
+        isA<ParentCustodyBackupRequiredFailure>(),
+      );
+      expect(await secrets.fetch(id), isA<Ok>());
+      final state = await admission.runExclusive(
+        id,
+        (lease) async => lease.readState(),
+      );
+      expect((state as Ok).value, ParentCustodyState.ready);
+    });
+
+    test('an unreadable backup state preserves the seed', () async {
+      final guarded = SeedReferences(
+        owner,
+        admission: admission,
+        backupVerification: const _UnreadableBackups(),
+      );
+
+      expect(
+        (await guarded.deleteUnreferenced(secrets, id) as Err).failure,
+        isA<ParentCustodyBackupUnavailableFailure>(),
+      );
+      expect(await secrets.fetch(id), isA<Ok>());
+      final state = await admission.runExclusive(
+        id,
+        (lease) async => lease.readState(),
+      );
+      expect((state as Ok).value, ParentCustodyState.ready);
+    });
+
+    test('an absent seed is reconciled to deleted without a backup', () async {
+      // The tombstone records a deletion that already ran; the entry is gone.
+      // Completing it must not require a proof for a seed that cannot be
+      // backed up, because it no longer exists.
+      expect(
+        await admission.runExclusive<void>(
+          id,
+          (lease) async => lease.markDeleting(),
+        ),
+        isA<Ok>(),
+      );
+      expect(await secrets.trash(id), isA<Ok>());
+      final guarded = SeedReferences(
+        owner,
+        admission: admission,
+        backupVerification: const FakeInventoryBackups(),
+      );
+
+      expect(
+        await guarded.deleteUnreferenced(
+          secrets,
+          id,
+          reconcileBeforeDelete: true,
+        ),
+        isA<Ok<void, ParentCustodyFailure>>(),
+      );
+      final state = await admission.runExclusive(
+        id,
+        (lease) async => lease.readState(),
+      );
+      expect((state as Ok).value, ParentCustodyState.deleted);
     });
 
     test(

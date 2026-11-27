@@ -87,6 +87,37 @@ void main() {
     expect(find.text('Start typing'), findsOneWidget);
   });
 
+  testWidgets('exposes the search entry point as an enabled button action', (
+    tester,
+  ) async {
+    await _mount(tester);
+    await tester.tap(find.text('Open settings'));
+    await tester.pumpAndSettle();
+    final search = find.byKey(_searchBar);
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pump();
+      expect(find.bySemanticsLabel('Search settings'), findsOneWidget);
+      expect(
+        tester.getSemantics(search),
+        matchesSemantics(
+          label: 'Search settings',
+          isButton: true,
+          isFocusable: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+
+      tester.semantics.tap(find.semantics.byLabel('Search settings'));
+      await tester.pumpAndSettle();
+    } finally {
+      semantics.dispose();
+    }
+    expect(find.text('Start typing'), findsOneWidget);
+  });
+
   testWidgets('refreshes the menu without resetting the current query', (
     tester,
   ) async {
@@ -180,13 +211,18 @@ void main() {
 }
 
 Color? _serviceColor(WidgetTester tester) => tester
-    .widget<BullSettingsEntryItem>(
-      find.ancestor(
-        of: find.text('Services'),
-        matching: find.byType(BullSettingsEntryItem),
-      ),
+    .widget<Icon>(
+      find
+          .descendant(
+            of: find.ancestor(
+              of: find.text('Services'),
+              matching: find.byType(BullSettingsEntryItem),
+            ),
+            matching: find.byType(Icon),
+          )
+          .first,
     )
-    .iconColor;
+    .color;
 
 Future<void> _mount(
   WidgetTester tester, {

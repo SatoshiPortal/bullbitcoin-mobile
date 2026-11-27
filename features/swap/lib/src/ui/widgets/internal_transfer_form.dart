@@ -145,12 +145,17 @@ class _InternalTransferFormState extends State<InternalTransferForm> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        BullText(
-                          context.swapCopyForLocale.swapInternalTransferTitle,
-                          role: BullTextRole.body,
+                        ExcludeSemantics(
+                          child: BullText(
+                            context.swapCopyForLocale.swapInternalTransferTitle,
+                            role: BullTextRole.body,
+                          ),
                         ),
                         BullSwitch(
                           value: false,
+                          semanticLabel: context
+                              .swapCopyForLocale
+                              .swapInternalTransferTitle,
                           onChanged: widget.busy
                               ? null
                               : (_) => widget.onExternal(),

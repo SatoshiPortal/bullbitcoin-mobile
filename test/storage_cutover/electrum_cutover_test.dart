@@ -30,7 +30,10 @@ void main() {
           await directory.delete(recursive: true);
         });
         FakeSecureStoragePlatform().install();
-        final secrets = Secrets(scratchDirectory: () async => directory.path);
+        final secrets = Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        );
         final source = File('${directory.path}/legacy.sqlite');
         final expectedNetwork = freshPilot
             ? 'unknown-network'

@@ -160,7 +160,10 @@ void main() {
   setUp(() async {
     FakeSecureStoragePlatform().install();
     directory = await Directory.systemTemp.createTemp('identity-pins-');
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     secret = switch (await secrets.import(
       words: words,
       language: Language.english,

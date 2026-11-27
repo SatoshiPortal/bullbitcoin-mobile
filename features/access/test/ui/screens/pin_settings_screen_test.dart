@@ -34,6 +34,7 @@ void main() {
     final bloc = PinCodeSettingBloc(
       setPinCodeUsecase: MockSetPinCodeUsecase(),
       deletePinCodeUsecase: MockDeletePinCodeUsecase(),
+      lockChanges: const Stream.empty(),
       isPinCodeSetUsecase: isPinCodeSet,
       checkBackupUsecase: checkBackup,
     );

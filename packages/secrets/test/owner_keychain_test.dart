@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/src/data/data.dart' show OwnerKey, OwnerKeychain;
 import 'package:secrets/testing.dart';
 
 class _Store extends FakeSecureStoragePlatform {
@@ -25,7 +26,10 @@ void main() {
   late Secrets secrets;
   setUp(() {
     store = _Store()..install();
-    secrets = Secrets(scratchDirectory: () async => Directory.systemTemp.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => Directory.systemTemp.path,
+    );
   });
   tearDown(() => debugDefaultTargetPlatformOverride = null);
 
@@ -45,22 +49,22 @@ void main() {
       });
       final before = Map.of(store.entries);
       expect(
-        await secrets.accessKeychain.isPinSet(),
+        await _LegacyPinEntries().isPinSet(),
         isA<Ok<bool, SecretFailure>>().having((r) => r.value, 'set', true),
       );
       expect(
-        await secrets.accessKeychain.verifyPin('synthetic'),
+        await _LegacyPinEntries().verifyPin('synthetic'),
         isA<Ok<bool?, SecretFailure>>().having((r) => r.value, 'match', true),
       );
       expect(
-        await secrets.accessKeychain.verifyPin('wrong'),
+        await _LegacyPinEntries().verifyPin('wrong'),
         isA<Ok<bool?, SecretFailure>>().having((r) => r.value, 'match', false),
       );
       final results = [
-        await secrets.accessKeychain.readAttempts(),
-        await secrets.accessKeychain.readLockedUntil(),
-        await secrets.exchangeKeychain.read(isTestnet: false),
-        await secrets.exchangeKeychain.read(isTestnet: true),
+        await _LegacyPinEntries().readAttempts(),
+        await _LegacyPinEntries().readLockedUntil(),
+        await LegacyExchangeKeychainFixture().read(isTestnet: false),
+        await LegacyExchangeKeychainFixture().read(isTestnet: true),
         await secrets.silentPaymentKeychain.readBackend(),
         await secrets.silentPaymentKeychain.readAutoScan(),
         await secrets.swapKeychain.read('swap_regtest_existing'),
@@ -79,12 +83,12 @@ void main() {
   );
   test('writes and deletes retain exact keys and unrelated entries', () async {
     store.entries['seed_unrelated'] = 'untouched';
-    final access = secrets.accessKeychain;
+    final access = _LegacyPinEntries();
     await access.setPin('synthetic');
     await access.writeAttempts('2');
     await access.writeLockedUntil('42');
-    await secrets.exchangeKeychain.write('main', isTestnet: false);
-    await secrets.exchangeKeychain.write('test', isTestnet: true);
+    await LegacyExchangeKeychainFixture().write('main', isTestnet: false);
+    await LegacyExchangeKeychainFixture().write('test', isTestnet: true);
     await secrets.silentPaymentKeychain.writeBackend('config');
     await secrets.silentPaymentKeychain.writeAutoScan('true');
     await secrets.swapKeychain.write('swap_regtest_id', 'swap');
@@ -101,7 +105,7 @@ void main() {
     });
     await access.deletePin();
     await access.deleteLockedUntil();
-    await secrets.exchangeKeychain.delete(isTestnet: true);
+    await LegacyExchangeKeychainFixture().delete(isTestnet: true);
     await secrets.silentPaymentKeychain.deleteBackend();
     await secrets.swapKeychain.delete('swap_regtest_id');
     expect(store.entries, {
@@ -136,14 +140,14 @@ void main() {
   });
   test('preserves Android and iOS plugin options', () async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
-    await secrets.accessKeychain.isPinSet();
+    await _LegacyPinEntries().isPinSet();
     expect(store.optionsSeen.last, containsPair('resetOnError', 'false'));
     expect(
       store.optionsSeen.last,
       containsPair('migrateOnAlgorithmChange', 'false'),
     );
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-    await secrets.accessKeychain.isPinSet();
+    await _LegacyPinEntries().isPinSet();
     expect(
       store.optionsSeen.last,
       containsPair('accessibility', 'first_unlock_this_device'),
@@ -159,7 +163,7 @@ void main() {
       ]) {
         store.scripted.add(error);
         expect(
-          await secrets.accessKeychain.isPinSet(),
+          await _LegacyPinEntries().isPinSet(),
           isA<Err<bool, SecretFailure>>().having(
             (r) => r.failure,
             'locked',
@@ -168,7 +172,7 @@ void main() {
         );
         store.scriptedWrites.add(error);
         expect(
-          await secrets.accessKeychain.deletePin(),
+          await _LegacyPinEntries().deletePin(),
           isA<Err<void, SecretFailure>>().having(
             (r) => r.failure,
             'locked',
@@ -185,7 +189,7 @@ void main() {
       store.scriptedWrites.add(
         PlatformException(code: 'failure', message: 'sensitive-payload'),
       );
-      final result = await secrets.accessKeychain.setPin('replacement');
+      final result = await _LegacyPinEntries().setPin('replacement');
       expect(
         result,
         isA<Err<void, SecretFailure>>().having(
@@ -201,4 +205,32 @@ void main() {
       expect(store.entries['securityKey'], 'synthetic');
     },
   );
+}
+
+/// The legacy PIN entries as the import and the removal read them. Not a public capability.
+final class _LegacyPinEntries {
+  final _store = OwnerKeychain();
+  _LegacyPinEntries();
+
+  Future<Result<bool, SecretFailure>> isPinSet() async =>
+      (await _store.read(OwnerKey.pin)).map((pin) => pin != null);
+
+  /// Null means absent; false means an existing PIN did not match.
+  Future<Result<bool?, SecretFailure>> verifyPin(String candidate) async =>
+      (await _store.read(OwnerKey.pin))
+          .map((pin) => pin == null ? null : pin == candidate);
+  Future<Result<void, SecretFailure>> setPin(String pin) =>
+      _store.write(OwnerKey.pin, pin);
+  Future<Result<void, SecretFailure>> deletePin() =>
+      _store.delete(OwnerKey.pin);
+  Future<Result<String?, SecretFailure>> readAttempts() =>
+      _store.read(OwnerKey.attempts);
+  Future<Result<void, SecretFailure>> writeAttempts(String value) =>
+      _store.write(OwnerKey.attempts, value);
+  Future<Result<String?, SecretFailure>> readLockedUntil() =>
+      _store.read(OwnerKey.lockedUntil);
+  Future<Result<void, SecretFailure>> writeLockedUntil(String value) =>
+      _store.write(OwnerKey.lockedUntil, value);
+  Future<Result<void, SecretFailure>> deleteLockedUntil() =>
+      _store.delete(OwnerKey.lockedUntil);
 }

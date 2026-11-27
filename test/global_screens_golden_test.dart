@@ -9,13 +9,12 @@ import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:settings/testing.dart';
 import 'package:transactions/testing.dart';
+import 'package:bull_quick_actions/bull_quick_actions.dart'
+    show QuickActionsLocalizations;
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
-import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/localizations.dart';
-import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,21 +30,6 @@ class _Settings extends Mock implements SettingsCubit {}
 
 class _Transactions extends Mock implements TransactionsCubit {}
 
-class _MemoryActions implements QuickActionsStorage {
-  final values = <String, String>{};
-  @override
-  Future<String?> read(String key) async => values[key];
-  @override
-  Future<void> write(String key, String value) async {
-    values[key] = value;
-  }
-
-  @override
-  Future<void> remove(String key) async {
-    values.remove(key);
-  }
-}
-
 void main() {
   setUpAll(() async {
     await (FontLoader(
@@ -56,7 +40,7 @@ void main() {
     )..addFont(rootBundle.load('assets/fonts/GolosText.ttf'))).load();
   });
   for (final type in AppThemeType.values) {
-    for (final scene in ['home', 'settings', 'wallet', 'shared-sheet']) {
+    for (final scene in ['settings', 'wallet', 'shared-sheet']) {
       testWidgets('untouched $scene ${type.name}', (tester) async {
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1;
@@ -111,19 +95,6 @@ void main() {
         when(() => transactions.stream).thenAnswer((_) => const Stream.empty());
         when(() => transactions.loadTxs()).thenAnswer((_) async {});
         when(() => transactions.close()).thenAnswer((_) async {});
-        final actions = createQuickActionsCubit(
-          storage: _MemoryActions(),
-          warning: (_) {},
-          exchangeVisible: Stream.value(true),
-        );
-        addTearDown(actions.close);
-        await actions.load();
-        final exchangePrompt = createExchangePromptCubit(
-          storage: _MemoryActions(),
-          warning: (_) {},
-          offered: const Stream.empty(),
-        );
-        addTearDown(exchangePrompt.close);
         final navigatorKey = GlobalKey<NavigatorState>();
         final router = GoRouter(
           navigatorKey: navigatorKey,
@@ -134,25 +105,6 @@ void main() {
               builder: (context, _) {
                 Device.init(context);
                 return switch (scene) {
-                  'home' => Scaffold(
-                    extendBodyBehindAppBar: true,
-                    appBar: const WalletHomeAppBar(),
-                    body: WalletHomeScreen(
-                      announcements: const SizedBox.shrink(),
-                      arkHost: null,
-                      createSetupCubit: () => throw StateError(
-                        'Populated preview does not create wallets',
-                      ),
-                      onEmptyMainnet: () {},
-                      onImportNetworkWallet: () {},
-                      onRecoverEncryptedVault: () {},
-                      quickActions: actions,
-                      onQuickAction: (_, _) {},
-                      onCustomizeQuickActions: (_) {},
-                      exchangePrompt: exchangePrompt,
-                      onActivateExchange: (_) {},
-                    ),
-                  ),
                   'settings' => const AppSettingsScreen(),
                   'wallet' => WalletDetailScreen(
                     walletId: wallet.id,

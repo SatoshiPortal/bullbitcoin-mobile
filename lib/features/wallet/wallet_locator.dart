@@ -30,7 +30,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_ongoing_swaps_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
@@ -67,6 +68,7 @@ class WalletLocator {
       final electrum = locator<ElectrumSync>();
       return WalletRepository(
         walletRegistrations: locator<WalletRegistrations>(),
+        session: locator<WalletSessionJoin>(),
         walletValuesDatasource: locator<SyncWalletValuesDatasource>(),
         synchronization: locator<ForegroundWalletSynchronization>(),
         syncStarted: electrum.started.map((key) => key.id),
@@ -79,9 +81,8 @@ class WalletLocator {
       ),
     );
     // Usecase
-    locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
-      () =>
-          GetUnconfirmedIncomingBalanceUsecase(swapStore: locator<SwapStore>()),
+    locator.registerFactory<GetOngoingSwapsUsecase>(
+      () => GetOngoingSwapsUsecase(swapStore: locator<SwapStore>()),
     );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
       () => GetExternalTorProxyStatusUsecase(
@@ -140,8 +141,10 @@ class WalletLocator {
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
         watchWalletSyncEventsUsecase: locator<WatchWalletSyncEventsUsecase>(),
         syncWalletsUsecase: locator<SyncWalletsUsecase>(),
-        getUnconfirmedIncomingBalanceUsecase:
-            locator<GetUnconfirmedIncomingBalanceUsecase>(),
+        getOngoingSwapsUsecase: locator<GetOngoingSwapsUsecase>(),
+        checkSwapServerUsecase: CheckSwapServerUsecase(
+          boltz: locator<BoltzSwaps>(),
+        ),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),

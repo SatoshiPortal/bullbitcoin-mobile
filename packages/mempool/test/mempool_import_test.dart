@@ -29,8 +29,10 @@ void main() {
         await File('${directory.path}/fixture-keystore.json').readAsString(),
       ) as Map<String, dynamic>).cast<String, String>();
       FakeSecureStoragePlatform(entries: entries).install();
-      final keys = Secrets(scratchDirectory: () async => directory.path)
-          .databaseKeys(module: 'mempool');
+      final keys = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      ).databaseKeys(module: 'mempool');
       final lease = await NativeFileGate(
         File('${directory.path}/gate'),
       ).acquire(exclusive: true, timeout: Duration.zero) as ExclusiveAdmission;
@@ -75,8 +77,10 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('mempool-import-');
     keystore = FakeSecureStoragePlatform()..install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'mempool');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'mempool');
     gate = NativeFileGate(File('${directory.path}/gate'));
   });
   tearDown(() async {
@@ -188,6 +192,53 @@ void main() {
       },
     );
   }
+
+  test(
+    'a verified runtime store is consumed once by its own admission',
+    () async {
+      final exclusive = await gate.acquire(
+        exclusive: true,
+        timeout: Duration.zero,
+      ) as ExclusiveAdmission;
+      final owner = await prepare(exclusive);
+      expect(await owner.initializeFresh(), isA<Ok>());
+      expect(await owner.close(), isA<Ok>());
+      await exclusive.close();
+
+      final participant = MempoolImport(
+        file: File('${directory.path}/mempool.sqlite'),
+        defaultServers: defaults,
+        testingKeys: keys,
+        retainRuntimeStore: true,
+      );
+      final first = await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission;
+      addTearDown(first.close);
+      final other = await gate.acquire(
+        exclusive: false,
+        timeout: Duration.zero,
+      ) as RuntimeAdmission;
+      addTearDown(other.close);
+
+      expect(await participant.inspect(first), isA<Ok>());
+      expect(participant.takeRuntimeStore(other), isNull);
+      final store = participant.takeRuntimeStore(first);
+      if (store == null) {
+        fail('The admission must keep the verified store open');
+      }
+      expect(participant.takeRuntimeStore(first), isNull);
+      expect(await store.database.customSelect('SELECT 1').get(), hasLength(1));
+
+      expect(await participant.inspect(other), isA<Ok>());
+      await other.close();
+      expect(participant.takeRuntimeStore(other), isNull);
+      await first.close();
+      final next = await gate.acquire(exclusive: true, timeout: Duration.zero);
+      await next.close();
+    },
+  );
 
   test(
     'pending schema is not readiness and fresh initialization is atomic',

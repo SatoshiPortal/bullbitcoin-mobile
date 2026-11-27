@@ -37,7 +37,10 @@ void main() {
 
   Secrets secretsWith(FakeSecureStoragePlatform storage) {
     storage.install();
-    return Secrets(scratchDirectory: () async => '.');
+    return Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '.',
+    );
   }
 
   Future<Secret> secretIn(Secrets secrets) async =>

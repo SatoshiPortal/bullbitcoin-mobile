@@ -113,6 +113,10 @@ sealed class Transaction with _$Transaction {
       (orderSwap != null && !orderSwap!.localStatus.isTerminal);
   bool get isPayjoin => payjoin != null;
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
+
+  /// A Boltz swap nothing has moved for; see [Swap.isUnfunded].
+  bool get isUnfundedSwap => swap?.isUnfunded ?? false;
+
   bool get isOngoingPayjoinReceiver =>
       isOngoingPayjoin && payjoin is PayjoinReceiverSession;
 
@@ -305,6 +309,11 @@ sealed class Transaction with _$Transaction {
     if (s == null) return amountSat;
     return s.recovered ? amountSat : s.amountSat;
   }
+
+  /// The amount in a list of one wallet's transactions: exactly what this
+  /// wallet sent or received, a swap's own leg included.
+  int get walletListAmountSat =>
+      walletTransaction?.amountSat ?? swapListAmountSat;
 
   String get walletId =>
       walletTransaction?.walletId ??

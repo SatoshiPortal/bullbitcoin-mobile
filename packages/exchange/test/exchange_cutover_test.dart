@@ -30,7 +30,10 @@ void main() {
     directory = await Directory.systemTemp.createTemp('exchange-cutover-');
     keystore = _RecordingKeystore();
     keystore.install();
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     destination = File('${directory.path}/exchange.sqlite');
     source = File('${directory.path}/legacy.sqlite');
     final legacy = sqlite3.open(source.path);
@@ -47,8 +50,14 @@ void main() {
     } finally {
       legacy.close();
     }
-    await secrets.exchangeKeychain.write(_mainnetRecord, isTestnet: false);
-    await secrets.exchangeKeychain.write(_testnetRecord, isTestnet: true);
+    await LegacyExchangeKeychainFixture().write(
+      _mainnetRecord,
+      isTestnet: false,
+    );
+    await LegacyExchangeKeychainFixture().write(
+      _testnetRecord,
+      isTestnet: true,
+    );
     keystore.exchangeOps.clear();
   });
 
@@ -105,11 +114,13 @@ void main() {
 
   Future<void> expectLegacySourcesUntouched() async {
     expect(
-      (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+      (await LegacyExchangeKeychainFixture().read(
+        isTestnet: false,
+      ) as Ok).value,
       _mainnetRecord,
     );
     expect(
-      (await secrets.exchangeKeychain.read(isTestnet: true) as Ok).value,
+      (await LegacyExchangeKeychainFixture().read(isTestnet: true) as Ok).value,
       _testnetRecord,
     );
     final legacy = sqlite3.open(source.path, mode: OpenMode.readOnly);
@@ -378,11 +389,13 @@ void main() {
       expect(keystore.exchangeOps, isEmpty, reason: 'resume $launch');
     }
     expect(
-      (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+      (await LegacyExchangeKeychainFixture().read(
+        isTestnet: false,
+      ) as Ok).value,
       _mainnetRecord,
     );
     expect(
-      (await secrets.exchangeKeychain.read(isTestnet: true) as Ok).value,
+      (await LegacyExchangeKeychainFixture().read(isTestnet: true) as Ok).value,
       _testnetRecord,
     );
   });
@@ -477,7 +490,9 @@ void main() {
       await admission.close();
     }
     expect(
-      (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+      (await LegacyExchangeKeychainFixture().read(
+        isTestnet: false,
+      ) as Ok).value,
       _mainnetRecord,
     );
   });
@@ -492,7 +507,9 @@ void main() {
       expect(result, isA<Err<RuntimeAdmission, LegacyImportFailure>>());
       expect(destination.existsSync(), isTrue);
       expect(
-        (await secrets.exchangeKeychain.read(isTestnet: false) as Ok).value,
+        (await LegacyExchangeKeychainFixture().read(
+          isTestnet: false,
+        ) as Ok).value,
         _mainnetRecord,
       );
     },

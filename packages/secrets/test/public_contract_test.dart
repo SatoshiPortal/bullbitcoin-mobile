@@ -18,7 +18,10 @@ void main() {
 
   Secrets service(FakeSecureStoragePlatform storage) {
     storage.install();
-    return Secrets(scratchDirectory: () async => '/tmp');
+    return Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
   }
 
   group('strict import', () {
@@ -61,7 +64,10 @@ void main() {
       () async {
         final storage = _RecordingStorage();
         final first = service(storage);
-        final second = Secrets(scratchDirectory: () async => '/tmp');
+        final second = Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => '/tmp',
+        );
 
         final results = await Future.wait([
           first.import(words: words, language: Language.english),

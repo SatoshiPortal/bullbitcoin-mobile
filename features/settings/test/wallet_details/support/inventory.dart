@@ -8,6 +8,7 @@ import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:signers/signers.dart' show SignerDevice;
 import 'package:signers/storage.dart';
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 /// A real inventory and its signer-device store, opened the way the app opens
 /// them: fresh owner databases behind an admitted native file gate.
@@ -34,8 +35,10 @@ final class InventoryFixture {
     final directory = await Directory.systemTemp.createTemp('wallet-details-');
     final secretsFile = File('${directory.path}/secrets.sqlite');
     final signersFile = File('${directory.path}/signers.sqlite');
-    final keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'signers');
+    final keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'signers');
     final gate = NativeFileGate(File('${directory.path}/gate'));
     final exclusive = await gate.acquire(
       exclusive: true,
@@ -72,6 +75,7 @@ final class InventoryFixture {
     try {
       final inventory =
           (await SecretsInventory.open(
+            authority: SessionAuthority(),
             file: secretsFile,
             admission: admission,
           )).fold(

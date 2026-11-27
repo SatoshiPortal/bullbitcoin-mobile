@@ -30,7 +30,10 @@ void main() {
     account = _Account();
     when(() => account.spAddress()).thenReturn('same account');
     sdk.account = account;
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final result = await secrets.import(
       words: [...List.filled(11, 'abandon'), 'about'],
       language: Language.english,

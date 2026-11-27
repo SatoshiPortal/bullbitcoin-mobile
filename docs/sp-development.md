@@ -5,7 +5,7 @@
 | Tool | Version | Install |
 |---|---|---|
 | Rust | 1.100.0 for SatoshiPortal hooks; 1.85.1 for official Payjoin | `rustup toolchain install 1.100.0 1.85.1 --profile minimal` |
-| Flutter | 3.50.0 via fvm (pinned in `.fvmrc`) | `fvm install` in repo root |
+| Flutter | 3.50.1 via fvm (pinned in `.fvmrc`) | `fvm install` in repo root |
 | Dart | bundled with Flutter (SDK 3.14.0, per `pubspec.yaml`) | comes with Flutter |
 | Java | JDK 21 (matches `android.jvmTarget`) | system package manager or [SDKMAN](https://sdkman.io) |
 | Android SDK | `compileSdk` 37 (SDK platform 37.0) | Android Studio SDK Manager |

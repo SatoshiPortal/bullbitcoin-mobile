@@ -3,7 +3,9 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use boltz_client::{swaps::boltz::BoltzApiClientV2, Bolt11Invoice};
+use boltz_client::{
+    lightning_invoice::Bolt11InvoiceDescriptionRef, swaps::boltz::BoltzApiClientV2, Bolt11Invoice,
+};
 
 use crate::util::{ensure_http_prefix, HTTP_TIMEOUT};
 
@@ -73,7 +75,10 @@ impl DecodedInvoice {
             network: invoice.network().to_string(),
             bip21: bip21,
             preimage_hash: invoice.payment_hash().to_string(),
-            description: invoice.description().to_string(),
+            description: match invoice.description() {
+                Bolt11InvoiceDescriptionRef::Direct(text) => text.to_string(),
+                Bolt11InvoiceDescriptionRef::Hash(_) => String::new(),
+            },
         })
     }
 }
@@ -104,6 +109,16 @@ mod tests {
             .expect("decode 26m sat invoice");
         assert_eq!(decoded.msats, 26_000_000_000);
         assert_eq!(decoded.network, "testnet");
+    }
+
+    const INVOICE_DESCRIPTION_HASH: &str = "lnbc10u1pnle5gcpp5kt360vzd3ksj6ekhva0gkjwdn6c24jm83yr2uczpepq6lkk33taqhp5pk24lyjep93uz92uxpc7c3d8s58q5g0xr66fpja5xg7zrq47sf2qcqzzsxqyz5vqsp5wc4yxlh83cnm0zc4w64lren8hmn59jq7jmc9m2m6wcsveumpxvvq9qxpqysgqw58qkad47xdmnca3c4elk9eex9smhk36x768u7zrld5kmwzmaf29ad45503fhkdacc8dnnf00ph6qzwuprwsf7uud83safs5adux8scpv9kkjf";
+
+    #[tokio::test]
+    async fn a_description_hash_is_no_description() {
+        let decoded = DecodedInvoice::from_string(INVOICE_DESCRIPTION_HASH.to_string(), None)
+            .await
+            .expect("decode description-hash invoice");
+        assert_eq!(decoded.description, "");
     }
 
     #[tokio::test]

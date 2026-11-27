@@ -1,10 +1,48 @@
 import 'package:bull_ui/bull_ui.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'test_app.dart';
 
 void main() {
+  for (final scale in [1.0, 2.0]) {
+    for (final withTitle in [true, false]) {
+      testWidgets('the icon sits on the first line in a tall card '
+          '(scale $scale, title $withTitle)', (tester) async {
+        await tester.pumpWidget(
+          wrapWithTheme(
+            MediaQuery(
+              data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+              child: SizedBox(
+                height: 320,
+                child: BullInfoCard(
+                  title: withTitle ? 'Unable to connect to Boltz' : null,
+                  description: 'Tap to configure',
+                  tagColor: testBullTheme.error,
+                  bgColor: testBullTheme.errorContainer,
+                ),
+              ),
+            ),
+          ),
+        );
+        final icon = tester.getCenter(find.byIcon(Icons.info_outline_rounded));
+        final first = find.text(
+          withTitle ? 'Unable to connect to Boltz' : 'Tap to configure',
+        );
+        final paragraph = tester.renderObject<RenderParagraph>(first);
+        final firstLine = paragraph
+            .getBoxesForSelection(
+              const TextSelection(baseOffset: 0, extentOffset: 1),
+            )
+            .first
+            .toRect()
+            .shift(paragraph.localToGlobal(Offset.zero));
+        expect(icon.dy, moreOrLessEquals(firstLine.center.dy, epsilon: 1.5));
+      });
+    }
+  }
+
   testWidgets('a card action has a name and a 48 dp target', (tester) async {
     final semantics = tester.ensureSemantics();
     var opened = false;

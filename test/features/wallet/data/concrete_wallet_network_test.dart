@@ -22,6 +22,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../support/wallet_registrations.dart' show passthroughSessionJoin;
+
 class _Metadata extends Mock implements WalletRegistrations {}
 
 class _Values extends Mock implements SyncWalletValuesDatasource {}
@@ -83,6 +85,7 @@ void main() {
           .thenThrow(StateError('not initialized'));
       final repository = WalletRepository(
         walletRegistrations: metadata,
+        session: passthroughSessionJoin,
         walletValuesDatasource: values,
         synchronization: synchronization,
         syncStarted: const Stream<String>.empty(),

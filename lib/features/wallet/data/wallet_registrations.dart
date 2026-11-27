@@ -28,7 +28,11 @@ void registerWalletProjections(
     regtestBackups,
   );
   services.registerSingleton<WalletRegistrations>(registrations);
+  services.registerSingleton<WalletSessionJoin>(registrations.join);
 }
+
+/// Runs a joined read and refuses publication after its session ends.
+typedef WalletSessionJoin = Future<T> Function<T>(Future<T> Function() read);
 
 /// Application wallet values still consumed by repositories in the app shell.
 abstract interface class WalletRegistrations {
@@ -54,14 +58,19 @@ final class SecretsWalletRegistrations implements WalletRegistrations {
   );
 
   @override
-  Future<WalletMetadataModel?> fetch(String id) async {
+  Future<WalletMetadataModel?> fetch(String id) => join(() async {
     final row = _value(await _inventory.findWallet(id));
     return row == null ? null : _metadata(row);
-  }
+  });
 
   @override
-  Future<List<WalletMetadataModel>> fetchAll() async =>
-      Future.wait(_value(await _inventory.listWallets()).map(_metadata));
+  Future<List<WalletMetadataModel>> fetchAll() => join(
+    () async =>
+        Future.wait(_value(await _inventory.listWallets()).map(_metadata)),
+  );
+
+  Future<T> join<T>(Future<T> Function() read) async =>
+      _value(await _inventory.readInSession(read));
 
   RecoverBullWalletBackups _backupStore(String networkCode) =>
       switch (networkCode) {

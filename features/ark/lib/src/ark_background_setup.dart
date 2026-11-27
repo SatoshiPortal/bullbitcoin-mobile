@@ -1,4 +1,6 @@
 import 'package:legacy_storage/coordination.dart';
+import 'package:notifications/notifications.dart'
+    show ScheduledNotificationPort;
 import 'package:preferences/preferences.dart'
     show Preferences, PreferencesFailure;
 
@@ -10,6 +12,7 @@ import '../ark_notification_setup.dart';
 import '../ark_setup.dart';
 import '../ark_wallet_setup.dart';
 import '../bull_ark.dart';
+import 'data/ark_renewal_client.dart';
 
 import 'package:ark/ark_setup.dart' as native;
 import 'package:background_tasks/background_tasks.dart';
@@ -18,10 +21,8 @@ import 'package:ark/ark.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
-import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show ArkBackgroundAccess;
 import 'package:notifications/payment_store.dart';
-import 'package:notifications/notifications.dart'
-    show ScheduledNotificationPort;
 
 import 'data/ark_exit_notification_setup.dart';
 import 'data/ark_exit_notifier.dart';
@@ -86,19 +87,32 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     Ok(:final value) => value,
     Err() => unavailableArkNotifications(),
   };
-  final opened = SqliteArkReminderRepository.open(
+  // D105: the task never builds a `Secrets`. Refresh goes through the trusted
+  // renewal client, which reads only the account's dedicated BIP85 child under
+  // a fresh admission; saved claims never ask for a seed. The inventory is
+  // asked directly only whether a view still permits a reminder.
+  final support = await getApplicationSupportDirectory();
+  final secretsFile = File('${support.path}/databases/secrets.sqlite');
+  final backgroundAccess = switch (await ArkBackgroundAccess.open(
+    file: secretsFile,
+    admission: admission,
+  )) {
+    Ok(:final value) => value,
+    Err() => null,
+  };
+  if (backgroundAccess != null) resources.onClose(backgroundAccess.close);
+  final opened = openBackgroundReminders(
     path: '$directory/reminders.sqlite',
     notifications: notification,
     title: copy.title,
     body: copy.body,
-    foreground: false,
+    access: backgroundAccess,
   );
   ArkReminderRepository reminders = const _UnavailableReminders();
   var reminderFailure = initialized is Err;
   if (opened case Ok(:final value)) {
     reminders = value;
     resources.onClose(value.close);
-    if (await value.reapplyStored() case Err()) reminderFailure = true;
   } else {
     reminderFailure = true;
   }
@@ -111,9 +125,13 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
     budget: budget,
   );
   resources.onClose(exitNotifier.close);
-  final secrets = Secrets(
-    scratchDirectory: () async => (await getTemporaryDirectory()).path,
-  );
+  // The ledger was built with the owner's notify permission, so reapplying
+  // its alarms honours it; without the inventory none can be proved, nothing is
+  // reapplied and the task retries.
+  if (reminders case final SqliteArkReminderRepository stored) {
+    if (await stored.reapplyStored() case Err()) reminderFailure = true;
+    if (backgroundAccess == null) reminderFailure = true;
+  }
   // Headless work never provisions or migrates the source authority.
   final sourceAuthority = SqliteArkFundingReservations.open(
     '${documents.path}/ark-funding.sqlite',
@@ -121,19 +139,26 @@ Future<BackgroundTaskHandler> setupArkBackgroundTask(
   );
   if (sourceAuthority case Ok(:final value)) resources.onClose(value.close);
   const policy = _RegtestBackgroundPolicy();
-  final client =
-      existingClient?.call(policy, budget) ??
-      createArkNativeClient(
-        storagePath: '$directory/native',
-        childProvider: SecretsArkChildProvider(secrets, registry),
-        transactionVerifier: const ArkTransactionVerifier(),
-        boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
-        executionPolicy: policy,
-        executionMode: native.ArkExecutionMode.backgroundExisting,
-        stageBudget: budget,
-        exitObserver: exitNotifier,
-      );
-  resources.onClose(client.close);
+  final injected = existingClient?.call(policy, budget);
+  final ArkClient client;
+  if (injected != null) {
+    client = injected;
+    resources.onClose(client.close);
+  } else {
+    final renewal = await ArkBackgroundRenewal.open(
+      storagePath: '$directory/native',
+      secretsFile: secretsFile,
+      admission: admission,
+      registry: registry,
+      transactionVerifier: const ArkTransactionVerifier(),
+      executionPolicy: policy,
+      stageBudget: budget,
+      boardAbandonment: WalletArkBoardAbandonment(sourceAuthority),
+      exitObserver: exitNotifier,
+    );
+    client = renewal.client;
+    resources.onClose(renewal.close);
+  }
   final handler = ArkMaintenance(
     client: client,
     reminders: reminders,
@@ -288,3 +313,24 @@ final class _UnavailableReminders implements ArkReminderRepository {
     ArkReminderPolicyEvidence? policyEvidence,
   }) async => const Err(ArkFeatureStorageFailure());
 }
+
+/// The reminders ledger of the headless task, built with the owner's notify
+/// permission (see [ArkBackgroundAccess.mayNotify]) as part of its
+/// construction: every alarm it schedules or reapplies, a refresh's included,
+/// is decided by it. Without an inventory nothing can be proved, so nothing is
+/// scheduled.
+@visibleForTesting
+Result<SqliteArkReminderRepository, ArkFailure> openBackgroundReminders({
+  required String path,
+  required ScheduledNotificationPort notifications,
+  required String title,
+  required String body,
+  required ArkBackgroundAccess? access,
+}) => SqliteArkReminderRepository.open(
+  path: path,
+  notifications: notifications,
+  title: title,
+  body: body,
+  foreground: false,
+  permitsParent: access == null ? (_) async => false : access.mayNotify,
+);

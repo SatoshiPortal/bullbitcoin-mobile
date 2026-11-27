@@ -22,8 +22,10 @@ void main() {
     directory = await Directory.systemTemp.createTemp('encrypted-drift-');
     file = File('${directory.path}/sample.sqlite');
     store = _Store()..install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'recipe_test');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'recipe_test');
   });
 
   tearDown(() => directory.delete(recursive: true));

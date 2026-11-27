@@ -1,5 +1,5 @@
 // Regenerates integration_test/all_test.dart — the single-entrypoint aggregator
-// that runs Bull.init() once, then every integration test file's
+// that runs Bull.init() once, then the compatible integration test files'
 // main(isInitialized: true). On the Linux desktop device the app can be
 // launched only once per `flutter test` invocation, so the whole suite must run
 // through one file; this script keeps that file in sync with what's on disk so
@@ -11,11 +11,11 @@
 // Run via: fvm dart run tools/gen_all_test.dart
 import 'dart:io';
 
-// Files matching *_test.dart that must NOT be aggregated: only the generated
-// file itself. Every real test file is wired in; a test that needs fixtures
+// RecoverBull restores a wallet and must run in its own isolated process.
+// Other test files are wired in; a test that needs fixtures
 // (e.g. payjoin's funded testnet wallets) skips itself gracefully when they
 // are absent rather than being excluded here.
-const skip = {'all_test.dart'};
+const skip = {'all_test.dart', 'recoverbull_test.dart'};
 
 void main() {
   final files =

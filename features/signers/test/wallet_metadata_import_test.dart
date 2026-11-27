@@ -34,8 +34,10 @@ void main() {
       }
 
       final file = File('${dir.path}/signers.sqlite');
-      final keys = Secrets(scratchDirectory: () async => dir.path)
-          .databaseKeys(module: 'signers');
+      final keys = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => dir.path,
+      ).databaseKeys(module: 'signers');
       final participant = signersWalletMetadataImport(file: file, keys: keys);
       final gate = NativeFileGate(File('${dir.path}/gate'));
       final exclusive = await gate.acquire(

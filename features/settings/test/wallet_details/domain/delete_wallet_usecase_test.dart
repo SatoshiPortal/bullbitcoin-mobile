@@ -19,6 +19,25 @@ import '../support/inventory.dart';
 
 class _MockOrderSwaps extends Mock implements OrderSwaps {}
 
+/// The backup proofs the deletion stage judges, per test. A seed is missing
+/// unless this test states it is verified.
+final class _Proofs implements InventoryBackupVerification {
+  final Set<Fingerprint> verified = {};
+  bool unreadable = false;
+
+  @override
+  Future<Result<BackupProof, SecretFailure>> verify(
+    Fingerprint secret, {
+    ({String walletId, bool regtest})? replacingWallet,
+  }) async => unreadable
+      ? const Err(BackupStateUnavailableFailure())
+      : Ok(
+          verified.contains(secret)
+              ? BackupProof.verified
+              : BackupProof.missing,
+        );
+}
+
 /// Fail-closed wallet deletion, against the real inventory and the real
 /// [Secrets] keystore.
 ///
@@ -59,6 +78,7 @@ void main() {
   late FakeNativeLifecycle native;
   late FakeSwapStore swaps;
   late _MockOrderSwaps orders;
+  late _Proofs proofs;
   late SeedReferences references;
   late DeleteWalletUsecase usecase;
 
@@ -106,7 +126,10 @@ void main() {
     logDirectory = await Directory.systemTemp.createTemp('wallet-delete-log-');
     log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => logDirectory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => logDirectory.path,
+    );
     final stored = await secrets.import(
       words: words,
       language: Language.english,
@@ -133,6 +156,8 @@ void main() {
         directory: () async => inventory.directory.path,
         mayCreate: true,
       ),
+      backupVerification: proofs = _Proofs()
+        ..verified.add(Fingerprint(fingerprint)),
     );
     usecase = DeleteWalletUsecase(
       inventory: inventory.inventory,
@@ -251,6 +276,38 @@ void main() {
 
       expect(await findWallet(walletId), isNull);
       expect(storedSeeds(), [seedKey]);
+    });
+
+    test('and keeps the seed that has no tested backup', () async {
+      await registerLocal(walletId);
+      proofs.verified.clear();
+
+      final result = await usecase.execute(walletId);
+
+      // The wallet deletion the user asked for still succeeds; the seed stays,
+      // because without a tested backup those words exist nowhere else.
+      expect(result, isA<Ok<void, WalletDetailsFailure>>());
+      expect(await findWallet(walletId), isNull);
+      expect(storedSeeds(), [seedKey]);
+      expect(await deletionLog(), [
+        'Wallet deleted outcome=ok',
+        'Seed cleanup refused reason=backup_required',
+      ]);
+    });
+
+    test('and keeps the seed when the backup state cannot be read', () async {
+      await registerLocal(walletId);
+      proofs.unreadable = true;
+
+      final result = await usecase.execute(walletId);
+
+      expect(result, isA<Ok<void, WalletDetailsFailure>>());
+      expect(await findWallet(walletId), isNull);
+      expect(storedSeeds(), [seedKey]);
+      expect(await deletionLog(), [
+        'Wallet deleted outcome=ok',
+        'Seed cleanup refused reason=backup_unavailable',
+      ]);
     });
   });
 

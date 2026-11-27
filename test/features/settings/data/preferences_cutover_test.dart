@@ -32,8 +32,10 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('preferences-routing-');
     FakeSecureStoragePlatform().install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'preferences');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'preferences');
     gate = NativeFileGate(File('${directory.path}/gate'));
     ownerFile = File('${directory.path}/preferences.sqlite');
     source = LegacySourceStore(

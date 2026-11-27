@@ -97,6 +97,15 @@ void main() {
       expect(temp.listSync(), isEmpty);
     },
   );
+  test('background observation without renewal never opens a child', () async {
+    expect(await client.create(config), isA<Ok>());
+    await client.close();
+    client = build(mode: ArkExecutionMode.backgroundExisting);
+    final children = child.calls;
+
+    expect(await client.synchronize(account, renew: false), isA<Err>());
+    expect(child.calls, children);
+  });
   test(
     'ambiguous payment is never replayed; read/sync reconcile after restart',
     () async {
@@ -840,6 +849,21 @@ void main() {
     expect(await client.create(config), isA<Ok>());
     expect(native.creates, 1);
   });
+  test(
+    'every renewal batch is admitted afresh and a refusal stops the next',
+    () async {
+      expect(await client.create(config), isA<Ok>());
+      await client.close();
+      client = build(mode: ArkExecutionMode.backgroundExisting);
+      child.refuseBatchAt = 1;
+      final pass = await client.synchronize(account, renew: true);
+      final outcome = (pass as Ok<ArkPassOutcome, ArkWalletFailure>).value;
+      expect(child.batchAdmissions, 2, reason: 'asked before each of two lots');
+      expect(native.executes, 1, reason: 'the refused lot never ran');
+      expect(outcome.failedStages, contains('deferred'));
+      expect(native.closes, native.opens);
+    },
+  );
   test('next round is a foreground-only server read', () async {
     expect(await client.create(config), isA<Ok>());
     expect(

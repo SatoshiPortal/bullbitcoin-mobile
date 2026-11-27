@@ -5,7 +5,7 @@ import 'package:overview/overview.dart';
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/wallet_type_l10n.dart';
-import 'package:bull_ui/bull_ui.dart' show Gap;
+import 'package:bull_ui/bull_ui.dart' show BullSizes, Gap;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -62,12 +62,19 @@ class WalletCards extends StatelessWidget {
     );
 
     return Padding(
-      padding: padding ?? const EdgeInsets.all(13.0),
+      padding:
+          padding ??
+          const EdgeInsets.fromLTRB(
+            13,
+            BullSizes.homeCardGap,
+            13,
+            BullSizes.homeCardGap,
+          ),
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
           for (final (index, w) in wallets.indexed) ...[
-            if (index > 0) const Gap(8),
+            if (index > 0) const Gap(BullSizes.homeCardGap),
             if (w.balanceSat case final balance?)
               WalletCard(
                 tagColor: cardDetails(context, w),
@@ -85,7 +92,7 @@ class WalletCards extends StatelessWidget {
               ),
           ],
           if (showSpWallet) ...[
-            if (wallets.isNotEmpty) const Gap(8),
+            if (wallets.isNotEmpty) const Gap(BullSizes.homeCardGap),
             WalletCard(
               tagColor: context.appColors.tertiary,
               title: context.loc.walletSpTitle,

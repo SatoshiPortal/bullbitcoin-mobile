@@ -32,6 +32,7 @@ void main() {
   late _MockReadWalletDetails read;
   late _MockDeleteWallet delete;
   late WalletDetailsCubit cubit;
+  late StreamController<bool> locks;
   late List<WalletDetailsState> states;
   late Completer<void> stateDelivered;
   late bool streamClosed;
@@ -40,7 +41,9 @@ void main() {
   setUp(() {
     read = _MockReadWalletDetails();
     delete = _MockDeleteWallet();
-    cubit = WalletDetailsCubit(read, delete);
+    locks = StreamController<bool>.broadcast(sync: true);
+    addTearDown(locks.close);
+    cubit = WalletDetailsCubit(read, delete, locks.stream);
     states = [];
     closed = false;
     streamClosed = false;
@@ -170,6 +173,50 @@ void main() {
           ),
     );
   });
+
+  test(
+    'a revocation during deletion publishes nothing of the old session',
+    () async {
+      loadOk();
+      await waitForStates(1);
+      final gate = Completer<Result<void, WalletDetailsFailure>>();
+      when(() => delete.execute(_walletId)).thenAnswer((_) => gate.future);
+
+      final pending = cubit.delete();
+      await waitForStates(2);
+      locks.add(true);
+      await waitForStates(3);
+      expect(states.last, isA<WalletDetailsLoading>());
+
+      gate.complete(const Ok(null));
+      await pending;
+      await Future<void>.delayed(Duration.zero);
+
+      expect(states, hasLength(3), reason: 'no Deleted or failure afterwards');
+    },
+  );
+
+  test(
+    'a revocation during the load drops its result and the next unlock reloads',
+    () async {
+      final gate = Completer<Result<WalletDetails, WalletDetailsFailure>>();
+      when(() => read.execute(_walletId)).thenAnswer((_) => gate.future);
+
+      final pending = cubit.load(_walletId);
+      locks.add(true);
+      gate.complete(Ok(_details));
+      await pending;
+      await Future<void>.delayed(Duration.zero);
+      expect(states.whereType<WalletDetailsLoaded>(), isEmpty);
+
+      when(() => read.execute(_walletId))
+          .thenAnswer((_) async => const Err(WalletDetailsNotFoundFailure()));
+      locks.add(false);
+      await waitForStates(states.length + 1);
+
+      expect(states.last, isA<WalletDetailsMissing>());
+    },
+  );
 
   test('ignores a deletion before the wallet is loaded', () async {
     await cubit.delete();

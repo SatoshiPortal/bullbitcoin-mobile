@@ -1,6 +1,6 @@
 use crate::util::{
-    ensure_boltz_url, ensure_http_prefix, force_https, get_electrum_configs, strip_protocol_prefix,
-    HTTP_TIMEOUT,
+    ensure_boltz_url, ensure_http_prefix, force_https, get_electrum_configs, liquid_tip_height,
+    strip_protocol_prefix, HTTP_TIMEOUT,
 };
 use std::str::FromStr;
 
@@ -145,7 +145,7 @@ impl LbtcLnSwap {
         electrum_url: String,
         boltz_url: String,
         referral_id: Option<String>,
-        // pair_hash: String,
+        electrum_settings: Option<ElectrumSettings>,
     ) -> Result<LbtcLnSwap, BoltzError> {
         let swap_type = SwapType::Submarine;
         if network != swap_master_key.network.liquid() {
@@ -191,6 +191,8 @@ impl LbtcLnSwap {
                 ))
             }
         };
+        let tip = liquid_tip_height(liquid_chain, electrum_settings, &electrum_url).await?;
+        response.validate_timeout(network.into(), tip)?;
         let script_address = swap_script.to_address(liquid_chain)?.to_string();
         Ok(LbtcLnSwap::new_with_expected_onchain_amount(
             response.id,
@@ -261,7 +263,7 @@ impl LbtcLnSwap {
         boltz_url: String,
         description: Option<String>,
         referral_id: Option<String>,
-        // pair_hash: String,
+        electrum_settings: Option<ElectrumSettings>,
     ) -> Result<LbtcLnSwap, BoltzError> {
         let swap_type = SwapType::Reverse;
         if network != swap_master_key.network.liquid() {
@@ -283,6 +285,7 @@ impl LbtcLnSwap {
         let boltz_url = ensure_boltz_url(&boltz_url, Network::from(network) != Network::Mainnet)
             .map_err(|e| BoltzError::new("Network".to_string(), e))?;
         let boltz_client = BoltzApiClientV2::new(boltz_url.clone(), Some(HTTP_TIMEOUT));
+        let requested_magic_routing_hint = out_address.is_some();
         let create_reverse_req = if out_address.is_some() {
             let address = out_address.unwrap();
             boltz_client::swaps::boltz::CreateReverseRequest {
@@ -329,6 +332,11 @@ impl LbtcLnSwap {
         let invoice = response.invoice.clone().unwrap_or_default();
         let preimage_boltz: Preimage = preimage.clone().into();
         response.validate(&preimage_boltz, &claim_public_key, network.into())?;
+        if requested_magic_routing_hint {
+            response.validate_magic_routing_hint(&claim_public_key)?;
+        }
+        let tip = liquid_tip_height(liquid_chain, electrum_settings, &electrum_url).await?;
+        response.validate_timeout(network.into(), tip)?;
         let swap_script = LBtcSwapScript::reverse_from_swap_resp(&response, claim_public_key)?;
         let script_address = swap_script.to_address(liquid_chain)?.to_string();
         Ok(LbtcLnSwap::new_with_expected_onchain_amount(

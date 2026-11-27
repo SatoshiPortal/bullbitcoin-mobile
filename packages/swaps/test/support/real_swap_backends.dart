@@ -12,7 +12,10 @@ class ReproKeychainBackend extends FakeSecureStoragePlatform {
 
   SwapKeychain get capability {
     install();
-    return Secrets(scratchDirectory: () async => '/unused').swapKeychain;
+    return Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/unused',
+    ).swapKeychain;
   }
 }
 

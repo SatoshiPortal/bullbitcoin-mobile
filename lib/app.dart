@@ -1,3 +1,5 @@
+import 'package:access/access.dart'
+    show Access, AccessPrivacyVeil, AppUnlockRouteData;
 import 'package:send/setup.dart' show SendLocalizations;
 import 'package:coins/setup.dart' show CoinsLocalizations;
 import 'package:send/send.dart' show Consolidation;
@@ -10,6 +12,7 @@ import 'package:address_view/routes.dart' show AddressViewLocalizations;
 import 'package:backups/backups.dart';
 import 'package:backup_metadata/backup_metadata_ui.dart'
     show backupMetadataLocalizationsDelegate;
+import 'package:backup_metadata/setup.dart' show BackupMetadataFeature;
 import 'package:bb_mobile/generated/novlang/novlang_bitcoin_price_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_label_editor_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_receive_localizations.dart';
@@ -75,10 +78,15 @@ class BullBitcoinWalletApp extends StatefulWidget {
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
   late final tor.TorLifecycleController _torLifecycleController;
+  StreamSubscription<bool>? _lockSubscription;
+  var _locked = false;
 
   @override
   void initState() {
     super.initState();
+    if (locator.isRegistered<Access>()) {
+      _lockSubscription = locator<Access>().locked.listen(_onLockChanged);
+    }
 
     _torLifecycleController = locator<tor.TorLifecycleController>()..start();
     // Initialize the AppLifecycleListener class and pass callbacks
@@ -94,6 +102,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     // Do not forget to dispose the listener
     _listener.dispose();
     Statistics.instance.setForeground(false);
+    unawaited(_lockSubscription?.cancel());
     if (locator.isRegistered<PayjoinLifecycle>()) {
       unawaited(locator<PayjoinLifecycle>().dispose());
     }
@@ -102,14 +111,39 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
+  /// On lock the unlock screen replaces the current page; the PIN brings the
+  /// user back to the location they left. Engines that sign or reveal are
+  /// suspended on lock and resumed once on unlock (D93).
+  void _onLockChanged(bool locked) {
+    _locked = locked;
+    if (locator.isRegistered<ForegroundWalletStartup>()) {
+      locator<ForegroundWalletStartup>().onLockChanged(locked);
+    }
+    if (!locked) return;
+    final router = AppRouter.router;
+    final here = router.routerDelegate.currentConfiguration.uri;
+    if (here.path == AppUnlockRouteData.path) return;
+    AppUnlockRouteData(onSuccess: () => router.go(here.toString())).go(router);
+  }
+
   // Overview schedules its own resume sync through its lifecycle listener.
   void _onStateChanged(AppLifecycleState state) {
     Statistics.instance.setForeground(state == AppLifecycleState.resumed);
     log.info(state.name);
-    if (locator.isRegistered<ForegroundWalletStartup>()) {
+    if (locator.isRegistered<Access>()) {
+      locator<Access>().onLifecycle(state);
+    }
+    // A locked app resumes no engine: they would only be refused by Secrets.
+    if (!_locked && locator.isRegistered<ForegroundWalletStartup>()) {
       resumePayjoinsOnAppResume(state, locator<ForegroundWalletStartup>());
     }
-    if (state == AppLifecycleState.resumed &&
+    if (!_locked &&
+        state == AppLifecycleState.resumed &&
+        locator.isRegistered<BackupMetadataFeature>()) {
+      unawaited(locator<BackupMetadataFeature>().trigger.onResumed());
+    }
+    if (!_locked &&
+        state == AppLifecycleState.resumed &&
         locator.isRegistered<ArkForegroundHost>()) {
       unawaited(locator<ArkForegroundHost>().resume());
     }
@@ -254,30 +288,34 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                               if (child == null) return const SizedBox.shrink();
                               // keyboard_actions still uses SDK Material widgets;
                               // the official bridge supports this transition.
-                              // ignore: deprecated_member_use
-                              final app = MaterialUiCompatibilityBridge(
-                                child: Settings.amountScope(
-                                  navigatorKey: AppRouter.rootNavigatorKey,
-                                  child: BullSupportScope(
-                                    onContactSupport: Support.contactSupport,
-                                    child: locator<StartupFeature>().gate(
-                                      logs: () => locator<LogsFacade>(),
-                                      splash: locator<OnboardingFeature>()
-                                          .buildLoadingSplash(context),
-                                      openOnboarding: () =>
-                                          OnboardingNavigation.go(
-                                            AppRouter.router,
-                                          ),
-                                      onUnlocked: () =>
-                                          AppLocator.startWalletsAfterUnlock(
-                                            locator,
-                                          ),
-                                      app: locator<RecoverBullFeature>()
-                                          .withAlerts(
-                                            child,
-                                            onOpen: () => AppRouter.router
-                                                .pushNamed('recoverbullFlows'),
-                                          ),
+                              final app = AccessPrivacyVeil(
+                                // ignore: deprecated_member_use
+                                child: MaterialUiCompatibilityBridge(
+                                  child: Settings.amountScope(
+                                    navigatorKey: AppRouter.rootNavigatorKey,
+                                    child: BullSupportScope(
+                                      onContactSupport: Support.contactSupport,
+                                      child: locator<StartupFeature>().gate(
+                                        logs: () => locator<LogsFacade>(),
+                                        splash: locator<OnboardingFeature>()
+                                            .buildLoadingSplash(context),
+                                        openOnboarding: () =>
+                                            OnboardingNavigation.go(
+                                              AppRouter.router,
+                                            ),
+                                        onUnlocked: () =>
+                                            AppLocator.startWalletsAfterUnlock(
+                                              locator,
+                                            ),
+                                        app: locator<RecoverBullFeature>()
+                                            .withAlerts(
+                                              child,
+                                              onOpen: () =>
+                                                  AppRouter.router.pushNamed(
+                                                    'recoverbullFlows',
+                                                  ),
+                                            ),
+                                      ),
                                     ),
                                   ),
                                 ),

@@ -24,6 +24,8 @@ class SwapEngineSwitcher {
   int _revision = 0;
   bool _failed = false;
   bool _disposed = false;
+  bool _sessionSuspended = false;
+  Future<void>? _sessionStop;
 
   SwapEngineSwitcher({
     required this._settingsRepository,
@@ -94,6 +96,9 @@ class SwapEngineSwitcher {
       await _engine.replace(parts);
       uninstalled = null;
       if (!_current(revision)) return const Err(SwapsBusyFailure());
+      // A locked session leaves the new engine installed but stopped; the
+      // unlock starts it.
+      if (_sessionSuspended) return const Err(SwapsBusyFailure());
       await _swapWatcher.start();
       if (!_current(revision)) {
         _swapWatcher.suspend();
@@ -112,6 +117,41 @@ class SwapEngineSwitcher {
       log.warning('[Swaps] engine rebuild failed (${error.runtimeType})');
       return Err(classifySwapsFailure(error));
     }
+  }
+
+  /// Revokes the swap driver for a locked session: creation and effects are
+  /// refused at once, and no rebuild starts the driver again. Completes once
+  /// the driver, any rebuild and any creation under way have all drained; it
+  /// never completes on a timeout, so a late stop is still awaited.
+  Future<void> suspendSession() {
+    _sessionSuspended = true;
+    _engine.suspendCreation();
+    _engine.suspendEffects();
+    _swapWatcher.suspend();
+    return _sessionStop ??= _stopSession();
+  }
+
+  Future<void> _stopSession() async {
+    try {
+      unawaited(_swapWatcher.stop());
+      await _swapWatcher.drained;
+      await _pending;
+      await _engine.creationsSettled;
+      await _engine.effectsSettled;
+    } finally {
+      _sessionStop = null;
+    }
+  }
+
+  /// Starts the driver again once, after a confirmed stop. Does nothing while
+  /// the stop is still pending.
+  void resumeSession() {
+    if (!_sessionSuspended || _sessionStop != null) return;
+    _sessionSuspended = false;
+    if (_disposed || _failed) return;
+    _engine.resumeCreation();
+    _engine.resumeEffects();
+    unawaited(_swapWatcher.start());
   }
 
   Future<void> dispose() async {

@@ -80,8 +80,46 @@ pub fn get_electrum_configs(
             settings.timeout,
         )
     } else {
-        (default_electrum_url.to_string(), true, true, 10)
+        (strip_protocol_prefix(default_electrum_url), true, true, 10)
     }
+}
+
+/// Tip height of the Bitcoin chain as the user's own Electrum server sees it.
+pub(crate) async fn bitcoin_tip_height(
+    chain: boltz_client::network::BitcoinChain,
+    electrum_settings: Option<crate::api::types::ElectrumSettings>,
+    default_electrum_url: &str,
+) -> Result<u32, crate::api::error::BoltzError> {
+    use boltz_client::network::BitcoinClient;
+    let (url, tls, validate_domain, timeout) =
+        get_electrum_configs(electrum_settings, default_electrum_url);
+    let client = boltz_client::network::electrum::ElectrumBitcoinClient::new(
+        chain,
+        &url,
+        tls,
+        validate_domain,
+        timeout,
+    )?;
+    Ok(client.get_tip_height().await?)
+}
+
+/// Tip height of the Liquid chain as the user's own Electrum server sees it.
+pub(crate) async fn liquid_tip_height(
+    chain: boltz_client::network::LiquidChain,
+    electrum_settings: Option<crate::api::types::ElectrumSettings>,
+    default_electrum_url: &str,
+) -> Result<u32, crate::api::error::BoltzError> {
+    use boltz_client::network::LiquidClient;
+    let (url, tls, validate_domain, timeout) =
+        get_electrum_configs(electrum_settings, default_electrum_url);
+    let client = boltz_client::network::electrum::ElectrumLiquidClient::new(
+        chain,
+        &url,
+        tls,
+        validate_domain,
+        timeout,
+    )?;
+    Ok(client.get_tip_height().await?)
 }
 
 #[cfg(test)]
@@ -141,6 +179,14 @@ mod tests {
         assert_eq!(
             get_electrum_configs(Some(settings), "unused"),
             ("example.com:50002".to_string(), false, true, 7)
+        );
+    }
+
+    #[test]
+    fn default_electrum_url_loses_its_scheme() {
+        assert_eq!(
+            get_electrum_configs(None, "ssl://example.com:50002"),
+            ("example.com:50002".to_string(), true, true, 10)
         );
     }
 
