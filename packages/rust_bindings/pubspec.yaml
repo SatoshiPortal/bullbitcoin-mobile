@@ -20,7 +20,7 @@ version: 2.0.0
 
 environment:
   sdk: "3.14.0"
-  flutter: "3.50.0"
+  flutter: "3.50.1"
 
 resolution: workspace
 

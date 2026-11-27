@@ -6,7 +6,7 @@ version: 6.15.0+228
 
 environment:
   sdk: "3.14.0"
-  flutter: "3.50.0"
+  flutter: "3.50.1"
 workspace:
   - features/address_view
   - features/announcements
