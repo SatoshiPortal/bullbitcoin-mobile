@@ -124,6 +124,8 @@ Future<void> main({bool isInitialized = false}) async {
             admission: admission,
             sync: () async => runtime,
             openWallet: (_) async => fail('no wallet needed for freezes'),
+            readInSession: (_) async =>
+                fail('no ownership read needed for freezes'),
           );
           final labels = switch (opened) {
             Ok(:final value) => value,

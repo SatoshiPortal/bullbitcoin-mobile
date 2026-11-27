@@ -74,6 +74,7 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
   final inventory =
       (openedInventory as Ok<SecretsInventory, DatabaseOpenFailure>).value;
   services.registerSingleton(inventory, dispose: (value) => value.close());
+  services.registerSingleton<WalletInventory>(inventory);
 
   final signers = await SignerDevices.open(
     file: signersFile,

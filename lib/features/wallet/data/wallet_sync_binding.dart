@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
@@ -10,23 +9,6 @@ abstract final class WalletSyncBinding {
   /// Resolve application metadata before invoking a native capability.
   static WalletKey keyFromMetadata(WalletMetadataModel row) =>
       value(descriptorFromMetadata(row)).key;
-
-  static Future<WalletKey> keyForId(
-    WalletRegistrations metadata,
-    String id,
-  ) async {
-    try {
-      final row = await metadata.fetch(id);
-      if (row == null) {
-        throw const WalletSnapshotException(SyncNotFoundFailure());
-      }
-      return WalletKey(id: row.id, network: row.network.shared);
-    } on WalletSnapshotException {
-      rethrow;
-    } on Exception {
-      throw const WalletSnapshotException(SyncStorageFailure());
-    }
-  }
 
   /// The legacy app repositories retain throwing boundaries until migrated.
   static T value<T>(Result<T, SyncFailure> result) => switch (result) {

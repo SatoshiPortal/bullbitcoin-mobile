@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -6,10 +9,14 @@ import 'package:overview/setup.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart'
+    show multiViewSupported, SecretsInventory, ViewId;
 import 'package:secrets/testing.dart';
 import 'package:silent/silent.dart';
 import 'package:swap_feature/swap_feature.dart';
 import 'package:sync/sync.dart';
+
+import '../../../support/inventory_fixture.dart';
 
 class _Inventory extends Mock implements WalletInventory {}
 
@@ -51,8 +58,12 @@ void main() {
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
   late _Inventory inventory;
+  SecretsInventory? sessionInventory;
   late OverviewSynchronization foreground;
-  late List<String> synced;
+  late List<PublicWalletDescriptor> synced;
+  late Map<String, PublicWalletDescriptor> descriptors;
+
+  List<String> syncedIds() => [for (final wallet in synced) wallet.key.id];
 
   setUp(() {
     binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
@@ -60,13 +71,20 @@ void main() {
     when(settings.readActiveEnvironment)
         .thenAnswer((_) async => const Ok(Environment.mainnet));
     inventory = _Inventory();
+    sessionInventory = null;
     synced = [];
+    descriptors = {
+      for (final id in ['btc-1', 'btc-2']) id: _descriptor(id),
+    };
     foreground = OverviewSynchronization.open(
       inventory: inventory,
+      readInSession: <T>(Future<T> Function() read) async {
+        final live = sessionInventory;
+        if (live != null) return live.readInSession(read);
+        return Ok(await read());
+      },
       environment: settings,
-      catalog: () => _Catalog({
-        for (final id in ['btc-1', 'btc-2']) id: _descriptor(id),
-      }),
+      catalog: () => _Catalog(descriptors),
       synchronize:
           (
             descriptor, {
@@ -74,7 +92,7 @@ void main() {
             allowInitialScan = true,
             reason = SyncReason.auto,
           }) async {
-            synced.add(descriptor.key.id);
+            synced.add(descriptor);
             return const Ok(null);
           },
       refreshRevisions: () async => const Ok(null),
@@ -117,7 +135,7 @@ void main() {
 
     await foreground.coordinator.sync(only: {SyncKind.bitcoin});
 
-    expect(synced, ['btc-1', 'btc-2']);
+    expect(syncedIds(), ['btc-1', 'btc-2']);
   });
 
   test(
@@ -140,7 +158,7 @@ void main() {
 
       expect(failure, isA<SyncStorageFailure>());
       // The readable wallet is still synced: only the pass fails.
-      expect(synced, ['btc-1']);
+      expect(syncedIds(), ['btc-1']);
     },
   );
 
@@ -161,7 +179,7 @@ void main() {
 
     // A successful pass would have stamped the throttle window and dropped the
     // second automatic pass, hiding the unreadable rows until a user pull.
-    expect(synced, ['btc-1', 'btc-1']);
+    expect(syncedIds(), ['btc-1', 'btc-1']);
   });
 
   test(
@@ -187,5 +205,92 @@ void main() {
 
     expect(failure, isA<SyncNotFoundFailure>());
     expect(synced, isEmpty);
+  });
+
+  test('a queued discovery fails if selection crosses A to B to A', () async {
+    FakeSecureStoragePlatform().install();
+    final directory = await Directory.systemTemp.createTemp('overview-view-');
+    addTearDown(() => directory.delete(recursive: true));
+    final fixture = await InventoryFixture.open(directory);
+    addTearDown(fixture.close);
+    final live = fixture.inventory;
+    sessionInventory = live;
+    final views = live.openedViews ?? fail('Expected an open inventory');
+    const firstView = ViewId('all');
+    final other = await views.administration.create(name: 'Other');
+    final otherId = switch (other) {
+      Ok(:final value) => value.id,
+      Err(:final failure) => fail('Creating second view failed: $failure'),
+    };
+    const id = 'wpkh([01234567/84h/0h/0h])';
+    await fixture.addPublicWallet(id: id, network: 'bitcoinMainnet');
+    descriptors[id] = _descriptor(id);
+
+    final reachedLiquid = Completer<void>();
+    final resumeLiquid = Completer<void>();
+    var bitcoinReads = 0;
+    var liquidReads = 0;
+    when(() => inventory.walletsForNetwork(BitcoinNetwork.mainnet))
+        .thenAnswer((_) {
+          bitcoinReads++;
+          return live.walletsForNetwork(BitcoinNetwork.mainnet);
+        });
+    when(() => inventory.walletsForNetwork(LiquidNetwork.mainnet))
+        .thenAnswer((_) async {
+          if (++liquidReads == 2) {
+            reachedLiquid.complete();
+            await resumeLiquid.future;
+          }
+          return live.walletsForNetwork(LiquidNetwork.mainnet);
+        });
+
+    final discovery = foreground.coordinator.discoverWallet(id);
+    await reachedLiquid.future;
+    try {
+      expect(bitcoinReads, 2);
+      expect(await views.activate(otherId), isA<Ok>());
+      expect(await live.readWallet(id), isA<Err>());
+      expect(await views.activate(firstView), isA<Ok>());
+      expect(await live.readWallet(id), isA<Ok>());
+    } finally {
+      resumeLiquid.complete();
+    }
+
+    expect(
+      await discovery,
+      isA<Err<void, WalletDiscoveryFailure>>().having(
+        (result) => result.failure,
+        'failure',
+        isA<WalletDiscoveryUnavailableFailure>(),
+      ),
+    );
+    expect(synced, isEmpty);
+
+    expect(await foreground.coordinator.discoverWallet(id), isA<Ok>());
+    expect(syncedIds(), [id]);
+  }, skip: multiViewSupported ? false : 'Requires BULL_MULTI_VIEW=true');
+
+  test('the queued pass resolves the descriptor when it starts', () async {
+    const id = 'btc-1';
+    stubBitcoin(
+      Ok(
+        walletSelectionForTesting([
+          walletRegistrationForTesting(id: id, network: BitcoinNetwork.mainnet),
+        ]),
+      ),
+    );
+    final original = descriptors[id];
+    final replacement = _descriptor(id);
+    var liquidReads = 0;
+    when(() => inventory.walletsForNetwork(LiquidNetwork.mainnet))
+        .thenAnswer((_) async {
+          if (++liquidReads == 2) descriptors[id] = replacement;
+          return Ok(walletSelectionForTesting([]));
+        });
+
+    expect(await foreground.coordinator.discoverWallet(id), isA<Ok>());
+    expect(liquidReads, 2);
+    expect(replacement, isNot(same(original)));
+    expect(synced.single, same(replacement));
   });
 }

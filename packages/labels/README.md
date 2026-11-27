@@ -3,7 +3,7 @@
 `package:labels/labels.dart` provides label persistence and BIP-329 import and export.
 
 ```dart
-final opened = await Labels.open(file: file, admission: admission, sync: getSync, openWallet: openWallet);
+final opened = await Labels.open(file: file, admission: admission, sync: getSync, openWallet: openWallet, readInSession: inventory.readInSession);
 if (opened case Err(:final failure)) return Err(failure);
 final labels = (opened as Ok<Labels, LabelFailure>).value;
 final all = await labels.fetch();
@@ -15,7 +15,7 @@ final removed = await labels.trash(labelId);
 
 An empty match is a successful read. Consumers decide whether a read failure should preserve existing UI state or fall back to empty enrichment. Receive suggestions use the address filter because a BIP-21 message is visible to the payer.
 
-The sync and wallet callbacks are resolved when BIP-329 operations need freeze data. The app composes the reserved-address and Payjoin adapters through `package:labels/setup.dart`.
+The sync and wallet callbacks are resolved lazily. Wallet-owned outpoint reads for freeze validation run in the foreground inventory session from wallet resolution through publication of the loaded outpoints. This read guard does not authorize the subsequent freeze write. The app composes the reserved-address and Payjoin adapters through `package:labels/setup.dart`.
 
 Labels owns one encrypted schema-1 store for labels and user-frozen outpoints. The foreground coordinator imports raw rows, verifies them and preserves the labels AUTOINCREMENT high-water state in the same transaction as its sole readiness receipt. A missing receipt, conflicting preexisting state, invalid sequence or unavailable key blocks opening. The historical database and migrations are retained for unported owners; no legacy deletion occurs.
 

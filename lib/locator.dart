@@ -374,6 +374,7 @@ class AppLocator {
     locator.registerLazySingleton<OverviewSynchronization>(
       () => OverviewSynchronization.open(
         inventory: inventory,
+        readInSession: inventory.readInSession,
         environment: locator<ActiveEnvironmentReader>(),
         catalog: () => locator<WalletCatalogPort>(),
         synchronize: locator<ForegroundWalletSynchronization>().execute,

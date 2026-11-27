@@ -19,6 +19,10 @@ final class OverviewSynchronization {
 
   static OverviewSynchronization open({
     required WalletInventory inventory,
+    required Future<Result<T, SecretFailure>> Function<T>(
+      Future<T> Function() read,
+    )
+    readInSession,
     required ActiveEnvironmentReader environment,
     required WalletCatalogPort Function() catalog,
     required Future<Result<void, SyncFailure>> Function(
@@ -38,6 +42,47 @@ final class OverviewSynchronization {
           Err() => throw const WalletSnapshotException(SyncStorageFailure()),
         };
 
+    Future<Result<WalletRead<WalletKey, SyncFailure>, SyncFailure>>
+    selectWallets({bool? onlyBitcoin, bool? onlyLiquid}) async {
+      final active = await activeNetwork();
+      final keys = <WalletKey>[];
+      // A selection read only in part still surfaces its readable wallets:
+      // they are synced, then the pass fails so the throttle does not hide
+      // the rows that could not be read.
+      var incomplete = false;
+      for (final network in <Network>[
+        if (onlyLiquid != true)
+          ...BitcoinNetwork.values.where((network) => network.env == active),
+        if (onlyBitcoin != true)
+          ...LiquidNetwork.values.where((network) => network.env == active),
+      ]) {
+        switch (await inventory.walletsForNetwork(network)) {
+          case Ok(:final value):
+            keys.addAll(
+              value.wallets.map(
+                (wallet) => WalletKey(id: wallet.id, network: wallet.network),
+              ),
+            );
+            incomplete |= !value.isComplete;
+          case Err(failure: UnreadableWalletFailure()):
+            incomplete = true;
+          case Err():
+            return const Err(SyncStorageFailure());
+        }
+      }
+      if (keys.isEmpty) {
+        return incomplete
+            ? const Err(SyncStorageFailure())
+            : const Err(SyncNotFoundFailure());
+      }
+      return Ok(
+        WalletRead(
+          keys,
+          incomplete: incomplete ? const SyncStorageFailure() : null,
+        ),
+      );
+    }
+
     return OverviewSynchronization._(
       SyncCoordinator<WalletKey, SyncFailure>(
         walletKey: (key) => key,
@@ -45,46 +90,15 @@ final class OverviewSynchronization {
             (empty: failure is SyncNotFoundFailure, code: failure.logCode),
         readNetwork: activeNetwork,
         getWallets: ({onlyBitcoin, onlyLiquid}) async {
-          final active = await activeNetwork();
-          final keys = <WalletKey>[];
-          // A selection read only in part still surfaces its readable wallets:
-          // they are synced, then the pass fails so the throttle does not hide
-          // the rows that could not be read.
-          var incomplete = false;
-          for (final network in <Network>[
-            if (onlyLiquid != true)
-              ...BitcoinNetwork.values.where(
-                (network) => network.env == active,
-              ),
-            if (onlyBitcoin != true)
-              ...LiquidNetwork.values.where((network) => network.env == active),
-          ]) {
-            switch (await inventory.walletsForNetwork(network)) {
-              case Ok(:final value):
-                keys.addAll(
-                  value.wallets.map(
-                    (wallet) =>
-                        WalletKey(id: wallet.id, network: wallet.network),
-                  ),
-                );
-                incomplete |= !value.isComplete;
-              case Err(failure: UnreadableWalletFailure()):
-                incomplete = true;
-              case Err():
-                return const Err(SyncStorageFailure());
-            }
-          }
-          if (keys.isEmpty) {
-            return incomplete
-                ? const Err(SyncStorageFailure())
-                : const Err(SyncNotFoundFailure());
-          }
-          return Ok(
-            WalletRead(
-              keys,
-              incomplete: incomplete ? const SyncStorageFailure() : null,
-            ),
+          // A switch away and back still revokes this joined selection.
+          final selection = await readInSession(
+            () =>
+                selectWallets(onlyBitcoin: onlyBitcoin, onlyLiquid: onlyLiquid),
           );
+          return switch (selection) {
+            Ok(:final value) => value,
+            Err() => const Err(SyncStorageFailure()),
+          };
         },
         readWallet: (id) async => (await inventory.readWallet(id))
             .map((wallet) => WalletKey(id: wallet.id, network: wallet.network))

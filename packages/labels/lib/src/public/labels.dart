@@ -70,6 +70,7 @@ class Labels {
     required RuntimeAdmission admission,
     required Future<Sync> Function() sync,
     required Future<Wallet> Function(String) openWallet,
+    required ReadOwnedOutpointsInSession readInSession,
   }) async {
     try {
       final opened = await LabelsStore.open(file, admission, existing: true);
@@ -92,6 +93,7 @@ class Labels {
             database: store.database,
             sync: sync,
             openWallet: openWallet,
+            readInSession: readInSession,
             store: store,
           );
           published = true;
@@ -124,10 +126,15 @@ class Labels {
     required GeneratedDatabase database,
     required Future<Sync> Function() sync,
     required Future<Wallet> Function(String) openWallet,
+    required ReadOwnedOutpointsInSession readInSession,
   }) {
     final repository = DriftLabelsRepository(database: database);
     final converter = LabelsConverterAdapter(Bip329LabelsCodec());
-    final freezes = WalletFreezeAdapter(sync: sync, openWallet: openWallet);
+    final freezes = WalletFreezeAdapter(
+      sync: sync,
+      openWallet: openWallet,
+      readInSession: readInSession,
+    );
     return Labels._(
       store: store,
       backup: LabelBackups._(
@@ -249,11 +256,17 @@ Labels createLabelsForTesting({
   required GeneratedDatabase database,
   required Future<Sync> Function() sync,
   required Future<Wallet> Function(String) openWallet,
+  ReadOwnedOutpointsInSession readInSession = _testReadInSession,
 }) => Labels._usingDatabase(
   database: database,
   sync: sync,
   openWallet: openWallet,
+  readInSession: readInSession,
 );
+
+Future<Result<List<Outpoint>, SecretFailure>> _testReadInSession(
+  Future<List<Outpoint>> Function() read,
+) async => Ok(await read());
 
 /// The test seam behind `package:labels/testing.dart`.
 LabelBackups createLabelBackupsForTesting({

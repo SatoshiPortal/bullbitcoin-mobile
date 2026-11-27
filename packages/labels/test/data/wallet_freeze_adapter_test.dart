@@ -49,6 +49,7 @@ void main() {
           load: false,
         );
         final adapter = WalletFreezeAdapter(
+          readInSession: (read) async => Ok(await read()),
           sync: () =>
               throw StateError('Ownership uses the supplied wallet handle'),
           openWallet: (id) async {
@@ -69,6 +70,7 @@ void main() {
     test('does not report an absent wallet as an empty coin list', () async {
       const failure = WalletSnapshotException(sync.SyncNotFoundFailure());
       final adapter = WalletFreezeAdapter(
+        readInSession: (read) async => Ok(await read()),
         sync: () =>
             throw StateError('Ownership uses the supplied wallet handle'),
         openWallet: (_) async => throw failure,
@@ -80,8 +82,26 @@ void main() {
       );
     });
 
+    test(
+      'returns an empty list when the loaded wallet holds no coins',
+      () async {
+        final wallet = await testWallet(key: key, load: false);
+        final adapter = WalletFreezeAdapter(
+          sync: () =>
+              throw StateError('Ownership does not open foreground Sync'),
+          openWallet: (_) async => wallet,
+          readInSession: (read) async => Ok(await read()),
+        );
+
+        expect(await adapter.getOwnedOutpoints(walletId: walletId), isEmpty);
+        expect(wallet.coins.now.status, sync.ValueStatus.ready);
+      },
+    );
+
     test('keeps every origin, empty ones included', () async {
       final adapter = WalletFreezeAdapter(
+        readInSession: (_) =>
+            throw StateError('Freeze needs no ownership read'),
         sync: () async => owner,
         openWallet: (_) => throw StateError('Freeze does not load a wallet'),
       );

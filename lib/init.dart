@@ -357,6 +357,7 @@ class Bull {
           admission: admission,
           sync: sync,
           openWallet: openWallet,
+          readInSession: (read) => inventory.readInSession(read),
         ),
         openElectrum: (readPreferences, tor) => Electrum.open(
           file: electrumFile,
