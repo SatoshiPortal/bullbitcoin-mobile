@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-import '../session/exchange_access_machine.dart';
+import '../session/exchange_access_event.dart';
 import 'exchange_environment.dart';
 
 /// One signed-in session: the environment its key belongs to, an [epoch]
@@ -307,3 +307,15 @@ extension ExchangeAccessSessionX on ExchangeAccess {
     ExchangeAccessSignOutIncomplete() => false,
   };
 }
+
+/// Whether a completed web sign-in may store its key in [access].
+bool accessAcceptsKey(ExchangeAccess access) => switch (access) {
+  ExchangeAccessSignedOut() ||
+  ExchangeAccessSignedIn() ||
+  ExchangeAccessExpiring() ||
+  ExchangeAccessCredentialUnreadable() => true,
+  ExchangeAccessResolving() ||
+  ExchangeAccessUnreadable() ||
+  ExchangeAccessDisabled() ||
+  ExchangeAccessSignOutIncomplete() => false,
+};

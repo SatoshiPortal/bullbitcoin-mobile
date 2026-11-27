@@ -88,15 +88,3 @@ final class AccessExpiryFailed extends ExchangeAccessEvent {
 
   const AccessExpiryFailed(this.epoch);
 }
-
-/// Whether a completed web sign-in may store its key in [access].
-bool accessAcceptsKey(ExchangeAccess access) => switch (access) {
-  ExchangeAccessSignedOut() ||
-  ExchangeAccessSignedIn() ||
-  ExchangeAccessExpiring() ||
-  ExchangeAccessCredentialUnreadable() => true,
-  ExchangeAccessResolving() ||
-  ExchangeAccessUnreadable() ||
-  ExchangeAccessDisabled() ||
-  ExchangeAccessSignOutIncomplete() => false,
-};

@@ -10,7 +10,7 @@ import '../domain/exchange_access.dart';
 import '../domain/exchange_availability.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
-import '../session/exchange_access_machine.dart';
+import '../session/exchange_access_event.dart';
 import 'exchange_credentials.dart';
 
 /// Foreground session authority. Platform storage and WebView cleanup are

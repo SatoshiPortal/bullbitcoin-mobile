@@ -1,5 +1,5 @@
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/session/exchange_access_machine.dart';
+import 'package:exchange/src/session/exchange_access_event.dart';
 import 'package:test/test.dart';
 
 const _main = ExchangeEnvironment.mainnet;
