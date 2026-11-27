@@ -58,6 +58,9 @@ class _DcaListTileState extends State<DcaListTile> {
   @override
   Widget build(BuildContext context) {
     final dca = widget.dca;
+    final label = widget.hasDcaActive
+        ? context.loc.exchangeDcaDeactivateTitle
+        : context.loc.exchangeDcaActivateTitle;
     return ListTile(
       title: Row(
         children: [
@@ -66,11 +69,7 @@ class _DcaListTileState extends State<DcaListTile> {
               crossAxisAlignment: .start,
               mainAxisSize: .min,
               children: [
-                Text(
-                  widget.hasDcaActive
-                      ? context.loc.exchangeDcaDeactivateTitle
-                      : context.loc.exchangeDcaActivateTitle,
-                ),
+                ExcludeSemantics(child: Text(label)),
                 if (widget.hasDcaActive) ...[
                   const Gap(4),
                   TextButton(
@@ -93,17 +92,22 @@ class _DcaListTileState extends State<DcaListTile> {
               ],
             ),
           ),
-          BullSwitch(
-            value: widget.hasDcaActive,
-            onChanged: (value) {
-              if (value) {
-                // Activate DCA
-                widget.onActivate();
-              } else {
-                // Deactivate DCA - show confirmation dialog
-                _confirmStopDca(context);
-              }
-            },
+          MergeSemantics(
+            child: Semantics(
+              label: label,
+              child: BullSwitch(
+                value: widget.hasDcaActive,
+                onChanged: (value) {
+                  if (value) {
+                    // Activate DCA
+                    widget.onActivate();
+                  } else {
+                    // Deactivate DCA - show confirmation dialog
+                    _confirmStopDca(context);
+                  }
+                },
+              ),
+            ),
           ),
         ],
       ),

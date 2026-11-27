@@ -152,15 +152,22 @@ class _BuyEntryPageState extends State<BuyEntryPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          context.loc.payjoinUseToggle,
-                          style: context.bullType.body,
+                        child: ExcludeSemantics(
+                          child: Text(
+                            context.loc.payjoinUseToggle,
+                            style: context.bullType.body,
+                          ),
                         ),
                       ),
-                      BullSwitch(
-                        value: entry.payjoin,
-                        onChanged: (enabled) =>
-                            widget.onEvent(BuyPayjoinToggled(enabled)),
+                      MergeSemantics(
+                        child: Semantics(
+                          label: context.loc.payjoinUseToggle,
+                          child: BullSwitch(
+                            value: entry.payjoin,
+                            onChanged: (enabled) =>
+                                widget.onEvent(BuyPayjoinToggled(enabled)),
+                          ),
+                        ),
                       ),
                     ],
                   ),

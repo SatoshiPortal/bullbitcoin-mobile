@@ -35,6 +35,9 @@ class AutoBuyHomeCard extends StatelessWidget {
         context.loc.exchangeStepUnverified,
       SwitchShown() || SwitchDeactivating() || SwitchSessionEnded() => null,
     };
+    final label = state.active
+        ? context.loc.autoBuyDeactivate
+        : context.loc.autoBuyActivate;
     final Widget control = switch (state) {
       SwitchDeactivating(confirm: ConfirmUnverified()) => BullButton.secondary(
         label: context.loc.exchangeStepCheckAgain,
@@ -48,27 +51,28 @@ class AutoBuyHomeCard extends StatelessWidget {
         height: 24,
         padding: EdgeInsets.zero,
       ),
-      SwitchShown(:final active, :final restricted) => BullSwitch(
-        value: active,
-        onChanged: restricted
-            ? null
-            : (value) => value ? onActivate() : _confirmDeactivate(context),
+      SwitchShown(:final active, :final restricted) => MergeSemantics(
+        child: Semantics(
+          label: label,
+          child: BullSwitch(
+            value: active,
+            onChanged: restricted
+                ? null
+                : (value) => value ? onActivate() : _confirmDeactivate(context),
+          ),
+        ),
       ),
-      SwitchSessionEnded(:final active) => BullSwitch(
-        value: active,
-        onChanged: null,
+      SwitchSessionEnded(:final active) => MergeSemantics(
+        child: Semantics(
+          label: label,
+          child: BullSwitch(value: active, onChanged: null),
+        ),
       ),
     };
     return ListTile(
       title: Row(
         children: [
-          Expanded(
-            child: Text(
-              state.active
-                  ? context.loc.autoBuyDeactivate
-                  : context.loc.autoBuyActivate,
-            ),
-          ),
+          Expanded(child: ExcludeSemantics(child: Text(label))),
           control,
         ],
       ),
