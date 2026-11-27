@@ -250,8 +250,8 @@ void main() {
         isA<Err<void, ArkFailure>>(),
       );
       expect(
-        await references.getCustodyFingerprints(),
-        isA<Err<Set<Fingerprint>, Failure>>(),
+        await references.isReferenced(Fingerprint('01234567')),
+        isA<Err<bool, Failure>>(),
       );
 
       expect(
@@ -281,9 +281,9 @@ void main() {
           ),
           isA<Ok<void, ArkFailure>>(),
         );
-        final inventory = await references.getCustodyFingerprints();
-        expect(inventory, isA<Ok<Set<Fingerprint>, Failure>>());
-        expect((inventory as Ok<Set<Fingerprint>, Failure>).value, {parent});
+        final inventory = await references.isReferenced(parent);
+        expect(inventory, isA<Ok<bool, Failure>>());
+        expect((inventory as Ok<bool, Failure>).value, isTrue);
       } finally {
         registry.close();
       }
@@ -319,8 +319,8 @@ void main() {
       false,
     );
     expect(
-      await references.getCustodyFingerprints(),
-      isA<Err<Set<Fingerprint>, Failure>>(),
+      await references.isReferenced(Fingerprint('01234567')),
+      isA<Err<bool, Failure>>(),
     );
   });
 
@@ -355,8 +355,8 @@ void main() {
       );
       expect(File('${arkDirectory.path}/accounts.sqlite').existsSync(), false);
       expect(
-        await references.getCustodyFingerprints(),
-        isA<Err<Set<Fingerprint>, Failure>>(),
+        await references.isReferenced(Fingerprint('01234567')),
+        isA<Err<bool, Failure>>(),
       );
     },
   );

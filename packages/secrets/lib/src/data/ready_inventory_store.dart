@@ -9,25 +9,73 @@ import 'package:legacy_storage/legacy_storage.dart'
         LegacyOwnerFailure,
         LegacyOwnerFailureCause;
 import 'package:primitives/primitives.dart';
+import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import '../domain/domain.dart';
+import 'encrypted_database.dart' show databaseFileProblemOf;
 import 'inventory_import.dart';
+import 'early_v1_shape.dart';
 import 'inventory_store.dart';
+import 'view_format.dart';
 
 /// Opens an existing inventory and checks its import receipt before any
 /// capability can use the connection. Shared by every reader of the file.
+///
+/// The supported view layout is checked here, so every opener (foreground
+/// inventory, background descriptors and both Ark capabilities) refuses what
+/// this build cannot read before any of them uses the connection.
 Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
   File file,
-  RuntimeAdmission admission,
-) async {
-  final result = await InventoryStore.open(file, admission, existing: true);
+  RuntimeAdmission admission, {
+  bool foreground = false,
+}) async {
+  final result = await InventoryStore.open(
+    file,
+    admission,
+    existing: true,
+    adaptEarlyV1: foreground,
+  );
   switch (result) {
     case Err():
       return result;
     case Ok(:final value):
-      switch (await readInventoryReadiness(value.database, admitted: true)) {
+      // A file written before `last_view_id` is adapted by the foreground app
+      // alone; a worker that finds it so waits for the app.
+      if (!foreground) {
+        try {
+          if (!await hasLastViewColumn(value.database)) {
+            await value.close();
+            return const Err(DatabaseNotReady());
+          }
+        } on SqliteException catch (error) {
+          await value.close();
+          return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
+        }
+      }
+      switch (await readInventoryReadiness(
+        value.database,
+        admitted: true,
+        checkLayout: false,
+      )) {
         case Ok(value: OwnerReadiness.imported || OwnerReadiness.initialized):
-          return result;
+          try {
+            switch (await checkSupportedViewFormat(value.database)) {
+              case Err(:final failure):
+                await value.close();
+                return Err(failure);
+              case Ok():
+                return result;
+            }
+          } on SqliteException catch (error) {
+            // Damage to a page of the layout tables is the file's content.
+            await value.close();
+            return Err(DatabaseFileUnavailable(databaseFileProblemOf(error)));
+          } on Exception {
+            await value.close();
+            return const Err(
+              DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
+            );
+          }
         case Ok():
           await value.close();
           return const Err(DatabaseNotReady());

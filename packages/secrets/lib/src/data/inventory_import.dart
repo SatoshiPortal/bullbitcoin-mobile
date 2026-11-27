@@ -15,6 +15,7 @@ import 'inventory_store.dart';
 import 'owner_keychain.dart';
 import 'secret_repository.dart';
 import 'secrets_database.dart';
+import 'view_format.dart';
 import 'secrets_database.drift.dart';
 
 const defaultViewId = 'all';
@@ -68,6 +69,7 @@ final class SecretsImport implements LegacyImportParticipant {
     _file,
     admission,
     existing: false,
+    adaptEarlyV1: true,
   )).map(_PreparedInventory.new).mapErr(_mapOpenFailure);
 
   @override
@@ -129,18 +131,44 @@ final class SecretsImport implements LegacyImportParticipant {
 
 /// [admitted] says the owner already passed admission, so unreadable content
 /// is lost data rather than an import that has not finished.
+///
+/// A terminal receipt is only believed when the layout of the views is one
+/// this build supports, so no admission, replay or retirement rests on a
+/// receipt over a layout it cannot read. An empty file stays pending.
+/// [checkLayout] is false only for the opener, which reports the layout with
+/// its own typed failure.
 Future<Result<OwnerReadiness, LegacyImportFailure>> readInventoryReadiness(
   SecretsDatabase database, {
   bool admitted = false,
+  bool checkLayout = true,
 }) async {
   try {
-    final state = await database.select(database.accessState).getSingleOrNull();
-    return switch (state?.importReceipt) {
-      null => const Ok(OwnerReadiness.pending),
-      _imported || _importedWithAccess => const Ok(OwnerReadiness.imported),
-      _fresh || _freshWithAccess => const Ok(OwnerReadiness.initialized),
-      _ => const Err(LegacyImportVerificationFailed()),
+    final rows = await database
+        .customSelect('SELECT import_receipt AS receipt FROM access_state')
+        .get();
+    if (rows.length > 1) return const Err(LegacyImportVerificationFailed());
+    final receipt = rows.isEmpty ? null : rows.single.read<String>('receipt');
+    final Result<OwnerReadiness, LegacyImportFailure> readiness =
+        switch (receipt) {
+          null => const Ok<OwnerReadiness, LegacyImportFailure>(
+            OwnerReadiness.pending,
+          ),
+          _imported || _importedWithAccess => const Ok(OwnerReadiness.imported),
+          _fresh || _freshWithAccess => const Ok(OwnerReadiness.initialized),
+          _ => const Err<OwnerReadiness, LegacyImportFailure>(
+            LegacyImportVerificationFailed(),
+          ),
+        };
+    final terminal = switch (readiness) {
+      Ok(value: OwnerReadiness.imported || OwnerReadiness.initialized) => true,
+      _ => false,
     };
+    if (checkLayout &&
+        terminal &&
+        await checkSupportedViewFormat(database) is Err) {
+      return const Err(LegacyImportVerificationFailed());
+    }
+    return readiness;
   } on SqliteException catch (error) {
     return Err(
       admitted ? _admittedReadFailure(error) : const LegacyImportUnavailable(),

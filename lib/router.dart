@@ -46,6 +46,7 @@ import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubi
 import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:startup/startup.dart' show RouteErrorScreen;
 import 'package:announcements/setup.dart';
+import 'package:views/setup.dart' show ViewsFeature;
 import 'package:swaps/order_swaps.dart' show OrderSwaps;
 import 'package:access/setup.dart';
 import 'package:label_editor/setup.dart';
@@ -327,6 +328,7 @@ class AppRouter {
       ?_exchangeFeature.supportChatRoute,
       locator<OnboardingFeature>().route,
       ...locator<AccessFeature>().routes.root,
+      ...locator<ViewsFeature>().routes,
       WalletRouter.walletDetailRoute(
         scopeWalletHistory: locator<TransactionsFeature>().scopeWalletHistory,
         loadCoinSummary: (id) => locator<Coins>().summary(id),

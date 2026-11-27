@@ -37,6 +37,7 @@ import 'package:fees_feature/fees_feature.dart' show FeesFeature;
 import 'dart:io';
 
 import 'package:access/setup.dart';
+import 'package:views/setup.dart' show ViewsFeature;
 import 'package:exchange/exchange.dart' show Exchange;
 import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart' show exchangeForTesting;
@@ -258,6 +259,12 @@ void main() {
           onBackUp: (_) async {},
         ),
       );
+      locator.registerSingleton<ViewsFeature>(
+        ViewsFeature.mount(
+          inventory: inventoryFixture.inventory,
+          enabled: false,
+        ),
+      );
       final signerServices = GetIt.asNewInstance();
       locator.registerSingleton(
         SignersFeature.mount(
@@ -473,6 +480,7 @@ void main() {
         await quickActions.close();
         await recovery.dispose();
         await locator.unregister<AccessFeature>();
+        await locator.unregister<ViewsFeature>();
         await locator.unregister<AddressViewFeature>();
         await locator.unregister<Bip85Feature>();
         await locator.unregister<AllSeedViewFeature>();

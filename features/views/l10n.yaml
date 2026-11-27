@@ -1,0 +1,7 @@
+arb-dir: lib/l10n
+template-arb-file: views_en.arb
+output-localization-file: views_localizations.dart
+output-class: ViewsLocalizations
+output-dir: lib/generated/l10n
+nullable-getter: false
+untranslated-messages-file: untranslated-messages.txt

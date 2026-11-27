@@ -89,6 +89,11 @@ class AccessState extends Table {
   IntColumn get lockedUntil => integer().nullable()();
   TextColumn get importReceipt => text()();
 
+  /// The view opened last, so the next opening starts there. A memory, never a
+  /// right: it is read only after an authentication and only among the views
+  /// that authentication opened.
+  TextColumn get lastViewId => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {singleton};
 

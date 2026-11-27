@@ -9,6 +9,8 @@ import 'package:secrets/metadata_backup.dart';
 import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/src/data/inventory_store.dart';
+import 'package:secrets/src/public/secrets_inventory.dart'
+    show custodyReferencesOf;
 import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
 
@@ -437,13 +439,14 @@ void main() {
         ),
       );
 
-      expect(_value(await inventory.getCustodyFingerprints()), {
-        Fingerprint('0a1b2c3d'),
-      });
+      expect(
+        _value(await custodyReferencesOf(inventory).getCustodyFingerprints()),
+        {Fingerprint('0a1b2c3d')},
+      );
 
       inventory.lock();
       expect(
-        await inventory.getCustodyFingerprints(),
+        await custodyReferencesOf(inventory).getCustodyFingerprints(),
         isA<Err<Set<Fingerprint>, Failure>>().having(
           (result) => result.failure,
           'failure',
@@ -466,9 +469,10 @@ void main() {
     await storage.database.customStatement('DELETE FROM view_members');
 
     expect(_value(await inventory.listWallets()), isEmpty);
-    expect(_value(await inventory.getCustodyFingerprints()), {
-      Fingerprint('0a1b2c3d'),
-    });
+    expect(
+      _value(await custodyReferencesOf(inventory).getCustodyFingerprints()),
+      {Fingerprint('0a1b2c3d')},
+    );
   });
 
   test('an invalid local custody reference refuses deletion', () async {
@@ -479,7 +483,7 @@ void main() {
     );
 
     expect(
-      await inventory.getCustodyFingerprints(),
+      await custodyReferencesOf(inventory).getCustodyFingerprints(),
       isA<Err<Set<Fingerprint>, Failure>>().having(
         (result) => result.failure,
         'failure',

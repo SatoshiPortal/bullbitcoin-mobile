@@ -165,7 +165,7 @@ void main() {
       properties: const [],
     );
     settings = _Settings();
-    references = SeedReferences(
+    references = SeedReferences.forInventory(
       fixture.inventory,
       admission: admission,
       backupVerification: FakeInventoryBackups(verified: {parent}),

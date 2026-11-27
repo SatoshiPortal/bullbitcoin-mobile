@@ -7,6 +7,7 @@ import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
 import '../domain/domain.dart';
 import 'database_key_repository.dart';
+import 'early_v1_shape.dart';
 import 'encrypted_database.dart';
 import 'secrets_database.dart';
 
@@ -24,6 +25,7 @@ final class InventoryStore {
     File file,
     LifecycleAdmission admission, {
     required bool existing,
+    bool adaptEarlyV1 = false,
   }) async {
     if (existing) {
       // An admitted inventory lives in its main file. Check it before anything
@@ -71,6 +73,7 @@ final class InventoryStore {
           await selected
               .customSelect('SELECT 1 FROM access_state LIMIT 1')
               .get();
+          if (adaptEarlyV1) await adaptEarlyV1Shape(selected);
           published = true;
           return Ok(InventoryStore._(selected, handle));
       }

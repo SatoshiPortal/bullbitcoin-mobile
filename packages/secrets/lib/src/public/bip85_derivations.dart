@@ -110,7 +110,7 @@ class Bip85Derivations {
     required Future<Result<RecordedDerivation, SecretFailure>> Function()
     reserve,
     required Future<Result<T, SecretFailure>> Function(Secret, int) derive,
-  }) => _inventory._inSession((session) async {
+  }) => _inventory._inSession((session, _) async {
     final Secret secret;
     switch (await _secrets.fetch(parent)) {
       case Err(:final failure):
@@ -139,7 +139,7 @@ class Bip85Derivations {
   Future<
     Result<List<({Bip85Derivation derivation, String entropy})>, SecretFailure>
   >
-  reveal(Fingerprint parent) => _inventory._inSession((session) async {
+  reveal(Fingerprint parent) => _inventory._inSession((session, _) async {
     final Secret secret;
     switch (await _secrets.fetch(parent)) {
       case Err(:final failure):

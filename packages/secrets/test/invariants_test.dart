@@ -91,6 +91,7 @@ void main() {
       'lib/src/data/secret_repository.dart', // the two that are not exceptions: not-found, mnemonic required
       'lib/src/data/database_key_repository.dart', // not-found on an open-only read
       'lib/src/data/backup_guard.dart', // typed outcomes from backup proof reads
+      'lib/src/data/view_administration_repository.dart', // typed refusals read from the memberships
     };
 
     // Absence, unreadable records and duplicate identities are Results from
@@ -100,6 +101,9 @@ void main() {
       'UnreadableWalletFailure',
       'WalletRegistrationNotFoundFailure',
       'WalletAlreadyRegisteredFailure',
+      'SecretOwnedByAnotherViewFailure',
+      'SharedWithOtherViewFailure',
+      'ViewsUnsupportedFailure',
     };
     final offenders = <String>[];
     for (final file in sources) {
@@ -368,12 +372,24 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart'
       'DatabaseFileUnavailable',
       'DatabaseCipherUnavailable',
       'DatabaseNotReady',
+      'DatabaseViewsUnsupported',
+      // views
+      'ViewId',
+      'ViewSummary',
+      'ViewNotOpenFailure',
+      'ViewInUseFailure',
+      'ViewHoldsSecretsFailure',
+      'LastViewFailure',
+      'InvalidViewNameFailure',
+      'ViewsUnsupportedFailure',
+      'SharedWithOtherViewFailure',
       // the failure family
       'SecretFailure',
       'BackupRequiredFailure',
       'BackupStateUnavailableFailure',
       'BackupVerifierUnboundFailure',
       'SecretAlreadyExistsFailure',
+      'SecretOwnedByAnotherViewFailure',
       'SecretNotFoundFailure',
       'FetchSecretFailure',
       'StoreSecretFailure', 'TrashSecretFailure', 'KeystoreLockedFailure',

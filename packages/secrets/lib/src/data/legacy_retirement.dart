@@ -9,6 +9,7 @@ import 'inventory_import.dart';
 import 'inventory_store.dart';
 import 'legacy_fingerprint_verification.dart';
 import 'secrets_database.dart';
+import 'view_format.dart';
 
 /// Retirement of the three legacy access entries of the keychain.
 ///
@@ -56,15 +57,22 @@ final class SecretsRetirement implements LegacyRetirementParticipant {
     OwnerOrigin origin,
   ) async {
     try {
-      final state = await database
-          .select(database.accessState)
-          .getSingleOrNull();
+      final rows = await database
+          .customSelect('SELECT import_receipt AS receipt FROM access_state')
+          .get();
+      final receipt = rows.length == 1
+          ? rows.single.read<String>('receipt')
+          : null;
       final expected = origin == OwnerOrigin.legacy
           ? importedWithAccessReceipt
           : freshWithAccessReceipt;
-      return state?.importReceipt == expected
-          ? const Ok(null)
-          : const Err(LegacyImportVerificationFailed());
+      if (receipt != expected) {
+        return const Err(LegacyImportVerificationFailed());
+      }
+      // A receipt over a layout this build cannot read authorizes nothing.
+      return await checkSupportedViewFormat(database) is Err
+          ? const Err(LegacyImportVerificationFailed())
+          : const Ok(null);
     } on SqliteException {
       return const Err(LegacyImportUnavailable());
     }

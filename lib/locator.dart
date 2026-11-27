@@ -76,6 +76,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:address_view/address_view.dart';
 import 'package:bb_mobile/address_view_setup.dart';
 import 'package:access/setup.dart' show AccessFeature;
+import 'package:views/setup.dart' show ViewsFeature;
 import 'package:go_router/go_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:signers/routes.dart';
@@ -408,6 +409,9 @@ class AppLocator {
         },
         onBackUp: BackupsNavigation.open,
       ),
+    );
+    locator.registerSingleton<ViewsFeature>(
+      ViewsFeature.mount(inventory: inventory, enabled: multiViewSupported),
     );
     locator.registerLazySingleton(
       () => StartupFeature.mount(

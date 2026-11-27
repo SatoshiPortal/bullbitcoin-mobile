@@ -130,7 +130,7 @@ void registerNativeRuntime(
     ),
   );
   locator.registerLazySingleton<SeedReferences>(() {
-    final references = SeedReferences(
+    final references = SeedReferences.forInventory(
       locator<SecretsInventory>(),
       admission: locator<ParentCustodyAdmissionPort>(),
       // The same verifier the inventory opened with: deletion and protection
