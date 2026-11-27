@@ -1,36 +1,34 @@
 import 'dart:ui' show Tristate;
 
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_preferences_usecase.dart';
-import 'package:bull_exchange/src/settings/domain/usecases/update_exchange_preferences_usecase.dart';
+import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_preferences_bloc.dart';
 import 'package:bull_exchange/src/settings/ui/screens/exchange_preferences_screen.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:bull_ui/testing.dart';
-import 'package:exchange/exchange.dart';
-import 'package:exchange/testing.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 
 import '../../../buy/buy_fixtures.dart';
+import '../../settings_usecase_fakes.dart';
 
 ExchangePreferencesBloc _bloc({required bool emailNotifications}) =>
     ExchangePreferencesBloc(
-      getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
-        exchange: exchangeForTesting(
-          getUserSummary: (_) async => Ok(
-            buySummary.copyWith(emailNotificationsEnabled: emailNotifications),
+      session: buySession,
+      getPreferences: FakeGetExchangePreferencesUsecase(
+        () async => Ok(
+          ExchangePreferences(
+            language: 'EN',
+            currency: 'CAD',
+            emailNotificationsEnabled: emailNotifications,
           ),
-          writeGate: ExchangeWriteGate(),
         ),
       ),
-      updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
-        save: (_) async => const Ok(null),
+      updatePreferences: FakeUpdateExchangePreferencesUsecase(
+        (session, {required loaded, required edited}) async => const Ok(null),
       ),
-      writeGate: ExchangeWriteGate(),
-      session: buySession,
     );
 
 Future<void> _pump(WidgetTester tester, ExchangePreferencesBloc bloc) async {
