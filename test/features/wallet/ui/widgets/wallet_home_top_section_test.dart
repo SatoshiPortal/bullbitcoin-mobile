@@ -1,15 +1,8 @@
-import 'package:bb_mobile/localizations.dart' show appLocalizationsDelegates;
-import 'package:bitcoin_price/bitcoin_price.dart'
-    show BitcoinPriceLocalizations;
-import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
-import 'package:bull_ui/app_theme.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/localizations.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:settings/testing.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:overview/overview.dart' show EyeToggle;
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
-import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullAmount,
@@ -17,99 +10,75 @@ import 'package:bull_ui/bull_ui.dart'
         BullAmountSnapshot,
         BullHeaderBackground,
         BullQuickActionBar,
+        BullShimmerBox,
         bullUiLocalizationsDelegate;
-import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit;
 
-class _Wallet extends MockBloc<WalletEvent, WalletState>
-    implements WalletBloc {}
+const _actionsKey = ValueKey('home-quick-actions');
 
-class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
-
-const _actionKey = ValueKey('actions');
-
-Future<void> _pumpTopSection(
+Future<void> _pump(
   WidgetTester tester, {
-  required double textScale,
-  bool hideAmounts = true,
-  bool amountsKnown = true,
-  double? actionsHeight,
+  int? total = 12345,
+  bool? hide = false,
+  bool chart = false,
+  VoidCallback? closeChart,
+  double scale = 1,
 }) async {
-  final wallet = _Wallet();
-  final settings = _Settings();
-
-  final amountDisplay = (
-    bitcoinUnit: BitcoinUnit.btc,
-    currencyCode: 'CAD',
-    hideAmounts: hideAmounts,
-  );
-  whenListen(
-    wallet,
-    const Stream<WalletState>.empty(),
-    initialState: WalletState(
-      amountDisplay: amountsKnown ? amountDisplay : null,
-      status: WalletStatus.success,
-    ),
-  );
-  whenListen(
-    settings,
-    const Stream<SettingsState>.empty(),
-    initialState: SettingsState(
-      storedSettings: SettingsEntity(
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currencyCode: 'CAD',
-        hideAmounts: hideAmounts,
-      ),
-    ),
-  );
-
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.themeData(AppThemeType.light),
-      localizationsDelegates: [
-        ...appLocalizationsDelegates,
-        BitcoinPriceLocalizations.delegate,
-        ...GlobalMaterialLocalizations.delegates,
+      localizationsDelegates: const [
         bullUiLocalizationsDelegate,
+        ...appLocalizationsDelegates,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: MediaQuery(
-          data: MediaQueryData(
-            size: const Size(360, 800),
-            textScaler: TextScaler.linear(textScale),
+      home: MultiBlocProvider(
+        providers: [
+          BitcoinPriceFixture.prices(
+            amountDisplay: (
+              bitcoinUnit: BitcoinUnit.sats,
+              currencyCode: 'CAD',
+              hideAmounts: false,
+            ),
+            currency: 'CAD',
+            bitcoinPrice: 100000,
           ),
-          child: MultiBlocProvider(
-            providers: [
-              BlocProvider<WalletBloc>.value(value: wallet),
-              BlocProvider<SettingsCubit>.value(value: settings),
-              BitcoinPriceFixture.prices(
-                amountDisplay: amountsKnown ? amountDisplay : null,
-                currency: 'CAD',
-                bitcoinPrice: 100000,
-              ),
-              BitcoinPriceFixture.chart(),
-            ],
+        ],
+        child: Scaffold(
+          body: MediaQuery(
+            data: MediaQueryData(
+              size: const Size(360, 800),
+              textScaler: TextScaler.linear(scale),
+            ),
             child: BullAmountScope(
-              snapshot: BullAmountSnapshot(
-                unit: BitcoinUnit.btc,
-                hideAmounts: hideAmounts,
-                isReady: amountsKnown,
+              snapshot: const BullAmountSnapshot(
+                unit: BitcoinUnit.sats,
+                hideAmounts: false,
+                isReady: true,
               ),
               writeUnit: (_) async => true,
               child: SingleChildScrollView(
                 child: SizedBox(
                   width: 360,
                   child: WalletHomeTopSection(
+                    background: AssetImage(Assets.backgrounds.bgRed.path),
+                    totalSat: total,
+                    isLoading: false,
+                    hideAmounts: hide,
+                    unavailableLabel: 'Balance unavailable',
+                    onCurrencyChanged: (_, _) {},
+                    showChart: chart,
+                    chart: const Text('Price history'),
+                    closeChartLabel: 'Back to balance',
+                    onCloseChart: closeChart ?? () {},
                     actions: Builder(
                       builder: (context) => SizedBox(
-                        key: _actionKey,
-                        height:
-                            actionsHeight ??
-                            BullQuickActionBar.heightOf(context),
+                        key: _actionsKey,
+                        height: BullQuickActionBar.heightOf(context),
                       ),
                     ),
                   ),
@@ -121,44 +90,76 @@ Future<void> _pumpTopSection(
       ),
     ),
   );
-  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 350));
 }
 
 void main() {
-  testWidgets(
-    'Home does not expose a bitcoin amount while preferences are unknown',
-    (tester) async {
-      await _pumpTopSection(
-        tester,
-        textScale: 1,
-        hideAmounts: false,
-        amountsKnown: false,
-      );
-      expect(find.byType(BullAmount), findsNothing);
-    },
-  );
-
-  testWidgets('home balance has no eye toggle', (tester) async {
-    await _pumpTopSection(tester, textScale: 1, actionsHeight: 100);
+  testWidgets('unknown balance differs from a proven zero', (tester) async {
+    await _pump(tester, total: null);
+    expect(find.text('Balance unavailable'), findsNWidgets(2));
+    expect(find.byType(BullAmount), findsNothing);
+    await _pump(tester, total: 0);
+    expect(find.text('0 sats'), findsOneWidget);
+    expect(find.text('Balance unavailable'), findsNothing);
+    expect(find.byType(HomeFiatBalance), findsOneWidget);
     expect(find.byType(EyeToggle), findsNothing);
-    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
-    expect(find.byTooltip(l10n.walletShowAmountsTooltip), findsNothing);
-    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('unknown or hidden preferences do not expose BTC or fiat', (
+    tester,
+  ) async {
+    await _pump(tester);
+    final visibleFiat = tester.widget<FiatAmountText>(
+      find.byType(FiatAmountText),
+    );
+    expect(find.text('12,345 sats'), findsOneWidget);
+    expect(visibleFiat.hideAmounts, isFalse);
+    final quote = visibleFiat.formattedAmount;
+    if (quote == null) throw StateError('Expected a readable fiat quote');
+    for (final hide in <bool?>[true, null]) {
+      await _pump(tester, hide: hide);
+      expect(find.text('12,345 sats'), findsNothing);
+      expect(find.text(quote), findsNothing);
+      expect(
+        tester.widget<FiatAmountText>(find.byType(FiatAmountText)).hideAmounts,
+        isTrue,
+      );
+      expect(
+        find.byType(BullShimmerBox),
+        hide == null ? findsOneWidget : findsNothing,
+      );
+    }
   });
 
   testWidgets(
-    'background image is minBackgroundHeight tall with the quick action bar',
+    'chart replaces the amounts and closes via its translated label',
     (tester) async {
-      // The home screen sizes its overscroll backdrop from this constant; a
-      // taller backdrop shows below the image.
-      await _pumpTopSection(tester, textScale: 1);
-      expect(tester.takeException(), isNull);
-      expect(
-        tester.getSize(find.byType(BullHeaderBackground)).height,
+      var closed = false;
+      await _pump(tester);
+      await _pump(tester, chart: true, closeChart: () => closed = true);
+      await tester.pump(const Duration(milliseconds: 350));
+      expect(find.text('Price history'), findsOneWidget);
+      expect(find.byType(BullAmount), findsNothing);
+      await tester.tap(find.byTooltip('Back to balance'));
+      expect(closed, isTrue);
+    },
+  );
+
+  testWidgets('background retains its quick-action overhang with large text', (
+    tester,
+  ) async {
+    await _pump(tester, scale: 1.5);
+    expect(tester.takeException(), isNull);
+    final background = tester.getRect(find.byType(BullHeaderBackground));
+    final actions = tester.getRect(find.byKey(_actionsKey));
+    expect(
+      background.height,
+      greaterThanOrEqualTo(
         WalletHomeTopSection.minBackgroundHeight(
           tester.element(find.byType(WalletHomeTopSection)),
         ),
-      );
-    },
-  );
+      ),
+    );
+    expect(background.bottom, closeTo(actions.center.dy, 0.01));
+  });
 }
