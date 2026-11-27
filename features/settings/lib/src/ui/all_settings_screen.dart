@@ -52,12 +52,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ))
                   BullSettingsEntryItem(
                     icon: item.icon,
-                    leading: item.indicatesServiceHealth
-                        ? _ServiceHealthIcon(
-                            icon: item.icon,
-                            health: _serviceHealth,
-                          )
-                        : item.homeIcon,
+                    leading:
+                        item.homeIcon ??
+                        (item.indicatesServiceHealth
+                            ? _ServiceHealthIcon(
+                                icon: item.icon,
+                                health: _serviceHealth,
+                              )
+                            : null),
                     title: item.title,
                     isSuperUser: item.isSuperuser,
                     onTap: () => item.open(context),
