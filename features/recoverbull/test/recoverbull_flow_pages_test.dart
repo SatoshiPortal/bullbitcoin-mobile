@@ -22,6 +22,7 @@ import 'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
 import 'package:bull_recoverbull/src/ui/pages/password_input_page.dart';
+import 'package:bull_recoverbull/src/ui/pages/settings_page.dart';
 import 'package:bull_recoverbull/src/ui/recoverbull_flow_navigator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
@@ -126,6 +127,30 @@ void main() {
         .setMockMethodCallHandler(_channel, null),
   );
 
+  testWidgets('passkey demo is not a separate settings entry', (tester) async {
+    usePhoneScreen(tester);
+    tester.view.physicalSize = const Size(2200, 2340);
+    final presentation = flow(
+      passkeyDemo: RunPasskeyDemoUsecase(() async => true, _Demo()),
+    );
+    await tester.pumpWidget(
+      app(
+        RecoverBullFlowHost(
+          flow: RecoverBullFlow.recoverVault,
+          presentation: presentation,
+          page: const SettingsPage(),
+          copiedMessage: 'Copied',
+          onTestVault: () {},
+          onFinished: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Passkey demo'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    await presentation.close();
+  });
+
   testWidgets('passkey alternative preserves recovery choices and returns', (
     tester,
   ) async {
@@ -145,6 +170,19 @@ void main() {
       find.widgetWithText(BullButton, 'Use a passkey instead'),
     );
     expect(button.outlined, isFalse);
+    final buttonContainer = tester.widget<Container>(
+      find.descendant(
+        of: find.widgetWithText(BullButton, 'Use a passkey instead'),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Container && widget.decoration is BoxDecoration,
+        ),
+      ),
+    );
+    final decoration = buttonContainer.decoration as BoxDecoration;
+    expect(decoration.color, testBullTheme.secondary);
+    expect(decoration.color, const Color(0xFF000000));
+    expect(decoration.border, isNull);
+    expect(find.byType(BullPinPad), findsOneWidget);
     expect(find.text('Or enter the vault key'), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('Use a password instead')).dy,
