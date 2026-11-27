@@ -22,13 +22,13 @@ import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:overview/setup.dart';
+import 'package:overview/overview.dart' show OngoingSwaps;
 import 'package:backups/backups.dart' show BackupsFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
@@ -70,10 +70,6 @@ class WalletLocator {
         syncFinished: electrum.finished.map((event) => event.key.id),
       );
     });
-    // Usecase
-    locator.registerFactory<GetOngoingSwapsUsecase>(
-      () => GetOngoingSwapsUsecase(swapStore: locator<SwapStore>()),
-    );
     locator.registerFactory<GetExternalTorProxyStatusUsecase>(
       () => GetExternalTorProxyStatusUsecase(
         locator<TorProxyPreferencesReader>(),
@@ -131,7 +127,7 @@ class WalletLocator {
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
         watchWalletSyncEventsUsecase: locator<WatchWalletSyncEventsUsecase>(),
         syncWalletsUsecase: locator<SyncWalletsUsecase>(),
-        getOngoingSwapsUsecase: locator<GetOngoingSwapsUsecase>(),
+        ongoingSwaps: OngoingSwaps(locator<SwapStore>()),
         checkSwapServerUsecase: CheckSwapServerUsecase(
           boltz: locator<BoltzSwaps>(),
         ),

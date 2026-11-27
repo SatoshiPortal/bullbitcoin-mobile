@@ -1,13 +1,12 @@
 import 'package:swaps/swaps.dart';
 import 'package:primitives/primitives.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_ongoing_swaps_usecase.dart';
+import 'package:overview/overview.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockSwapStore extends Mock implements SwapStore {}
 
-List<Swap> _valueOf(Result<List<Swap>, WalletFailure> result) =>
+List<Swap> _valueOf(Result<List<Swap>, OngoingSwapsFailure> result) =>
     switch (result) {
       Ok(:final value) => value,
       Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
@@ -45,11 +44,11 @@ Swap _unpaidInvoice() => Swap.lnReceive(
 
 void main() {
   late _MockSwapStore swapStore;
-  late GetOngoingSwapsUsecase usecase;
+  late OngoingSwaps reader;
 
   setUp(() {
     swapStore = _MockSwapStore();
-    usecase = GetOngoingSwapsUsecase(swapStore: swapStore);
+    reader = OngoingSwaps(swapStore);
   });
 
   test('lists the swaps in progress, newest first', () async {
@@ -60,7 +59,7 @@ void main() {
       ]),
     );
 
-    final swaps = _valueOf(await usecase.execute());
+    final swaps = _valueOf(await reader.read());
 
     expect(swaps.map((swap) => swap.id), ['newer', 'older']);
   });
@@ -74,7 +73,7 @@ void main() {
       ]),
     );
 
-    final swaps = _valueOf(await usecase.execute());
+    final swaps = _valueOf(await reader.read());
 
     expect(swaps.map((swap) => swap.id), ['sent']);
   });
@@ -82,7 +81,7 @@ void main() {
   test('no swaps is an empty list, not a failure', () async {
     when(() => swapStore.ongoing()).thenAnswer((_) async => const Ok([]));
 
-    expect(_valueOf(await usecase.execute()), isEmpty);
+    expect(_valueOf(await reader.read()), isEmpty);
   });
 
   test('sanitizes a failed swap read', () async {
@@ -94,11 +93,11 @@ void main() {
       ),
     );
 
-    final failure = switch (await usecase.execute()) {
+    final failure = switch (await reader.read()) {
       Ok() => fail('expected an Err, got Ok'),
       Err(:final failure) => failure,
     };
-    expect(failure, isA<WalletUnexpectedFailure>());
+    expect(failure, isA<OngoingSwapsUnavailableFailure>());
     expect(failure.logMessage, isNot(contains('api.boltz.exchange')));
   });
 }

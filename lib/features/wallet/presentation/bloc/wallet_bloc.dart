@@ -23,7 +23,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
 import 'package:swaps/swaps.dart' show Swap;
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
@@ -47,7 +46,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._checkWalletSyncingUsecase,
     required this._watchWalletSyncEventsUsecase,
     required this._syncWalletsUsecase,
-    required this._getOngoingSwapsUsecase,
+    required this._ongoingSwaps,
     required this._readBackupWarning,
     required this._getExternalTorProxyStatusUsecase,
     required this._checkSpWalletSetupForWalletUsecase,
@@ -93,7 +92,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WatchWalletSyncEventsUsecase _watchWalletSyncEventsUsecase;
   final SyncWalletsUsecase _syncWalletsUsecase;
   final RetrySwapsOnRefreshUsecase? _retrySwapsOnRefreshUsecase;
-  final GetOngoingSwapsUsecase _getOngoingSwapsUsecase;
+  final OngoingSwaps _ongoingSwaps;
   final CheckSwapServerUsecase? _checkSwapServerUsecase;
   final Future<bool?> Function() _readBackupWarning;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
@@ -484,7 +483,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     // This reads the swap database, never another native wallet.
-    final ongoing = await _getOngoingSwapsUsecase.execute();
+    final ongoing = await _ongoingSwaps.read();
     if (emit.isDone ||
         catalog != _catalogGeneration ||
         ongoingVersion != _ongoingSwapsReadVersion) {
