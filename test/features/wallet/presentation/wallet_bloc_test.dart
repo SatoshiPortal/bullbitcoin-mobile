@@ -786,6 +786,81 @@ void main() {
     expect(bloc.state.noWalletsFound, isTrue);
     expect(bloc.state.loadFailure, isNull);
   });
+
+  test(
+    'a reload after a recovery never reports the previous "no wallets"',
+    () async {
+      // The home screen routes to onboarding while "no wallets" is reported.
+      // After a recovery it opens while the reload is still reading, so a
+      // stale answer sent it back to onboarding mid-transition.
+      final getWallets = _MockGetWalletsUsecase();
+      final reload = Completer<Result<List<Wallet>, WalletFailure>>();
+      var reads = 0;
+      when(
+        () => getWallets.execute(
+          onlyDefaults: any(named: 'onlyDefaults'),
+          onlyBitcoin: any(named: 'onlyBitcoin'),
+          onlyLiquid: any(named: 'onlyLiquid'),
+          sync: any(named: 'sync'),
+        ),
+      ).thenAnswer(
+        (_) => ++reads == 1
+            ? Future.value(const Err(NoWalletsFoundFailure()))
+            : reload.future,
+      );
+      final syncing = _MockCheckWalletSyncingUsecase();
+      when(() => syncing.execute(walletId: any(named: 'walletId')))
+          .thenReturn(const Ok<bool, WalletFailure>(false));
+      final bloc = WalletBloc(
+        readWalletUsecase: _stubbedReadWallet(),
+        getWalletsUsecase: getWallets,
+        checkWalletSyncingUsecase: syncing,
+        watchWalletSyncEventsUsecase: _stubbedWatchers(),
+        syncWalletsUsecase: _stubbedSync(),
+        getUnconfirmedIncomingBalanceUsecase:
+            _MockGetUnconfirmedIncomingBalanceUsecase(),
+        checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
+        checkSpScanningForWalletUsecase: _stubbedSpScanning(),
+        refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
+        watchSpWalletUsecase: _stubbedSpWatch(),
+        checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+        checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+        getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
+      );
+      addTearDown(bloc.close);
+
+      bloc.add(const WalletStarted());
+      await pumpEventQueue();
+      expect(bloc.state.noWalletsFound, isTrue);
+
+      final observed = <WalletState>[];
+      final subscription = bloc.stream.listen(observed.add);
+      addTearDown(subscription.cancel);
+      bloc.add(const WalletStarted());
+      await pumpEventQueue();
+
+      expect(reads, 2, reason: 'the reload is still reading');
+      expect(bloc.state.noWalletsFound, isFalse);
+
+      reload.complete(Ok([_syncedWallet]));
+      await pumpEventQueue();
+
+      expect(bloc.state.wallets, [_syncedWallet]);
+      expect(observed.where((state) => state.noWalletsFound), isEmpty);
+    },
+  );
+
+  test('a reload that finds no wallets still routes to onboarding', () async {
+    final bloc = _blocWithFailingLoad(const NoWalletsFoundFailure());
+    addTearDown(bloc.close);
+
+    bloc.add(const WalletStarted());
+    await pumpEventQueue();
+    bloc.add(const WalletStarted());
+    await pumpEventQueue();
+
+    expect(bloc.state.noWalletsFound, isTrue);
+  });
 }
 
 /// Builds a bloc whose wallet load fails, so the failure path can be driven.
