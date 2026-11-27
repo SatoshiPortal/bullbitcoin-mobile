@@ -192,6 +192,35 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
     if (value != null) _publish(vault: value);
   }
 
+  /// Runs an opening operation without publishing its result as the selection.
+  Future<Result<T, RecoverBullFailure>?> _openVaultOperation<T>(
+    Future<Result<T, RecoverBullFailure>> Function() action,
+  ) async {
+    if (state.busy || _closing || isClosed) return null;
+    _publish(busy: true, files: state.files);
+    final result = await action();
+    if (_closing || isClosed) return null;
+    _publish(files: state.files);
+    return result;
+  }
+
+  Future<Result<EncryptedVault, RecoverBullFailure>?> openPickedVault() =>
+      _openVaultOperation(_files.pick.execute);
+
+  Future<Result<List<DriveFileMetadata>, RecoverBullFailure>?>
+  openDriveList() => _openVaultOperation(_files.list.execute);
+
+  Future<Result<EncryptedVault, RecoverBullFailure>?> openDriveVault(
+    DriveFileMetadata file,
+  ) => _openVaultOperation(() => _files.select.execute(file));
+
+  /// Adopts only the vault accepted by the active selection machine.
+  bool adoptSelectedVault(EncryptedVault vault) {
+    if (state.busy || _closing || isClosed) return false;
+    _publish(vault: vault, files: state.files);
+    return true;
+  }
+
   Future<void> export(DriveFileMetadata file) async {
     await _run(() => _files.export.execute(file));
   }
