@@ -333,7 +333,7 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       final pair = _list(data['descriptor']);
       if (pair.length != 2) throw const _Rejected();
       for (final descriptor in pair) {
-        fromContainer.add(_text(descriptor, required: true)!);
+        fromContainer.add(_requiredText(descriptor));
       }
     }
     final walletsJson = _list(document['wallets']);
@@ -371,8 +371,8 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       final env = NetworkEnv.values
           .where((value) => value.name == data['network'])
           .firstOrNull;
-      final external = _text(data['external'], required: true)!;
-      final internal = _text(data['internal'], required: true)!;
+      final external = _requiredText(data['external']);
+      final internal = _requiredText(data['internal']);
       final birthday = _text(data['birthday']);
       final watch = data['watch'];
       if (scriptType == null ||
@@ -384,7 +384,7 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       }
       wallets.add(
         BackupWallet(
-          walletId: _text(data['id'], required: true)!,
+          walletId: _requiredText(data['id']),
           network: group.network,
           scriptType: scriptType,
           externalDescriptor: external,
@@ -426,10 +426,9 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
         required: const {'type', 'ref', 'wallet'},
       );
       final type = _type(data['type']);
-      attribution[(type, _text(data['ref'], required: true)!)] = _text(
+      attribution[(type, _requiredText(data['ref']))] = _requiredText(
         data['wallet'],
-        required: true,
-      )!;
+      );
     }
     final records = <BackupLabelRecord>[];
     final lines = utf8.decode(labels.bytes).split('\n');
@@ -441,7 +440,7 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
         required: const {'type', 'ref'},
       );
       final type = _type(data['type']);
-      final ref = _text(data['ref'], required: true)!;
+      final ref = _requiredText(data['ref']);
       final spendable = data['spendable'];
       if (spendable != null && spendable is! bool) throw const _Rejected();
       records.add(
@@ -468,7 +467,7 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
         BackupLabelRecord(
           chain: BackupLabelChain.liquid,
           type: _type(data['type']),
-          ref: _text(data['ref'], required: true)!,
+          ref: _requiredText(data['ref']),
           label: _text(data['label']),
           origin: _text(data['origin']),
           spendable: spendable as bool?,
@@ -505,9 +504,9 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
 
   static BackupDerivation _derivation(Map<String, Object?> data) =>
       BackupDerivation(
-        path: _text(data['path'], required: true)!,
-        application: _text(data['application'], required: true)!,
-        status: _text(data['status'], required: true)!,
+        path: _requiredText(data['path']),
+        application: _requiredText(data['application']),
+        status: _requiredText(data['status']),
         alias: _text(data['alias']),
       );
 
@@ -533,6 +532,9 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
 
   static List<Object?> _list(Object? value) =>
       value is List ? value.cast<Object?>() : throw const _Rejected();
+
+  static String _requiredText(Object? value) =>
+      _text(value, required: true) ?? (throw const _Rejected());
 
   static String? _text(Object? value, {bool required = false}) {
     if (value == null) return required ? throw const _Rejected() : null;

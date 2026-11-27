@@ -179,13 +179,14 @@ final class DerivationRepository {
               );
               continue;
             }
+            final archived = _statuses[record.status];
+            final stored = _statuses[local.status];
             if (local.application != record.application ||
-                !_statuses.containsKey(local.status)) {
+                archived == null ||
+                stored == null) {
               throw const _IncompatibleArchive();
             }
-            final status = _statuses[record.status]! > _statuses[local.status]!
-                ? record.status
-                : local.status;
+            final status = archived > stored ? record.status : local.status;
             final alias = local.alias ?? record.alias;
             if (status == local.status && alias == local.alias) {
               unchanged++;
