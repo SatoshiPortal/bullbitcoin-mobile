@@ -1,0 +1,30 @@
+name: views
+description: "The views of one installation: list, create, rename, delete and switch."
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: "3.14.0"
+  flutter: "3.50.0"
+
+dependencies:
+  bull_ui:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_localizations:
+    sdk: flutter
+  go_router: ^18.1.4
+  intl: any
+  material_ui: ^1.11.0
+  meta: ^1.17.0
+  primitives:
+  secrets:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  generate: true

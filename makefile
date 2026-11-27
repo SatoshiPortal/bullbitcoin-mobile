@@ -162,6 +162,7 @@ translations:
 	@$(MAKE) novlang-translations
 	@$(gen-l10n)
 	@(cd features/announcements && $(gen-l10n))
+	@(cd features/views && $(gen-l10n))
 	@(cd features/bitcoin_price && $(gen-l10n))
 	@(cd features/btc_map && $(gen-l10n))
 	@(cd features/bull_exchange && $(gen-l10n))
