@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_field_checks.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:meta/meta.dart';
@@ -316,6 +317,10 @@ class SepaEurDetails extends RecipientDetails {
 }
 
 // ── SPEI (MXN)
+//
+// `create` is for a new recipient and also checks the format of the CLABE,
+// phone or card number, so a mistyped one is never sent. `saved` is for a
+// recipient the API already holds, listed as it is.
 @immutable
 class SpeiClabeMxnDetails extends RecipientDetails {
   final String clabe;
@@ -330,6 +335,26 @@ class SpeiClabeMxnDetails extends RecipientDetails {
   });
 
   factory SpeiClabeMxnDetails.create({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String clabe,
+    required String name,
+  }) {
+    final problem = speiClabeProblem(clabe);
+    if (problem != null) {
+      throw ArgumentError('Invalid CLABE: ${problem.name}');
+    }
+    return SpeiClabeMxnDetails.saved(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      clabe: clabe,
+      name: name,
+    );
+  }
+
+  factory SpeiClabeMxnDetails.saved({
     String? label,
     bool isDefault = false,
     bool? isOwner,
@@ -379,6 +404,28 @@ class SpeiSmsMxnDetails extends RecipientDetails {
     required String phone,
     required String name,
   }) {
+    final problem = speiPhoneProblem(phone);
+    if (problem != null) {
+      throw ArgumentError('Invalid SPEI phone: ${problem.name}');
+    }
+    return SpeiSmsMxnDetails.saved(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      institutionCode: institutionCode,
+      phone: phone,
+      name: name,
+    );
+  }
+
+  factory SpeiSmsMxnDetails.saved({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String institutionCode,
+    required String phone,
+    required String name,
+  }) {
     if (institutionCode.trim().isEmpty) {
       throw ArgumentError('Institution code cannot be empty');
     }
@@ -419,6 +466,28 @@ class SpeiCardMxnDetails extends RecipientDetails {
   });
 
   factory SpeiCardMxnDetails.create({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String institutionCode,
+    required String debitcard,
+    required String name,
+  }) {
+    final problem = speiDebitCardProblem(debitcard);
+    if (problem != null) {
+      throw ArgumentError('Invalid SPEI debit card: ${problem.name}');
+    }
+    return SpeiCardMxnDetails.saved(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      institutionCode: institutionCode,
+      debitcard: debitcard,
+      name: name,
+    );
+  }
+
+  factory SpeiCardMxnDetails.saved({
     String? label,
     bool isDefault = false,
     bool? isOwner,

@@ -12349,6 +12349,22 @@
   "@recipientsValidationFieldRequired": {
     "description": "Validation error shown when a required recipient form field is empty."
   },
+  "recipientsValidationClabeLength": "A CLABE has 18 digits",
+  "@recipientsValidationClabeLength": {
+    "description": "Recipient form (Mexico SPEI): the CLABE is not 18 digits"
+  },
+  "recipientsValidationClabeCheckDigit": "This CLABE is not valid. Check the number",
+  "@recipientsValidationClabeCheckDigit": {
+    "description": "Recipient form (Mexico SPEI): the CLABE has 18 digits but its last (check) digit does not match the others, so it was mistyped"
+  },
+  "recipientsValidationSpeiPhone": "Enter the 10-digit phone number, without the country code",
+  "@recipientsValidationSpeiPhone": {
+    "description": "Recipient form (Mexico SPEI by phone): the phone number is not 10 digits"
+  },
+  "recipientsValidationDebitCard": "A debit card number has 16 digits",
+  "@recipientsValidationDebitCard": {
+    "description": "Recipient form (Mexico SPEI by debit card): the card number is not 16 digits"
+  },
   "recipientsLabelOptional": "Label (optional)",
   "@recipientsLabelOptional": {
     "description": "Label for the optional recipient label/nickname field in recipient forms."

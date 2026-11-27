@@ -183,7 +183,9 @@ class RecipientDetailsDto {
         if (name == null) {
           throw StateError('name is required for SPEI_CLABE_MXN.');
         }
-        return SpeiClabeMxnDetails.create(
+        return (isSaved
+            ? SpeiClabeMxnDetails.saved
+            : SpeiClabeMxnDetails.create)(
           label: label,
           isDefault: def,
           isOwner: isOwner,
@@ -201,7 +203,7 @@ class RecipientDetailsDto {
         if (name == null) {
           throw StateError('name is required for SPEI_SMS_MXN.');
         }
-        return SpeiSmsMxnDetails.create(
+        return (isSaved ? SpeiSmsMxnDetails.saved : SpeiSmsMxnDetails.create)(
           label: label,
           isDefault: def,
           isOwner: isOwner,
@@ -220,7 +222,7 @@ class RecipientDetailsDto {
         if (name == null) {
           throw StateError('name is required for SPEI_CARD_MXN.');
         }
-        return SpeiCardMxnDetails.create(
+        return (isSaved ? SpeiCardMxnDetails.saved : SpeiCardMxnDetails.create)(
           label: label,
           isDefault: def,
           isOwner: isOwner,
