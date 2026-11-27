@@ -42,7 +42,9 @@ void main() {
     expect(
       await _load(
         summary: const Err(ExchangeNetworkFailure()),
-        wallets: const Err(ExchangeSessionRejectedFailure()),
+        wallets: const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
       ),
       isA<ReadSessionRejected<DcaContext>>(),
     );

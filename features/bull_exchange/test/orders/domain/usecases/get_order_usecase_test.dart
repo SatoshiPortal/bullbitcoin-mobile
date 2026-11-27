@@ -50,7 +50,11 @@ void main() {
   test('a rejected session is not an order', () async {
     final read = await GetOrderUsecase(
       _exchange(
-        _Orders(order: const Err(ExchangeSessionRejectedFailure())),
+        _Orders(
+          order: const Err(
+            ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+          ),
+        ),
         [],
       ),
     ).execute(_session, 'w-1');

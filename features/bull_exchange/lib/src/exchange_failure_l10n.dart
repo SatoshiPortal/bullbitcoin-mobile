@@ -33,7 +33,8 @@ extension ExchangeFailureL10n on ExchangeFailure {
       context.loc.exchangeErrorLoadingAnnouncements,
     ExchangeAccountDeletionRequestFailure() =>
       context.loc.exchangeErrorRequestingAccountDeletion,
-    ExchangeNetworkFailure() => context.loc.exchangeErrorNetwork,
+    ExchangeNetworkFailure() || ExchangeUnreachableFailure(isNetwork: true) =>
+      context.loc.exchangeErrorNetwork,
     // Never `logMessage`. The legacy `BullException` chain interpolated the
     // raw `'$e'` into its message, so that field can carry anything.
     RecipientsFailure() ||
@@ -59,6 +60,12 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeVirtualIbanNotAvailableFailure() ||
     ExchangeEuResidencyRequiredFailure() ||
     ExchangeOrderInventoryUnavailableFailure() ||
-    ExchangeOperationStaleFailure() => context.loc.oopsSomethingWentWrong,
+    ExchangeOperationStaleFailure() ||
+    ExchangeUnreachableFailure(isNetwork: false) ||
+    ExchangeMissingFailure() ||
+    ExchangeMalformedFailure() ||
+    ExchangeWriteRefusedFailure() ||
+    ExchangeWriteOutcomeUnknownFailure() ||
+    ExchangeWriteNotSentFailure() => context.loc.oopsSomethingWentWrong,
   };
 }

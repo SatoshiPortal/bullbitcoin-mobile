@@ -285,6 +285,7 @@ final class BbxApiLimitOrdersRepository implements LimitOrdersRepository {
     ExchangeLimitOrderProblem fallback,
   ) => switch (failure) {
     bbx.BbxHttpFailure(status: 401) => ExchangeSessionRejectedFailure(
+      ExchangeSessionRejection.server,
       description,
     ),
     bbx.BbxRpcFailure(apiCode: 'ERR_ORDTRG_LOMAX429') =>

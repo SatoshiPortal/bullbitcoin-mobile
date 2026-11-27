@@ -1,4 +1,4 @@
-import '../exchange_call_result.dart';
+import '../exchange_failure.dart';
 
 /// Why the exchange refused a limit-order create, read from its code.
 enum LimitOrderRefusal {

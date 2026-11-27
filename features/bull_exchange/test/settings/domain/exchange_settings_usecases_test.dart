@@ -223,7 +223,7 @@ void main() {
 
     for (final failure in const <ExchangeFailure>[
       ExchangeNotAuthenticatedFailure(),
-      ExchangeSessionRejectedFailure(),
+      ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
     ]) {
       test('${failure.runtimeType} is signed out, not a retryable error '
           '(SET-3)', () async {
@@ -277,7 +277,7 @@ void main() {
 
     for (final failure in const <ExchangeFailure>[
       ExchangeNotAuthenticatedFailure(),
-      ExchangeSessionRejectedFailure(),
+      ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
     ]) {
       test('${failure.runtimeType} is signed out, not a retryable error '
           '(SET-3)', () async {

@@ -157,7 +157,11 @@ void main() {
         isA<ReadUnreachable<int>>().having((r) => r.isNetwork, 'net', true),
       );
       expect(
-        readOfResult<int>(const Err(ExchangeSessionRejectedFailure())),
+        readOfResult<int>(
+          const Err(
+            ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+          ),
+        ),
         isA<ReadSessionRejected<int>>(),
       );
       expect(

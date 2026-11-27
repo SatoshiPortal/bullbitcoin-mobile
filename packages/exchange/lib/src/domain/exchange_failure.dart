@@ -1,5 +1,6 @@
 import 'package:primitives/primitives.dart' show Failure;
 
+part 'exchange_call_failure.dart';
 part '../recipients/domain/recipients_failure.dart';
 
 /// Recoverable exchange failures. Consumers localize them at the UI boundary.
@@ -14,12 +15,6 @@ sealed class ExchangeFailure extends Failure {
 /// actionable signal is "log in", not "retry".
 final class ExchangeNotAuthenticatedFailure extends ExchangeFailure {
   const ExchangeNotAuthenticatedFailure([super.logMessage]);
-}
-
-/// A server HTTP 401 rejected the active request's credential.
-/// Only this failure may expire a session automatically.
-final class ExchangeSessionRejectedFailure extends ExchangeFailure {
-  const ExchangeSessionRejectedFailure([super.logMessage]);
 }
 
 /// The signed-in account could not be read, so balances, KYC level and

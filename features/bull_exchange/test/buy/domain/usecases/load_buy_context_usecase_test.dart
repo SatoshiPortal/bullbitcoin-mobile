@@ -122,7 +122,9 @@ void main() {
         BitcoinNetwork.mainnet: const [],
         LiquidNetwork.mainnet: const [],
       }),
-      summary: (_) async => const Err(ExchangeSessionRejectedFailure()),
+      summary: (_) async => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
     );
     expect(read, isA<ReadSessionRejected<BuyContext>>());
   });

@@ -66,8 +66,11 @@ void main() {
   });
 
   test('current server rejection expires the matching epoch', () async {
-    when(mainnet.getAccount)
-        .thenAnswer((_) async => const Err(ExchangeSessionRejectedFailure()));
+    when(mainnet.getAccount).thenAnswer(
+      (_) async => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
+    );
     expect(
       await usecase.execute(_testSession),
       isA<Err<UserSummary, ExchangeFailure>>(),
@@ -81,7 +84,11 @@ void main() {
     final result = usecase.execute(_testSession);
     await Future<void>.delayed(Duration.zero);
     epoch++;
-    pending.complete(const Err(ExchangeSessionRejectedFailure()));
+    pending.complete(
+      const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
+    );
     expect((await result as Err).failure, isA<ExchangeOperationStaleFailure>());
     verifyNever(
       () => expire.execute(
@@ -147,8 +154,11 @@ void main() {
       sessionId: 'test',
     );
     when(() => access.session).thenReturn(session);
-    when(testnet.getAccount)
-        .thenAnswer((_) async => const Err(ExchangeSessionRejectedFailure()));
+    when(testnet.getAccount).thenAnswer(
+      (_) async => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
+    );
     await usecase.execute(session);
     verify(testnet.getAccount).called(1);
     verifyZeroInteractions(mainnet);

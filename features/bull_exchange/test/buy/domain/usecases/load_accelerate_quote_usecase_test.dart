@@ -122,7 +122,11 @@ void main() {
     expect(
       await _load(
         orders: orders,
-        rate: _LimitOrders(const Err(ExchangeSessionRejectedFailure())),
+        rate: _LimitOrders(
+          const Err(
+            ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+          ),
+        ),
       ),
       isA<ReadSessionRejected<AccelerateQuote>>(),
     );

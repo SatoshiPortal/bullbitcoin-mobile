@@ -91,7 +91,9 @@ void main() {
   test('a rejected session on either read wins', () async {
     final read = await _usecase(
       summary: const Err(ExchangeNetworkFailure()),
-      iban: const Err(ExchangeSessionRejectedFailure()),
+      iban: const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
     ).execute(_testnet);
     expect(read, isA<ReadSessionRejected<VirtualIbanContext>>());
   });

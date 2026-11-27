@@ -47,7 +47,9 @@ void main() {
   test('a rejected session is its own answer', () async {
     final answer = await _cancel(
       LimitTestOrders()
-        ..cancelled = const Err(ExchangeSessionRejectedFailure()),
+        ..cancelled = const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
     );
     expect(answer, isA<CancelAnsweredSessionRejected>());
   });

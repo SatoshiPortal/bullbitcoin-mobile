@@ -49,8 +49,9 @@ void main() {
   test('a failed summary read is the answer', () async {
     final read = await LoadPayContextUsecase(
       exchangeForTesting(
-        getUserSummary: (_) async =>
-            const Err(ExchangeSessionRejectedFailure()),
+        getUserSummary: (_) async => const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
       ),
     ).execute(paySession);
     expect(read, isA<ReadSessionRejected<PayContext>>());

@@ -233,7 +233,10 @@ void main() {
       const ExchangePreferencesSaveOutcomeUnknownFailure(),
       ExchangePreferencesSaveOutcomeUnknownFailure,
     ),
-    (const ExchangeSessionRejectedFailure(), ExchangePreferencesSaveFailure),
+    (
+      const ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ExchangePreferencesSaveFailure,
+    ),
   ]) {
     test('a failed write (${answer.runtimeType}) is $expected', () async {
       final account = _Account()..answer = Err(answer);

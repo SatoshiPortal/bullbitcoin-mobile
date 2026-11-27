@@ -430,7 +430,9 @@ final class BbxApiOrdersRepository implements OrdersRepository {
       const ExchangeNotAuthenticatedFailure(),
     bbx.BbxCredentialUnavailableFailure() =>
       const ExchangeCredentialReadFailure(),
-    bbx.BbxHttpFailure(status: 401) => const ExchangeSessionRejectedFailure(),
+    bbx.BbxHttpFailure(status: 401) => const ExchangeSessionRejectedFailure(
+      ExchangeSessionRejection.server,
+    ),
     bbx.BbxConfidentialSepaInactiveFailure() =>
       const ExchangeConfidentialSepaInactiveFailure(),
     bbx.BbxOrderLimitFailure(:final bound, :final amount, :final currency) =>

@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 
 /// What a step's transition answers: the next [state] and the [effects] the
 /// bloc starts on entering it. A stay returns the same state instance with no

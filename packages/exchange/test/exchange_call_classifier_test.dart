@@ -242,7 +242,7 @@ void main() {
         ),
       ),
       (
-        const ExchangeSessionRejectedFailure(),
+        const ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
         isA<WriteSessionRejected<int>>(),
       ),
       (

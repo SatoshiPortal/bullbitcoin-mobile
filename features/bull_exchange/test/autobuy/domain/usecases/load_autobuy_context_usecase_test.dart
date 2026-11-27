@@ -39,7 +39,11 @@ void main() {
 
   test('a failed summary read is never a context', () async {
     expect(
-      await _load(const Err(ExchangeSessionRejectedFailure())),
+      await _load(
+        const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
+      ),
       isA<ReadSessionRejected<AutoBuyContext>>(),
     );
     expect(

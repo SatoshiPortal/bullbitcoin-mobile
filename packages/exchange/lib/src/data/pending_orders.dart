@@ -54,8 +54,9 @@ final class PendingOrders {
         }
         if (result case Err(:final failure)) {
           return Err(switch (failure) {
-            BbxHttpFailure(status: 401) =>
-              const ExchangeSessionRejectedFailure(),
+            BbxHttpFailure(status: 401) => const ExchangeSessionRejectedFailure(
+              ExchangeSessionRejection.server,
+            ),
             BbxCredentialUnavailableFailure() ||
             BbxMissingCredentialFailure() =>
               const ExchangeOperationStaleFailure(),

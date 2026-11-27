@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 import '../domain/exchange_access.dart';
 import '../domain/exchange_call_result.dart';
+import '../domain/exchange_failure.dart';
 import '../domain/exchange_write_gate.dart';
 import 'step_next.dart';
 

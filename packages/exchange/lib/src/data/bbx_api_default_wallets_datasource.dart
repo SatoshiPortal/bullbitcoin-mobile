@@ -103,8 +103,9 @@ final class BbxApiDefaultWalletsDatasource {
           const ExchangeNotAuthenticatedFailure(),
         bbx.BbxCredentialUnavailableFailure() =>
           const ExchangeApiKeyStorageFailure(),
-        bbx.BbxHttpFailure(status: 401) =>
-          const ExchangeSessionRejectedFailure(),
+        bbx.BbxHttpFailure(status: 401) => const ExchangeSessionRejectedFailure(
+          ExchangeSessionRejection.server,
+        ),
         bbx.BbxTimeoutFailure() ||
         bbx.BbxConnectionFailure() => const ExchangeNetworkFailure(),
         _ => ExchangeUnexpectedFailure(

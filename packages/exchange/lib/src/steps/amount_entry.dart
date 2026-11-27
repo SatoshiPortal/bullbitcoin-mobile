@@ -5,7 +5,7 @@ import '../domain/catalog/kyc_policy.dart';
 import '../domain/catalog/market.dart';
 import '../domain/entities/order.dart';
 import '../domain/exchange_call_result.dart';
-import '../domain/exchange_failure.dart' show ExchangeOrderAmountBound;
+import '../domain/exchange_failure.dart';
 import 'step_next.dart';
 
 enum AmountUnit { fiat, bitcoin }

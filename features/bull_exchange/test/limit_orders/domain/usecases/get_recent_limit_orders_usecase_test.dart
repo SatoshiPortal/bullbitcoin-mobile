@@ -47,7 +47,9 @@ void main() {
     final read = await GetRecentLimitOrdersUsecase(
       exchangeForTesting(
         limitOrders: LimitTestOrders()
-          ..recent = const Err(ExchangeSessionRejectedFailure()),
+          ..recent = const Err(
+            ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+          ),
       ),
     ).execute(limitSession);
     expect(read, isA<ReadSessionRejected<List<LimitOrder>>>());

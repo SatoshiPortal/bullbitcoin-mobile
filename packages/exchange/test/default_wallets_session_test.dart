@@ -68,7 +68,7 @@ void main() {
         isA<ReadSessionRejected<DefaultWallets>>(),
       ),
       (
-        const ExchangeSessionRejectedFailure(),
+        const ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
         isA<ReadSessionRejected<DefaultWallets>>(),
       ),
       (

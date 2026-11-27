@@ -49,8 +49,9 @@ void main() {
   test('a failed summary read is the answer', () async {
     final read = await LoadSellContextUsecase(
       exchangeForTesting(
-        getUserSummary: (_) async =>
-            const Err(ExchangeSessionRejectedFailure()),
+        getUserSummary: (_) async => const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
       ),
     ).execute(sellSession);
     expect(read, isA<ReadSessionRejected<SellContext>>());

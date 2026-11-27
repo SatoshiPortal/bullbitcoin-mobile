@@ -32,7 +32,7 @@ Result<UserSummary, ExchangeFailure> userSummaryResult(
     ExchangeAccountUnavailableFailure('getUserSummary: no account'),
   ),
   ReadSessionRejected(why: ExchangeSessionRejection.server) => const Err(
-    ExchangeSessionRejectedFailure(),
+    ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
   ),
   ReadSessionRejected(why: ExchangeSessionRejection.signedOut) => const Err(
     ExchangeNotAuthenticatedFailure(),

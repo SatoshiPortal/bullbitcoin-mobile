@@ -39,7 +39,9 @@ void main() {
     expect(
       await _cancelAll(
         LimitTestOrders()
-          ..cancelledAll = const Err(ExchangeSessionRejectedFailure()),
+          ..cancelledAll = const Err(
+            ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+          ),
       ),
       isA<CancelAllSessionRejected>(),
     );
