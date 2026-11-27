@@ -564,10 +564,16 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     Future<Result<T, SecretFailure>> Function(int session, String view) run, {
     bool requireUnlocked = true,
     bool preserveCommittedCommand = false,
+    SessionToken? expect,
   }) async {
     final token = _authority.current;
     if (requireUnlocked && token == null) {
       return const Err(inventoryLockedFailure);
+    }
+    // A capability taken in an earlier generation names a session that is
+    // over, whoever holds the current one now.
+    if (expect != null && !_authority.isCurrent(expect)) {
+      return const Err(inventorySessionChangedFailure);
     }
     final session = _session;
     final view = token?.activeView ?? defaultViewId;

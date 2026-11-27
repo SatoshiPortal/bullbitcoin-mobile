@@ -23,9 +23,11 @@ final class OpenedViews {
 
   const OpenedViews._(this._inventory, this._epoch);
 
-  /// Administration of the views this session opened.
+  /// Administration of the views this session opened, bound to the session
+  /// generation it is taken in: after a lock or a switch of view, take it
+  /// again.
   ViewAdministration get administration =>
-      ViewAdministration._(_inventory, this);
+      ViewAdministration._(_inventory, this, _inventory._authority.current);
 
   /// The views opened so far, by name. Empty once the session is over.
   List<ViewSummary> get views =>
@@ -59,8 +61,9 @@ final class OpenedViews {
 final class ViewAdministration {
   final SecretsInventory _inventory;
   final OpenedViews _views;
+  final SessionToken? _token;
 
-  const ViewAdministration._(this._inventory, this._views);
+  const ViewAdministration._(this._inventory, this._views, this._token);
 
   bool _opened(ViewId id) => _views.views.any((view) => view.id == id);
 
@@ -80,6 +83,7 @@ final class ViewAdministration {
         publicWallets: publicWallets,
       )).map((summary) => summary),
       preserveCommittedCommand: true,
+      expect: _token,
     );
     if (result case Ok(:final value)) _inventory._mergeOpened([value]);
     return result;
@@ -91,6 +95,7 @@ final class ViewAdministration {
     final result = await _inventory._inSession(
       (_, _) => _inventory._administration.rename(id.value, name),
       preserveCommittedCommand: true,
+      expect: _token,
     );
     if (result is Ok) {
       _inventory._openedViews = List.unmodifiable([
@@ -117,6 +122,7 @@ final class ViewAdministration {
     final result = await _inventory._inSession(
       (_, _) => _inventory._administration.delete(id.value),
       preserveCommittedCommand: true,
+      expect: _token,
     );
     if (result is Ok) {
       _inventory._openedViews = List.unmodifiable([
@@ -141,6 +147,7 @@ final class ViewAdministration {
         secret: secret,
       ),
       preserveCommittedCommand: true,
+      expect: _token,
     );
   }
 
@@ -151,5 +158,6 @@ final class ViewAdministration {
         (_, view) =>
             _inventory._administration.detach(view: view, secret: secret),
         preserveCommittedCommand: true,
+        expect: _token,
       );
 }
