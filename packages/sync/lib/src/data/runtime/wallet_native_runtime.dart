@@ -5,6 +5,8 @@ import 'package:meta/meta.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart'
+    show WalletCatalogueSignal, WalletCatalogueStamp;
 
 import '../../../inventory.dart';
 import '../../../sync.dart' hide Wallet;
@@ -43,6 +45,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   final _changes = StreamController<WalletRevisionState>.broadcast();
   final _unavailable = <WalletKey, SyncFailure>{};
   Future<_NativeServices>? _opening;
+  _NativeServices? _openedServices;
   Future<void>? _initialization;
   Type? _initializationFailure;
   final void Function(ForegroundStores)? _onStoresOpened;
@@ -192,8 +195,46 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
     WalletKey key,
     String txid,
   ) => _result(() => _protectObservedSpend(key, txid));
-  Future<Result<sync.Wallet, SyncFailure>> loadWallet(WalletKey key) =>
-      _result(() => _loadWallet(key));
+  Future<Result<sync.Wallet, SyncFailure>> loadWallet(WalletKey key) {
+    final signal = _walletCatalogue;
+    final stamp = signal?.capture();
+    if (signal != null && stamp == null) {
+      return Future.value(const Err(SyncClosedFailure()));
+    }
+    return _result(() => _loadWallet(key, stamp));
+  }
+
+  WalletCatalogueSignal? get _walletCatalogue => switch (_catalog) {
+    final SecretsWalletCatalog catalog => catalog.walletCatalogue,
+    _ => null,
+  };
+
+  /// A balance already admitted under [catalogue] and exactly [stamp].
+  /// Never opens the runtime or a native wallet, and publishes no revisions.
+  @useResult
+  Result<BigInt, SyncFailure> readRetainedBalance(
+    WalletCatalogueStamp catalogue,
+    WalletRevision stamp,
+  ) {
+    final signal = _walletCatalogue;
+    final owner = _openedServices;
+    if (_closing != null || signal?.isCurrent(catalogue) != true) {
+      return const Err(SyncClosedFailure());
+    }
+    if (owner == null) return const Err(SyncNotFoundFailure());
+    final total = owner.sync.retainedTotal(catalogue, stamp);
+    if (total == null) return const Err(SyncNotFoundFailure());
+    return switch (owner.stores.retainedRevision(stamp.key)) {
+      Ok(value: final state)
+          when state.stamp == stamp &&
+              signal?.isCurrent(catalogue) == true &&
+              _closing == null =>
+        Ok(total),
+      Ok() => const Err(SyncNotFoundFailure()),
+      Err(:final failure) => Err(failure),
+    };
+  }
+
   Future<Result<void, SyncFailure>> refresh(
     WalletKey key, {
     bool catalogChanged = false,
@@ -517,7 +558,9 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
       subscription = sync.changes.watch().listen(_changes.add);
       // Inject a failure after acquiring resources to verify cleanup in tests.
       _onStoresOpened?.call(sync.stores);
-      return _NativeServices(sync, subscription);
+      final services = _NativeServices(sync, subscription);
+      if (_closing == null) _openedServices = services;
+      return services;
     } catch (_) {
       try {
         await subscription?.cancel();
@@ -795,12 +838,20 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   /// A wallet whose values are loaded at its latest committed revision, from
   /// local stores only. Throws [WalletSnapshotException] with the failure.
-  Future<sync.Wallet> _loadWallet(WalletKey key) async {
+  Future<sync.Wallet> _loadWallet(
+    WalletKey key,
+    WalletCatalogueStamp? catalogue,
+  ) async {
     await _initializeBestEffort();
     final failure = _unavailable[key];
     if (failure != null) throw WalletSnapshotException(failure);
-    final wallet = _value(await (await _services).sync.wallet(key));
-    _value(await wallet.load());
+    final owner = (await _services).sync;
+    final wallet = _value(await owner.wallet(key));
+    _value(
+      await (catalogue == null
+          ? wallet.load()
+          : owner.loadFromCatalogue(wallet, catalogue)),
+    );
     return wallet;
   }
 
@@ -843,6 +894,7 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
   }
 
   Future<void> _close() async {
+    _openedServices = null;
     await Future.wait(_scopedRequests);
     final opening = _opening;
     if (opening != null) {

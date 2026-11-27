@@ -14,7 +14,7 @@ import 'wallet_snapshot_reader.dart';
 /// Frames from the shared reader: hydration under its brief admission, then
 /// mapping after the lease is released. A revision already mapped is reused,
 /// whatever status it is published with.
-final class NativeFrameSource implements FrameSource {
+final class NativeFrameSource implements CatalogueFrameSource {
   final WalletSnapshotReader _reader;
   final WalletCatalogPort _catalog;
 
@@ -24,8 +24,15 @@ final class NativeFrameSource implements FrameSource {
   Future<Result<LoadedFrame, SyncFailure>> load(
     WalletKey key,
     WalletFrame? current,
+  ) => loadFrom(key, current, _catalog);
+
+  @override
+  Future<Result<LoadedFrame, SyncFailure>> loadFrom(
+    WalletKey key,
+    WalletFrame? current,
+    WalletCatalogPort catalog,
   ) async {
-    switch (await _reader.read(key, _catalog)) {
+    switch (await _reader.read(key, catalog)) {
       case Err(:final failure):
         return Err(failure);
       case Ok(value: final snapshot):

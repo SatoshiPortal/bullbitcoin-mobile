@@ -4,11 +4,13 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart' show WalletCatalogueStamp;
 
 import '../data/datasources/revision_store_datasource.dart';
 import '../data/freeze_authority.dart';
 import '../data/native_store_paths.dart';
 import '../data/read/native_frame_source.dart';
+import '../data/secrets_wallet_catalog.dart';
 import '../data/wallet_projections.dart';
 import '../data/datasources/spend_gate_store_datasource.dart'
     show BitcoinSpendGateUnavailable;
@@ -80,6 +82,7 @@ final class Sync {
       connections: connections,
     );
     stores.freezes.demand();
+    final ownerCatalogue = catalog is SecretsWalletCatalog ? catalog : null;
     return Sync._(
       stores,
       WalletProjections(
@@ -87,6 +90,8 @@ final class Sync {
         changes: stores.changes,
         source: NativeFrameSource(stores.reader, catalog),
         freezes: stores.freezes,
+        catalogueSignal: ownerCatalogue?.walletCatalogue,
+        bindCatalogue: ownerCatalogue?.bindWalletCatalogue,
       ),
     );
   }
@@ -167,6 +172,14 @@ final class Sync {
 @internal
 extension SyncForegroundStores on Sync {
   ForegroundStores get stores => _stores;
+
+  BigInt? retainedTotal(WalletCatalogueStamp catalogue, WalletRevision stamp) =>
+      _projections.retainedTotal(catalogue, stamp);
+
+  Future<Result<WalletRevision, SyncFailure>> loadFromCatalogue(
+    Wallet wallet,
+    WalletCatalogueStamp catalogue,
+  ) => wallet._load(catalogue);
 }
 
 /// `sync.changes.watch()`.
@@ -249,8 +262,16 @@ final class Wallet {
   /// The freezes are read too when none are known yet, so coins are ready,
   /// or unavailable with the reason, once this returns.
   @useResult
-  Future<Result<WalletRevision, SyncFailure>> load() async {
-    final loaded = await _projections.load(key, generation);
+  Future<Result<WalletRevision, SyncFailure>> load() => _load();
+
+  Future<Result<WalletRevision, SyncFailure>> _load([
+    WalletCatalogueStamp? catalogue,
+  ]) async {
+    final loaded = await _projections.load(
+      key,
+      generation,
+      catalogue: catalogue,
+    );
     final freezes = _projections.freezes;
     if (freezes.snapshot == null) await freezes.read();
     return loaded;

@@ -31,6 +31,14 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
   ForegroundSession? get foregroundSession =>
       _token == null ? _inventory?.foregroundSession : null;
 
+  WalletCatalogueSignal? get walletCatalogue =>
+      _token == null ? _inventory?.walletCatalogue : null;
+
+  WalletCatalogPort? bindWalletCatalogue(WalletCatalogueStamp stamp) =>
+      walletCatalogue?.isCurrent(stamp) == true
+      ? captureForeground(stamp.grant)
+      : null;
+
   /// Binds catalog reads to [token], without following any later grant.
   WalletCatalogPort? captureForeground(SessionToken token) {
     final inventory = _inventory;
