@@ -11,7 +11,6 @@ import '../domain/domain.dart';
 import 'backup_guard.dart';
 import 'boundary.dart';
 import 'encrypted_database.dart' show databaseFileProblemOf;
-import 'inventory_import.dart';
 import 'secrets_database.dart';
 import 'secrets_database.drift.dart';
 
@@ -217,24 +216,38 @@ final class AccessRepository {
           await viewSecrets(_database, view.id),
         );
         if (refusal != null) return refusal;
-        credentialId = view.id == defaultViewId
-            ? initialCredentialId
-            : 'credential-${view.id}';
+        credentialId = _newCredentialId();
       }
-      // A rotation rewrites the row the view uses: every view that shares it
-      // follows, which the caller announces. A first PIN is the view's own.
       final salt = AccessVerifier.newSalt();
-      await _database
-          .into(_database.credentials)
-          .insertOnConflictUpdate(
-            CredentialsCompanion.insert(
-              id: credentialId!,
-              scheme: AccessVerifier.scheme,
-              salt: salt,
-              params: AccessVerifier.params,
-              verifier: await AccessVerifier.derive(next, salt),
-            ),
-          );
+      final verifier = await AccessVerifier.derive(next, salt);
+      if (existing == null) {
+        // A first PIN is the view's own: a new row, never an id another view
+        // may already use.
+        await _database
+            .into(_database.credentials)
+            .insert(
+              CredentialsCompanion.insert(
+                id: credentialId!,
+                scheme: AccessVerifier.scheme,
+                salt: salt,
+                params: AccessVerifier.params,
+                verifier: verifier,
+              ),
+            );
+      } else {
+        // A rotation rewrites the row the view uses: every view that shares
+        // it follows, which the caller announces.
+        await (_database.update(
+          _database.credentials,
+        )..where((row) => row.id.equals(existing.id))).write(
+          CredentialsCompanion(
+            scheme: Value(AccessVerifier.scheme),
+            salt: Value(salt),
+            params: Value(AccessVerifier.params),
+            verifier: Value(verifier),
+          ),
+        );
+      }
     }
     final viewUpdate = _database.update(_database.views)
       ..where((v) => v.id.equals(view.id));
@@ -271,10 +284,10 @@ final class AccessRepository {
         _database.views,
       )..where((v) => v.credentialId.equals(shared.id))).get();
       if (users.length < 2) return;
-      final own = 'credential-${view.id}';
+      final own = _newCredentialId();
       await _database
           .into(_database.credentials)
-          .insertOnConflictUpdate(
+          .insert(
             CredentialsCompanion.insert(
               id: own,
               scheme: shared.scheme,
@@ -289,6 +302,11 @@ final class AccessRepository {
     }),
     orElse: StoreSecretFailure.new,
   );
+
+  static String _newCredentialId() {
+    final random = math.Random.secure();
+    return 'credential-${[for (var i = 0; i < 8; i++) random.nextInt(256).toRadixString(16).padLeft(2, '0')].join()}';
+  }
 
   Future<void> _deleteCredentialIfUnused(String id) async {
     final remaining = await (_database.select(
