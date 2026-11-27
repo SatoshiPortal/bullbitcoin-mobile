@@ -89,6 +89,25 @@ void main() {
       semantics.dispose();
     });
 
+    testWidgets('an unnamed switch still reaches the 48 dp target', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await tester.pumpWidget(
+        wrapWithTheme(
+          Scaffold(
+            body: Center(child: BullSwitch(value: false, onChanged: (_) {})),
+          ),
+        ),
+      );
+
+      final size = tester.getSize(find.byType(Switch));
+      expect(size.width, greaterThanOrEqualTo(48));
+      expect(size.height, greaterThanOrEqualTo(48));
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      semantics.dispose();
+    });
+
     testWidgets('a switch without a caption keeps its single node', (
       tester,
     ) async {
