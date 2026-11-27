@@ -206,7 +206,10 @@ void main() {
         final unbound = await open();
         await add(unbound, 'wallet-a', _a);
         _value(await unbound.removeWallet('wallet-a'));
-        final secrets = Secrets(scratchDirectory: () async => directory.path);
+        final secrets = Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        );
         _value(await secrets.trash(Fingerprint(_a)));
         storage.locked = true;
 
@@ -238,7 +241,10 @@ void main() {
     late Secrets secrets;
 
     setUp(() {
-      secrets = Secrets(scratchDirectory: () async => directory.path);
+      secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
     });
 
     /// Stores a real secret and registers a wallet for it, the way import

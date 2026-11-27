@@ -195,7 +195,7 @@ void main() {
         barrier,
         () => AccessRepository(
           database,
-          BackupGuard(null),
+          BackupGuard(null, database),
         ).setBackgroundEnabled(true),
       );
       final rows = await database
@@ -227,7 +227,7 @@ void main() {
           isDefault: false,
         ),
         view: 'all',
-        guard: BackupGuard(null),
+        guard: BackupGuard(null, database),
       ),
     );
     final ids = await database.customSelect('SELECT id FROM wallets').get();

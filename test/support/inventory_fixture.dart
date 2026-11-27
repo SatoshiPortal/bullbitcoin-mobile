@@ -206,11 +206,15 @@ final class InventoryFixture {
       Ok(:final value) => value,
       Err(:final failure) => fail('Cutover failed: ${failure.runtimeType}'),
     };
+    // The composition's one authority, as production registers it: the
+    // locator's `Secrets` follows the inventory's session.
+    final authority = SessionAuthority();
+    services.registerSingleton<SessionAuthority>(authority);
     final opened = await openWalletInventory(
       services,
       admission: admission,
       legacy: legacy.source,
-      authority: SessionAuthority(),
+      authority: authority,
       inventoryFile: owner('secrets'),
       signersFile: owner('signers'),
       syncFile: owner('sync'),
