@@ -797,18 +797,13 @@ final class _SendPaymentSession {
         amountController.text.trim().isEmpty) {
       return true;
     }
-    return await BullDialog.show<bool>(
-          context: context,
-          builder: (dialogContext) => SendLeavePaymentDialog(
-            title: context.loc.sendLeavePaymentTitle,
-            description: context.loc.sendLeavePaymentDescription,
-            cancelLabel: context.loc.cancel,
-            openLabel: context.loc.sendOpenCoins,
-            onCancel: () => Navigator.pop(dialogContext, false),
-            onOpen: () => Navigator.pop(dialogContext, true),
-          ),
-        ) ??
-        false;
+    return BullConfirmDialog.show(
+      context,
+      title: context.loc.sendLeavePaymentTitle,
+      message: context.loc.sendLeavePaymentDescription,
+      confirmLabel: context.loc.sendOpenCoins,
+      cancelLabel: context.loc.cancel,
+    );
   }
 
   String feeDescription(

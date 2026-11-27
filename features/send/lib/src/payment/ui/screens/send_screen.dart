@@ -7,8 +7,6 @@ import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:signers/signers.dart';
 import 'package:send/src/payment/public/send_psbt_handoff.dart';
 
-import '../widgets/send_leave_payment_dialog.dart';
-
 import 'dart:async';
 
 import '../../domain/send_source.dart';
@@ -86,7 +84,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullCountdown,
-        BullDialog,
+        BullConfirmDialog,
         BullPaymentDestinationInput,
         BullSwitch,
         BullTypographyX,
@@ -718,43 +716,14 @@ class SendAddressScreen extends StatelessWidget {
     SendCubit cubit,
   ) async {
     if (!value && cubit.state.recipientDrafts.length > 1) {
-      final confirmed = await BullDialog.show<bool>(
-        context: context,
-        builder: (dialogContext) => Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              context.loc.sendRemoveOtherRecipients,
-              style: context.bullType.subtitle,
-            ),
-            const Gap(12),
-            Text(
-              context.loc.sendRemoveOtherRecipientsMessage,
-              style: context.bullType.body,
-            ),
-            const Gap(20),
-            Row(
-              children: [
-                Expanded(
-                  child: BullButton.secondary(
-                    label: context.loc.cancel,
-                    onPressed: () => Navigator.of(dialogContext).pop(false),
-                  ),
-                ),
-                const Gap(12),
-                Expanded(
-                  child: BullButton.primary(
-                    label: context.loc.sendRemove,
-                    onPressed: () => Navigator.of(dialogContext).pop(true),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+      final confirmed = await BullConfirmDialog.show(
+        context,
+        title: context.loc.sendRemoveOtherRecipients,
+        message: context.loc.sendRemoveOtherRecipientsMessage,
+        confirmLabel: context.loc.sendRemove,
+        cancelLabel: context.loc.cancel,
       );
-      if (confirmed != true || !context.mounted) return;
+      if (!confirmed || !context.mounted) return;
       for (final recipient in cubit.state.recipientDrafts.skip(1).toList()) {
         cubit.removeRecipient(recipient.id);
       }
