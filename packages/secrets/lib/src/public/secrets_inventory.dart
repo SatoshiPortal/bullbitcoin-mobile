@@ -45,6 +45,7 @@ import 'wallet_inventory.dart';
 
 part 'bip85_derivations.dart';
 part 'opened_views.dart';
+part 'wallet_catalogue_signal.dart';
 
 /// Seeds held by locally signing wallets of every view, for the one caller
 /// that may ask: the deletion check, which must not delete a seed a hidden view
@@ -84,6 +85,9 @@ final class SecretsInventory implements WalletInventory {
   final BackupGuard _guard;
   final ViewAdministrationRepository _administration;
   final SessionAuthority _authority;
+  late final WalletCatalogueSignal walletCatalogue = WalletCatalogueSignal._(
+    _authority,
+  );
   var _session = 0;
   Future<void>? _pendingDrain;
 
@@ -623,6 +627,7 @@ final class SecretsInventory implements WalletInventory {
       () => run(session, view),
       isCurrent: () => session == _session,
       preserveCommittedCommand: preserveCommittedCommand,
+      onCatalogueCommit: walletCatalogue._committed,
     );
   }
 
@@ -686,6 +691,7 @@ final class SecretsInventory implements WalletInventory {
 
   Future<void> close() async {
     await lock();
+    await walletCatalogue._close();
     await _store.close();
   }
 }

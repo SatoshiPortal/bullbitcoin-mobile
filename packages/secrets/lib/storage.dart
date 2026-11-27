@@ -19,4 +19,6 @@ export 'src/public/secrets_inventory.dart'
         OpenedViews,
         SecretsInventory,
         ViewAdministration,
-        ViewAuthentication;
+        ViewAuthentication,
+        WalletCatalogueSignal,
+        WalletCatalogueStamp;

@@ -18,21 +18,25 @@ final _inventoryWrites = Lock();
 
 Future<T> inventoryWriteTransaction<T>(
   SecretsDatabase database,
-  Future<T> Function() action,
-) => guardedTransaction(database, action);
+  Future<T> Function() action, {
+  bool Function(T)? catalogueChanged,
+}) => guardedTransaction(database, action, catalogueChanged: catalogueChanged);
 
 /// Zone key under which an inventory operation publishes "my session is still
 /// the live one". Read by [guardedTransaction] just before the commit.
 const inventorySessionCheck = #secretsInventorySessionCheck;
 const inventoryCommitConfirmed = #secretsInventoryCommitConfirmed;
+const inventoryCatalogueCommitConfirmed =
+    #secretsInventoryCatalogueCommitConfirmed;
 
 /// A transaction that refuses to commit after its session ended. The check is
 /// made inside the transaction, after the last write and before the commit:
 /// checking after an `await` outside would not undo anything.
 Future<T> guardedTransaction<T>(
   SecretsDatabase database,
-  Future<T> Function() action,
-) => _inventoryWrites.synchronized(() async {
+  Future<T> Function() action, {
+  bool Function(T)? catalogueChanged,
+}) => _inventoryWrites.synchronized(() async {
   final result = await database.transaction(() async {
     final result = await action();
     final live = Zone.current[inventorySessionCheck];
@@ -41,6 +45,11 @@ Future<T> guardedTransaction<T>(
   });
   final committed = Zone.current[inventoryCommitConfirmed];
   if (committed is void Function()) committed();
+  final catalogueCommitted = Zone.current[inventoryCatalogueCommitConfirmed];
+  if (catalogueCommitted is void Function() &&
+      catalogueChanged?.call(result) == true) {
+    catalogueCommitted();
+  }
   return result;
 });
 

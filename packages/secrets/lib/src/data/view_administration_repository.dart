@@ -50,7 +50,7 @@ final class ViewAdministrationRepository {
         ];
         if (!wanted.every(held.contains)) {
           refused = secretNotInViewFailure;
-          return;
+          return false;
         }
         await _database
             .into(_database.views)
@@ -60,7 +60,8 @@ final class ViewAdministrationRepository {
               .into(_database.viewMembers)
               .insert(ViewMembersCompanion.insert(viewId: id, member: member));
         }
-      }),
+        return wanted.isNotEmpty;
+      }, catalogueChanged: (changed) => changed),
       orElse: StoreSecretFailure.new,
     );
     if (refused case final refusal?) return Err(refusal);
@@ -99,7 +100,7 @@ final class ViewAdministrationRepository {
         if (target == null) throw const _NoSuchView();
         if (views.length < 2) {
           refused = const LastViewFailure();
-          return;
+          return false;
         }
         final members = await _members(id);
         final others = <String>{};
@@ -110,7 +111,7 @@ final class ViewAdministrationRepository {
           (member) => member.startsWith('secret:') && !others.contains(member),
         )) {
           refused = const ViewHoldsSecretsFailure();
-          return;
+          return false;
         }
         for (final member in members.where((m) => m.startsWith('wallet:'))) {
           if (others.contains(member)) continue;
@@ -139,11 +140,12 @@ final class ViewAdministrationRepository {
             )..where((row) => row.id.equals(credential))).go();
           }
         }
-      }),
+        return members.isNotEmpty;
+      }, catalogueChanged: (changed) => changed),
       orElse: StoreSecretFailure.new,
     );
     final refusal = refused;
-    return refusal == null ? result : Err(refusal);
+    return refusal == null ? result.map((_) {}) : Err(refusal);
   }
 
   /// Adds a seed held by [source] to [target]. A protected target takes it only
@@ -161,32 +163,32 @@ final class ViewAdministrationRepository {
         final member = 'secret:${secret.hex}';
         if (!(await _members(source)).contains(member)) {
           refused = secretNotInViewFailure;
-          return;
+          return false;
         }
         final view = await (_database.select(
           _database.views,
         )..where((row) => row.id.equals(target))).getSingleOrNull();
         if (view == null) throw const _NoSuchView();
+        if ((await _members(target)).contains(member)) return false;
         if (view.credentialId != null) {
           final held = await viewSecrets(_database, target);
-          if (!held.contains(secret)) {
-            refused = await _guard.require(
-              [...held, secret],
-              newSecrets: {secret},
-            );
-            if (refused != null) return;
-          }
+          refused = await _guard.require(
+            [...held, secret],
+            newSecrets: {secret},
+          );
+          if (refused != null) return false;
         }
         await _database
             .into(_database.viewMembers)
             .insertOnConflictUpdate(
               ViewMembersCompanion.insert(viewId: target, member: member),
             );
-      }),
+        return true;
+      }, catalogueChanged: (changed) => changed),
       orElse: StoreSecretFailure.new,
     );
     final refusal = refused;
-    return refusal == null ? result : Err(refusal);
+    return refusal == null ? result.map((_) {}) : Err(refusal);
   }
 
   /// Removes [secret] from [view] without touching the seed or its wallets.
@@ -208,17 +210,19 @@ final class ViewAdministrationRepository {
                 .get();
         if (others.isEmpty) {
           refused = const ViewHoldsSecretsFailure();
-          return;
+          return false;
         }
-        await (_database.delete(_database.viewMembers)..where(
-              (row) => row.member.equals(member) & row.viewId.equals(view),
-            ))
-            .go();
-      }),
+        final removed =
+            await (_database.delete(_database.viewMembers)..where(
+                  (row) => row.member.equals(member) & row.viewId.equals(view),
+                ))
+                .go();
+        return removed > 0;
+      }, catalogueChanged: (changed) => changed),
       orElse: StoreSecretFailure.new,
     );
     final refusal = refused;
-    return refusal == null ? result : Err(refusal);
+    return refusal == null ? result.map((_) {}) : Err(refusal);
   }
 
   Future<Set<String>> _members(String view) async => {
