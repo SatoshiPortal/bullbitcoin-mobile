@@ -245,9 +245,7 @@ class _ThresholdField extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // The field carries the title as its accessible name, so the
-                  // visible copy is decorative here: announcing it again would
-                  // read the label twice.
+                  // The field carries the title as its accessible name; the visible copy below is decorative, so announcing it again would read the label twice.
                   ExcludeSemantics(
                     child: BullText(
                       title,

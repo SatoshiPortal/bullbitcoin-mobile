@@ -69,8 +69,7 @@ class _PayjoinSettingsScreenState extends State<PayjoinSettingsScreen> {
     final isLoaded = context.select(
       (SettingsCubit cubit) => cubit.state.payjoinPolicy != null,
     );
-    // One semantics node: the caption names the switch and its state follows,
-    // instead of a caption announced beside an unnamed switch.
+    // One semantics node: the caption names the switch and its state follows, instead of a caption announced beside an unnamed switch.
     return MergeSemantics(
       child: Row(
         children: [

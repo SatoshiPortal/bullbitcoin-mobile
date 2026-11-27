@@ -40,8 +40,7 @@ List<SemanticsNode> _semanticsNodes(WidgetTester tester) {
   return nodes;
 }
 
-/// The single node carrying [label]: the caption names the control, never a
-/// caption node announced beside an unnamed switch.
+/// The single node carrying [label]: the caption names the control, never a caption node announced beside an unnamed switch.
 SemanticsNode _nodeLabelled(WidgetTester tester, String label) =>
     _semanticsNodes(tester)
         .singleWhere((node) => node.getSemanticsData().label == label);
@@ -68,8 +67,7 @@ void main() {
     await tester.pump();
   }
 
-  /// Runs [body] with the semantics tree enabled, disposing the handle inside
-  /// the test body: the end-of-test check runs before the teardown callbacks.
+  /// Runs [body] with the semantics tree enabled, disposing the handle inside the test body: the end-of-test check runs before the teardown callbacks.
   Future<void> withSemantics(
     WidgetTester tester,
     Future<void> Function() body,

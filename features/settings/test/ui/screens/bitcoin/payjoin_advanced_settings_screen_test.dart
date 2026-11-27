@@ -38,8 +38,7 @@ List<SemanticsNode> _semanticsNodes(WidgetTester tester) {
   return nodes;
 }
 
-/// The field must be the one node named [title]: the caption is its name, not
-/// a separate text announced beside an unnamed edit box.
+/// The field must be the one node named [title]: the caption is its name, not a separate text announced beside an unnamed edit box.
 void _expectFieldLabelled(
   WidgetTester tester, {
   required String title,
@@ -131,8 +130,7 @@ void main() {
     verify(() => settingsCubit.setPayjoinMinAmount(12500)).called(1);
   });
 
-  /// The semantics handle is disposed inside the test body: the end-of-test
-  /// check runs before teardown callbacks.
+  /// The semantics handle is disposed inside the test body: the end-of-test check runs before teardown callbacks.
   Future<void> withSemantics(
     WidgetTester tester,
     Future<void> Function() body,
