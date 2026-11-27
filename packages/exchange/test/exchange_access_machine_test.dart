@@ -176,7 +176,7 @@ void main() {
       final state = _states[i];
       test('${state.runtimeType} + ${event.runtimeType} -> '
           '${next[i].runtimeType}', () {
-        expect(transitionAccess(state, event), next[i]);
+        expect(state.next(event), next[i]);
       });
     }
   }
@@ -184,28 +184,22 @@ void main() {
   group('guards', () {
     test('a key found for another environment starts a new session', () {
       expect(
-        transitionAccess(_signedIn, const AccessFoundKey(_other)),
+        _signedIn.next(const AccessFoundKey(_other)),
         const ExchangeAccessSignedIn(_other),
       );
     });
 
     test('a rejection for another epoch leaves the session alone', () {
-      expect(
-        transitionAccess(_signedIn, const AccessSessionRejected(2)),
-        _signedIn,
-      );
+      expect(_signedIn.next(const AccessSessionRejected(2)), _signedIn);
     });
 
     test('an expiry of another epoch does not end the expiring one', () {
-      expect(
-        transitionAccess(_expiring, const AccessExpiryCompleted(9)),
-        _expiring,
-      );
+      expect(_expiring.next(const AccessExpiryCompleted(9)), _expiring);
     });
 
     test('a key stored while signed in replaces the session', () {
       expect(
-        transitionAccess(_signedIn, const AccessKeyStored(_other)),
+        _signedIn.next(const AccessKeyStored(_other)),
         const ExchangeAccessSignedIn(_other),
       );
     });
@@ -224,7 +218,7 @@ void main() {
       final next = <ExchangeAccess>[];
       for (final state in frontier) {
         for (final event in events) {
-          final target = transitionAccess(state, event);
+          final target = state.next(event);
           if (seen.add(target)) next.add(target);
         }
       }

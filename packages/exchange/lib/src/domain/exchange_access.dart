@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import '../session/exchange_access_machine.dart';
 import 'exchange_environment.dart';
 
 /// One signed-in session: the environment its key belongs to, an [epoch]
@@ -37,6 +38,163 @@ final class ExchangeSession {
 /// what is known in it.
 sealed class ExchangeAccess {
   const ExchangeAccess();
+
+  /// The access table. A sign-out in progress is left only by its completion;
+  /// a session ends only through sign-out, expiry or a read that finds another
+  /// answer; a key found again for the current session's environment keeps
+  /// that session (no new epoch).
+  ExchangeAccess next(ExchangeAccessEvent event) {
+    final state = this;
+    return switch ((state, event)) {
+      // A sign-out in progress ignores every read; only its end leaves it.
+      (
+        ExchangeAccessSignOutIncomplete(),
+        AccessChoiceUnreadable() ||
+            AccessFoundDisabled() ||
+            AccessFoundSignOutPending() ||
+            AccessFoundSignedOut() ||
+            AccessFoundKey() ||
+            AccessKeyUnreadable() ||
+            AccessKeyStored() ||
+            AccessSignOutStarted() ||
+            AccessSignOutFailed() ||
+            AccessSessionRejected() ||
+            AccessExpiryCompleted() ||
+            AccessExpiryFailed(),
+      ) =>
+        state,
+      (ExchangeAccessSignOutIncomplete(), AccessSignOutCompleted()) =>
+        const ExchangeAccessDisabled(),
+
+      // Reads decide the state outside a sign-out.
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessChoiceUnreadable(),
+      ) =>
+        const ExchangeAccessUnreadable(),
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessFoundDisabled(),
+      ) =>
+        const ExchangeAccessDisabled(),
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessFoundSignOutPending() || AccessSignOutStarted(),
+      ) =>
+        const ExchangeAccessSignOutIncomplete(),
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessFoundSignedOut(:final environment),
+      ) =>
+        ExchangeAccessSignedOut(environment),
+      (ExchangeAccessSignedIn(:final session), AccessFoundKey(:final candidate))
+          when session.environment == candidate.environment =>
+        state,
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessFoundKey(:final candidate),
+      ) =>
+        ExchangeAccessSignedIn(candidate),
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessKeyUnreadable(:final environment),
+      ) =>
+        ExchangeAccessCredentialUnreadable(environment),
+
+      // A stored key starts a session only where sign-in is possible.
+      (
+        ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessKeyStored(:final session),
+      ) =>
+        ExchangeAccessSignedIn(session),
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled(),
+        AccessKeyStored(),
+      ) =>
+        state,
+
+      // A sign-out that is not running has nothing to complete or fail.
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessSignOutCompleted() || AccessSignOutFailed(),
+      ) =>
+        state,
+
+      // Expiry belongs to the session it names.
+      (
+        ExchangeAccessSignedIn(:final session),
+        AccessSessionRejected(:final epoch),
+      )
+          when session.epoch == epoch =>
+        ExchangeAccessExpiring(session),
+      (
+        ExchangeAccessExpiring(:final session),
+        AccessExpiryCompleted(:final epoch),
+      )
+          when session.epoch == epoch =>
+        ExchangeAccessSignedOut(session.environment),
+      (
+        ExchangeAccessResolving() ||
+            ExchangeAccessUnreadable() ||
+            ExchangeAccessDisabled() ||
+            ExchangeAccessSignedOut() ||
+            ExchangeAccessSignedIn() ||
+            ExchangeAccessExpiring() ||
+            ExchangeAccessCredentialUnreadable(),
+        AccessSessionRejected() ||
+            AccessExpiryCompleted() ||
+            AccessExpiryFailed(),
+      ) =>
+        state,
+    };
+  }
 }
 
 /// The stored choice and credential have not been read yet.
