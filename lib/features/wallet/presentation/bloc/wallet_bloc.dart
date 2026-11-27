@@ -2,7 +2,6 @@ import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 
 import 'dart:async';
 
@@ -18,7 +17,8 @@ import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:network/network.dart'
     show ExternalTorProxyDiagnostic, ExternalTorProxyStatus;
-import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
+import 'package:swap_feature/swap_feature.dart'
+    show SwapActivity, SwapHomeServerCheck;
 import 'package:swaps/swaps.dart' show Swap;
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
@@ -34,8 +34,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
     OverviewAmountDisplay? amountDisplay,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
-    this._retrySwapsOnRefreshUsecase,
-    this._checkSwapServerUsecase,
+    this._swapActivity,
+    this._swapServerCheck,
     required this._getWalletsUsecase,
     required this._readWalletUsecase,
     required this._checkWalletSyncingUsecase,
@@ -80,9 +80,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
   final WatchWalletSyncEventsUsecase _watchWalletSyncEventsUsecase;
   final SyncWalletsUsecase _syncWalletsUsecase;
-  final RetrySwapsOnRefreshUsecase? _retrySwapsOnRefreshUsecase;
+  final SwapActivity? _swapActivity;
   final OngoingSwaps _ongoingSwaps;
-  final CheckSwapServerUsecase? _checkSwapServerUsecase;
+  final SwapHomeServerCheck? _swapServerCheck;
   final Future<bool?> Function() _readBackupWarning;
   final ExternalTorProxyDiagnostic _externalTorProxy;
   final SilentHomeObservation _silentHome;
@@ -299,8 +299,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   /// RefreshIndicator callback must not complete with an error.
   Future<void> refresh() async {
     add(const WalletRefreshed(trigger: SyncTrigger.user));
-    final retrySwaps = _retrySwapsOnRefreshUsecase;
-    if (retrySwaps != null) unawaited(retrySwaps.execute());
+    unawaited(_swapActivity?.retryOngoingSwaps());
     // The result is dropped here because the event dispatched above runs the
     // same sync and puts its failure into WalletState; this await exists only
     // to hold the RefreshIndicator spinner, and its callback must not complete
@@ -312,9 +311,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     SwapServerCheckRequested event,
     Emitter<WalletState> emit,
   ) async {
-    final check = _checkSwapServerUsecase;
+    final check = _swapServerCheck;
     if (check == null) return;
-    final reachable = await check.execute();
+    final reachable = await check.reachable();
     if (emit.isDone) return;
     emit(state.copyWith(swapServerUnreachable: !reachable));
   }

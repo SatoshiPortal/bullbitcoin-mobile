@@ -42,8 +42,8 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:network/network.dart'
     show ExternalTorProxyDiagnostic, ExternalTorProxyStatus;
-import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
+import 'package:swap_feature/swap_feature.dart'
+    show SwapActivity, SwapHomeServerCheck;
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -83,13 +83,13 @@ WalletBloc createBloc(
   ReadWalletUsecase? readWallet,
   OngoingSwaps? getUnconfirmed,
   OverviewAmountDisplay? amountDisplay,
-  RetrySwapsOnRefreshUsecase? retrySwaps,
-  CheckSwapServerUsecase? checkSwapServer,
+  SwapActivity? retrySwaps,
+  SwapHomeServerCheck? checkSwapServer,
 }) {
   return WalletBloc(
     amountDisplay: amountDisplay,
-    retrySwapsOnRefreshUsecase: retrySwaps,
-    checkSwapServerUsecase: checkSwapServer,
+    swapActivity: retrySwaps,
+    swapServerCheck: checkSwapServer,
     readWalletUsecase: readWallet ?? _stubbedReadWallet(),
     getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
     checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
@@ -106,11 +106,9 @@ class _MockSyncWalletUsecase extends Mock implements WalletRepository {}
 
 class _ViewWalletBloc extends Mock implements WalletBloc {}
 
-class _MockRetrySwapsOnRefreshUsecase extends Mock
-    implements RetrySwapsOnRefreshUsecase {}
+class _MockSwapActivity extends Mock implements SwapActivity {}
 
-class _MockCheckSwapServerUsecase extends Mock
-    implements CheckSwapServerUsecase {}
+class _MockSwapServerCheck extends Mock implements SwapHomeServerCheck {}
 
 class _AmountReader implements AmountDisplayPreferencesReader {
   final Stream<Result<AmountDisplayPreferences, PreferencesFailure>> stream;
@@ -163,9 +161,9 @@ void main() {
   );
 
   test('an unreachable swap server raises the home warning', () async {
-    final check = _MockCheckSwapServerUsecase();
+    final check = _MockSwapServerCheck();
     var reachable = false;
-    when(check.execute).thenAnswer((_) async => reachable);
+    when(check.reachable).thenAnswer((_) async => reachable);
     final bloc = createBloc(
       _MockExternalTorStatusUsecase(),
       checkSwapServer: check,
@@ -183,8 +181,9 @@ void main() {
   });
 
   test('a manual refresh retries ongoing swaps at once', () async {
-    final retrySwaps = _MockRetrySwapsOnRefreshUsecase();
-    when(retrySwaps.execute).thenAnswer((_) async {});
+    final retrySwaps = _MockSwapActivity();
+    final retryPending = Completer<void>();
+    when(retrySwaps.retryOngoingSwaps).thenAnswer((_) => retryPending.future);
     final getWallets = _MockGetWalletsUsecase();
     when(() => getWallets.execute())
         .thenAnswer((_) async => Ok([_syncedWallet]));
@@ -194,11 +193,16 @@ void main() {
       retrySwaps: retrySwaps,
     );
 
+    addTearDown(bloc.close);
+    bloc.add(const WalletRefreshed());
+    await pumpEventQueue();
+    verifyNever(retrySwaps.retryOngoingSwaps);
     await bloc.refresh();
     await pumpEventQueue();
 
-    verify(retrySwaps.execute).called(1);
-    await bloc.close();
+    verify(retrySwaps.retryOngoingSwaps).called(1);
+    expect(retryPending.isCompleted, isFalse);
+    retryPending.complete();
   });
 
   for (final catalogueChanged in [false, true]) {

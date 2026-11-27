@@ -24,12 +24,10 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.da
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
 import 'package:network/network.dart' show ExternalTorProxyDiagnostic;
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:swap_feature/swap_feature.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -86,9 +84,7 @@ class WalletLocator {
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(
           locator<WalletNativeRuntime>().changes,
         ),
-        retrySwapsOnRefreshUsecase: RetrySwapsOnRefreshUsecase(
-          locator<SwapActivity>(),
-        ),
+        swapActivity: locator<SwapActivity>(),
         silentHome: SilentHomeObservation(locator<Silent>()),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         readWalletUsecase: ReadWalletUsecase(locator<WalletRepository>()),
@@ -96,9 +92,7 @@ class WalletLocator {
         watchWalletSyncEventsUsecase: locator<WatchWalletSyncEventsUsecase>(),
         syncWalletsUsecase: locator<SyncWalletsUsecase>(),
         ongoingSwaps: OngoingSwaps(locator<SwapStore>()),
-        checkSwapServerUsecase: CheckSwapServerUsecase(
-          boltz: locator<BoltzSwaps>(),
-        ),
+        swapServerCheck: SwapHomeServerCheck(locator<BoltzSwaps>()),
         readBackupWarning: () => BackupsFeature.readWarningNeeded(
           locator<RecoverBullFacade>().backupWarningNeeded,
         ),
