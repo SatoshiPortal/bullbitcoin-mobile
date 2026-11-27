@@ -28,6 +28,56 @@ void main() {
     });
   });
 
+  testWidgets('exposes the server URL field under its visible label', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final electrumBloc = _MockElectrumSettingsBloc();
+    when(() => electrumBloc.state).thenReturn(const ElectrumSettingsState());
+    when(() => electrumBloc.stream)
+        .thenAnswer((_) => const Stream<ElectrumSettingsState>.empty());
+    final torCubit = _MockTorSettingsCubit();
+    when(() => torCubit.state).thenReturn(const TorSettingsState());
+    when(() => torCubit.stream)
+        .thenAnswer((_) => const Stream<TorSettingsState>.empty());
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: networkTestTheme(),
+        localizationsDelegates: networkTestLocalizationsDelegates,
+        supportedLocales: NetworkLocalizations.supportedLocales,
+        home: MultiBlocProvider(
+          providers: [
+            BlocProvider<ElectrumSettingsBloc>.value(value: electrumBloc),
+            BlocProvider<TorSettingsCubit>.value(value: torCubit),
+          ],
+          child: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => AddCustomServerBottomSheet.show(context),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), 'abc');
+    await tester.pump();
+
+    // The decoration's label is what gives the editable node its accessible
+    // name; adding a second Semantics label would announce it twice.
+    final node = tester.getSemantics(find.byType(TextFormField));
+    expect(node, isSemantics(value: 'abc', isTextField: true));
+    expect(node.getSemanticsData().label.split('\n').first, 'Server URL');
+    expect(find.text('Server URL'), findsOneWidget);
+
+    semantics.dispose();
+  });
+
   testWidgets('opens Tor settings from an onion server input', (tester) async {
     final electrumBloc = _MockElectrumSettingsBloc();
     when(() => electrumBloc.state).thenReturn(const ElectrumSettingsState());
