@@ -57,6 +57,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     );
     on<RecipientsSearchChanged>(_onSearchChanged, transformer: restartable());
     on<RecipientsAdded>(_onAdded);
+    on<RecipientsNewRecipientFormChanged>(_onNewRecipientFormChanged);
     on<RecipientsSinpeChecked>(_onSinpeChecked);
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
     on<RecipientsSelected>(_onSelected);
@@ -373,6 +374,16 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         emit(state.copyWith(failedToAddRecipient: failure));
     }
     emit(state.copyWith(isAddingRecipient: false));
+  }
+
+  /// A save failure belongs to the form it was shown under; another country
+  /// or payout method starts without one.
+  void _onNewRecipientFormChanged(
+    RecipientsNewRecipientFormChanged event,
+    Emitter<RecipientsState> emit,
+  ) {
+    if (state.failedToAddRecipient == null) return;
+    emit(state.copyWith(failedToAddRecipient: null));
   }
 
   void _onVirtualIbanActivated(

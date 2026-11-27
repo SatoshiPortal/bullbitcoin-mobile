@@ -362,6 +362,26 @@ void main() {
     expect(bloc.state.isAddingRecipient, isFalse);
   });
 
+  test(
+    'switching country or payout method clears the last save error',
+    () async {
+      when(
+        () => addRecipient.execute(any()),
+      ).thenAnswer((_) async => const Err(RecipientsSaveFailure()));
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      bloc.add(RecipientsAdded(_formData()));
+      await pumpEventQueue();
+      expect(bloc.state.failedToAddRecipient, isA<RecipientsSaveFailure>());
+
+      bloc.add(const RecipientsEvent.newRecipientFormChanged());
+      await pumpEventQueue();
+
+      expect(bloc.state.failedToAddRecipient, isNull);
+    },
+  );
+
   // Both of these were set by the bloc but rendered by no widget, so their
   // localized messages were dead code. They are wired up now — the SINPE one
   // under the phone field, the biller one under the search field — and these

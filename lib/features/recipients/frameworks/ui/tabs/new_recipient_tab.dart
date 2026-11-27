@@ -64,8 +64,11 @@ class NewRecipientTabState extends State<NewRecipientTab> {
   }
 
   Future<void> _onTypeSelected(RecipientType type) async {
-    setState(() => _selectedRecipientType = type);
     final bloc = context.read<RecipientsBloc>();
+    if (type != _selectedRecipientType) {
+      bloc.add(const RecipientsEvent.newRecipientFormChanged());
+    }
+    setState(() => _selectedRecipientType = type);
     if (type != RecipientType.confidentialSepaEur ||
         bloc.state.confidentialSepaAvailability !=
             ConfidentialSepaAvailability.needsVirtualIban) {
@@ -91,6 +94,11 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           selectedJurisdiction: _selectedJurisdiction,
           onChanged: (newJurisdiction) {
             if (newJurisdiction == null) return;
+            if (newJurisdiction != _selectedJurisdiction) {
+              context.read<RecipientsBloc>().add(
+                const RecipientsEvent.newRecipientFormChanged(),
+              );
+            }
             setState(() {
               _selectedJurisdiction = newJurisdiction;
               // Reset selected type as well since for the possible types

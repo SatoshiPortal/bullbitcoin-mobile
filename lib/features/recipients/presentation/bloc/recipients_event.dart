@@ -13,6 +13,11 @@ sealed class RecipientsEvent with _$RecipientsEvent {
       RecipientsSearchChanged;
   const factory RecipientsEvent.added(RecipientFormDataModel recipient) =
       RecipientsAdded;
+
+  /// The user picked another jurisdiction or recipient type on the
+  /// new-recipient tab, so the last save error is about a form that is gone.
+  const factory RecipientsEvent.newRecipientFormChanged() =
+      RecipientsNewRecipientFormChanged;
   const factory RecipientsEvent.sinpeChecked(String phoneNumber) =
       RecipientsSinpeChecked;
   const factory RecipientsEvent.cadBillersSearched(String query) =
