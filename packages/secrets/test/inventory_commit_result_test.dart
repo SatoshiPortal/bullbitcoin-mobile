@@ -15,6 +15,7 @@ import 'package:secrets/src/data/secrets_database.drift.dart'
 import 'package:secrets/src/domain/registered_wallet.dart';
 import 'package:secrets/src/data/inventory_session.dart';
 import 'package:secrets/src/data/secrets_database.dart';
+import 'package:secrets/src/data/view_administration_repository.dart';
 import 'package:secrets/src/domain/domain.dart';
 
 class _CommitBarrier extends QueryInterceptor {
@@ -32,6 +33,40 @@ class _CommitBarrier extends QueryInterceptor {
 }
 
 void main() {
+  test(
+    'detach signals once when membership is removed, never on no-op or refusal',
+    () async {
+      final database = SecretsDatabase(NativeDatabase.memory());
+      addTearDown(database.close);
+      await database.customStatement(
+        "INSERT INTO views (id, name) VALUES ('all', 'All'), ('b', 'B')",
+      );
+      await database.customStatement(
+        "INSERT INTO view_members (view_id, member) "
+        "VALUES ('all', 'secret:01234567'), ('b', 'secret:01234567')",
+      );
+      final repo = ViewAdministrationRepository(
+        database,
+        BackupGuard(null, database),
+      );
+      final secret = Fingerprint.tryParse('01234567');
+      if (secret == null) throw StateError('Fixture fingerprint is invalid');
+      var signals = 0;
+      Future<Result<void, SecretFailure>> detach(String view) =>
+          runInventorySession(
+            () => repo.detach(view: view, secret: secret),
+            isCurrent: () => true,
+            onCatalogueCommit: () => signals++,
+          );
+      expect(await detach('all'), isA<Ok>());
+      expect(await detach('all'), isA<Ok>());
+      expect(await detach('b'), isA<Err>());
+      expect(signals, 1);
+      expect(await viewSecrets(database, 'all'), isEmpty);
+      expect(await viewSecrets(database, 'b'), [secret]);
+    },
+  );
+
   test('a committed command keeps its result after revocation', () async {
     final barrier = _CommitBarrier();
     final database = SecretsDatabase(
@@ -40,17 +75,20 @@ void main() {
     await database.customStatement('CREATE TABLE durable_test (value INTEGER)');
     barrier.armed = true;
     var current = true;
+    var signals = 0;
     final result = runInventorySession<void>(
       () => boundary(
         () => guardedTransaction(database, () async {
           await database.customStatement('INSERT INTO durable_test VALUES (1)');
-        }),
+        }, catalogueChanged: (_) => true),
         orElse: StoreSecretFailure.new,
       ),
       isCurrent: () => current,
       preserveCommittedCommand: true,
+      onCatalogueCommit: () => signals++,
     );
     await barrier.committed.future.timeout(const Duration(seconds: 5));
+    expect(signals, 0);
     current = false;
     barrier.release.complete();
     final returned = await result;
@@ -60,6 +98,7 @@ void main() {
     await database.close();
     expect(rows.single.read<int>('value'), 1);
     expect(returned, isA<Ok<void, SecretFailure>>());
+    expect(signals, 1);
   });
 
   test('revocation before commit rolls the command back', () async {
