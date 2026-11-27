@@ -298,6 +298,21 @@ final class InventoryRepository {
                   (row) => row.viewId.equals(view) & row.member.equals(member),
                 ))
                 .getSingleOrNull();
+        if (secret != null && known == null) {
+          // The fingerprint is public and 32 bits wide: naming it is not a
+          // right to the seed. A seed another view holds stays with that view.
+          final heldByAnother =
+              await (_database.select(_database.viewMembers)..where(
+                    (row) =>
+                        row.member.equals(member) &
+                        row.viewId.equals(view).not(),
+                  ))
+                  .get();
+          if (heldByAnother.isNotEmpty) {
+            refused = const SecretOwnedByAnotherViewFailure();
+            return false;
+          }
+        }
         final existingSecretMember = secret != null && known != null;
         if (await _isProtected(view)) {
           final members = await viewSecrets(_database, view);

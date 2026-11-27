@@ -30,6 +30,7 @@ export 'package:secrets/src/domain/domain.dart'
         SecretKind,
         SecretAlreadyExistsFailure,
         SecretNotFoundFailure,
+        SecretOwnedByAnotherViewFailure,
         StoreSecretFailure,
         SwapMasterKey,
         TrashSecretFailure,

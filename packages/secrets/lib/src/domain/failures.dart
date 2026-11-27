@@ -12,6 +12,13 @@ final class WalletAlreadyRegisteredFailure extends SecretFailure {
   const WalletAlreadyRegisteredFailure() : super('wallet already registered');
 }
 
+/// The secret already belongs to another view. A view takes a secret only from
+/// the view that holds it; a fingerprint naming it is not a right to it.
+final class SecretOwnedByAnotherViewFailure extends SecretFailure {
+  const SecretOwnedByAnotherViewFailure()
+    : super('secret owned by another view');
+}
+
 sealed class SecretFailure extends Failure {
   const SecretFailure([super.logMessage]);
 }
