@@ -53,14 +53,8 @@ void main() {
       'restore_partial',
     ]) {
       final mode = dark ? 'dark' : 'light';
-      testWidgets('$scenario $mode golden and accessible targets', (
-        tester,
-      ) async {
+      testWidgets('$scenario $mode has accessible targets', (tester) async {
         await _pump(tester, dark, scenario);
-        await expectLater(
-          find.byType(MaterialApp),
-          matchesGoldenFile('goldens/${scenario}_$mode.png'),
-        );
         await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
         await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       });

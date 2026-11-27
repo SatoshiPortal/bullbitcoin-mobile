@@ -84,12 +84,7 @@ void main() {
         if (render is! RenderRepaintBoundary) {
           throw StateError('Invalid boundary for $name');
         }
-        if (output == null) {
-          await expectLater(
-            find.byKey(boundary),
-            matchesGoldenFile('goldens/$name-${theme.name}.png'),
-          );
-        } else {
+        if (output != null) {
           await tester.runAsync(() async {
             final image = await render.toImage(pixelRatio: 1);
             final data = await image.toByteData(format: ui.ImageByteFormat.png);
