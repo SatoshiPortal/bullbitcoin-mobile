@@ -211,6 +211,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         isSpFeatureEnabled: false,
         spBalanceSat: 0,
         isSpWalletLoading: false,
+        // A stale "no wallets" would send the home screen to onboarding.
+        failure: state.noWalletsFound ? null : state.failure,
       ),
     );
     await _spUpdatesSubscription?.cancel();
