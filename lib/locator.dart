@@ -117,7 +117,9 @@ final GetIt locator = GetIt.instance;
 
 class AppLocator {
   static Future<void> startWalletsAfterUnlock(GetIt locator) async {
-    await locator<ForegroundWalletStartup>().start();
+    final startup = locator<ForegroundWalletStartup>();
+    startup.confirmUnlock();
+    await startup.start();
     unawaited(locator<RecoverBullFacade>().checkAtColdStart());
   }
 
@@ -717,12 +719,15 @@ class AppLocator {
       ),
     );
 
+    WalletNativeRuntime walletRuntime() => locator<WalletNativeRuntime>();
     locator.registerSingleton(
       ForegroundWalletStartup(
-        initialize: () async {
-          // Startup continues when native stores are unavailable.
-          final _ = await locator<WalletNativeRuntime>().initialize();
-        },
+        initialize: () => walletRuntime().initialize(),
+        balances: ForegroundBalanceStartup.mount(
+          runtime: walletRuntime,
+          inventory: inventory,
+          preferences: locator<Preferences>(),
+        ),
         startWatchers: () {
           locator<SilentFeature>().startForegroundWatchers();
           locator<SwapFeature>().start(
@@ -772,6 +777,7 @@ class AppLocator {
           ),
         ]),
       ),
+      dispose: (startup) => startup.dispose(),
     );
     return const Ok(null);
   }

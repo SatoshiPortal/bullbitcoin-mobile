@@ -53,6 +53,7 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart' show GoRouter;
 import 'package:novlang/novlang.dart';
 import 'package:primitives/primitives.dart' show NetworkEnv;
 import 'package:onboarding/onboarding.dart';
@@ -67,6 +68,18 @@ void resumePayjoinsOnAppResume(
     startup.resumePayjoins();
   }
 }
+
+@visibleForTesting
+AppUnlockRouteData returnAfterWalletUnlock(
+  GoRouter router,
+  Uri destination,
+  ForegroundWalletStartup startup,
+) => AppUnlockRouteData(
+  onSuccess: () {
+    startup.confirmUnlock();
+    router.go(destination.toString());
+  },
+);
 
 class BullBitcoinWalletApp extends StatefulWidget {
   const BullBitcoinWalletApp({super.key});
@@ -123,7 +136,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     final router = AppRouter.router;
     final here = router.routerDelegate.currentConfiguration.uri;
     if (here.path == AppUnlockRouteData.path) return;
-    AppUnlockRouteData(onSuccess: () => router.go(here.toString())).go(router);
+    final unlock = locator.isRegistered<ForegroundWalletStartup>()
+        ? returnAfterWalletUnlock(
+            router,
+            here,
+            locator<ForegroundWalletStartup>(),
+          )
+        : AppUnlockRouteData(onSuccess: () => router.go(here.toString()));
+    unlock.go(router);
   }
 
   // Overview schedules its own resume sync through its lifecycle listener.

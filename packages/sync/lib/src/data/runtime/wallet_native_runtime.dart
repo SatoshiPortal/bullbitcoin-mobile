@@ -244,22 +244,25 @@ final class WalletNativeRuntime implements WalletNativeLifecycle {
 
   /// Capture synchronously before queueing or waiting. [readEnvironment] must
   /// be a synchronous, side-effect-free snapshot; advance its epoch even if a
-  /// transition later returns to the same environment.
+  /// transition later returns to the same environment. Pass [catalogue] when
+  /// the caller already captured it before selecting the key: an expired stamp
+  /// is refused, never replaced with the current one.
   RetainedBalanceDemand? captureBalanceDemand(
     WalletKey key,
-    BalanceEnvironment? Function() readEnvironment,
-  ) {
+    BalanceEnvironment? Function() readEnvironment, {
+    WalletCatalogueStamp? catalogue,
+  }) {
     if (_closing != null) return null;
-    final catalogue = _walletCatalogue?.capture();
+    final stamp = catalogue ?? _walletCatalogue?.capture();
     final environment = readEnvironment();
-    if (catalogue == null ||
+    if (stamp == null ||
         environment == null ||
         environment.environment != key.network.env) {
       return null;
     }
     final demand = RetainedBalanceDemand._(
       key,
-      catalogue,
+      stamp,
       environment,
       this,
       readEnvironment,
