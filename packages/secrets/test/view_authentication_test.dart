@@ -49,6 +49,19 @@ void main() {
     return result.views!;
   }
 
+  test('the live session names its views and none while locked', () async {
+    expect(inventory.activeView, const ViewId('all'));
+    expect(inventory.openedViews?.views.map((v) => v.name), [
+      'All',
+      'Bravo',
+      'Charlie',
+    ]);
+    await inventory.lock();
+    expect(inventory.activeView, isNull);
+    expect(inventory.openedViews, isNull);
+    expect(multiViewSupported, isFalse, reason: 'release builds leave it off');
+  });
+
   test('with no credential anywhere every view opens and no attempt is '
       'counted', () async {
     expect(inventory.isLocked, isFalse);
