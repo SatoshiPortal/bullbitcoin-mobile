@@ -4,7 +4,7 @@ import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-final class _LimitOrders extends Fake implements ExchangeLimitOrders {
+final class _LimitOrders extends Fake implements LimitOrdersRepository {
   final Result<LimitOrderRate, ExchangeFailure> answer;
   final asked = <String>[];
 

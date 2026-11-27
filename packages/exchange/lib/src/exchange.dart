@@ -10,7 +10,7 @@ import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_exchange_recipient_repository.dart';
 import 'data/bbx_api_funding_rails.dart';
 import 'data/bbx_api_kyc_repository.dart';
-import 'data/bbx_api_limit_order_repository.dart';
+import 'data/bbx_api_limit_orders_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
 import 'data/bbx_api_order_stats_repository.dart';
 import 'data/bbx_api_orders_repository.dart';
@@ -28,6 +28,8 @@ import 'domain/entities/btc_network.dart';
 import 'domain/entities/confidential_sepa_availability.dart';
 import 'domain/entities/default_wallet.dart';
 import 'domain/entities/limit_order.dart';
+import 'domain/entities/limit_order_draft.dart';
+import 'domain/entities/limit_order_rate.dart';
 import 'domain/entities/notification_message.dart';
 import 'domain/entities/order_stats.dart';
 import 'domain/entities/support_chat_message.dart';
@@ -43,10 +45,10 @@ import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
 import 'domain/exchange_funding.dart';
 import 'domain/exchange_kyc_configuration.dart';
-import 'domain/exchange_limit_orders.dart';
 import 'domain/repositories/orders_repository.dart';
 import 'domain/exchange_virtual_ibans.dart';
 import 'domain/exchange_write_gate.dart';
+import 'domain/repositories/limit_orders_repository.dart';
 import 'domain/order_create_journal.dart';
 import 'domain/unknown_write_journal.dart';
 import 'setup/exchange_access_lifecycle.dart';
@@ -157,7 +159,7 @@ final class Exchange {
   final OrdersRepository Function(ExchangeEnvironment) _orders;
   final ExchangeChatOperations _chat;
   final ExchangeNotificationOperations _notifications;
-  final ExchangeLimitOrders limitOrders;
+  final LimitOrdersRepository limitOrders;
   final ExchangeFunding funding;
   final ExchangeVirtualIbans virtualIbans;
   final ExchangeKycConfigurationRepository? _kyc;
@@ -343,15 +345,6 @@ final class Exchange {
     final inventory = PendingOrders(
       readSession: sessionSnapshot,
       openClient: openClient,
-    );
-    Future<Result<T, ExchangeFailure>> limitOrder<T>(
-      ExchangeLimitOrderProblem problem,
-      Future<Result<T, ExchangeFailure>> Function(BbxApiLimitOrderRepository)
-      call,
-    ) => withClient(
-      (client) => call(BbxApiLimitOrderRepository(client)),
-      credentialReadFailure: () =>
-          ExchangeLimitOrderFailure(problem, 'Exchange credential unavailable'),
     );
     final fundingReturnUrl =
         paymentReturnUrl ?? Uri.parse('https://app.bullbitcoin.com');
@@ -576,54 +569,29 @@ final class Exchange {
           await notificationService?.dispose();
         },
       ),
-      ExchangeLimitOrdersImpl(
-        list: () => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.listActive(),
+      BbxApiLimitOrdersRepository(
+        read: <T>(problem, operation) => withClient<T>(
+          operation,
+          credentialReadFailure: () => ExchangeLimitOrderFailure(
+            problem,
+            'Exchange credential unavailable',
+          ),
         ),
-        listRecent: () => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.listRecent(),
-        ),
-        get: (id) => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.get(id),
-        ),
-        create: (draft) async {
-          final write = switch (await withClient<ExchangeWrite<LimitOrder>>(
-            (client) async =>
-                Ok(await BbxApiLimitOrderRepository(client).create(draft)),
-            completionCheck: _CompletionCheck.write,
-          )) {
-            Ok(:final value) => value,
-            Err(:final failure) => writeNotRun<LimitOrder>(failure),
-          };
-          if (write is WriteOutcomeUnknown<LimitOrder> && recorder != null) {
-            if (await sessionSnapshot() case Ok(:final value)) {
-              await recorder.record(
-                UnknownWriteDraft(
-                  kind: UnknownWriteKind.limitOrderCreate,
-                  environment: value.environment,
-                  sessionEpoch: value.epoch,
-                  request: draft.journalRequest,
-                ),
-              );
-            }
+        write: <T>(operation) =>
+            withClient<T>(operation, completionCheck: _CompletionCheck.write),
+        journalUnknownCreate: (draft) async {
+          if (recorder == null) return;
+          if (await sessionSnapshot() case Ok(:final value)) {
+            await recorder.record(
+              UnknownWriteDraft(
+                kind: UnknownWriteKind.limitOrderCreate,
+                environment: value.environment,
+                sessionEpoch: value.epoch,
+                request: draft.journalRequest,
+              ),
+            );
           }
-          return write;
         },
-        cancel: (id) => limitOrder(
-          ExchangeLimitOrderProblem.cancel,
-          (repository) => repository.cancel(id),
-        ),
-        cancelAll: () => limitOrder(
-          ExchangeLimitOrderProblem.cancel,
-          (repository) => repository.cancelAll(),
-        ),
-        rate: (currency) => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.getRate(currency),
-        ),
       ),
       ExchangeFundingImpl(
         account: (session) => fundRead(session, (rails) => rails.account()),
@@ -1340,7 +1308,7 @@ Exchange exchangeForTesting({
   OrdersRepository Function(ExchangeEnvironment)? orders,
   ExchangeChatOperations? chat,
   ExchangeNotificationOperations? notifications,
-  ExchangeLimitOrders? limitOrders,
+  LimitOrdersRepository? limitOrders,
   ExchangeFunding? funding,
   ExchangeVirtualIbans? virtualIbans,
   Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
@@ -1409,16 +1377,7 @@ Exchange exchangeForTesting({
         disconnect: () {},
         close: () async {},
       ),
-  limitOrders ??
-      ExchangeLimitOrdersImpl(
-        list: () => throw StateError('Unexpected limit order listing'),
-        listRecent: () => throw StateError('Unexpected limit order listing'),
-        get: (_) => throw StateError('Unexpected limit order read'),
-        create: (_) => throw StateError('Unexpected limit order create'),
-        cancel: (_) => throw StateError('Unexpected limit order cancel'),
-        cancelAll: () => throw StateError('Unexpected limit order bulk cancel'),
-        rate: (_) => throw StateError('Unexpected limit order rate'),
-      ),
+  limitOrders ?? const _UnexpectedLimitOrders(),
   funding ??
       ExchangeFundingImpl(
         account: (_) => throw StateError('Unexpected funding account read'),
@@ -1470,3 +1429,38 @@ Exchange exchangeWithTransportForTesting({
   access: access,
   unknownWrites: unknownWrites,
 );
+
+/// [exchangeForTesting]'s limit orders when a test gives none: every call is
+/// a test bug.
+final class _UnexpectedLimitOrders implements LimitOrdersRepository {
+  const _UnexpectedLimitOrders();
+
+  @override
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listActive() =>
+      throw StateError('Unexpected limit order listing');
+
+  @override
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent() =>
+      throw StateError('Unexpected limit order listing');
+
+  @override
+  Future<Result<LimitOrder, ExchangeFailure>> get(String id) =>
+      throw StateError('Unexpected limit order read');
+
+  @override
+  Future<ExchangeWrite<LimitOrder>> create(LimitOrderDraft draft) =>
+      throw StateError('Unexpected limit order create');
+
+  @override
+  Future<Result<LimitOrder, ExchangeFailure>> cancel(String id) =>
+      throw StateError('Unexpected limit order cancel');
+
+  @override
+  Future<Result<List<LimitOrder>, ExchangeFailure>> cancelAll() =>
+      throw StateError('Unexpected limit order bulk cancel');
+
+  @override
+  Future<Result<LimitOrderRate, ExchangeFailure>> getRate(
+    String currencyCode,
+  ) => throw StateError('Unexpected limit order rate');
+}

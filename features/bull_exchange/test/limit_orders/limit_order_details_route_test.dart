@@ -11,7 +11,7 @@ import 'package:primitives/primitives.dart';
 
 import 'limit_order_fixtures.dart';
 
-class _Orders extends Mock implements ExchangeLimitOrders {}
+class _Orders extends Mock implements LimitOrdersRepository {}
 
 void main() {
   testWidgets('the mounted details route loads the selected active order', (

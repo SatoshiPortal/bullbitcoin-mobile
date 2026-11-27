@@ -36,8 +36,8 @@ export 'src/domain/exchange_kyc_configuration.dart';
 export 'src/domain/exchange_failure.dart';
 export 'src/domain/exchange_environment.dart' show ExchangeEnvironment;
 export 'src/exchange.dart' show Exchange;
-export 'src/domain/exchange_limit_orders.dart'
-    show ExchangeLimitOrders, LimitOrderRefusal, limitOrderRefusalOf;
+export 'src/domain/repositories/limit_orders_repository.dart';
+export 'src/domain/entities/limit_order_refusal.dart';
 export 'src/domain/exchange_funding.dart' show ExchangeFunding;
 export 'src/domain/exchange_virtual_ibans.dart' show ExchangeVirtualIbans;
 export 'src/domain/repositories/orders_repository.dart' show OrdersRepository;

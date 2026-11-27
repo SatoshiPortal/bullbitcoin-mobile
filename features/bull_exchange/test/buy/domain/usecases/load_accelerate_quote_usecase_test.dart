@@ -34,7 +34,7 @@ final class _Fees extends Fake implements Fees {
   }
 }
 
-final class _LimitOrders extends Fake implements ExchangeLimitOrders {
+final class _LimitOrders extends Fake implements LimitOrdersRepository {
   final Result<LimitOrderRate, ExchangeFailure> answer;
   final asked = <String>[];
 

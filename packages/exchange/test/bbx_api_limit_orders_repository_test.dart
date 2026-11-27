@@ -76,7 +76,7 @@ void main() {
     useEnvironment(Environment.mainnet);
   });
 
-  ExchangeLimitOrders fromClient(Bbx Function(Uri) openClient) =>
+  LimitOrdersRepository fromClient(Bbx Function(Uri) openClient) =>
       exchangeWithTransportForTesting(
         readSession: () => readLegacyExchangeSession(
           preferences: settings,
@@ -86,14 +86,16 @@ void main() {
         openClient: (endpoint, _) => openClient(endpoint),
       ).limitOrders;
 
-  ExchangeLimitOrders repository(FakeBbxHttp mainnet, {FakeBbxHttp? testnet}) =>
-      fromClient(
-        (endpoint) => endpoint.host.startsWith('testnet')
-            ? (testnet ?? FakeBbxHttp()).client()
-            : mainnet.client(),
-      );
+  LimitOrdersRepository repository(
+    FakeBbxHttp mainnet, {
+    FakeBbxHttp? testnet,
+  }) => fromClient(
+    (endpoint) => endpoint.host.startsWith('testnet')
+        ? (testnet ?? FakeBbxHttp()).client()
+        : mainnet.client(),
+  );
 
-  ExchangeLimitOrders withClient(Bbx client) => fromClient((_) => client);
+  LimitOrdersRepository withClient(Bbx client) => fromClient((_) => client);
 
   String sent(FakeBbxHttp http, {String path = '/ak/api-ordertrigger'}) {
     final request = http.requests.single;

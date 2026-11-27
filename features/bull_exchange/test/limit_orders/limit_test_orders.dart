@@ -4,7 +4,7 @@ import 'package:primitives/primitives.dart';
 
 /// The limit-order calls of one test: each answers what it was given and
 /// throws when the test gave none; every call is logged.
-final class LimitTestOrders extends Fake implements ExchangeLimitOrders {
+final class LimitTestOrders extends Fake implements LimitOrdersRepository {
   Result<List<LimitOrder>, ExchangeFailure>? active;
   Result<List<LimitOrder>, ExchangeFailure>? recent;
   Result<LimitOrder, ExchangeFailure>? read;
