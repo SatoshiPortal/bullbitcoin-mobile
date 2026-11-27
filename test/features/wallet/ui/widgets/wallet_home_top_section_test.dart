@@ -12,6 +12,7 @@ import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
+        BullAmount,
         BullAmountScope,
         BullAmountSnapshot,
         BullHeaderBackground,
@@ -33,6 +34,7 @@ Future<void> _pumpTopSection(
   WidgetTester tester, {
   required double textScale,
   bool hideAmounts = true,
+  bool amountsKnown = true,
   double? actionsHeight,
 }) async {
   final wallet = _Wallet();
@@ -47,7 +49,7 @@ Future<void> _pumpTopSection(
     wallet,
     const Stream<WalletState>.empty(),
     initialState: WalletState(
-      amountDisplay: amountDisplay,
+      amountDisplay: amountsKnown ? amountDisplay : null,
       status: WalletStatus.success,
     ),
   );
@@ -85,7 +87,7 @@ Future<void> _pumpTopSection(
               BlocProvider<WalletBloc>.value(value: wallet),
               BlocProvider<SettingsCubit>.value(value: settings),
               BitcoinPriceFixture.prices(
-                amountDisplay: amountDisplay,
+                amountDisplay: amountsKnown ? amountDisplay : null,
                 currency: 'CAD',
                 bitcoinPrice: 100000,
               ),
@@ -95,7 +97,7 @@ Future<void> _pumpTopSection(
               snapshot: BullAmountSnapshot(
                 unit: BitcoinUnit.btc,
                 hideAmounts: hideAmounts,
-                isReady: true,
+                isReady: amountsKnown,
               ),
               writeUnit: (_) async => true,
               child: SingleChildScrollView(
@@ -123,6 +125,19 @@ Future<void> _pumpTopSection(
 }
 
 void main() {
+  testWidgets(
+    'Home does not expose a bitcoin amount while preferences are unknown',
+    (tester) async {
+      await _pumpTopSection(
+        tester,
+        textScale: 1,
+        hideAmounts: false,
+        amountsKnown: false,
+      );
+      expect(find.byType(BullAmount), findsNothing);
+    },
+  );
+
   testWidgets('home balance has no eye toggle', (tester) async {
     await _pumpTopSection(tester, textScale: 1, actionsHeight: 100);
     expect(find.byType(EyeToggle), findsNothing);

@@ -1,5 +1,4 @@
 import 'package:preferences/preferences.dart' show AmountDisplayPreferences;
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_revisions_usecase.dart';
@@ -33,7 +32,7 @@ part 'wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
-    WatchWalletAmountDisplayUsecase? watchAmountDisplayUsecase,
+    OverviewAmountDisplay? amountDisplay,
     WatchWalletRevisionsUsecase? watchWalletRevisionsUsecase,
     this._retrySwapsOnRefreshUsecase,
     this._checkSwapServerUsecase,
@@ -50,9 +49,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<_WalletAmountDisplayChanged>((event, emit) {
       emit(state.copyWith(amountDisplay: event.preferences));
     });
-    _amountDisplaySubscription = watchAmountDisplayUsecase?.execute().listen((
-      preferences,
-    ) {
+    _amountDisplaySubscription = amountDisplay?.watch().listen((preferences) {
       if (!isClosed) add(_WalletAmountDisplayChanged(preferences));
     });
     _revisionsSubscription = watchWalletRevisionsUsecase?.execute().listen((
@@ -107,8 +104,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   @override
   Future<void> close() async {
+    final amountDisplayClosed = _amountDisplaySubscription?.cancel();
     await _silentHome.close();
-    await _amountDisplaySubscription?.cancel();
+    await amountDisplayClosed;
     _revisionsSubscription?.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();

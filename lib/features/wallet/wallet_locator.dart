@@ -1,6 +1,5 @@
 import 'package:provisioning/provisioning.dart';
 import 'package:preferences/preferences.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_amount_display_usecase.dart';
 
 import 'package:electrum/electrum.dart' show ElectrumSyncResult;
 
@@ -17,7 +16,8 @@ import 'package:bull_tor/tor.dart';
 import 'package:silent/silent.dart';
 import 'package:swaps/swaps.dart';
 import 'package:overview/setup.dart';
-import 'package:overview/overview.dart' show OngoingSwaps;
+import 'package:overview/overview.dart'
+    show OngoingSwaps, OverviewAmountDisplay;
 import 'package:backups/backups.dart' show BackupsFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -80,7 +80,7 @@ class WalletLocator {
     // Bloc
     locator.registerFactory<WalletBloc>(
       () => WalletBloc(
-        watchAmountDisplayUsecase: WatchWalletAmountDisplayUsecase(
+        amountDisplay: OverviewAmountDisplay(
           locator<AmountDisplayPreferencesReader>(),
         ),
         watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(

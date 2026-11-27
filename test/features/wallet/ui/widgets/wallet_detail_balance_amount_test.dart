@@ -5,6 +5,26 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
 void main() {
+  testWidgets('detail never renders digits before preferences are ready', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullAmountScope(
+          snapshot: const BullAmountSnapshot(
+            unit: BitcoinUnit.sats,
+            hideAmounts: false,
+            isReady: false,
+          ),
+          writeUnit: (_) async => true,
+          child: const WalletDetailBalanceAmount(balanceSat: 12345),
+        ),
+      ),
+    );
+    expect(find.textContaining('12,345'), findsNothing);
+    expect(find.byType(BullAmountUnitToggle), findsOneWidget);
+  });
+
   testWidgets('tap switches the unit, long press changes the default', (
     tester,
   ) async {

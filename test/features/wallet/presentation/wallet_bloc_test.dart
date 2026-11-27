@@ -17,10 +17,17 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:overview/overview.dart';
+import 'package:preferences/preferences.dart'
+    show
+        AmountDisplayPreferences,
+        AmountDisplayPreferencesReader,
+        PreferencesFailure,
+        PreferencesReadFailure;
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
-import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, Err, Ok, Result, ScriptType;
 import 'package:swaps/swaps.dart'
     show Swap, SwapEnvironment, SwapStatus, SwapType;
 import 'package:primitives/primitives.dart' show SignerEntity;
@@ -75,10 +82,12 @@ WalletBloc createBloc(
   SyncWalletsUsecase? refreshSync,
   ReadWalletUsecase? readWallet,
   OngoingSwaps? getUnconfirmed,
+  OverviewAmountDisplay? amountDisplay,
   RetrySwapsOnRefreshUsecase? retrySwaps,
   CheckSwapServerUsecase? checkSwapServer,
 }) {
   return WalletBloc(
+    amountDisplay: amountDisplay,
     retrySwapsOnRefreshUsecase: retrySwaps,
     checkSwapServerUsecase: checkSwapServer,
     readWalletUsecase: readWallet ?? _stubbedReadWallet(),
@@ -103,7 +112,56 @@ class _MockRetrySwapsOnRefreshUsecase extends Mock
 class _MockCheckSwapServerUsecase extends Mock
     implements CheckSwapServerUsecase {}
 
+class _AmountReader implements AmountDisplayPreferencesReader {
+  final Stream<Result<AmountDisplayPreferences, PreferencesFailure>> stream;
+
+  _AmountReader(this.stream);
+
+  @override
+  Stream<Result<AmountDisplayPreferences, PreferencesFailure>>
+  watchDisplayPreferences() => stream;
+}
+
 void main() {
+  test(
+    'amount preferences fail closed, recover, and stop on Wallet close',
+    () async {
+      var cancelled = false;
+      final updates =
+          StreamController<
+            Result<AmountDisplayPreferences, PreferencesFailure>
+          >(onCancel: () => cancelled = true);
+      addTearDown(updates.close);
+      final bloc = createBloc(
+        _MockExternalTorStatusUsecase(),
+        amountDisplay: OverviewAmountDisplay(_AmountReader(updates.stream)),
+      );
+      addTearDown(() async {
+        if (!bloc.isClosed) await bloc.close();
+      });
+      const visible = (
+        bitcoinUnit: BitcoinUnit.sats,
+        hideAmounts: false,
+        currencyCode: 'USD',
+      );
+      expect(bloc.state.amountDisplay, isNull);
+      updates.add(const Ok(visible));
+      await pumpEventQueue();
+      expect(bloc.state.amountDisplay, visible);
+      updates.add(const Err(PreferencesReadFailure()));
+      await pumpEventQueue();
+      expect(bloc.state.amountDisplay, isNull);
+      updates.add(const Ok(visible));
+      await pumpEventQueue();
+      expect(bloc.state.amountDisplay, visible);
+      await bloc.close();
+      expect(cancelled, isTrue);
+      updates.add(const Err(PreferencesReadFailure()));
+      await pumpEventQueue();
+      expect(bloc.state.amountDisplay, visible);
+    },
+  );
+
   test('an unreachable swap server raises the home warning', () async {
     final check = _MockCheckSwapServerUsecase();
     var reachable = false;

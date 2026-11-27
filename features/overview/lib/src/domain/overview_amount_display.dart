@@ -1,12 +1,13 @@
 import 'package:preferences/preferences.dart'
     show AmountDisplayPreferences, AmountDisplayPreferencesReader;
 
-final class WatchWalletAmountDisplayUsecase {
+final class OverviewAmountDisplay {
   final AmountDisplayPreferencesReader _preferences;
 
-  const WatchWalletAmountDisplayUsecase(this._preferences);
+  const OverviewAmountDisplay(this._preferences);
 
-  Stream<AmountDisplayPreferences?> execute() => _preferences
+  /// Unknown preferences mask amounts until a readable value arrives.
+  Stream<AmountDisplayPreferences?> watch() => _preferences
       .watchDisplayPreferences()
       .map((result) => result.fold((value) => value, (_) => null));
 }
