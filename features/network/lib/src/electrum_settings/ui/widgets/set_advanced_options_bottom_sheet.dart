@@ -160,71 +160,87 @@ class _SetAdvancedOptionsBottomSheetState
                   Column(
                     crossAxisAlignment: .start,
                     children: [
-                      Text(
-                        context.loc.electrumStopGap,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: .w600,
+                      ExcludeSemantics(
+                        child: Text(
+                          context.loc.electrumStopGap,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: .w600,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _stopGap,
-                        focusNode: _stopGapNode,
-                        textInputAction: .next,
-                        keyboardType: TextInputType.number,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
+                      Semantics(
+                        label: context.loc.electrumStopGap,
+                        child: TextFormField(
+                          controller: _stopGap,
+                          focusNode: _stopGapNode,
+                          textInputAction: .next,
+                          keyboardType: TextInputType.number,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          decoration: InputDecoration(
+                            hint: ExcludeSemantics(
+                              child: Text(
+                                context.loc.electrumStopGap,
+                                style: context.bullType.body.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: context.bull.textMuted,
+                                ),
+                              ),
+                            ),
+                            fillColor: context.bull.surface,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) {
+                              return context.loc.electrumStopGapEmptyError;
+                            }
+                            final n = int.tryParse(v.trim());
+                            if (n == null) {
+                              return context.loc.electrumInvalidNumberError;
+                            }
+                            if (n < 0) {
+                              return context.loc.electrumStopGapNegativeError;
+                            }
+                            if (n > ElectrumOptions.maxStopGap) {
+                              return context.loc.electrumStopGapTooHighError(
+                                ElectrumOptions.maxStopGap.toString(),
+                              );
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _timeoutNode.requestFocus(),
                         ),
-                        decoration: InputDecoration(
-                          hintText: context.loc.electrumStopGap,
-                          hintStyle: context.bullType.body.copyWith(
-                            color: context.bull.textMuted,
-                          ),
-                          fillColor: context.bull.surface,
-                          filled: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(color: context.bull.border),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(color: context.bull.border),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(
-                              color: context.bull.border.withValues(alpha: 0.5),
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                          ),
-                        ),
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) {
-                            return context.loc.electrumStopGapEmptyError;
-                          }
-                          final n = int.tryParse(v.trim());
-                          if (n == null) {
-                            return context.loc.electrumInvalidNumberError;
-                          }
-                          if (n < 0) {
-                            return context.loc.electrumStopGapNegativeError;
-                          }
-                          if (n > ElectrumOptions.maxStopGap) {
-                            return context.loc.electrumStopGapTooHighError(
-                              ElectrumOptions.maxStopGap.toString(),
-                            );
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (_) => _timeoutNode.requestFocus(),
                       ),
                       Builder(
                         builder: (context) {
@@ -248,72 +264,88 @@ class _SetAdvancedOptionsBottomSheetState
                         },
                       ),
                       const SizedBox(height: 12),
-                      Text(
-                        context.loc.electrumTimeout,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: .w600,
+                      ExcludeSemantics(
+                        child: Text(
+                          context.loc.electrumTimeout,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: .w600,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _timeout,
-                        focusNode: _timeoutNode,
-                        keyboardType: TextInputType.number,
-                        textInputAction: .next,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
+                      Semantics(
+                        label: context.loc.electrumTimeout,
+                        child: TextFormField(
+                          controller: _timeout,
+                          focusNode: _timeoutNode,
+                          keyboardType: TextInputType.number,
+                          textInputAction: .next,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          decoration: InputDecoration(
+                            hint: ExcludeSemantics(
+                              child: Text(
+                                context.loc.electrumTimeout,
+                                style: context.bullType.body.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: context.bull.textMuted,
+                                ),
+                              ),
+                            ),
+                            fillColor: context.bull.surface,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                          ),
+                          validator: (v) {
+                            final value = v?.trim() ?? '';
+                            if (value.isEmpty) {
+                              return context.loc.electrumTimeoutEmptyError;
+                            }
+                            final n = int.tryParse(value);
+                            if (n == null) {
+                              return context.loc.electrumInvalidNumberError;
+                            }
+                            if (n <= 0) {
+                              return context.loc.electrumTimeoutPositiveError;
+                            }
+                            if (n > ElectrumOptions.maxTimeout) {
+                              return context.loc.electrumTimeoutTooHighError(
+                                ElectrumOptions.maxTimeout.toString(),
+                              );
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _retryNode.requestFocus(),
                         ),
-                        decoration: InputDecoration(
-                          hintText: context.loc.electrumTimeout,
-                          hintStyle: context.bullType.body.copyWith(
-                            color: context.bull.textMuted,
-                          ),
-                          fillColor: context.bull.surface,
-                          filled: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(color: context.bull.border),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(color: context.bull.border),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(
-                              color: context.bull.border.withValues(alpha: 0.5),
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                          ),
-                        ),
-                        validator: (v) {
-                          final value = v?.trim() ?? '';
-                          if (value.isEmpty) {
-                            return context.loc.electrumTimeoutEmptyError;
-                          }
-                          final n = int.tryParse(value);
-                          if (n == null) {
-                            return context.loc.electrumInvalidNumberError;
-                          }
-                          if (n <= 0) {
-                            return context.loc.electrumTimeoutPositiveError;
-                          }
-                          if (n > ElectrumOptions.maxTimeout) {
-                            return context.loc.electrumTimeoutTooHighError(
-                              ElectrumOptions.maxTimeout.toString(),
-                            );
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (_) => _retryNode.requestFocus(),
                       ),
                       Builder(
                         builder: (context) {
@@ -349,67 +381,85 @@ class _SetAdvancedOptionsBottomSheetState
                         },
                       ),
                       const SizedBox(height: 12),
-                      Text(
-                        context.loc.electrumRetryCount,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: .w600,
+                      ExcludeSemantics(
+                        child: Text(
+                          context.loc.electrumRetryCount,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: .w600,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
-                      TextFormField(
-                        controller: _retry,
-                        focusNode: _retryNode,
-                        keyboardType: TextInputType.number,
-                        textInputAction: .done,
-                        style: context.bullType.body.copyWith(
-                          fontWeight: FontWeight.w500,
+                      Semantics(
+                        label: context.loc.electrumRetryCount,
+                        child: TextFormField(
+                          controller: _retry,
+                          focusNode: _retryNode,
+                          keyboardType: TextInputType.number,
+                          textInputAction: .done,
+                          style: context.bullType.body.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          decoration: InputDecoration(
+                            hint: ExcludeSemantics(
+                              child: Text(
+                                context.loc.electrumRetryCount,
+                                style: context.bullType.body.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: context.bull.textMuted,
+                                ),
+                              ),
+                            ),
+                            fillColor: context.bull.surface,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border,
+                              ),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                context.bullShapes.input,
+                              ),
+                              borderSide: BorderSide(
+                                color: context.bull.border.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                            ),
+                          ),
+                          validator: (v) {
+                            final value = v?.trim() ?? '';
+                            if (value.isEmpty) {
+                              return context.loc.electrumRetryCountEmptyError;
+                            }
+                            final n = int.tryParse(value);
+                            if (n == null) {
+                              return context.loc.electrumInvalidNumberError;
+                            }
+                            if (n < 0) {
+                              return context
+                                  .loc
+                                  .electrumRetryCountNegativeError;
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => _confirm(),
                         ),
-                        decoration: InputDecoration(
-                          hintText: context.loc.electrumRetryCount,
-                          hintStyle: context.bullType.body.copyWith(
-                            color: context.bull.textMuted,
-                          ),
-                          fillColor: context.bull.surface,
-                          filled: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(color: context.bull.border),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(color: context.bull.border),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              context.bullShapes.input,
-                            ),
-                            borderSide: BorderSide(
-                              color: context.bull.border.withValues(alpha: 0.5),
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                          ),
-                        ),
-                        validator: (v) {
-                          final value = v?.trim() ?? '';
-                          if (value.isEmpty) {
-                            return context.loc.electrumRetryCountEmptyError;
-                          }
-                          final n = int.tryParse(value);
-                          if (n == null) {
-                            return context.loc.electrumInvalidNumberError;
-                          }
-                          if (n < 0) {
-                            return context.loc.electrumRetryCountNegativeError;
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (_) => _confirm(),
                       ),
                       const SizedBox(height: 12),
                       SwitchListTile(
