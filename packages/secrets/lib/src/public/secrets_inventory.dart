@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
+import 'package:bull_logger/bull_logger.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:legacy_storage/coordination.dart';
 import 'package:meta/meta.dart';
@@ -11,6 +12,8 @@ import 'package:secrets/src/data/data.dart'
         inventorySessionChangedFailure,
         inventoryCredentialRequiredFailure,
         inventoryLockedFailure,
+        viewNotOpenFailure,
+        viewInUseFailure,
         invalidBip85HexLengthFailure,
         unreadableBip85RecordFailure;
 
@@ -23,6 +26,7 @@ import '../data/inventory_repository.dart';
 import '../data/inventory_session.dart';
 import '../data/inventory_store.dart';
 import '../data/ready_inventory_store.dart';
+import '../data/view_administration_repository.dart';
 export '../data/ready_inventory_store.dart' show inventoryReadinessFailure;
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
@@ -40,28 +44,81 @@ import 'seed_reference_port.dart';
 import 'wallet_inventory.dart';
 
 part 'bip85_derivations.dart';
+part 'opened_views.dart';
+
+/// Seeds held by locally signing wallets of every view, for the one caller
+/// that may ask: the deletion check, which must not delete a seed a hidden view
+/// still holds. A watch-only origin never keeps a seed alive (#2634); a locked
+/// session, an unreadable inventory or an invalid local reference cannot prove
+/// the seed unused.
+///
+/// This is not on [SecretsInventory], which a view's code holds: that list
+/// names the seeds of views the session may not open. It is reachable only
+/// through `SeedReferences.forInventory`, as the package's own composition.
+@internal
+SeedReferencePort custodyReferencesOf(SecretsInventory inventory) =>
+    _InventoryCustody(inventory);
+
+final class _InventoryCustody implements SeedReferencePort {
+  final SecretsInventory _inventory;
+
+  const _InventoryCustody(this._inventory);
+
+  @override
+  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
+      switch (await _inventory._inSession(
+        (_, _) => _inventory._wallets.custodyFingerprints(),
+      )) {
+        Ok(:final value) => Ok(value),
+        Err() => const Err(SeedReferencesUnavailable()),
+      };
+}
 
 /// The foreground wallet inventory. Access starts with the persisted policy.
 /// Lock invalidates any pending read and the next operation checks the session.
-final class SecretsInventory implements WalletInventory, SeedReferencePort {
+final class SecretsInventory implements WalletInventory {
   final InventoryStore _store;
   final AccessRepository _access;
   final InventoryRepository _wallets;
   final DerivationRepository _derivations;
   final BackupGuard _guard;
+  final ViewAdministrationRepository _administration;
   final SessionAuthority _authority;
   var _session = 0;
   Future<void>? _pendingDrain;
 
-  SecretsInventory._(
-    this._store,
-    this._access,
-    this._guard,
-    this._authority,
-    bool initiallyProtected,
-  ) : _wallets = InventoryRepository(_store.database),
+  /// The views opened by the authentications of the live session. Empty while
+  /// locked. [_epoch] changes at every lock, so an [OpenedViews] kept across a
+  /// lock is refused even after a new unlock.
+  var _openedViews = <ViewSummary>[];
+  var _epoch = 0;
+
+  SecretsInventory._(this._store, this._access, this._guard, this._authority)
+    : _wallets = InventoryRepository(_store.database),
+      _administration = ViewAdministrationRepository(_store.database, _guard),
       _derivations = DerivationRepository(_store.database) {
-    if (!initiallyProtected) _authority.grant(defaultViewId);
+    _authority.bindMemberships(_seedsOf);
+  }
+
+  /// The seeds the token's view holds, or null while the file holds one view:
+  /// an installation that shows a single view hides nothing from itself.
+  Future<Set<String>?> _seedsOf(SessionToken token) async {
+    try {
+      final views = await _store.database
+          .customSelect('SELECT COUNT(*) AS n FROM views')
+          .getSingle();
+      if (views.read<int>('n') <= 1) return null;
+      return {
+        for (final fingerprint in await viewSecrets(
+          _store.database,
+          token.activeView,
+        ))
+          fingerprint.hex,
+      };
+    } on Exception {
+      // An unreadable membership hides every seed rather than showing all.
+      return <String>{};
+    }
   }
 
   bool get _unlocked => _authority.current != null;
@@ -81,7 +138,11 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     InventoryBackupVerification? backupVerification,
     required SessionAuthority authority,
   }) async {
-    final opened = await openReadyInventoryStore(file, admission);
+    final opened = await openReadyInventoryStore(
+      file,
+      admission,
+      foreground: true,
+    );
     switch (opened) {
       case Err(:final failure):
         return Err(failure);
@@ -99,9 +160,25 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
             await value.close();
             return Err(failure);
           case Ok(value: final protected):
-            return Ok(
-              SecretsInventory._(value, access, guard, authority, protected),
+            final inventory = SecretsInventory._(
+              value,
+              access,
+              guard,
+              authority,
             );
+            if (protected) return Ok(inventory);
+            // No view requires a credential: the session starts open.
+            switch (await inventory._openWithoutCredential(
+              inventory._session,
+            )) {
+              case Ok():
+                return Ok(inventory);
+              case Err():
+                await inventory.close();
+                return const Err(
+                  DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
+                );
+            }
         }
     }
   }
@@ -128,20 +205,123 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// True on every lock, false on every unlock, in order.
   Stream<bool> get lockedChanges => _authority.changes.map((t) => t == null);
 
+  /// The view in use, or null while locked.
+  ViewId? get activeView {
+    final view = _authority.current?.activeView;
+    return view == null ? null : ViewId(view);
+  }
+
+  /// The views the live session opened, for a host that composes the view
+  /// screens. Null while locked: there is no session to administer.
+  OpenedViews? get openedViews =>
+      _unlocked ? OpenedViews._(this, _epoch) : null;
+
+  /// Presents [candidate] to every credential at once and opens the views it
+  /// unlocks. One guess is one attempt, whatever the number of credentials.
+  /// The result names the views opened and nothing about the others.
+  ///
+  /// Authenticating inside a live session adds the views the credential opens
+  /// and keeps the view in use and its handles. Only a locked inventory starts
+  /// a session, on the first opened view by name.
   @useResult
-  Future<Result<AccessAttempt, SecretFailure>> unlock(String candidate) async {
+  Future<Result<ViewAuthentication, SecretFailure>> authenticate(
+    String candidate,
+  ) async {
     if (_pendingDrain != null) return const Err(inventoryLockedFailure);
     final current = _session;
-    final attempt = await _access.unlock(candidate);
+    final outcome = await _access.authenticate(candidate);
     if (current != _session || _pendingDrain != null) {
       return const Err(inventorySessionChangedFailure);
     }
-    if (attempt case Ok(value: AccessAttempt(accepted: true))) {
-      // A re-authentication inside a live session keeps its handles; only a
-      // locked inventory opens a new generation.
-      if (!_unlocked) _authority.grant(defaultViewId);
+    switch (outcome) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        if (!value.attempt.accepted) {
+          return Ok(ViewAuthentication._(value.attempt, null));
+        }
+        final wasLocked = !_unlocked;
+        // The remembered view is read before anything is published, so a
+        // lock that lands meanwhile still wins.
+        final chosen = wasLocked ? await _choose(value.opened) : null;
+        if (current != _session || _pendingDrain != null) {
+          return const Err(inventorySessionChangedFailure);
+        }
+        if (wasLocked) _epoch++;
+        _mergeOpened(value.opened);
+        final opened = OpenedViews._(this, _epoch);
+        if (chosen != null) await _startSession(chosen);
+        return Ok(ViewAuthentication._(value.attempt, opened));
     }
-    return attempt;
+  }
+
+  /// The flow of an installation that shows one view: authenticate, then open
+  /// the view the session would start on.
+  @useResult
+  Future<Result<AccessAttempt, SecretFailure>> unlock(String candidate) async =>
+      (await authenticate(candidate)).map((value) => value.attempt);
+
+  void _mergeOpened(List<ViewSummary> add) {
+    final byId = {for (final view in _openedViews) view.id: view};
+    for (final view in add) {
+      byId[view.id] = view;
+    }
+    _openedViews = List.unmodifiable(byId.values);
+  }
+
+  /// The view a session starts on among [opened] (never empty): the one
+  /// opened last when this authentication opened it, otherwise the first by
+  /// name. The memory is read only here, after an authentication, and a view
+  /// this authentication did not open is never chosen.
+  Future<ViewSummary> _choose(List<ViewSummary> opened) async {
+    final remembered = switch (await _access.lastView()) {
+      Ok(:final value) => value,
+      // A memory that cannot be read changes which view opens first, nothing
+      // else: it is logged, not hidden, and never decides an access.
+      Err(:final failure) => () {
+        log.warning(
+          'secrets.views.last_view_unreadable ${failure.runtimeType}',
+        );
+        return null;
+      }(),
+    };
+    return opened.firstWhere(
+      (view) => view.id.value == remembered,
+      orElse: () => opened.first,
+    );
+  }
+
+  /// Opens the session on [view]: the grant is synchronous, so nothing can
+  /// interleave between the checks that precede it and the token.
+  Future<void> _startSession(ViewSummary view) async {
+    _authority.grant(view.id.value);
+    if (await _access.rememberView(view.id.value) case Err(:final failure)) {
+      log.warning('secrets.views.last_view_unwritten ${failure.runtimeType}');
+    }
+  }
+
+  /// [session] is the generation read before anything was awaited: a lock
+  /// that lands during the reads bumps it, and the grant below is refused.
+  Future<Result<void, SecretFailure>> _openWithoutCredential(
+    int session,
+  ) async {
+    final opened = await _access.openWithoutCredential();
+    switch (opened) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(value: null):
+        return const Err(inventoryCredentialRequiredFailure);
+      case Ok(:final value?):
+        if (_unlocked) return const Ok(null);
+        final chosen = await _choose(value);
+        if (session != _session || _pendingDrain != null || _unlocked) {
+          return const Err(inventorySessionChangedFailure);
+        }
+        _epoch++;
+        _mergeOpened(value);
+        await _startSession(chosen);
+        return const Ok(null);
+    }
   }
 
   /// Closes the inventory, in this order: the admission and the authority
@@ -164,6 +344,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// running reports [inventorySessionChangedFailure] when it ends.
   Future<bool> lock({Duration drain = const Duration(seconds: 2)}) async {
     _session++;
+    _epoch++;
+    _openedViews = <ViewSummary>[];
     final pending = inventoryWritesSettled();
     _pendingDrain = pending;
     _authority.revoke();
@@ -195,21 +377,9 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     if (_pendingDrain != null) {
       return Future.value(const Err(inventoryLockedFailure));
     }
-    return _inSession(requireUnlocked: false, (session) async {
-      switch (await _access.isProtected()) {
-        case Err(:final failure):
-          return Err(failure);
-        case Ok(value: true):
-          return const Err(inventoryCredentialRequiredFailure);
-        case Ok(value: false):
-          if (_pendingDrain != null) {
-            return const Err(inventoryLockedFailure);
-          }
-          if (session == _session && !_unlocked) {
-            _authority.grant(defaultViewId);
-          }
-          return const Ok(null);
-      }
+    return _inSession(requireUnlocked: false, (session, _) async {
+      if (_pendingDrain != null) return const Err(inventoryLockedFailure);
+      return _openWithoutCredential(session);
     });
   }
 
@@ -220,7 +390,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// write lock.
   @useResult
   Future<Result<List<Fingerprint>, SecretFailure>> unbackedSecrets() =>
-      _inSession((_) => _access.unbackedSecrets());
+      _inSession((_, view) => _access.unbackedSecrets(view));
 
   /// Protect the active view, or replace its PIN, from an authenticated
   /// foreground session. Protecting needs a tested backup of every secret the
@@ -228,14 +398,23 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   @useResult
   Future<Result<void, SecretFailure>> setCredential(String candidate) =>
       _inSession(
-        (_) => _access.replaceCredential(candidate),
+        (_, view) => _access.replaceCredential(candidate, view),
         preserveCommittedCommand: true,
       );
+
+  /// Gives the active view a credential of its own with the PIN it already
+  /// has, so rotating or removing either no longer moves the other. No effect
+  /// on a view that does not share one.
+  @useResult
+  Future<Result<void, SecretFailure>> dissociateView() => _inSession(
+    (_, view) => _access.dissociate(view),
+    preserveCommittedCommand: true,
+  );
 
   /// Remove access protection from an authenticated foreground session.
   @useResult
   Future<Result<void, SecretFailure>> removeCredential() => _inSession(
-    (_) => _access.replaceCredential(null),
+    (_, view) => _access.replaceCredential(null, view),
     preserveCommittedCommand: true,
   );
 
@@ -243,29 +422,18 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   @useResult
   Future<Result<void, SecretFailure>> setBackgroundEnabled(bool enabled) =>
       _inSession(
-        (_) => _access.setBackgroundEnabled(enabled),
+        (_, view) => _access.setBackgroundEnabled(enabled, view),
         preserveCommittedCommand: true,
       );
 
   @useResult
   Future<Result<List<RegisteredWallet>, SecretFailure>> listWallets() =>
-      _inSession((_) => _wallets.list(defaultViewId));
+      _inSession((_, view) => _wallets.list(view));
 
   @override
   @useResult
   Future<Result<List<Fingerprint>, SecretFailure>> referencedFingerprints() =>
-      _inSession((_) => _wallets.referencedFingerprints(defaultViewId));
-
-  /// Whether the authorized view has any wallet, including on other networks.
-  /// Seeds held by locally signing wallets of every view. A watch-only origin
-  /// never keeps a seed alive (#2634); a locked session, an unreadable
-  /// inventory or an invalid local reference cannot prove the seed unused.
-  @override
-  Future<Result<Set<Fingerprint>, Failure>> getCustodyFingerprints() async =>
-      switch (await _inSession((_) => _wallets.custodyFingerprints())) {
-        Ok(:final value) => Ok(value),
-        Err() => const Err(SeedReferencesUnavailable()),
-      };
+      _inSession((_, view) => _wallets.referencedFingerprints(view));
 
   @useResult
   Future<Result<bool, SecretFailure>> hasWallets() async =>
@@ -274,35 +442,34 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
   /// Locally signing Bitcoin wallets and their public recovery evidence.
   @useResult
   Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>>
-  recoveryWallets() =>
-      _inSession((_) => _wallets.recoveryWallets(defaultViewId));
+  recoveryWallets() => _inSession((_, view) => _wallets.recoveryWallets(view));
 
   @useResult
   Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
   listDescriptors() =>
-      _inSession((_) => _wallets.descriptors(foregroundView: defaultViewId));
+      _inSession((_, view) => _wallets.descriptors(foregroundView: view));
 
   @useResult
   Future<Result<RegisteredWallet?, SecretFailure>> findWallet(String id) =>
-      _inSession((_) => _wallets.find(defaultViewId, id));
+      _inSession((_, view) => _wallets.find(view, id));
 
   @override
   @useResult
   Future<Result<WalletRegistration, SecretFailure>> readWallet(String id) =>
-      _inSession((_) => _wallets.read(defaultViewId, id));
+      _inSession((_, view) => _wallets.read(view, id));
 
   /// Publishes a joined read only while the session that started it is live.
   /// Exceptions from [read] propagate to the caller.
   @useResult
   Future<Result<T, SecretFailure>> readInSession<T>(
     Future<T> Function() read,
-  ) => _inSession((_) async => Ok(await read()));
+  ) => _inSession((_, _) async => Ok(await read()));
 
   @override
   @useResult
   Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
     Network network,
-  ) => _inSession((_) => _wallets.listForNetwork(defaultViewId, network));
+  ) => _inSession((_, view) => _wallets.listForNetwork(view, network));
 
   /// Reserve the ID before preparing properties owned by other stores. The
   /// callback must not call back into this inventory. If it fails, the wallet
@@ -315,9 +482,9 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     Future<Result<void, SecretFailure>> Function(bool existingSecretMember)?
     prepareProperties,
   }) => _inSession(
-    (_) => _wallets.register(
+    (_, view) => _wallets.register(
       wallet,
-      view: defaultViewId,
+      view: view,
       guard: _guard,
       prepareProperties: prepareProperties,
     ),
@@ -331,8 +498,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     required DateTime? birthday,
     required bool isDefault,
   }) => _inSession(
-    (_) => _wallets.updateProperties(
-      view: defaultViewId,
+    (_, view) => _wallets.updateProperties(
+      view: view,
       id: id,
       label: label,
       birthday: birthday,
@@ -343,7 +510,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
 
   @useResult
   Future<Result<void, SecretFailure>> removeWallet(String id) => _inSession(
-    (_) => _wallets.remove(view: defaultViewId, id: id),
+    (_, view) => _wallets.remove(view: view, id: id),
     preserveCommittedCommand: true,
   );
 
@@ -352,7 +519,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
 
   @useResult
   Future<Result<List<RecordedDerivation>, SecretFailure>> listDerivations() =>
-      _inSession((_) => _derivations.list(defaultViewId));
+      _inSession((_, view) => _derivations.list(view));
 
   @useResult
   Future<Result<RecordedDerivation, SecretFailure>> reserveHexDerivation({
@@ -360,8 +527,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     required int length,
     String? alias,
   }) => _inSession(
-    (_) => _derivations.reserveHex(
-      view: defaultViewId,
+    (_, view) => _derivations.reserveHex(
+      view: view,
       parent: parent,
       length: length,
       alias: alias,
@@ -375,8 +542,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     required Language language,
     String? alias,
   }) => _inSession(
-    (_) => _derivations.reserveMnemonic(
-      view: defaultViewId,
+    (_, view) => _derivations.reserveMnemonic(
+      view: view,
       parent: parent,
       length: length,
       language: language,
@@ -403,8 +570,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     RecordedDerivation derivation,
     DerivationsCompanion change,
   ) => _inSession(
-    (_) => _derivations.update(
-      view: defaultViewId,
+    (_, view) => _derivations.update(
+      view: view,
       parentFingerprint: derivation.parentFingerprint,
       path: derivation.path,
       change: change,
@@ -412,17 +579,28 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
     preserveCommittedCommand: true,
   );
 
+  /// Runs [run] in the session now live, for the view that session opened. The
+  /// view comes from the token, never from the caller: a view id supplied by a
+  /// caller is not a right (D96).
   Future<Result<T, SecretFailure>> _inSession<T>(
-    Future<Result<T, SecretFailure>> Function(int session) run, {
+    Future<Result<T, SecretFailure>> Function(int session, String view) run, {
     bool requireUnlocked = true,
     bool preserveCommittedCommand = false,
+    SessionToken? expect,
   }) async {
-    if (requireUnlocked && !_unlocked) {
+    final token = _authority.current;
+    if (requireUnlocked && token == null) {
       return const Err(inventoryLockedFailure);
     }
+    // A capability taken in an earlier generation names a session that is
+    // over, whoever holds the current one now.
+    if (expect != null && !_authority.isCurrent(expect)) {
+      return const Err(inventorySessionChangedFailure);
+    }
     final session = _session;
+    final view = token?.activeView ?? defaultViewId;
     return runInventorySession(
-      () => run(session),
+      () => run(session, view),
       isCurrent: () => session == _session,
       preserveCommittedCommand: preserveCommittedCommand,
     );
@@ -496,8 +674,8 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
 extension MetadataBackupInventory on SecretsInventory {
   @useResult
   Future<Result<List<MetadataBackupWallet>, SecretFailure>>
-  metadataBackupWallets(Secrets secrets) => _inSession((_) async {
-    final projection = await _wallets.metadataBackupWallets(defaultViewId);
+  metadataBackupWallets(Secrets secrets) => _inSession((_, view) async {
+    final projection = await _wallets.metadataBackupWallets(view);
     if (projection case Err(:final failure)) return Err(failure);
     final wallets =
         (projection as Ok<List<MetadataBackupWallet>, SecretFailure>).value;
@@ -556,7 +734,7 @@ extension MetadataBackupRestore on SecretsInventory {
   /// it starts.
   @useResult
   Future<Result<BackupSession, SecretFailure>> backupSession() => _inSession(
-    (generation) async => Ok(BackupSession._(defaultViewId, this, generation)),
+    (generation, view) async => Ok(BackupSession._(view, this, generation)),
   );
 
   /// The Bitcoin wallets of [network] visible in this session's view, each with
@@ -641,7 +819,7 @@ extension MetadataBackupRestore on SecretsInventory {
     // happened: hiding a committed change behind a failure would let the
     // caller retry or journal the wrong state.
     return _inSession(
-      (_) => run(session.view),
+      (_, _) => run(session.view),
       preserveCommittedCommand: isWrite,
     );
   }

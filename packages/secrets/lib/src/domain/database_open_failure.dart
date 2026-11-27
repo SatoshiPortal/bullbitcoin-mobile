@@ -43,3 +43,11 @@ final class DatabaseCipherUnavailable extends DatabaseOpenFailure {
 final class DatabaseNotReady extends DatabaseOpenFailure {
   const DatabaseNotReady();
 }
+
+/// The file holds a view layout this build does not support: more than the
+/// one initial view, or a view or credential left in an inconsistent shape.
+/// The data is intact. It is never a reason to recover or replace the file,
+/// and a build that supports the layout opens it as it is.
+final class DatabaseViewsUnsupported extends DatabaseOpenFailure {
+  const DatabaseViewsUnsupported();
+}

@@ -41,6 +41,7 @@ flowchart TD
   pkg_startup["startup"]
   pkg_swap_feature["swap_feature"]
   pkg_transactions["transactions"]
+  pkg_views["views"]
   pkg_wallet_import["wallet_import"]
   pkg_wizard["wizard"]
   pkg_address_view --> pkg_label_editor
@@ -306,5 +307,6 @@ flowchart TD
 | [`startup`](features/startup/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_tor`, `bull_ui`, `legacy_storage`, `preferences`, `primitives`, `provisioning`, `screen_privacy`, `secrets`, `swaps` | — |
 | [`swap_feature`](features/swap/pubspec.yaml) | `bull_logger`, `bull_pricer`, `bull_ui`, `electrum`, `fees`, `labels`, `preferences`, `primitives`, `satoshifier`, `secrets`, `spend`, `swaps`, `sync` | — |
 | [`transactions`](features/transactions/pubspec.yaml) | `ark`, `bull_logger`, `bull_payjoin`, `bull_ui`, `exchange`, `fees`, `file_system`, `labels`, `legacy_storage`, `mempool`, `preferences`, `primitives`, `secrets`, `swaps`, `sync` | — |
+| [`views`](features/views/pubspec.yaml) | `bull_ui`, `primitives`, `secrets` | — |
 | [`wallet_import`](features/wallet_import/pubspec.yaml) | `bull_logger`, `bull_ui`, `electrum`, `preferences`, `primitives`, `provisioning`, `satoshifier`, `screen_privacy`, `secrets`, `sync` | `rust_bindings` |
 | [`wizard`](features/wizard/pubspec.yaml) | `background_tasks`, `bull_logger`, `bull_pricer`, `bull_ui`, `exchange`, `notifications`, `novlang`, `preferences`, `primitives` | — |

@@ -84,7 +84,7 @@ final class Secrets {
       // bdk generates English words.
       language: Language.english,
       rejectExisting: true,
-    )).map((info) => _handle(info, scope)),
+    )).map((info) => _handle(info, scope, made: true)),
   );
 
   /// Imports user-supplied words and returns a newly stored secret. The caller must release its input afterwards. Invalid words return [InvalidMnemonicFailure]; an existing secret returns [SecretAlreadyExistsFailure] without changing storage.
@@ -103,7 +103,7 @@ final class Secrets {
       passphrase: passphrase,
       rejectExisting: true,
       acceptOnly: acceptOnly,
-    )).map((info) => _handle(info, scope)),
+    )).map((info) => _handle(info, scope, made: true)),
   );
 
   // ----------------------------------------------------------------- queries
@@ -112,10 +112,14 @@ final class Secrets {
   ///
   /// Validates the stored shape without deriving a seed. A stored value that is not a secret is a [FetchSecretFailure], never a [SecretNotFoundFailure].
   @useResult
-  Future<Result<Secret, SecretFailure>> fetch(Fingerprint id) => _read(
-    (scope) async =>
-        (await _repository.describe(id)).map((info) => _handle(info, scope)),
-  );
+  Future<Result<Secret, SecretFailure>> fetch(Fingerprint id) =>
+      _read((scope) async {
+        if (!await _authority.mayUse(scope.token, id)) {
+          return const Err(secretNotInViewFailure);
+        }
+        return (await _repository.describe(id))
+            .map((info) => _handle(info, scope));
+      });
 
   /// Every stored entry: a usable [Secret] or an [UnreadableSecret] with its failure and, when recoverable, its fingerprint.
   ///
@@ -123,15 +127,22 @@ final class Secrets {
   ///
   /// Reads the keystore with one `readAll`, which on Android is all-or-nothing: an entry the plugin cannot decrypt — in *any* namespace — fails the whole read. A failed listing therefore says nothing about any particular seed and must not be read as one being gone. [fetch] reads one key and is unaffected.
   @useResult
-  Future<Result<List<SecretEntry>, SecretFailure>> list() => _read(
-    (scope) async => (await _repository.describeAll()).map(
-      (listing) => List<SecretEntry>.unmodifiable([
-        ...listing.secrets.map((info) => _handle(info, scope)),
-        for (final entry in listing.unreadable)
-          UnreadableSecret(id: entry.id, failure: entry.failure),
-      ]),
-    ),
-  );
+  Future<Result<List<SecretEntry>, SecretFailure>> list() =>
+      _read((scope) async {
+        final visible = await _authority.visibleTo(scope.token);
+        return (await _repository.describeAll()).map(
+          (listing) => List<SecretEntry>.unmodifiable([
+            for (final info in listing.secrets)
+              if (visible == null || visible.contains(info.id.hex))
+                _handle(info, scope),
+            for (final entry in listing.unreadable)
+              // An entry whose seed cannot be named cannot be placed in a view.
+              if (visible == null ||
+                  (entry.id != null && visible.contains(entry.id!.hex)))
+                UnreadableSecret(id: entry.id, failure: entry.failure),
+          ]),
+        );
+      });
 
   /// Unconditional delete.
   ///
@@ -140,7 +151,12 @@ final class Secrets {
   /// package deliberately does not.
   @useResult
   Future<Result<void, SecretFailure>> trash(Fingerprint id) =>
-      _write((_) => _repository.trash(id));
+      _write((scope) async {
+        if (!await _authority.mayUse(scope.token, id)) {
+          return const Err(secretNotInViewFailure);
+        }
+        return _repository.trash(id);
+      });
 
   /// Whether a secret is already stored under [id].
   ///
@@ -148,7 +164,10 @@ final class Secrets {
   /// loop that a seed read does. Use it only for indicative checks, never to conclude that a wallet's seed has disappeared. [import] checks duplicates atomically.
   @useResult
   Future<Result<bool, SecretFailure>> exists(Fingerprint id) =>
-      _read((_) => _repository.exists(id));
+      _read((scope) async {
+        if (!await _authority.mayUse(scope.token, id)) return const Ok(false);
+        return _repository.exists(id);
+      });
 
   /// Whether these words and passphrase are already stored, comparing full seed bytes. Invalid words return [InvalidMnemonicFailure]; keystore failures remain failures. This preflight does not reserve an import.
   @useResult
@@ -174,7 +193,7 @@ final class Secrets {
       words: words,
       language: language,
       passphrase: passphrase,
-    )).map((info) => info == null ? null : _handle(info, scope)),
+    )).map((info) => info == null ? null : _handle(info, scope, made: true)),
   );
 
   // ----------------------------------------------------------------- preview
@@ -264,7 +283,7 @@ final class Secrets {
         )).map((restored) {
           log.fine('secret.backup.restored');
           return (
-            secret: _handle(restored.info, scope),
+            secret: _handle(restored.info, scope, made: true),
             metadata: restored.metadata,
           );
         }),
@@ -345,12 +364,15 @@ final class Secrets {
     return token == null ? null : SessionScope(_authority, token);
   }
 
-  Secret _handle(SecretInfo info, SessionScope scope) => Secret(
-    info,
-    repository: _repository,
-    scope: scope,
-    scratchDirectory: _scratchDirectory,
-  );
+  Secret _handle(SecretInfo info, SessionScope scope, {bool made = false}) {
+    if (made) _authority.noteMade(scope.token, info.id);
+    return Secret(
+      info,
+      repository: _repository,
+      scope: scope,
+      scratchDirectory: _scratchDirectory,
+    );
+  }
 }
 
 /// What a restored vault gives back: the secret, and the caller's own

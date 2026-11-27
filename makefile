@@ -162,6 +162,7 @@ translations:
 	@$(MAKE) novlang-translations
 	@$(gen-l10n)
 	@(cd features/announcements && $(gen-l10n))
+	@(cd features/views && $(gen-l10n))
 	@(cd features/bitcoin_price && $(gen-l10n))
 	@(cd features/btc_map && $(gen-l10n))
 	@(cd features/bull_exchange && $(gen-l10n))
@@ -236,6 +237,11 @@ drift-migrations:
 	@$(MAKE) recoverbull-drift-migrations
 	@(cd features/announcements && fvm dart run drift_dev make-migrations)
 	@(cd packages/swaps && fvm dart run drift_dev make-migrations)
+
+.PHONY: secrets-multiview-test
+# The multiple-view gate is a compile-time constant, so the suites that need it open run in their own invocation.
+secrets-multiview-test:
+	@(cd packages/secrets && fvm flutter test --dart-define=BULL_MULTI_VIEW=true test/view_*_test.dart test/last_view_test.dart test/supported_view_format_test.dart)
 
 .PHONY: secrets-drift-migrations
 secrets-drift-migrations:
@@ -511,6 +517,7 @@ unit-test:
 	@echo "🏃‍ running unit tests of every workspace member"
 	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh flutter --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
 	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh dart --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@$(MAKE) secrets-multiview-test
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the

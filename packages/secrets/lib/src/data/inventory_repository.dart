@@ -489,6 +489,21 @@ final class InventoryRepository {
                   (row) => row.viewId.equals(view) & row.member.equals(member),
                 ))
                 .getSingleOrNull();
+        if (secret != null && known == null) {
+          // The fingerprint is public and 32 bits wide: naming it is not a
+          // right to the seed. A seed another view holds stays with that view.
+          final heldByAnother =
+              await (_database.select(_database.viewMembers)..where(
+                    (row) =>
+                        row.member.equals(member) &
+                        row.viewId.equals(view).not(),
+                  ))
+                  .get();
+          if (heldByAnother.isNotEmpty) {
+            refused = const SecretOwnedByAnotherViewFailure();
+            return false;
+          }
+        }
         final existingSecretMember = secret != null && known != null;
         if (await _isProtected(view)) {
           final members = await viewSecrets(_database, view);
@@ -612,25 +627,46 @@ final class InventoryRepository {
     orElse: StoreSecretFailure.new,
   );
 
+  /// Deletes the wallet's row, which every view holding its member reads. A
+  /// member another view refers to is not this view's to delete: the call is
+  /// refused and nothing changes.
   Future<Result<void, SecretFailure>> remove({
     required String view,
     required String id,
-  }) => boundary(
-    () => guardedTransaction(_database, () async {
-      final wallet = await _requireWallet(view, id);
-      final removeWallet = _database.delete(_database.wallets)
-        ..where((wallet) => wallet.id.equals(id));
-      await removeWallet.go();
-      if (wallet.secretFingerprint == null) {
-        // Public memberships are references to this row alone. Local
-        // memberships also authorize the parent's other usages and derivations.
-        final removeMembers = _database.delete(_database.viewMembers)
-          ..where((member) => member.member.equals('wallet:$id'));
-        await removeMembers.go();
-      }
-    }),
-    orElse: TrashSecretFailure.new,
-  );
+  }) async {
+    SecretFailure? refused;
+    final result = await boundary(
+      () => guardedTransaction(_database, () async {
+        final wallet = await _requireWallet(view, id);
+        final secret = wallet.secretFingerprint;
+        final member = secret == null ? 'wallet:$id' : 'secret:$secret';
+        final others =
+            await (_database.select(_database.viewMembers)..where(
+                  (row) =>
+                      row.member.equals(member) & row.viewId.equals(view).not(),
+                ))
+                .get();
+        if (others.isNotEmpty) {
+          refused = const SharedWithOtherViewFailure();
+          return;
+        }
+        final removeWallet = _database.delete(_database.wallets)
+          ..where((wallet) => wallet.id.equals(id));
+        await removeWallet.go();
+        if (secret == null) {
+          // Public memberships are references to this row alone. Local
+          // memberships also authorize the parent's other usages and
+          // derivations.
+          final removeMembers = _database.delete(_database.viewMembers)
+            ..where((member) => member.member.equals('wallet:$id'));
+          await removeMembers.go();
+        }
+      }),
+      orElse: TrashSecretFailure.new,
+    );
+    final refusal = refused;
+    return refusal == null ? result : Err(refusal);
+  }
 
   Future<RegisteredWallet> _requireWallet(String view, String id) async =>
       switch (await find(view, id)) {

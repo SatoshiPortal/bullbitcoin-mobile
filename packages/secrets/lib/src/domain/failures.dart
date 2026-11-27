@@ -12,6 +12,52 @@ final class WalletAlreadyRegisteredFailure extends SecretFailure {
   const WalletAlreadyRegisteredFailure() : super('wallet already registered');
 }
 
+/// The secret already belongs to another view. A view takes a secret only from
+/// the view that holds it; a fingerprint naming it is not a right to it.
+final class SecretOwnedByAnotherViewFailure extends SecretFailure {
+  const SecretOwnedByAnotherViewFailure()
+    : super('secret owned by another view');
+}
+
+/// The view was not opened by the authentication that is asking: it may not
+/// exist, or it may belong to a credential this session did not present. The
+/// two are not told apart.
+final class ViewNotOpenFailure extends SecretFailure {
+  const ViewNotOpenFailure() : super('view not open');
+}
+
+/// A view is the last one, and an installation always keeps one.
+final class LastViewFailure extends SecretFailure {
+  const LastViewFailure() : super('last view');
+}
+
+/// The view holds a seed no other view holds. Deleting the view or detaching
+/// the seed would leave it in no view; move it first.
+final class ViewHoldsSecretsFailure extends SecretFailure {
+  const ViewHoldsSecretsFailure() : super('view holds secrets');
+}
+
+/// Another view still refers to what the wallet is made of, so deleting its
+/// row would reach into that view. Detach the member from this view instead.
+final class SharedWithOtherViewFailure extends SecretFailure {
+  const SharedWithOtherViewFailure() : super('shared with another view');
+}
+
+/// A view name must be a non-empty single line of at most 64 characters.
+final class InvalidViewNameFailure extends SecretFailure {
+  const InvalidViewNameFailure() : super('invalid view name');
+}
+
+/// The view is the one in use: switch to another before deleting it.
+final class ViewInUseFailure extends SecretFailure {
+  const ViewInUseFailure() : super('view in use');
+}
+
+/// This build supports one view only. Nothing was written.
+final class ViewsUnsupportedFailure extends SecretFailure {
+  const ViewsUnsupportedFailure() : super('views unsupported');
+}
+
 sealed class SecretFailure extends Failure {
   const SecretFailure([super.logMessage]);
 }

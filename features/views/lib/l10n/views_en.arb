@@ -1,0 +1,100 @@
+{
+  "viewsTitle": "Views",
+  "@viewsTitle": {
+    "description": "Title of the screen listing the views"
+  },
+  "viewsAdd": "Add a view",
+  "@viewsAdd": {
+    "description": "Button that creates a view"
+  },
+  "viewsNameLabel": "Name",
+  "@viewsNameLabel": {
+    "description": "Label of the field naming a view"
+  },
+  "viewsCreate": "Create",
+  "@viewsCreate": {
+    "description": "Confirms the creation of a view"
+  },
+  "viewsCancel": "Cancel",
+  "@viewsCancel": {
+    "description": "Dismisses a sheet without changing anything"
+  },
+  "viewProtected": "Protected",
+  "@viewProtected": {
+    "description": "Badge of a view that requires a PIN"
+  },
+  "viewUnprotected": "No PIN",
+  "@viewUnprotected": {
+    "description": "Badge of a view that does not require a PIN"
+  },
+  "viewActive": "In use",
+  "@viewActive": {
+    "description": "Marks the view currently in use"
+  },
+  "viewSwitchTitle": "Switch view",
+  "@viewSwitchTitle": {
+    "description": "Title of the sheet and the button that switch the view in use"
+  },
+  "viewSwitchTo": "Switch to {name}",
+  "@viewSwitchTo": {
+    "description": "Semantic label of a view in the switcher",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "viewRename": "Rename",
+  "@viewRename": {
+    "description": "Action that renames a view"
+  },
+  "viewRenameTitle": "Rename view",
+  "@viewRenameTitle": {
+    "description": "Title of the sheet that renames a view"
+  },
+  "viewDelete": "Delete",
+  "@viewDelete": {
+    "description": "Action that deletes a view"
+  },
+  "viewDeleteConfirm": "Delete “{name}”? Wallets only this view holds are removed from the app.",
+  "@viewDeleteConfirm": {
+    "description": "Confirmation before deleting a view",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "viewLastCannotDelete": "The last view cannot be deleted.",
+  "@viewLastCannotDelete": {
+    "description": "Refusal to delete the only view"
+  },
+  "viewInUseCannotDelete": "Switch to another view before deleting this one.",
+  "@viewInUseCannotDelete": {
+    "description": "Refusal to delete the view in use"
+  },
+  "viewHoldsSecretsCannotDelete": "This view holds a seed no other view holds. Move it to another view first.",
+  "@viewHoldsSecretsCannotDelete": {
+    "description": "Refusal to delete a view that is the only holder of a seed"
+  },
+  "viewNameInvalid": "Enter a name of up to 64 characters.",
+  "@viewNameInvalid": {
+    "description": "Shown when a view name is empty or too long"
+  },
+  "viewBackgroundTitle": "Sync in the background",
+  "@viewBackgroundTitle": {
+    "description": "Title of the switch that lets a view sync while the app is locked"
+  },
+  "viewBackgroundBody": "Lets this view’s public wallet data sync and notify while the app is locked. Seeds are never read.",
+  "@viewBackgroundBody": {
+    "description": "Explains what the background switch allows"
+  },
+  "viewsUnavailable": "Views are not available right now. Unlock the app and try again.",
+  "@viewsUnavailable": {
+    "description": "Shown when the app is locked or the view is no longer open"
+  },
+  "viewsSomethingWentWrong": "Something went wrong.",
+  "@viewsSomethingWentWrong": {
+    "description": "Generic message for an unexpected failure"
+  }
+}
