@@ -82,6 +82,10 @@ class BullDialog extends StatelessWidget {
     }
     return Dialog(
       backgroundColor: colors.background,
+      insetPadding: const EdgeInsets.symmetric(
+        horizontal: BullSpacing.lg,
+        vertical: BullSpacing.lg,
+      ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(context.bullShapes.sheet),
         side: BorderSide(color: colors.border),

@@ -70,10 +70,22 @@ class BullConfirmDialog extends StatelessWidget {
           Semantics(
             namesRoute: true,
             container: true,
-            child: Text(title, style: type.title.copyWith(color: colors.text)),
+            child: Text(
+              title,
+              style: type.subtitle.copyWith(
+                color: colors.text,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
           const Gap(BullSpacing.sm),
-          Text(message, style: type.body.copyWith(color: colors.text)),
+          Text(
+            message,
+            style: type.label.copyWith(
+              color: colors.textMuted,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
           const Gap(BullSpacing.lg),
           Row(
             children: [
