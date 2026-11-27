@@ -78,6 +78,70 @@ void main() {
     expect(_serviceColor(tester), testBullTheme.error);
     expect(menuBuilds, 1);
   });
+
+  testWidgets('an explicit home icon wins over the service-health glyph', (
+    tester,
+  ) async {
+    // Broadcast: the screen must not subscribe at all, so no listener exists to
+    // drain a single-subscription controller and close it.
+    final health = StreamController<SettingsServiceHealth>.broadcast();
+    addTearDown(health.close);
+    var menuBuilds = 0;
+
+    await tester.pumpWidget(
+      wrapWithTheme(
+        AllSettingsScreen(
+          watchServiceHealth: () => health.stream,
+          menuOf: (_) {
+            menuBuilds++;
+            return (
+              appVersion: '1.2.3',
+              entries: [
+                const SettingsEntry(
+                  id: 'services',
+                  title: 'Services',
+                  breadcrumbs: ['Settings', 'Services'],
+                  icon: Icons.monitor_heart,
+                  open: _noop,
+                  showOnHome: true,
+                  indicatesServiceHealth: true,
+                  homeIcon: Icon(Icons.code, key: Key('custom-home-icon')),
+                ),
+              ],
+            );
+          },
+          labelsOf: (_) => (
+            title: 'Settings',
+            searchHint: 'Search settings',
+            searchStartTyping: 'Start typing',
+            searchNoResults: 'No results',
+            appVersionLabel: 'Version ',
+          ),
+          openSearch: (_) {},
+        ),
+      ),
+    );
+
+    Future<void> emit(SettingsServiceHealth state) async {
+      health.add(state);
+      await tester.pump();
+      await tester.pump();
+    }
+
+    // The entry keeps the icon its owner gave it, and the health subscription
+    // never takes its place.
+    expect(find.byKey(const Key('custom-home-icon')), findsOneWidget);
+    expect(find.byIcon(Icons.monitor_heart), findsNothing);
+    expect(health.hasListener, isFalse);
+    expect(menuBuilds, 1);
+
+    await emit(SettingsServiceHealth.healthy);
+    await emit(SettingsServiceHealth.unhealthy);
+
+    expect(find.byKey(const Key('custom-home-icon')), findsOneWidget);
+    expect(find.byIcon(Icons.monitor_heart), findsNothing);
+    expect(menuBuilds, 1);
+  });
 }
 
 void _noop(BuildContext _) {}
