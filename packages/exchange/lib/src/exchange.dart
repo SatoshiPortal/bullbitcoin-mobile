@@ -780,14 +780,6 @@ final class Exchange {
     ).execute(session);
   }
 
-  /// [loadAccount] for the session signed in now.
-  @useResult
-  Future<Result<UserSummary, ExchangeFailure>> loadCurrentAccount() async =>
-      switch (_access?.session) {
-        null => const Err(ExchangeNotAuthenticatedFailure()),
-        final session => loadAccount(session),
-      };
-
   @useResult
   Future<Result<List<Announcement>, ExchangeFailure>> loadAnnouncements(
     ExchangeSession session,
