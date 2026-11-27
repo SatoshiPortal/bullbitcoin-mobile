@@ -105,13 +105,19 @@ class DeleteWalletUsecase {
   }
 
   /// Best effort: a failure leaves an orphan seed entry but never fails the
-  /// deletion the user asked for.
+  /// deletion the user asked for. A seed without a tested backup stays too:
+  /// keeping key material is recoverable, deleting it is not, and its
+  /// membership still needs a proof before the view can take a PIN.
   Future<void> _deleteOrphanSeed(Fingerprint fingerprint) async {
     switch (await _references.deleteUnreferenced(_secrets, fingerprint)) {
       case Ok():
         log.fine('Seed deleted source=wallet_cleanup');
       case Err(failure: ParentCustodyReferencedFailure()):
         log.fine('Seed cleanup skipped reason=referenced');
+      case Err(failure: ParentCustodyBackupRequiredFailure()):
+        log.warning('Seed cleanup refused reason=backup_required');
+      case Err(failure: ParentCustodyBackupUnavailableFailure()):
+        log.warning('Seed cleanup refused reason=backup_unavailable');
       case Err(failure: ParentCustodyStateFailure()):
         log.warning('Seed cleanup refused reason=custody_state');
       case Err(failure: ParentCustodyMetadataFailure()):
