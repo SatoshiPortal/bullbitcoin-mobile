@@ -7,6 +7,9 @@ import 'package:qr_flutter/qr_flutter.dart';
 final paints = find.byWidgetPredicate(
   (w) => w is CustomPaint && w.painter is QrPainter,
 );
+final quietZone = find.byWidgetPredicate(
+  (w) => w is ColoredBox && w.color == testBullTheme.onSecondaryFixed,
+);
 final longData = 'lnbc1${List.filled(600, 'a').join()}';
 Widget app(
   Widget child, {
@@ -30,7 +33,7 @@ void main() {
       'fractional tight nonsquare constraints retain painted module margin length=${data.length}',
       (tester) async {
         await tester.pumpWidget(app(BullQrCode(data: data, size: 200)));
-        final qr = find.byType(QrImageView);
+        final qr = quietZone;
         final outer = tester.getSize(qr);
         final content = tester.getSize(paints);
         final modules = 17 + 4 * painter(tester).version;
@@ -50,7 +53,7 @@ void main() {
           outer.height - content.height - offset.dy,
           closeTo(4 * step, 0.000001),
         );
-        expect(tester.widget<QrImageView>(qr).gapless, true);
+        expect(painter(tester).gapless, true);
         expect(tester.takeException(), isNull);
       },
     );
@@ -65,9 +68,10 @@ void main() {
           brightness: brightness,
         ),
       );
-      final image = tester.widget<QrImageView>(find.byType(QrImageView));
-      expect(image.backgroundColor, testBullTheme.onSecondaryFixed);
-      expect(image.backgroundColor.a, 1);
+      expect(quietZone, findsOneWidget);
+      final quiet = tester.widget<ColoredBox>(quietZone);
+      expect(quiet.color, testBullTheme.onSecondaryFixed);
+      expect(quiet.color.a, 1);
       expect(painter(tester).eyeStyle.color, testBullTheme.onSurfaceFixed);
       expect(
         painter(tester).dataModuleStyle.color,
@@ -75,6 +79,20 @@ void main() {
       );
     });
   }
+  testWidgets('a rebuild of the same symbol keeps the painter it built', (
+    tester,
+  ) async {
+    await tester.pumpWidget(app(const BullQrCode(data: 'public', size: 100)));
+    final first = painter(tester);
+    await tester.pumpWidget(
+      app(
+        const BullQrCode(data: 'public', size: 100, semanticsLabel: 'Adresse'),
+      ),
+    );
+    expect(identical(painter(tester), first), isTrue);
+    await tester.pumpWidget(app(const BullQrCode(data: 'public2', size: 100)));
+    expect(identical(painter(tester), first), isFalse);
+  });
   testWidgets(
     'new content updates the painted symbol and empty content removes it',
     (tester) async {
