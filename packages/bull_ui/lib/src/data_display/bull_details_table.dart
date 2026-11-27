@@ -4,7 +4,6 @@ import 'package:bull_ui/src/feedback/bull_snack_bar.dart';
 import 'package:bull_ui/src/theme/bull_theme.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:bull_ui/src/layout/gap.dart';
 
 /// A bordered, padded container that stacks [BullDetailsTableItem] rows with
 /// hairline dividers between them.
@@ -52,10 +51,11 @@ class BullDetailsTable extends StatelessWidget {
 ///
 /// Shows [label] on the left and a right-aligned value on the right. The value
 /// is [displayWidget] if provided, otherwise [displayValue] as text, otherwise
-/// a [BullShimmerLine] placeholder. When [copyValue] is non-empty a copy icon
+/// a [BullShimmerLine] placeholder. When [copyValue] is non-empty a copy action
 /// is shown that writes to the clipboard, then calls [onCopied] or, when that
 /// is null, surfaces a [BullSnackBar]. When [expandableChild] is provided an
-/// expand/collapse toggle reveals it below.
+/// expand/collapse action reveals it below and publishes its expanded state.
+/// Both actions are 48×48 targets named after their row.
 class BullDetailsTableItem extends StatefulWidget {
   const BullDetailsTableItem({
     super.key,
@@ -80,8 +80,8 @@ class BullDetailsTableItem extends StatefulWidget {
   /// Right-hand value rendered as text when [displayWidget] is null.
   final String? displayValue;
 
-  /// Value written to the clipboard by the copy icon; the icon is hidden when
-  /// this is null or empty.
+  /// Value written to the clipboard by the copy action; the action is hidden
+  /// when this is null or empty.
   final String? copyValue;
 
   /// Whether to underline the [displayValue] text.
@@ -114,11 +114,37 @@ class BullDetailsTableItem extends StatefulWidget {
 class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
   late bool _expanded = widget.initiallyExpanded;
 
+  void _copy(String value) {
+    Clipboard.setData(ClipboardData(text: value));
+    final onCopied = widget.onCopied;
+    if (onCopied != null) {
+      onCopied();
+    } else {
+      BullSnackBar.show(context, message: widget.copiedMessage);
+    }
+  }
+
+  void _toggleExpanded() {
+    setState(() {
+      _expanded = !_expanded;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.bull;
+    final material = MaterialLocalizations.of(context);
     final value = widget.displayValue;
     final onValueTap = widget.onValueTap;
+    final copyValue = widget.copyValue;
+    final expandable = widget.expandableChild != null;
+    // Material's translated copy/expand wording, qualified with the row label
+    // so that assistive technology reads each action against its own row
+    // instead of announcing several identical "Copy" or "Expand" buttons.
+    final copyLabel = '${material.copyButtonLabel} ${widget.label}';
+    final expandLabel =
+        '${_expanded ? material.expandedIconTapHint : material.collapsedIconTapHint}'
+        ' ${widget.label}';
     final display =
         widget.displayWidget ??
         switch ((value, onValueTap)) {
@@ -181,59 +207,31 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
                 ),
               ),
 
-              // Value + copy icon + expand icon
+              // Value + copy action + expand action
               Expanded(
                 flex: 3,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Flexible(child: display),
-                    const Gap(8),
-                    if (widget.copyValue != null &&
-                        widget.copyValue!.isNotEmpty)
-                      Material(
-                        color: colors.transparent,
-                        child: InkWell(
-                          splashColor: colors.primary.withValues(alpha: 0.12),
-                          onTap: () {
-                            Clipboard.setData(
-                              ClipboardData(text: widget.copyValue!),
-                            );
-                            final onCopied = widget.onCopied;
-                            if (onCopied != null) {
-                              onCopied();
-                            } else {
-                              BullSnackBar.show(
-                                context,
-                                message: widget.copiedMessage,
-                              );
-                            }
-                          },
-                          child: Icon(
-                            Icons.copy_outlined,
-                            size: 18,
-                            color: colors.primary,
-                          ),
-                        ),
+                    // The actions carry their own 48 dp padding, so no extra
+                    // gap is added next to them: the layout stays as wide as
+                    // the two touch targets require.
+                    if (copyValue != null && copyValue.isNotEmpty)
+                      _DetailsTableAction(
+                        label: copyLabel,
+                        icon: Icons.copy_outlined,
+                        color: colors.primary,
+                        onPressed: () => _copy(copyValue),
                       ),
-                    if (widget.expandableChild != null) ...[
-                      const Gap(8),
-                      Material(
-                        color: colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _expanded = !_expanded;
-                            });
-                          },
-                          child: Icon(
-                            _expanded ? Icons.expand_less : Icons.expand_more,
-                            size: 18,
-                            color: colors.primary,
-                          ),
-                        ),
+                    if (expandable)
+                      _DetailsTableAction(
+                        label: expandLabel,
+                        icon: _expanded ? Icons.expand_less : Icons.expand_more,
+                        color: colors.primary,
+                        onPressed: _toggleExpanded,
+                        expanded: _expanded,
                       ),
-                    ],
                   ],
                 ),
               ),
@@ -246,6 +244,50 @@ class _BullDetailsTableItemState extends State<BullDetailsTableItem> {
             child: widget.expandableChild,
           ),
       ],
+    );
+  }
+}
+
+/// A 48×48 icon action of a [BullDetailsTableItem].
+///
+/// The glyph stays 18 dp, but the touch target meets the 48 dp guideline. The
+/// action is announced by [label] and shows it as its tooltip; the inner
+/// button semantics are excluded so the action is a single node named by the
+/// row it belongs to, never a duplicate of the surrounding text. [expanded]
+/// publishes the disclosure state of an expand/collapse action.
+class _DetailsTableAction extends StatelessWidget {
+  const _DetailsTableAction({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onPressed,
+    this.expanded,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onPressed;
+  final bool? expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      enabled: true,
+      focusable: true,
+      label: label,
+      expanded: expanded,
+      onTap: onPressed,
+      excludeSemantics: true,
+      child: IconButton(
+        onPressed: onPressed,
+        tooltip: label,
+        iconSize: 18,
+        padding: const EdgeInsets.all(15),
+        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+        icon: Icon(icon, color: color),
+      ),
     );
   }
 }
