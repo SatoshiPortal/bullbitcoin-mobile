@@ -141,10 +141,7 @@ class _ConnectingPageState extends State<ConnectingPage> {
       child: Scaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
-          leading: IconButton(
-            onPressed: () => recoverBullBack(context),
-            icon: const Icon(Icons.arrow_back),
-          ),
+          leading: const RecoverBullBackButton(),
         ),
         body: SafeArea(
           child: Padding(
