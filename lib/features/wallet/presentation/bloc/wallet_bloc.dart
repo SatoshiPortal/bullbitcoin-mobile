@@ -93,6 +93,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   StreamSubscription? _electrumSyncResultsSubscription;
 
   int _catalogGeneration = 0;
+  int _walletActionsEpoch = 0;
+  bool _walletActionsAdmitted = false;
+  bool _closing = false;
   int _ongoingSwapsReadVersion = 0;
   final Map<String, int> _walletUpdateVersions = {};
   final Map<String, int> _walletReadVersions = {};
@@ -102,8 +105,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   int _electrumWarningGeneration = 0;
   int _backupStatusGeneration = 0;
 
+  /// Lifetime of the legacy catalogue used by the detail action adapter.
+  /// This does not authorize a Secrets or Sync operation.
+  int? get walletActionsGeneration =>
+      _walletActionsAdmitted && !_closing ? _walletActionsEpoch : null;
+
+  void _retireWalletActions() {
+    _walletActionsEpoch++;
+    _walletActionsAdmitted = false;
+  }
+
   @override
   Future<void> close() async {
+    _closing = true;
     final amountDisplayClosed = _amountDisplaySubscription?.cancel();
     await _silentHome.close();
     await amountDisplayClosed;
@@ -173,6 +187,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     add(const SwapServerCheckRequested());
     final catalog = ++_catalogGeneration;
+    _retireWalletActions();
     _silentHome.catalogReplacing();
     final updates = Map<String, int>.of(_walletUpdateVersions);
     emit(
@@ -214,6 +229,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       for (final wallet in wallets) wallet.network.environment,
     });
     _backupStatusGeneration++;
+    _walletActionsAdmitted = true;
     emit(
       state.copyWith(
         status: WalletStatus.success,
@@ -358,6 +374,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       case Ok(:final value):
         wallets = value;
       case Err(:final failure):
+        _retireWalletActions();
         emit(
           state.copyWith(
             status: WalletStatus.failure,
@@ -379,6 +396,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (previousKeys.length != loadedKeys.length ||
         !previousKeys.containsAll(loadedKeys)) {
       _catalogGeneration++;
+      _retireWalletActions();
       _silentHome.catalogReplacing();
       _walletReadVersions.clear();
       emit(
@@ -396,6 +414,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(const RefreshSpWallet());
 
     _backupStatusGeneration++;
+    _walletActionsAdmitted = true;
     emit(
       state.copyWith(
         status: WalletStatus.success,

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/wallet/domain/wallet.dart' as legacy;
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:primitives/primitives.dart' show ScriptType;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:receive/receive.dart';
@@ -9,13 +10,16 @@ import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:send/send.dart' show SendRoute;
 import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:receive/testing.dart';
 import 'package:primitives/primitives.dart'
     show Network, BitcoinNetwork, LiquidNetwork;
 import 'package:bb_mobile/localizations.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSegmented;
+import 'package:bull_ui/bull_ui.dart'
+    show BullSegmented, BullReceiveSendButtons;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,6 +37,9 @@ ReceiveWallet wallet(
 
 class _ReceiveBloc extends MockBloc<ReceiveEvent, ReceiveState>
     implements ReceiveBloc {}
+
+class _WalletBloc extends MockBloc<WalletEvent, WalletState>
+    implements WalletBloc {}
 
 void main() {
   for (final network in <Network>[
@@ -103,27 +110,47 @@ void main() {
     'Liquid regtest Receive button opens the Boltz Lightning route with its wallet',
     (tester) async {
       final selected = wallet(LiquidNetwork.regtest);
+      final legacyWallet = legacy.Wallet(
+        origin: selected.id,
+        network: legacy.Network.liquidRegtest,
+        signer: SignerEntity.local,
+        scriptType: ScriptType.bip84,
+        xpubFingerprint: '',
+        xpub: '',
+        externalPublicDescriptor: '',
+        internalPublicDescriptor: '',
+        signerDevice: null,
+        balanceSat: BigInt.zero,
+      );
+      final catalogue = _WalletBloc();
+      var generation = 1;
+      when(() => catalogue.walletActionsGeneration)
+          .thenAnswer((_) => generation);
+      whenListen(
+        catalogue,
+        const Stream<WalletState>.empty(),
+        initialState: WalletState(wallets: [legacyWallet]),
+      );
       Object? received;
+      Object? sent;
       final router = GoRouter(
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => Scaffold(
-              body: WalletBottomButtons(
-                wallet: legacy.Wallet(
-                  origin: selected.id,
-                  network: legacy.Network.liquidRegtest,
-                  signer: SignerEntity.local,
-                  scriptType: ScriptType.bip84,
-                  xpubFingerprint: '',
-                  xpub: '',
-                  externalPublicDescriptor: '',
-                  internalPublicDescriptor: '',
-                  signerDevice: null,
-                  balanceSat: BigInt.zero,
-                ),
+            builder: (_, _) => BlocProvider<WalletBloc>.value(
+              value: catalogue,
+              child: Scaffold(
+                body: WalletBottomButtons.detail(wallet: legacyWallet),
               ),
             ),
+          ),
+          GoRoute(
+            path: '/send',
+            name: SendRoute.send.name,
+            builder: (_, state) {
+              sent = state.extra;
+              return const Scaffold(body: Text('Send route'));
+            },
           ),
           GoRoute(
             path: '/liquid',
@@ -162,7 +189,30 @@ void main() {
       expect(received, isA<ReceiveWallet>());
       expect((received as ReceiveWallet).network, LiquidNetwork.regtest);
       expect((received as ReceiveWallet).id, '${selected.id}:regtest');
+      expect((received as ReceiveWallet).scriptType, ScriptType.bip84);
+      expect((received as ReceiveWallet).signsLocally, isTrue);
       expect(tester.takeException(), isNull);
+
+      router.pop();
+      await tester.pumpAndSettle();
+      final buttons = tester.widget<BullReceiveSendButtons>(
+        find.byType(BullReceiveSendButtons),
+      );
+      await tester.tap(find.text(loc.walletButtonSend));
+      await tester.pumpAndSettle();
+      expect(find.text('Send route'), findsOneWidget);
+      expect(sent, isNotNull);
+      router.pop();
+      await tester.pumpAndSettle();
+      generation++;
+      received = null;
+      sent = null;
+      buttons.onReceive();
+      buttons.onSend?.call();
+      await tester.pumpAndSettle();
+      expect(received, isNull);
+      expect(sent, isNull);
+      expect(find.byType(WalletBottomButtons), findsOneWidget);
     },
   );
 

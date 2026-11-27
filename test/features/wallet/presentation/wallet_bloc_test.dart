@@ -80,6 +80,7 @@ WalletBloc createBloc(
   ExternalTorProxyDiagnostic externalStatus, {
   GetWalletsUsecase? getWallets,
   SyncWalletsUsecase? refreshSync,
+  CheckWalletSyncingUsecase? checkSyncing,
   ReadWalletUsecase? readWallet,
   OngoingSwaps? getUnconfirmed,
   OverviewAmountDisplay? amountDisplay,
@@ -92,7 +93,7 @@ WalletBloc createBloc(
     swapServerCheck: checkSwapServer,
     readWalletUsecase: readWallet ?? _stubbedReadWallet(),
     getWalletsUsecase: getWallets ?? _MockGetWalletsUsecase(),
-    checkWalletSyncingUsecase: _MockCheckWalletSyncingUsecase(),
+    checkWalletSyncingUsecase: checkSyncing ?? _MockCheckWalletSyncingUsecase(),
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: refreshSync ?? _stubbedSync(),
     ongoingSwaps: getUnconfirmed ?? _MockOngoingSwaps(),
@@ -121,6 +122,45 @@ class _AmountReader implements AmountDisplayPreferencesReader {
 }
 
 void main() {
+  test(
+    'detail action lifetime retires before a replacement read and on close',
+    () async {
+      final wallets = _MockGetWalletsUsecase();
+      final pending = Completer<Result<List<Wallet>, WalletFailure>>();
+      var replacing = false;
+      when(() => wallets.execute()).thenAnswer((_) async {
+        if (replacing) return pending.future;
+        return Ok([_syncedWallet]);
+      });
+      final checking = _MockCheckWalletSyncingUsecase();
+      when(checking.execute).thenReturn(const Ok(false));
+      final bloc = createBloc(
+        _MockExternalTorStatusUsecase(),
+        getWallets: wallets,
+        checkSyncing: checking,
+      );
+      addTearDown(() async {
+        if (!pending.isCompleted) pending.complete(Ok([_syncedWallet]));
+        if (!bloc.isClosed) await bloc.close();
+      });
+      bloc.add(const WalletStarted());
+      await pumpEventQueue();
+      final first = bloc.walletActionsGeneration;
+      expect(first, isNotNull);
+      replacing = true;
+      bloc.add(const WalletStarted());
+      await pumpEventQueue();
+      expect(bloc.walletActionsGeneration, isNull);
+      pending.complete(Ok([_syncedWallet]));
+      await pumpEventQueue();
+      expect(bloc.walletActionsGeneration, isNotNull);
+      expect(bloc.walletActionsGeneration, isNot(first));
+      final closing = bloc.close();
+      expect(bloc.walletActionsGeneration, isNull);
+      await closing;
+    },
+  );
+
   test(
     'amount preferences fail closed, recover, and stop on Wallet close',
     () async {

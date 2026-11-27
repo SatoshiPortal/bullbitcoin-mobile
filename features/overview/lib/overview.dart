@@ -4,6 +4,8 @@ export 'src/domain/overview_amount_display.dart' show OverviewAmountDisplay;
 
 export 'src/ui/widgets/wallet_card.dart';
 export 'src/ui/widgets/eye_toggle.dart' show EyeToggle;
+export 'src/ui/widgets/overview_wallet_buttons.dart'
+    show OverviewReceiveTarget, OverviewWalletButtons;
 export 'src/ui/widgets/home_warning_carousel.dart'
     show
         HomeNetworkWarning,

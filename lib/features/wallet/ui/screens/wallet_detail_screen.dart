@@ -145,7 +145,7 @@ class WalletDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-      bottomActions: WalletBottomButtons(wallet: wallet),
+      bottomActions: WalletBottomButtons.detail(wallet: wallet),
     );
   }
 }
