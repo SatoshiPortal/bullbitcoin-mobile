@@ -45,6 +45,7 @@ class WalletDetailTxsList extends StatelessWidget {
           itemBuilder: (context, tx) => TransactionListItem.transaction(
             tx,
             onDetailsClosed: refreshLabels,
+            walletScoped: true,
           ),
           loadingMessage: context.loc.transactionListLoadingTransactions,
           pendingLabel: context.loc.transactionListPending,
@@ -60,6 +61,7 @@ class WalletDetailTxsList extends StatelessWidget {
                       OngoingSwapsWidget(
                         ongoingSwaps: ongoingSwaps,
                         onDetailsClosed: refreshLabels,
+                        walletScoped: true,
                       ),
                   ],
                 )

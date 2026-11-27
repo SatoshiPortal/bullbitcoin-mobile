@@ -52,6 +52,32 @@ void main() {
     refundTxid: refundTxid,
   );
 
+  group('unfunded', () {
+    test('an unpaid invoice and an unsent lockup are unfunded', () {
+      expect(reverse(SwapStatus.pending).isUnfunded, isTrue);
+      expect(submarine(SwapStatus.pending).isUnfunded, isTrue);
+      expect(chain(SwapStatus.pending).isUnfunded, isTrue);
+    });
+
+    test('a sent lockup is funded even before Boltz sees it', () {
+      expect(
+        submarine(SwapStatus.pending, sendTxid: 'lockup').isUnfunded,
+        isFalse,
+      );
+      expect(chain(SwapStatus.pending, sendTxid: 'lockup').isUnfunded, isFalse);
+    });
+
+    test('a swap past pending is never unfunded', () {
+      for (final status in SwapStatus.values.where(
+        (status) => status != SwapStatus.pending,
+      )) {
+        expect(reverse(status).isUnfunded, isFalse, reason: '$status');
+        expect(submarine(status).isUnfunded, isFalse, reason: '$status');
+        expect(chain(status).isUnfunded, isFalse, reason: '$status');
+      }
+    });
+  });
+
   group('reverse swap', () {
     test('claims Boltz\'s lockup until our claim is recorded', () {
       for (final status in [

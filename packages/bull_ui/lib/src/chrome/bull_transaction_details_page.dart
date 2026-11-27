@@ -17,6 +17,7 @@ class BullTransactionDetailsPage extends StatelessWidget {
     required this.details,
     this.isSwap = false,
     this.appBarBottom,
+    this.header = const [],
     this.afterStatus = const [],
     this.beforeDetails = const [],
     this.afterDetails = const [],
@@ -36,6 +37,9 @@ class BullTransactionDetailsPage extends StatelessWidget {
   final Widget status;
   final Widget amount;
   final Widget details;
+
+  /// Shown first, above the direction badge.
+  final List<Widget> header;
   final List<Widget> afterStatus;
   final List<Widget> beforeDetails;
   final List<Widget> afterDetails;
@@ -69,6 +73,7 @@ class BullTransactionDetailsPage extends StatelessWidget {
               child: Center(
                 child: Column(
                   children: [
+                    ...header,
                     if (isLoading)
                       const BullShimmerBox(height: 72, width: 72)
                     else

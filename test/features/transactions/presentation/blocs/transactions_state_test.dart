@@ -34,6 +34,82 @@ void main() {
     }
   }
 
+  group('unfunded Boltz swaps', () {
+    Swap chain({String? sendTxid, String? pendingLockupTx}) => Swap.chain(
+      id: 'chain',
+      keyIndex: 0,
+      type: SwapType.bitcoinToLiquid,
+      status: SwapStatus.pending,
+      environment: Environment.mainnet,
+      creationTime: DateTime.utc(2026),
+      sendWalletId: 'wallet-1',
+      paymentAddress: 'test-only-address',
+      paymentAmount: 1000,
+      sendTxid: sendTxid,
+      pendingLockupTx: pendingLockupTx,
+      receiveWalletId: 'wallet-2',
+    );
+
+    final unpaidInvoice = Swap.lnReceive(
+      id: 'receive',
+      keyIndex: 1,
+      type: SwapType.lightningToLiquid,
+      status: SwapStatus.pending,
+      environment: Environment.mainnet,
+      creationTime: DateTime.utc(2026),
+      receiveWalletId: 'wallet-2',
+      invoice: '',
+    );
+
+    final unsentSubmarine = Swap.lnSend(
+      id: 'send',
+      keyIndex: 2,
+      type: SwapType.liquidToLightning,
+      status: SwapStatus.pending,
+      environment: Environment.mainnet,
+      creationTime: DateTime.utc(2026),
+      sendWalletId: 'wallet-2',
+      invoice: '',
+      paymentAddress: 'test-only-address',
+      paymentAmount: 1000,
+    );
+
+    List<Transaction> listed(TransactionsState state) =>
+        state.filteredTransactionsByDay?.values
+            .expand((items) => items)
+            .toList() ??
+        [];
+
+    for (final (name, swap) in [
+      ('a chain swap we never locked up for', chain()),
+      ('a submarine swap we never locked up for', unsentSubmarine),
+      ('an invoice nobody has paid', unpaidInvoice),
+    ]) {
+      test('$name is not shown as in progress', () {
+        final transaction = Transaction(swap: swap);
+        final state = TransactionsState(transactions: [transaction]);
+
+        expect(transaction.isUnfundedSwap, isTrue);
+        expect(state.ongoingSwaps, isEmpty);
+        expect(listed(state), isEmpty);
+      });
+    }
+
+    for (final (name, swap) in [
+      ('a broadcast lockup', chain(sendTxid: 'lockup-tx')),
+      ('a signed lockup awaiting broadcast', chain(pendingLockupTx: 'hex')),
+      ('a paid invoice', unpaidInvoice.copyWith(status: SwapStatus.paid)),
+    ]) {
+      test('$name stays in progress', () {
+        final transaction = Transaction(swap: swap);
+        final state = TransactionsState(transactions: [transaction]);
+
+        expect(transaction.isUnfundedSwap, isFalse);
+        expect(state.ongoingSwaps, [transaction]);
+      });
+    }
+  });
+
   test('shows an ongoing Exchange payin in the ongoing section', () {
     final transaction = Transaction(orderSwap: _orderSwap());
     final state = TransactionsState(transactions: [transaction]);

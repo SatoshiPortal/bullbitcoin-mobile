@@ -12,7 +12,7 @@ void main() {
       'features/transactions/lib/src/domain/usecases/get_transactions_usecase.dart',
     ).readAsStringSync();
     expect(source, contains('s.walletId == wt.walletId'));
-    expect(source, contains('wt.amountSat <= s.amountSat'));
+    expect(source, contains('wt.amountSat <= lockedSat'));
     expect(source, contains('swapLegToKeep[s.id]'));
   });
 }

@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:ui' show Tristate;
 
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -168,28 +166,31 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
   }
 
-  Finder button(String label) => find.widgetWithText(BullToolButton, label);
+  Finder viewDetails() => find.text('View details');
 
-  bool selected(WidgetTester tester, String label) =>
-      tester.getSemantics(button(label)).flagsCollection.isSelected ==
-      Tristate.isTrue;
+  Future<void> openStatus(WidgetTester tester) async {
+    final showStatus = find.text('View status');
+    await tester.scrollUntilVisible(
+      showStatus,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(showStatus);
+    await tester.pump();
+  }
 
   for (final (language, label) in [
-    ('en', 'Status'),
-    ('fr', 'Statut'),
-    ('es', 'Estado'),
+    ('en', 'View details'),
+    ('fr', 'Voir les détails'),
+    ('es', 'Ver detalles'),
   ]) {
-    testWidgets('payment view uses the status label in $language', (
-      tester,
-    ) async {
+    testWidgets('the status offers its details in $language', (tester) async {
       await pump(tester, locale: Locale(language));
-      expect(button(label), findsOneWidget);
+      expect(find.text(label), findsOneWidget);
     });
   }
 
-  testWidgets('broadcast keeps its scene and switch across observation', (
-    tester,
-  ) async {
+  testWidgets('broadcast keeps its scene across observation', (tester) async {
     await pump(
       tester,
       query: '?walletId=w1',
@@ -199,17 +200,13 @@ void main() {
       ),
     );
     final transition = find.byType(BullPaymentTransition);
-    final switcher = find.byType(BullPaymentViewSwitch);
-    expect(find.byType(BullPaymentViews), findsOneWidget);
-    expect(switcher, findsOneWidget);
+    expect(find.byType(BullPaymentViewSwitch), findsNothing);
     final oldState = tester.state(transition);
     final sceneRect = tester.getRect(transition);
-    final switchRect = tester.getRect(switcher);
     details.emit(TransactionDetailsState(transaction: pendingSend()));
     await tester.pump();
     expect(tester.state(transition), same(oldState));
     expect(tester.getRect(transition), sceneRect);
-    expect(tester.getRect(switcher), switchRect);
   });
 
   for (final animated in [true, false]) {
@@ -240,7 +237,7 @@ void main() {
     });
   }
 
-  testWidgets('waiting selector fits a narrow screen with enlarged text', (
+  testWidgets('waiting status fits a narrow screen with enlarged text', (
     tester,
   ) async {
     await pump(
@@ -254,9 +251,7 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
-    expect(find.widgetWithText(BullToolButton, 'Status'), findsOneWidget);
-    expect(find.widgetWithText(BullToolButton, 'Details'), findsOneWidget);
-    await tester.tap(find.widgetWithText(BullToolButton, 'Details'));
+    await tester.tap(viewDetails());
     await tester.pump();
     expect(find.text('Waiting for the transaction'), findsOneWidget);
   });
@@ -336,7 +331,7 @@ void main() {
         failure: TransactionNotFoundFailure(),
       ),
     );
-    await tester.tap(button('Details'));
+    await tester.tap(viewDetails());
     await tester.pump();
     expect(find.text('Waiting for the transaction'), findsOneWidget);
     await tester.pump(const Duration(seconds: 20));
@@ -519,7 +514,7 @@ void main() {
       tester,
     ) async {
       await pump(tester);
-      await tester.tap(button('Details'));
+      await tester.tap(viewDetails());
       await tester.pump();
       expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
       await tester.binding.handlePopRoute();
@@ -536,118 +531,66 @@ void main() {
     });
   });
 
-  group('switching', () {
-    testWidgets('the buttons switch between status and details', (
+  group('moving between the views', () {
+    testWidgets('View details and View status move between the views', (
       tester,
     ) async {
       await pump(tester);
-      expect(button('Status'), findsOneWidget);
-      expect(button('Details'), findsOneWidget);
-      expect(find.text('Transaction details'), findsNothing);
+      expect(find.byType(BullPaymentTransition), findsOneWidget);
+      expect(find.byType(BullPaymentViewSwitch), findsNothing);
 
-      await tester.tap(button('Details'));
+      await tester.tap(viewDetails());
       await tester.pump();
       expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
       expect(find.byType(BullPaymentTransition), findsNothing);
-      expect(button('Status'), findsOneWidget);
 
-      await tester.tap(button('Status'));
-      await tester.pump();
+      await openStatus(tester);
       expect(find.byType(BullPaymentTransition), findsOneWidget);
       expect(find.byType(BullTransactionDetailsPage), findsNothing);
     });
 
-    testWidgets('the switch sits at the same place on both views', (
+    testWidgets('back on a status opened from the details returns to them', (
       tester,
     ) async {
-      await pump(tester);
-      expect(find.byType(BullPaymentTransition), findsOneWidget);
-      final onStatus = tester.getRect(find.byType(BullPaymentViewSwitch));
-
-      await tester.tap(button('Details'));
+      await pump(tester, query: '?view=details&returnHome=true');
+      await openStatus(tester);
+      await tester.tap(find.byType(BackButton));
       await tester.pump();
       expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
-      final onDetails = tester.getRect(find.byType(BullPaymentViewSwitch));
-      expect(onDetails, onStatus);
-
-      await tester.tap(button('Status'));
-      await tester.pump();
-      expect(tester.getRect(find.byType(BullPaymentViewSwitch)), onStatus);
-      // Centred on the screen.
-      expect(onStatus.center.dx, 400);
+      expect(_MockActions.homes, 0);
     });
 
-    testWidgets('animations off or unknown shows no switch', (tester) async {
+    testWidgets(
+      'system back on a status opened from the details returns to them',
+      (tester) async {
+        await pump(tester, query: '?view=details&returnHome=true');
+        await openStatus(tester);
+        await tester.binding.handlePopRoute();
+        await tester.pump();
+        expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
+        expect(_MockActions.homes, 0);
+        await tester.binding.handlePopRoute();
+        await tester.pump();
+        expect(_MockActions.homes, 1);
+      },
+    );
+
+    testWidgets('animations off or unknown offers no status', (tester) async {
       await pump(tester, animationsEnabled: false);
       expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
-      expect(find.byType(BullPaymentViewSwitch), findsNothing);
-      expect(find.byType(BullToolButton), findsNothing);
+      expect(find.text('View status', skipOffstage: false), findsNothing);
 
       await pump(tester, animationsEnabled: null);
-      expect(find.byType(BullPaymentViewSwitch), findsNothing);
-    });
-
-    testWidgets('the switch is reachable and activated from the keyboard', (
-      tester,
-    ) async {
-      await pump(tester);
-      expect(find.byType(BullPaymentTransition), findsOneWidget);
-      var guard = 0;
-      bool onDetails() =>
-          FocusManager.instance.primaryFocus?.context
-              ?.findAncestorWidgetOfExactType<BullToolButton>()
-              ?.label ==
-          'Details';
-      while (!onDetails() && guard++ < 20) {
-        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-        await tester.pump();
-      }
-      expect(guard, lessThan(20));
-      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await tester.pump();
-      expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
-      expect(find.byType(BullPaymentTransition), findsNothing);
-    });
-
-    testWidgets('the shown view is primary and selected', (tester) async {
-      await pump(tester);
-      expect(tester.widget<BullToolButton>(button('Status')).primary, isTrue);
-      expect(tester.widget<BullToolButton>(button('Details')).primary, isFalse);
-      expect(selected(tester, 'Status'), isTrue);
-      expect(selected(tester, 'Details'), isFalse);
-
-      await tester.tap(button('Details'));
-      await tester.pump();
-      expect(selected(tester, 'Status'), isFalse);
-      expect(selected(tester, 'Details'), isTrue);
-      expect(tester.widget<BullToolButton>(button('Details')).primary, isTrue);
-    });
-
-    testWidgets('the buttons are semantic buttons', (tester) async {
-      await pump(tester);
-      expect(
-        tester.getSemantics(button('Details')),
-        matchesSemantics(
-          label: 'Details',
-          isButton: true,
-          isEnabled: true,
-          hasEnabledState: true,
-          hasSelectedState: true,
-          hasTapAction: true,
-          isFocusable: true,
-          hasFocusAction: true,
-        ),
-      );
+      expect(find.text('View status', skipOffstage: false), findsNothing);
     });
 
     testWidgets('the hidden status view does not tick', (tester) async {
       await pump(tester, query: '?view=details');
-      await tester.tap(button('Status'));
-      await tester.pump();
+      await openStatus(tester);
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.binding.transientCallbackCount, greaterThan(0));
 
-      await tester.tap(button('Details'));
+      await tester.tap(viewDetails());
       await tester.pump();
       // Past the button's own ink splash, nothing is left ticking.
       await tester.pump(const Duration(seconds: 1));
@@ -672,15 +615,37 @@ void main() {
       expect(details.refreshes, 1);
     });
 
-    testWidgets('carries the same Status | Details pair', (tester) async {
+    testWidgets('offers the status while the payment is in progress', (
+      tester,
+    ) async {
       await pump(tester, query: '?view=details');
       await tester.scrollUntilVisible(
-        button('Status'),
+        find.text('View status'),
         200,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(button('Status'), findsOneWidget);
-      expect(selected(tester, 'Details'), isTrue);
+      expect(find.text('View status'), findsOneWidget);
+    });
+
+    testWidgets('a finished payment opens on the details with no status', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        transaction: Transaction(
+          walletTransaction: walletTx('tx', confirmed: true),
+        ),
+        statusState: TransactionStatusState(
+          animationsEnabled: true,
+          settlement: walletTx('tx', confirmed: true),
+        ),
+      );
+      expect(find.byType(BullTransactionDetailsPage), findsOneWidget);
+      expect(
+        find.byType(BullPaymentTransition, skipOffstage: false),
+        findsNothing,
+      );
+      expect(find.text('View status', skipOffstage: false), findsNothing);
     });
   });
 
@@ -768,8 +733,7 @@ void main() {
         ),
       );
       expect(polls, isEmpty);
-      await tester.tap(button('Status'));
-      await tester.pump();
+      await openStatus(tester);
       expect(polls, ['wallet']);
     });
   });

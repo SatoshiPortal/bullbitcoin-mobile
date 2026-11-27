@@ -271,5 +271,7 @@
   "paymentStatusFailed": "Fallido",
   "paymentStatusExpired": "Expirado",
   "paymentStatusRefundInProgress": "Reembolso en curso",
-  "paymentStatusRefunded": "Reembolsado"
+  "paymentStatusRefunded": "Reembolsado",
+  "transactionDetailViewStatus": "Ver estado",
+  "transactionDetailViewDetails": "Ver detalles"
 }
