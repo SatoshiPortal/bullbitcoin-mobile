@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:ark/ark.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/read_ark_home_usecase.dart';
-import 'package:bb_mobile/features/wallet/presentation/ark_home_cubit.dart';
+import 'package:bull_ark/src/presentation/ark_home_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -21,13 +20,11 @@ ArkSnapshot observation(String server, int amount) => ArkSnapshot(
 void main() {
   test('reload clears the previous owner before publishing new data', () async {
     final replies = <Completer<ArkSnapshot?>>[];
-    final cubit = ArkHomeCubit(
-      ReadArkHomeUsecase(() {
-        final reply = Completer<ArkSnapshot?>();
-        replies.add(reply);
-        return reply.future;
-      }),
-    );
+    final cubit = ArkHomeCubit(() {
+      final reply = Completer<ArkSnapshot?>();
+      replies.add(reply);
+      return reply.future;
+    });
     addTearDown(cubit.close);
     var pending = cubit.load();
     replies.last.complete(observation('first', 42));
@@ -44,13 +41,11 @@ void main() {
     'old or disposed dashboard reads never replace the latest observation',
     () async {
       final replies = <Completer<ArkSnapshot?>>[];
-      final cubit = ArkHomeCubit(
-        ReadArkHomeUsecase(() {
-          final reply = Completer<ArkSnapshot?>();
-          replies.add(reply);
-          return reply.future;
-        }),
-      );
+      final cubit = ArkHomeCubit(() {
+        final reply = Completer<ArkSnapshot?>();
+        replies.add(reply);
+        return reply.future;
+      });
       final first = cubit.load();
       final latest = cubit.load();
       final value = observation('latest', 21);
@@ -71,13 +66,11 @@ void main() {
     'a refresh of the same account keeps its balance until it is read',
     () async {
       final replies = <Completer<ArkSnapshot?>>[];
-      final cubit = ArkHomeCubit(
-        ReadArkHomeUsecase(() {
-          final reply = Completer<ArkSnapshot?>();
-          replies.add(reply);
-          return reply.future;
-        }),
-      );
+      final cubit = ArkHomeCubit(() {
+        final reply = Completer<ArkSnapshot?>();
+        replies.add(reply);
+        return reply.future;
+      });
       addTearDown(cubit.close);
       var pending = cubit.load();
       replies.last.complete(observation('first', 42));

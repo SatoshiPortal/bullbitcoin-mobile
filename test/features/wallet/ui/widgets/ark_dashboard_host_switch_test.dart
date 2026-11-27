@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/ark_dashboard_entry.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
+import 'package:bull_ark/ark_ui.dart' show ArkHomeCard;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,18 +12,10 @@ import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:overview/overview.dart' show WalletCard;
-import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
-import 'package:primitives/primitives.dart' show BitcoinUnit;
 import 'package:secrets/secrets.dart' show WalletInventory;
-import 'package:settings/testing.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/types.dart';
-
-class _Wallet extends MockBloc<WalletEvent, WalletState>
-    implements WalletBloc {}
-
-class _Settings extends MockCubit<SettingsState> implements SettingsCubit {}
 
 class _Inventory extends Mock implements WalletInventory {}
 
@@ -72,26 +62,6 @@ void main() {
 
       final a = host(7070);
       final b = host(7071);
-      final wallet = _Wallet();
-      final settings = _Settings();
-      addTearDown(wallet.close);
-      addTearDown(settings.close);
-      whenListen(
-        wallet,
-        const Stream<WalletState>.empty(),
-        initialState: const WalletState(),
-      );
-      whenListen(
-        settings,
-        const Stream<SettingsState>.empty(),
-        initialState: const SettingsState(
-          storedSettings: SettingsEntity(
-            environment: Environment.regtest,
-            bitcoinUnit: BitcoinUnit.sats,
-            currencyCode: 'CAD',
-          ),
-        ),
-      );
       Future<void> pump(ArkForegroundHost host) => tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.themeData(AppThemeType.light),
@@ -102,12 +72,30 @@ void main() {
             ...appLocalizationsDelegates,
           ],
           home: MultiBlocProvider(
-            providers: [
-              BlocProvider<WalletBloc>.value(value: wallet),
-              BlocProvider<SettingsCubit>.value(value: settings),
-              BitcoinPriceFixture.prices(),
-            ],
-            child: Scaffold(body: ArkDashboardEntry(host: host, refresh: 0)),
+            providers: [BitcoinPriceFixture.prices()],
+            child: Scaffold(
+              body: ArkHomeCard(
+                host: host,
+                refresh: 0,
+                scope: 'same-scope',
+                buildCard:
+                    (
+                      context, {
+                      required title,
+                      required description,
+                      required balanceSat,
+                      required isSyncing,
+                      required onTap,
+                    }) => WalletCard(
+                      tagColor: context.appColors.bitcoinOrange,
+                      title: title,
+                      description: description,
+                      balanceSat: balanceSat,
+                      isSyncing: isSyncing,
+                      onTap: onTap,
+                    ),
+              ),
+            ),
           ),
         ),
       );

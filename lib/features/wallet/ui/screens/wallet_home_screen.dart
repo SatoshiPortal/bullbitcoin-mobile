@@ -6,7 +6,11 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/ark_dashboard_entry.dart';
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as wallet_model;
+import 'package:bull_ark/ark_ui.dart' show ArkHomeCard;
+import 'package:bull_ui/app_theme.dart';
+import 'package:primitives/primitives.dart' show NetworkCapability;
+import 'package:settings/settings.dart' show NetworkCapabilityVisibility;
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:overview/overview.dart';
@@ -112,8 +116,53 @@ class WalletHomeScreen extends StatelessWidget {
           pathParameters: {'walletId': wallet.id},
         ),
       ),
-      ark: (refresh) => ArkDashboardEntry(host: arkHost, refresh: refresh),
+      ark: _arkCard,
       bottomActions: WalletBottomButtons(),
+    );
+  }
+
+  Widget _arkCard(int refresh) {
+    final host = arkHost;
+    if (host == null) return const SizedBox.shrink();
+    return Builder(
+      builder: (context) {
+        final scope = context.select(
+          (WalletBloc bloc) => bloc.state.wallets
+              .where(
+                (wallet) =>
+                    wallet.isDefault &&
+                    wallet.network == wallet_model.Network.bitcoinRegtest,
+              )
+              .map((wallet) => (wallet.id, wallet.masterFingerprint))
+              .toList()
+              .toString(),
+        );
+        return NetworkCapabilityVisibility(
+          capability: NetworkCapability.ark,
+          child: ArkHomeCard(
+            key: ValueKey(scope),
+            host: host,
+            refresh: refresh,
+            scope: scope,
+            buildCard:
+                (
+                  context, {
+                  required title,
+                  required description,
+                  required balanceSat,
+                  required isSyncing,
+                  required onTap,
+                }) => WalletCard(
+                  tagColor: context.appColors.bitcoinOrange,
+                  title: title,
+                  description: description,
+                  balanceSat: balanceSat,
+                  isSyncing: isSyncing,
+                  onTap: onTap,
+                ),
+          ),
+        );
+      },
     );
   }
 }

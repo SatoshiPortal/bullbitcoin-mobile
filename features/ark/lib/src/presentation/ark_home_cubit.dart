@@ -1,10 +1,8 @@
 import 'package:ark/ark.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../domain/usecases/read_ark_home_usecase.dart';
+import 'package:bloc/bloc.dart';
 
 final class ArkHomeCubit extends Cubit<ArkSnapshot?> {
-  final ReadArkHomeUsecase _read;
+  final Future<ArkSnapshot?> Function() _read;
   int _generation = 0;
   ArkHomeCubit(this._read) : super(null);
 
@@ -16,7 +14,7 @@ final class ArkHomeCubit extends Cubit<ArkSnapshot?> {
     if (isClosed) return;
     final generation = ++_generation;
     if (!keep) emit(null);
-    final snapshot = await _read.execute();
+    final snapshot = await _read();
     if (!isClosed && generation == _generation) emit(snapshot);
   }
 

@@ -1,78 +1,41 @@
 import 'dart:async';
 
-import 'package:settings/settings.dart';
-import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:bull_ark/ark_ui.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:primitives/primitives.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:bull_ui/app_theme.dart';
+import '../ark_foreground_host.dart';
+import '../presentation/ark_home_cubit.dart';
+import '../presentation/ark_l10n.dart';
+import '../public/ark_navigation.dart';
 
-import '../../domain/usecases/read_ark_home_usecase.dart';
-
-import 'package:overview/overview.dart' show WalletCard;
-
-import '../../presentation/ark_home_cubit.dart';
-import '../../presentation/bloc/wallet_bloc.dart';
-import '../../domain/wallet.dart' as wallet_model;
-
-class ArkDashboardEntry extends StatelessWidget {
-  final ArkForegroundHost? host;
-  final int refresh;
-  const ArkDashboardEntry({
-    super.key,
-    required this.host,
-    required this.refresh,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final host = this.host;
-    if (host == null) {
-      return const SizedBox.shrink();
-    }
-    final sources = context.select(
-      (WalletBloc bloc) => bloc.state.wallets
-          .where(
-            (wallet) =>
-                wallet.isDefault &&
-                wallet.network == wallet_model.Network.bitcoinRegtest,
-          )
-          .map((wallet) => (wallet.id, wallet.masterFingerprint))
-          .toList()
-          .toString(),
-    );
-    return NetworkCapabilityVisibility(
-      capability: NetworkCapability.ark,
-      child: _ArkDashboardCard(
-        key: ValueKey(sources),
-        host: host,
-        refresh: refresh,
-        scope: sources,
-      ),
-    );
-  }
-}
-
-class _ArkDashboardCard extends StatefulWidget {
+/// Observes the selected Home source without opening Ark or a funding runtime.
+class ArkHomeCard extends StatefulWidget {
   final ArkForegroundHost host;
   final int refresh;
+  final Widget Function(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required int balanceSat,
+    required bool isSyncing,
+    required VoidCallback onTap,
+  })
+  buildCard;
 
   /// The source wallet this card belongs to, for its remembered balance.
   final String scope;
-  const _ArkDashboardCard({
+  const ArkHomeCard({
     super.key,
     required this.host,
     required this.refresh,
     required this.scope,
+    required this.buildCard,
   });
   @override
-  State<_ArkDashboardCard> createState() => _ArkDashboardCardState();
+  State<ArkHomeCard> createState() => _ArkHomeCardState();
 }
 
-class _ArkDashboardCardState extends State<_ArkDashboardCard>
-    with WidgetsBindingObserver {
+class _ArkHomeCardState extends State<ArkHomeCard> with WidgetsBindingObserver {
   late ArkHomeCubit _owner;
 
   /// The balance shown last time, until Ark has one of its own.
@@ -81,7 +44,7 @@ class _ArkDashboardCardState extends State<_ArkDashboardCard>
   late StreamSubscription<void> _changes;
 
   void _listen() {
-    final owner = ArkHomeCubit(ReadArkHomeUsecase(widget.host.homeObservation));
+    final owner = ArkHomeCubit(widget.host.homeObservation);
     _owner = owner;
     _subscription = owner.stream.listen((_) {
       if (mounted && identical(owner, _owner)) setState(() {});
@@ -118,9 +81,10 @@ class _ArkDashboardCardState extends State<_ArkDashboardCard>
   }
 
   @override
-  void didUpdateWidget(_ArkDashboardCard oldWidget) {
+  void didUpdateWidget(ArkHomeCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.host, widget.host)) {
+    if (!identical(oldWidget.host, widget.host) ||
+        oldWidget.scope != widget.scope) {
       unawaited(_subscription.cancel());
       unawaited(_changes.cancel());
       unawaited(_owner.close());
@@ -180,8 +144,8 @@ class _ArkDashboardCardState extends State<_ArkDashboardCard>
     final balance = live ?? _remembered;
     if (balance == null) return const SizedBox.shrink();
     final l10n = arkLocalizationsOf(context);
-    return WalletCard(
-      tagColor: context.appColors.bitcoinOrange,
+    return widget.buildCard(
+      context,
       title: l10n.title,
       description: l10n.arkWalletSubtitle,
       balanceSat: balance.value.toInt(),
