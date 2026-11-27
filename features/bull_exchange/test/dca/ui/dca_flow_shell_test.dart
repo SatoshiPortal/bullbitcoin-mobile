@@ -66,10 +66,7 @@ void main() {
   test('an unverified create is its own page, not the review', () {
     final unverified = applyDca(dcaConfirmingState, const [
       DcaConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
       DcaConfirmChanged(
         ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),

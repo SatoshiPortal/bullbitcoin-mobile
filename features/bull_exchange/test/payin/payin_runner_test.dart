@@ -34,7 +34,7 @@ void main() {
           calls.add('send ${effect.built.txid} ${session.sessionId}');
           return PayinSendAnswered(
             effect.attempt,
-            const GateAdmitted(PayinBroadcastOutcomeUnknown('tx1')),
+            const Ok(PayinBroadcastOutcomeUnknown('tx1')),
           );
         }),
         getOrder: FakeGetOrderUsecase((session, orderId) async {

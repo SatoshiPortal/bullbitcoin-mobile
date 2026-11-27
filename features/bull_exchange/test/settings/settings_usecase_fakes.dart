@@ -104,7 +104,7 @@ final class FakeGetExchangePreferencesUsecase
 
 final class FakeUpdateExchangePreferencesUsecase
     implements UpdateExchangePreferencesUsecase {
-  final Future<GatedWrite<Result<void, ExchangeFailure>>> Function(
+  final Future<Result<void, ExchangeFailure>> Function(
     ExchangeSession? session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
@@ -114,7 +114,7 @@ final class FakeUpdateExchangePreferencesUsecase
   FakeUpdateExchangePreferencesUsecase(this.answer);
 
   @override
-  Future<GatedWrite<Result<void, ExchangeFailure>>> execute(
+  Future<Result<void, ExchangeFailure>> execute(
     ExchangeSession? session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,

@@ -33,7 +33,7 @@ Future<void> _settle() async {
 ExchangePreferencesBloc _bloc(
   List<String> calls, {
   ExchangeSession? session = _session,
-  GatedWrite<Result<void, ExchangeFailure>>? saved,
+  Result<void, ExchangeFailure>? saved,
 }) {
   final bloc = ExchangePreferencesBloc(
     session: session,
@@ -60,7 +60,7 @@ ExchangePreferencesBloc _bloc(
 void main() {
   test('the save is sent for the session the screen opened for', () async {
     final calls = <String>[];
-    final bloc = _bloc(calls, saved: const GateAdmitted(Ok(null)));
+    final bloc = _bloc(calls, saved: const Ok(null));
     await _settle();
     bloc
       ..add(const PreferencesLanguageChosen('FR'))
@@ -74,7 +74,11 @@ void main() {
     final calls = <String>[];
     final bloc = _bloc(
       calls,
-      saved: const GateRefused(WriteGateBusy(FinancialWriteKind.orderConfirm)),
+      saved: const Err(
+        ExchangeWriteBusyFailure(
+          WriteGateBusy(FinancialWriteKind.orderConfirm),
+        ),
+      ),
     );
     await _settle();
     bloc
@@ -83,7 +87,13 @@ void main() {
     await _settle();
     expect(
       bloc.state,
-      const PreferencesSaveFailed(_a, _b, ExchangeWriteBusyFailure()),
+      const PreferencesSaveFailed(
+        _a,
+        _b,
+        ExchangeWriteBusyFailure(
+          WriteGateBusy(FinancialWriteKind.orderConfirm),
+        ),
+      ),
     );
   });
 

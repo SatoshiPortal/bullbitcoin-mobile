@@ -45,7 +45,7 @@ final class PreferencesSavePressed extends PreferencesEvent {
 /// The answer of the one write in flight (Saving is left only by it, so it
 /// needs no tag).
 final class PreferencesSaveAnswered extends PreferencesEvent {
-  final GatedWrite<Result<void, ExchangeFailure>> answer;
+  final Result<void, ExchangeFailure> answer;
 
   const PreferencesSaveAnswered(this.answer);
 }

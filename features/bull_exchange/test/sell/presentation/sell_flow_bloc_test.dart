@@ -47,7 +47,7 @@ final class _Usecases {
       _called(session, 'create ${effect.attempt}');
       return OrderCreateAnswered(
         effect.attempt,
-        GateAdmitted(Ok<Order, ExchangeWriteFailure>(sellOrder())),
+        Ok<Order, ExchangeWriteFailure>(sellOrder()),
       );
     }),
     findCreatedOrder: FakeFindCreatedOrderUsecase((

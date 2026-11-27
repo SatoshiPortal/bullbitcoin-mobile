@@ -102,24 +102,14 @@ sealed class PreferencesState {
         PreferencesSaveAnswered(:final answer),
       ) =>
         StepNext(switch (answer) {
-          GateAdmitted(result: Ok()) =>
+          Ok() =>
             draft == inFlight
                 ? PreferencesSaved(inFlight)
                 : PreferencesEditing(inFlight, draft),
-          GateAdmitted(
-            result: Err(failure: ExchangeNotAuthenticatedFailure()),
-          ) =>
+          Err(failure: ExchangeNotAuthenticatedFailure()) =>
             const PreferencesSignedOut(),
-          GateAdmitted(result: Err(:final failure)) => PreferencesSaveFailed(
-            saved,
-            draft,
-            failure,
-          ),
-          GateRefused() => PreferencesSaveFailed(
-            saved,
-            draft,
-            const ExchangeWriteBusyFailure(),
-          ),
+          // Shown as it is, a refusal of the write gate included.
+          Err(:final failure) => PreferencesSaveFailed(saved, draft, failure),
         }),
       (
         PreferencesLoading() ||

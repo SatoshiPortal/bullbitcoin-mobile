@@ -103,8 +103,7 @@ BuyOrder buyOrder({
   isTestnet: false,
 ) as BuyOrder;
 
-GateAdmitted<Result<T, ExchangeWriteFailure>> buyDone<T>(T value) =>
-    GateAdmitted(Ok(value));
+Result<T, ExchangeGatedWriteFailure> buyDone<T>(T value) => Ok(value);
 
 BuyFlowNext applyBuy(BuyFlowState state, List<BuyFlowEvent> events) {
   var next = BuyFlowNext.stay(state);

@@ -46,7 +46,7 @@ void main() {
       cancelAllOrders: FakeCancelAllLimitOrdersUsecase((session) async {
         sessions.add(session);
         log.add('cancelAll');
-        return const CancelAllDone();
+        return const Ok(null);
       }),
       notifications: notifications.stream,
       refreshRequests: refreshes.stream,

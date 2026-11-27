@@ -3,7 +3,6 @@ import 'package:primitives/primitives.dart' show Result;
 
 import '../domain/entities/order.dart';
 import '../domain/exchange_failure.dart';
-import '../domain/exchange_write_gate.dart';
 import '../domain/payin_broadcast.dart';
 import 'outcome_watch_event.dart';
 import 'payin_state.dart';
@@ -26,7 +25,7 @@ final class PayinBuildAnswered<P> extends PayinEvent<P> {
 /// What the write gate and the send of [attempt] answered.
 final class PayinSendAnswered<P> extends PayinEvent<P> {
   final int attempt;
-  final GatedWrite<PayinBroadcastOutcome> answer;
+  final Result<PayinBroadcastOutcome, ExchangeWriteBusyFailure> answer;
 
   const PayinSendAnswered(this.attempt, this.answer);
 }

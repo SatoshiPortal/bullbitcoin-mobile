@@ -29,9 +29,7 @@ void main() {
       uris,
     ).execute(buySession, send);
     expect(answer.attempt, send.attempt);
-    final result =
-        (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
-            .result;
+    final result = answer.answer;
     expect(
       (result as Ok<BuyOrder, ExchangeWriteFailure>).value.bip21URI,
       'bitcoin:x?pj=y',
@@ -52,8 +50,7 @@ void main() {
       BuyPayjoinUris(),
     ).execute(buySession, _send());
     expect(
-      (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
-          .result,
+      answer.answer,
       isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
         (r) => r.failure,
         'failure',

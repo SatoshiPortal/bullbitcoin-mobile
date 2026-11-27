@@ -42,16 +42,22 @@ sealed class LimitCancelState {
       )
           when answered == attempt =>
         switch (answer) {
-          CancelAnsweredOrder(order: final read) => _settled(read, attempt),
-          CancelAnsweredGateRefused(:final refusal) => StepNext(
+          Ok(value: final read) => _settled(read, attempt),
+          Err(failure: ExchangeWriteBusyFailure(:final refusal)) => StepNext(
             CancelIdle(
               order,
               attempt: attempt,
               problem: CancelGateProblem(refusal),
             ),
           ),
-          CancelAnsweredUnsure() => _checking(order, attempt),
-          CancelAnsweredSessionRejected() => StepNext(
+          // Refused, lost or never sent: the re-read decides.
+          Err(
+            failure: ExchangeWriteRefusedFailure() ||
+                ExchangeWriteOutcomeUnknownFailure() ||
+                ExchangeWriteNotSentFailure(),
+          ) =>
+            _checking(order, attempt),
+          Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
             CancelSessionEnded(order, attempt),
           ),
         },
@@ -252,33 +258,6 @@ final class CancelSessionEnded extends LimitCancelState {
 
   @override
   int get hashCode => Object.hash(CancelSessionEnded, attempt);
-}
-
-/// What a cancel answered, closed.
-@immutable
-sealed class LimitCancelAnswer {
-  const LimitCancelAnswer();
-}
-
-final class CancelAnsweredOrder extends LimitCancelAnswer {
-  final LimitOrder order;
-
-  const CancelAnsweredOrder(this.order);
-}
-
-final class CancelAnsweredGateRefused extends LimitCancelAnswer {
-  final WriteGateRefusal refusal;
-
-  const CancelAnsweredGateRefused(this.refusal);
-}
-
-/// Anything else: the cancel may or may not have taken effect.
-final class CancelAnsweredUnsure extends LimitCancelAnswer {
-  const CancelAnsweredUnsure();
-}
-
-final class CancelAnsweredSessionRejected extends LimitCancelAnswer {
-  const CancelAnsweredSessionRejected();
 }
 
 typedef LimitCancelNext = StepNext<LimitCancelState, LimitCancelEffect>;

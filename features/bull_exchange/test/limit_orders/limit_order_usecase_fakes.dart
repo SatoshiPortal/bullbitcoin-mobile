@@ -1,6 +1,4 @@
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel_state.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_order_state.dart';
-import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list_state.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/create_limit_order_usecase.dart';
@@ -121,7 +119,7 @@ final class FakeGetLimitOrderUsecase implements GetLimitOrderUsecase {
 }
 
 final class FakeCancelLimitOrderUsecase implements CancelLimitOrderUsecase {
-  final Future<LimitCancelAnswer> Function(
+  final Future<Result<LimitOrder, ExchangeGatedWriteFailure>> Function(
     ExchangeSession session,
     String orderId,
   )
@@ -130,8 +128,10 @@ final class FakeCancelLimitOrderUsecase implements CancelLimitOrderUsecase {
   FakeCancelLimitOrderUsecase(this.answer);
 
   @override
-  Future<LimitCancelAnswer> execute(ExchangeSession session, String orderId) =>
-      answer(session, orderId);
+  Future<Result<LimitOrder, ExchangeGatedWriteFailure>> execute(
+    ExchangeSession session,
+    String orderId,
+  ) => answer(session, orderId);
 }
 
 final class FakeGetActiveLimitOrdersUsecase
@@ -151,11 +151,15 @@ final class FakeGetActiveLimitOrdersUsecase
 
 final class FakeCancelAllLimitOrdersUsecase
     implements CancelAllLimitOrdersUsecase {
-  final Future<LimitCancelAllAnswer> Function(ExchangeSession? session) answer;
+  final Future<Result<void, ExchangeGatedWriteFailure>> Function(
+    ExchangeSession? session,
+  )
+  answer;
 
   FakeCancelAllLimitOrdersUsecase(this.answer);
 
   @override
-  Future<LimitCancelAllAnswer> execute(ExchangeSession? session) =>
-      answer(session);
+  Future<Result<void, ExchangeGatedWriteFailure>> execute(
+    ExchangeSession? session,
+  ) => answer(session);
 }

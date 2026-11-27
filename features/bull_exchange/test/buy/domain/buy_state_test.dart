@@ -397,7 +397,7 @@ void main() {
         const BuyOrderChanged(
           OrderCreateAnswered(
             1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+            Err(ExchangeWriteOutcomeUnknownFailure('lost')),
           ),
         ),
       );
@@ -418,9 +418,7 @@ void main() {
             const BuyOrderChanged(
               OrderCreateAnswered(
                 1,
-                GateAdmitted(
-                  Err(ExchangeWriteRefusedFailure(ExchangeRefusal())),
-                ),
+                Err(ExchangeWriteRefusedFailure(ExchangeRefusal())),
               ),
             ),
           )
@@ -519,10 +517,7 @@ void main() {
     test('an unknown confirm verifies; unverified offers only Check again', () {
       final verifying = buyConfirmingState.next(
         const BuyConfirmChanged(
-          ConfirmAnswered(
-            1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-          ),
+          ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
         ),
       );
       expect(verifying.effects, [
@@ -550,7 +545,7 @@ void main() {
         const BuyConfirmChanged(
           ConfirmAnswered(
             1,
-            GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
+            Err(ExchangeWriteRefusedFailure(ExchangeRefusal())),
           ),
         ),
       );
@@ -570,7 +565,9 @@ void main() {
         const BuyConfirmChanged(
           ConfirmAnswered(
             1,
-            GateRefused(WriteGateBusy(FinancialWriteKind.payin)),
+            Err(
+              ExchangeWriteBusyFailure(WriteGateBusy(FinancialWriteKind.payin)),
+            ),
           ),
         ),
       );
@@ -583,7 +580,7 @@ void main() {
             const BuyConfirmChanged(
               ConfirmAnswered(
                 1,
-                GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+                Err(ExchangeWriteOutcomeUnknownFailure('lost')),
               ),
             ),
           )
@@ -680,15 +677,13 @@ void main() {
       BuyOrderChanged(
         OrderCreateAnswered(
           1,
-          GateAdmitted(
-            Err(
-              ExchangeWriteRefusedFailure(
-                ExchangeRefusal(
-                  orderLimit: const ExchangeOrderLimit(
-                    ExchangeOrderAmountBound.minimum,
-                    20,
-                    'CAD',
-                  ),
+          Err(
+            ExchangeWriteRefusedFailure(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
                 ),
               ),
             ),

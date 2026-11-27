@@ -65,31 +65,30 @@ const _states = <_S>[
 ];
 
 final _events = <_E>[
-  const ConfirmAnswered(1, GateAdmitted(Ok(_c))), // 0
+  const ConfirmAnswered(1, Ok(_c)), // 0
+  const ConfirmAnswered(1, Err(ExchangeWriteRefusedFailure(_refusal))), // 1
   const ConfirmAnswered(
     1,
-    GateAdmitted(Err(ExchangeWriteRefusedFailure(_refusal))),
-  ), // 1
-  const ConfirmAnswered(
-    1,
-    GateAdmitted(
-      Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.signedOut)),
-    ),
+    Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.signedOut)),
   ), // 2
   const ConfirmAnswered(
     1,
-    GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('timeout'))),
+    Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
   ), // 3
   const ConfirmAnswered(
     1,
-    GateAdmitted(
-      Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
-    ),
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
   ), // 4
-  const ConfirmAnswered(1, GateRefused(_busy)), // 5
-  ConfirmAnswered(1, GateRefused(WriteGateUnsettled(_ownEntry))), // 6
-  ConfirmAnswered(1, GateRefused(WriteGateUnsettled(_otherEntry))), // 7
-  const ConfirmAnswered(2, GateAdmitted(Ok(_c))), // 8
+  const ConfirmAnswered(1, Err(ExchangeWriteBusyFailure(_busy))), // 5
+  ConfirmAnswered(
+    1,
+    Err(ExchangeWriteBusyFailure(WriteGateUnsettled(_ownEntry))),
+  ), // 6
+  ConfirmAnswered(
+    1,
+    Err(ExchangeWriteBusyFailure(WriteGateUnsettled(_otherEntry))),
+  ), // 7
+  const ConfirmAnswered(2, Ok(_c)), // 8
   const ConfirmVerified(1, ConfirmSeenApplied(_c)), // 9
   const ConfirmVerified(1, ConfirmSeenNotApplied()), // 10
   const ConfirmVerified(
@@ -213,7 +212,10 @@ void main() {
     }
     final events = [
       ..._events,
-      const ConfirmAnswered<String, String>(2, GateRefused(_busy)),
+      const ConfirmAnswered<String, String>(
+        2,
+        Err(ExchangeWriteBusyFailure(_busy)),
+      ),
     ];
     while (frontier.isNotEmpty) {
       final next = <_S>[];
@@ -291,6 +293,7 @@ void main() {
         session,
         FinancialWriteKind.accelerate,
         () => other.future,
+        refused: (r) => r,
       );
       final answered = await runServerConfirm<String, String>(
         gate: gate,

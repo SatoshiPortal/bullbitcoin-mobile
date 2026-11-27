@@ -88,8 +88,7 @@ WithdrawFlowNext _apply(
   return next;
 }
 
-GateAdmitted<Result<T, ExchangeWriteFailure>> _done<T>(T value) =>
-    GateAdmitted(Ok(value));
+Result<T, ExchangeGatedWriteFailure> _done<T>(T value) => Ok(value);
 
 final _loading = withdrawFlowStart(_session).state;
 final _amount = _apply(_loading, [
@@ -368,7 +367,7 @@ void main() {
         const WithdrawOrderChanged(
           OrderCreateAnswered(
             1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('timeout'))),
+            Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
           ),
         ),
       );
@@ -414,11 +413,7 @@ void main() {
         const WithdrawOrderChanged(
           OrderCreateAnswered(
             1,
-            GateAdmitted(
-              Err(
-                ExchangeWriteRefusedFailure(ExchangeRefusal(rpcCode: -32000)),
-              ),
-            ),
+            Err(ExchangeWriteRefusedFailure(ExchangeRefusal(rpcCode: -32000))),
           ),
         ),
       );
@@ -468,10 +463,7 @@ void main() {
         'Back then leaves the flow', () {
       final unknown = _confirming.next(
         const WithdrawConfirmChanged(
-          ConfirmAnswered(
-            1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-          ),
+          ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
         ),
       );
       expect(
@@ -503,7 +495,7 @@ void main() {
             const WithdrawConfirmChanged(
               ConfirmAnswered(
                 1,
-                GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+                Err(ExchangeWriteOutcomeUnknownFailure('lost')),
               ),
             ),
           )
@@ -595,15 +587,13 @@ void main() {
       WithdrawOrderChanged(
         OrderCreateAnswered(
           1,
-          GateAdmitted(
-            Err(
-              ExchangeWriteRefusedFailure(
-                ExchangeRefusal(
-                  orderLimit: const ExchangeOrderLimit(
-                    ExchangeOrderAmountBound.minimum,
-                    20,
-                    'CAD',
-                  ),
+          Err(
+            ExchangeWriteRefusedFailure(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
                 ),
               ),
             ),

@@ -84,29 +84,22 @@ const _states = <_S>[
 ];
 
 const _events = <_E>[
-  OrderCreateAnswered(1, GateAdmitted(Ok(_o1))), // 0
+  OrderCreateAnswered(1, Ok(_o1)), // 0
+  OrderCreateAnswered(1, Err(ExchangeWriteRefusedFailure(_refusal))), // 1
   OrderCreateAnswered(
     1,
-    GateAdmitted(Err(ExchangeWriteRefusedFailure(_refusal))),
-  ), // 1
-  OrderCreateAnswered(
-    1,
-    GateAdmitted(
-      Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.unreachable)),
-    ),
+    Err(ExchangeWriteNotSentFailure(ExchangeNotSentReason.unreachable)),
   ), // 2
   OrderCreateAnswered(
     1,
-    GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('timeout'))),
+    Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
   ), // 3
   OrderCreateAnswered(
     1,
-    GateAdmitted(
-      Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
-    ),
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
   ), // 4
-  OrderCreateAnswered(1, GateRefused(_busy)), // 5
-  OrderCreateAnswered(2, GateAdmitted(Ok(_o1))), // 6
+  OrderCreateAnswered(1, Err(ExchangeWriteBusyFailure(_busy))), // 5
+  OrderCreateAnswered(2, Ok(_o1)), // 6
   OrderFindAnswered(1, Ok(_o1)), // 7
   OrderFindAnswered(1, Err(ExchangeMissingFailure())), // 8
   OrderFindAnswered(
@@ -136,9 +129,7 @@ const _events = <_E>[
   OrderBackPressed(), // 21
   OrderCreateAnswered(
     1,
-    GateAdmitted(
-      Err(ExchangeWriteRefusedFailure(ExchangeRefusal(orderLimit: _limit))),
-    ),
+    Err(ExchangeWriteRefusedFailure(ExchangeRefusal(orderLimit: _limit))),
   ), // 22
 ];
 
@@ -284,7 +275,10 @@ void main() {
     reached.add(frontier.single.runtimeType);
     final events = [
       ..._events,
-      const OrderCreateAnswered<String, _Order>(2, GateRefused(_busy)),
+      const OrderCreateAnswered<String, _Order>(
+        2,
+        Err(ExchangeWriteBusyFailure(_busy)),
+      ),
     ];
     final seen = <_S>{frontier.single};
     while (frontier.isNotEmpty) {
@@ -344,6 +338,7 @@ void main() {
           session,
           FinancialWriteKind.withdrawal,
           () => other.future,
+          refused: (r) => r,
         );
         var sent = false;
         final answered = await runOrderCreate<String, _Order>(

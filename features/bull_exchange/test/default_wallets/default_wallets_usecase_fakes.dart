@@ -34,8 +34,7 @@ final class FakeValidateDefaultWalletDestinationUsecase
 }
 
 final class FakeSaveDefaultWalletUsecase implements SaveDefaultWalletUsecase {
-  final Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>>
-  Function(
+  final Future<Result<DefaultWallet, ExchangeGatedWriteFailure>> Function(
     ExchangeSession session, {
     required BtcNetwork network,
     required String address,
@@ -46,7 +45,7 @@ final class FakeSaveDefaultWalletUsecase implements SaveDefaultWalletUsecase {
   FakeSaveDefaultWalletUsecase(this.answer);
 
   @override
-  Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>> execute(
+  Future<Result<DefaultWallet, ExchangeGatedWriteFailure>> execute(
     ExchangeSession session, {
     required BtcNetwork network,
     required String address,
@@ -60,7 +59,7 @@ final class FakeSaveDefaultWalletUsecase implements SaveDefaultWalletUsecase {
 }
 
 final class FakeUnsetDefaultWalletUsecase implements UnsetDefaultWalletUsecase {
-  final Future<GatedWrite<Result<void, ExchangeWriteFailure>>> Function(
+  final Future<Result<void, ExchangeGatedWriteFailure>> Function(
     ExchangeSession session, {
     required BtcNetwork network,
     required String recipientId,
@@ -71,7 +70,7 @@ final class FakeUnsetDefaultWalletUsecase implements UnsetDefaultWalletUsecase {
   FakeUnsetDefaultWalletUsecase(this.answer);
 
   @override
-  Future<GatedWrite<Result<void, ExchangeWriteFailure>>> execute(
+  Future<Result<void, ExchangeGatedWriteFailure>> execute(
     ExchangeSession session, {
     required BtcNetwork network,
     required String recipientId,

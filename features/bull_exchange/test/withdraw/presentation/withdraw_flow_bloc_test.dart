@@ -18,8 +18,8 @@ import 'package:primitives/primitives.dart';
 final class _Usecases {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<Result<WithdrawOrder, ExchangeWriteFailure>>>
-  confirmAnswer = Completer();
+  Completer<Result<WithdrawOrder, ExchangeGatedWriteFailure>> confirmAnswer =
+      Completer();
   Result<Order, ExchangeReadFailure> reread = Ok(withdrawOrder());
 
   void _called(ExchangeSession session, String call) {
@@ -43,10 +43,7 @@ final class _Usecases {
     }),
     createOrder: FakeCreateWithdrawOrderUsecase((session, effect) async {
       _called(session, 'create ${effect.attempt}');
-      return OrderCreateAnswered(
-        effect.attempt,
-        GateAdmitted(Ok(withdrawOrder())),
-      );
+      return OrderCreateAnswered(effect.attempt, Ok(withdrawOrder()));
     }),
     findCreatedOrder: FakeFindCreatedOrderUsecase((
       session,
@@ -124,7 +121,7 @@ void main() {
     expect(bloc.state, isA<WithdrawConfirming>());
     usecases.reread = Ok(withdrawOrder(status: OrderStatus.inProgress));
     usecases.confirmAnswer.complete(
-      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+      const Err(ExchangeWriteOutcomeUnknownFailure('lost')),
     );
     await _settle();
     await _settle();

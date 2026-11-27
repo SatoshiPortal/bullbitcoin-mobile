@@ -30,7 +30,7 @@ final _review = _apply(_wallets, const [
 ]);
 final _activating = _apply(_review, const [AutoBuyActivatePressed()]);
 final _done = _apply(_activating, const [
-  AutoBuyConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(true)))),
+  AutoBuyConfirmChanged(ConfirmAnswered(1, Ok(true))),
 ]);
 const _ended = AutoBuySessionEnded();
 const _closed = AutoBuyClosed();
@@ -57,9 +57,7 @@ final _events = <String, AutoBuyFlowEvent>{
   'kycReloaded': AutoBuyKycReloaded(Ok(_ctx)),
   'walletsContinued': const AutoBuyWalletsContinued(autoBuyWallets),
   'activate': const AutoBuyActivatePressed(),
-  'confirm': const AutoBuyConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(Ok(true))),
-  ),
+  'confirm': const AutoBuyConfirmChanged(ConfirmAnswered(1, Ok(true))),
   'session': const AutoBuySessionChanged(autoBuyOtherSession),
 };
 
@@ -229,10 +227,7 @@ void main() {
     ]);
     final unknown = next.state.next(
       const AutoBuyConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
     );
     expect(unknown.effects, [

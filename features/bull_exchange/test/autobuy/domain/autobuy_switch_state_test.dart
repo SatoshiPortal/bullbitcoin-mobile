@@ -22,10 +22,7 @@ const _on = SwitchShown(active: true, restricted: false);
 final _deactivating = _apply(_on, const [SwitchDeactivatePressed()]);
 final _unverified = _apply(_deactivating, const [
   SwitchConfirmChanged(
-    ConfirmAnswered(
-      1,
-      GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-    ),
+    ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
   ),
   SwitchConfirmChanged(
     ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),
@@ -45,10 +42,7 @@ final _events = <String, AutoBuySwitchEvent>{
   'deactivate': const SwitchDeactivatePressed(),
   'retry': const SwitchRetryPressed(),
   'confirm': const SwitchConfirmChanged(
-    ConfirmAnswered(
-      1,
-      GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-    ),
+    ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
   ),
 };
 
@@ -95,10 +89,8 @@ void main() {
         const SwitchConfirmChanged(
           ConfirmAnswered(
             1,
-            GateAdmitted(
-              Err(
-                ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
-              ),
+            Err(
+              ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
             ),
           ),
         ),
@@ -127,7 +119,7 @@ void main() {
     'a verified write shows the re-read and refreshes the account (AB-3)',
     () {
       final verified = _deactivating.next(
-        const SwitchConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(false)))),
+        const SwitchConfirmChanged(ConfirmAnswered(1, Ok(false))),
       );
       expect(
         verified.state,
@@ -152,10 +144,7 @@ void main() {
   test('a write the re-read shows not applied says so, offered again', () {
     final failed = _apply(_deactivating, const [
       SwitchConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
       SwitchConfirmChanged(ConfirmVerified(1, ConfirmSeenNotApplied())),
     ]);

@@ -179,15 +179,13 @@ void main() {
       PayOrderChanged(
         OrderCreateAnswered(
           1,
-          GateAdmitted(
-            Err(
-              ExchangeWriteRefusedFailure(
-                ExchangeRefusal(
-                  orderLimit: const ExchangeOrderLimit(
-                    ExchangeOrderAmountBound.minimum,
-                    20,
-                    'CAD',
-                  ),
+          Err(
+            ExchangeWriteRefusedFailure(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
                 ),
               ),
             ),

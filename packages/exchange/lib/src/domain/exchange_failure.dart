@@ -1,6 +1,7 @@
 import 'package:primitives/primitives.dart' show Failure;
 
 import 'entities/btc_network.dart';
+import 'exchange_write_gate.dart' show WriteGateRefusal;
 
 part 'exchange_call_failure.dart';
 part '../recipients/domain/recipients_failure.dart';
@@ -211,10 +212,21 @@ final class ExchangeDocumentUnreadableFailure extends ExchangeFailure {
   const ExchangeDocumentUnreadableFailure([super.logMessage]);
 }
 
-/// Another exchange write of the account is running, or the journal can't
-/// tell whether one is unsettled: nothing was sent.
-final class ExchangeWriteBusyFailure extends ExchangeFailure {
-  const ExchangeWriteBusyFailure();
+/// The account's write gate refused the write ([refusal]: another exchange
+/// write of the account is running, one is unsettled, or the journal can't
+/// tell): nothing was sent.
+final class ExchangeWriteBusyFailure extends ExchangeFailure
+    implements ExchangeGatedWriteFailure {
+  final WriteGateRefusal refusal;
+
+  const ExchangeWriteBusyFailure(this.refusal);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExchangeWriteBusyFailure && other.refusal == refusal;
+
+  @override
+  int get hashCode => Object.hash(ExchangeWriteBusyFailure, refusal);
 }
 
 /// The COP payment link could not be handed to a browser, so the user cannot

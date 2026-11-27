@@ -2,7 +2,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_failure.dart';
-import '../domain/exchange_write_gate.dart';
 
 @immutable
 sealed class OrderStepEvent<R, O> {
@@ -12,7 +11,7 @@ sealed class OrderStepEvent<R, O> {
 /// What the write gate and the create of [attempt] answered.
 final class OrderCreateAnswered<R, O> extends OrderStepEvent<R, O> {
   final int attempt;
-  final GatedWrite<Result<O, ExchangeWriteFailure>> answer;
+  final Result<O, ExchangeGatedWriteFailure> answer;
 
   const OrderCreateAnswered(this.attempt, this.answer);
 }

@@ -69,7 +69,7 @@ final _review = _apply(_amount, const [
 final _live = _apply(_review, [LimitReviewRateArrived(1, Ok(_rate))]).state;
 final _creating = _apply(_live, const [LimitConfirmPressed()]).state;
 final _doneState = _apply(_creating, [
-  LimitConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(limitOrder())))),
+  LimitConfirmChanged(ConfirmAnswered(1, Ok(limitOrder()))),
 ]).state;
 const _sessionEnded = LimitSessionEnded();
 const _closedState = LimitClosed();
@@ -106,9 +106,7 @@ final _events = <String, LimitFlowEvent>{
   'detourLoaded': LimitDetourLoaded(Ok(_ctx)),
   'reviewRate': LimitReviewRateArrived(1, Ok(_rate)),
   'confirmPressed': const LimitConfirmPressed(),
-  'confirm': LimitConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(Ok(limitOrder()))),
-  ),
+  'confirm': LimitConfirmChanged(ConfirmAnswered(1, Ok(limitOrder()))),
 };
 
 /// Every (state, event) pair that is not a stay, and the state it leads to.
@@ -582,10 +580,7 @@ void main() {
     test('an unknown outcome re-reads and never sends again', () {
       final unknown = _creating.next(
         const LimitConfirmChanged(
-          ConfirmAnswered(
-            1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-          ),
+          ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
         ),
       );
       expect(
@@ -639,11 +634,9 @@ void main() {
             const LimitConfirmChanged(
               ConfirmAnswered(
                 1,
-                GateAdmitted(
-                  Err(
-                    ExchangeWriteRefusedFailure(
-                      ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
-                    ),
+                Err(
+                  ExchangeWriteRefusedFailure(
+                    ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
                   ),
                 ),
               ),

@@ -24,11 +24,11 @@ DefaultWalletsBloc _bloc({
   ExchangeSession? session = _s,
   required List<String> calls,
   Future<Result<DefaultWallets, ExchangeReadFailure>> Function()? read,
-  Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>> Function(
+  Future<Result<DefaultWallet, ExchangeGatedWriteFailure>> Function(
     String? existingRecipientId,
   )?
   save,
-  Future<GatedWrite<Result<void, ExchangeWriteFailure>>> Function()? unset,
+  Future<Result<void, ExchangeGatedWriteFailure>> Function()? unset,
   Future<Result<DefaultWallets, ExchangeReadFailure>> Function()? verify,
 }) => DefaultWalletsBloc(
   session: session,
@@ -91,9 +91,7 @@ void main() {
       read: () async => const Ok(DefaultWallets()),
       save: (existingRecipientId) async {
         saves.add(existingRecipientId);
-        return const GateAdmitted(
-          Err(ExchangeWriteOutcomeUnknownFailure('receive timeout')),
-        );
+        return const Err(ExchangeWriteOutcomeUnknownFailure('receive timeout'));
       },
       verify: () async => const Ok(created),
     );
@@ -126,7 +124,7 @@ void main() {
   });
 
   test('a second unset while one runs sends nothing (DW-4)', () async {
-    final release = Completer<GatedWrite<Result<void, ExchangeWriteFailure>>>();
+    final release = Completer<Result<void, ExchangeGatedWriteFailure>>();
     final calls = <String>[];
     final bloc = _bloc(
       calls: calls,
@@ -148,7 +146,7 @@ void main() {
       ..add(const SlotUnsetPressed(_btc));
     await _settle();
     expect(calls, ['read s', 'unset s bitcoin r-1']);
-    release.complete(const GateAdmitted(Ok(null)));
+    release.complete(const Ok(null));
     await _settle();
     await _settle();
     expect(

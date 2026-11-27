@@ -32,9 +32,7 @@ final class _Calls {
         _called(session, 'write ${effect.target.enabled} ${effect.attempt}');
         return ConfirmAnswered(
           effect.attempt,
-          const GateAdmitted(
-            Err(ExchangeWriteOutcomeUnknownFailure('verify after write')),
-          ),
+          const Err(ExchangeWriteOutcomeUnknownFailure('verify after write')),
         );
       });
 

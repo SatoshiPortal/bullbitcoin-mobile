@@ -148,10 +148,7 @@ void main() {
     final verifying = _apply(_live, const [
       LimitConfirmPressed(),
       LimitConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
     ]);
     final labels = await _pump(tester, verifying, []);
@@ -165,11 +162,9 @@ void main() {
       LimitConfirmChanged(
         ConfirmAnswered(
           1,
-          GateAdmitted(
-            Err(
-              ExchangeWriteRefusedFailure(
-                ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
-              ),
+          Err(
+            ExchangeWriteRefusedFailure(
+              ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
             ),
           ),
         ),
@@ -183,7 +178,7 @@ void main() {
     final events = <LimitFlowEvent>[];
     final done = _apply(_live, [
       const LimitConfirmPressed(),
-      LimitConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(limitOrder())))),
+      LimitConfirmChanged(ConfirmAnswered(1, Ok(limitOrder()))),
     ]);
     final labels = await _pump(tester, done, events);
     await tester.tap(_button(labels.limitOrdersViewOrder));

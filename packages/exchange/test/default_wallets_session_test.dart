@@ -132,14 +132,7 @@ void main() {
             walletType: BtcNetwork.bitcoin,
             address: 'bc1qsaved',
           );
-      expect(
-        read,
-        isA<GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>>().having(
-          (g) => g.result,
-          'result',
-          isA<Ok<DefaultWallet, ExchangeWriteFailure>>(),
-        ),
-      );
+      expect(read, isA<Ok<DefaultWallet, ExchangeGatedWriteFailure>>());
     });
 
     test('is refused while another write of the account runs', () async {
@@ -149,6 +142,7 @@ void main() {
         _session,
         FinancialWriteKind.orderConfirm,
         () => release.future,
+        refused: (r) => r,
       );
       final write = await _exchange(gate: gate).saveSessionDefaultWallet(
         _session,
@@ -157,10 +151,14 @@ void main() {
       );
       expect(
         write,
-        isA<GateRefused<Result<DefaultWallet, ExchangeWriteFailure>>>().having(
-          (g) => g.refusal,
-          'refusal',
-          const WriteGateBusy(FinancialWriteKind.orderConfirm),
+        isA<Err<DefaultWallet, ExchangeGatedWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteBusyFailure>().having(
+            (f) => f.refusal,
+            'refusal',
+            const WriteGateBusy(FinancialWriteKind.orderConfirm),
+          ),
         ),
       );
       release.complete('done');
@@ -175,17 +173,13 @@ void main() {
       );
       expect(
         write,
-        isA<GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>>().having(
-          (g) => g.result,
-          'result',
-          isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
-            (r) => r.failure,
-            'failure',
-            isA<ExchangeWriteNotSentFailure>().having(
-              (w) => w.reason,
-              'reason',
-              ExchangeNotSentReason.sessionChanged,
-            ),
+        isA<Err<DefaultWallet, ExchangeGatedWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>().having(
+            (w) => w.reason,
+            'reason',
+            ExchangeNotSentReason.sessionChanged,
           ),
         ),
       );
@@ -206,14 +200,7 @@ void main() {
               walletType: BtcNetwork.bitcoin,
               address: 'bc1qsaved',
             );
-        expect(
-          write,
-          isA<GateAdmitted<Result<void, ExchangeWriteFailure>>>().having(
-            (g) => g.result,
-            'result',
-            same(answer),
-          ),
-        );
+        expect(write, same(answer));
       });
     }
 
@@ -226,14 +213,10 @@ void main() {
       );
       expect(
         write,
-        isA<GateAdmitted<Result<void, ExchangeWriteFailure>>>().having(
-          (g) => g.result,
-          'result',
-          isA<Err<void, ExchangeWriteFailure>>().having(
-            (r) => r.failure,
-            'failure',
-            isA<ExchangeWriteNotSentFailure>(),
-          ),
+        isA<Err<void, ExchangeGatedWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>(),
         ),
       );
     });

@@ -116,14 +116,7 @@ void main() {
       _policy(sellEnabled: true),
     ).execute(sellSession, _toBalance());
     expect(answer.attempt, 1);
-    expect(
-      answer.answer,
-      isA<GateAdmitted<Result<Order, ExchangeWriteFailure>>>().having(
-        (a) => a.result,
-        'result',
-        isA<Ok<Order, ExchangeWriteFailure>>(),
-      ),
-    );
+    expect(answer.answer, isA<Ok<Order, ExchangeWriteFailure>>());
     expect(orders.placed, ['sell CAD bitcoin payjoin=true']);
     expect(environments, [ExchangeEnvironment.mainnet]);
   });

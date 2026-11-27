@@ -9,7 +9,7 @@ class UnsetDefaultWalletUsecase {
 
   const UnsetDefaultWalletUsecase(this._exchange);
 
-  Future<GatedWrite<Result<void, ExchangeWriteFailure>>> execute(
+  Future<Result<void, ExchangeGatedWriteFailure>> execute(
     ExchangeSession session, {
     required BtcNetwork network,
     required String recipientId,

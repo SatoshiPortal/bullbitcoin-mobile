@@ -24,11 +24,14 @@ Future<void> _settle() async {
 /// every call is logged, with the session it got where it takes one.
 final class _Calls {
   final List<Result<LimitOrder, ExchangeReadFailure>> reads;
-  final LimitCancelAnswer cancel;
+  final Result<LimitOrder, ExchangeGatedWriteFailure> cancel;
   final log = <String>[];
   final sessions = <ExchangeSession>{};
 
-  _Calls(this.reads, {this.cancel = const CancelAnsweredUnsure()});
+  _Calls(
+    this.reads, {
+    this.cancel = const Err(ExchangeWriteOutcomeUnknownFailure('unsure')),
+  });
 
   LimitDetailsBloc bloc({ExchangeSession? session = limitSession}) =>
       LimitDetailsBloc(
@@ -74,12 +77,9 @@ void main() {
   });
 
   test('a cancelled order closes as changed', () async {
-    final calls = _Calls(
-      [Ok(limitOrder())],
-      cancel: CancelAnsweredOrder(
-        limitOrder(status: LimitOrderStatus.cancelled),
-      ),
-    );
+    final calls = _Calls([
+      Ok(limitOrder()),
+    ], cancel: Ok(limitOrder(status: LimitOrderStatus.cancelled)));
     final bloc = calls.bloc();
     addTearDown(bloc.close);
     await _settle();

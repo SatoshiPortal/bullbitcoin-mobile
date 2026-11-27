@@ -103,9 +103,9 @@ void main() {
     expect(answer.attempt, 2);
     expect(
       answer.answer,
-      isA<GateAdmitted<PayinBroadcastOutcome>>().having(
-        (a) => a.result,
-        'result',
+      isA<Ok<PayinBroadcastOutcome, ExchangeWriteBusyFailure>>().having(
+        (r) => r.value,
+        'value',
         const PayinBroadcastAccepted('tx1'),
       ),
     );
@@ -130,9 +130,9 @@ void main() {
     ).execute(payinSession, _send(_signedBuilt));
     expect(
       answer.answer,
-      isA<GateAdmitted<PayinBroadcastOutcome>>().having(
-        (a) => a.result,
-        'result',
+      isA<Ok<PayinBroadcastOutcome, ExchangeWriteBusyFailure>>().having(
+        (r) => r.value,
+        'value',
         isA<PayinBroadcastOutcomeUnknown>(),
       ),
     );
@@ -161,9 +161,9 @@ void main() {
         );
     expect(
       answer.answer,
-      isA<GateAdmitted<PayinBroadcastOutcome>>().having(
-        (a) => a.result,
-        'result',
+      isA<Ok<PayinBroadcastOutcome, ExchangeWriteBusyFailure>>().having(
+        (r) => r.value,
+        'value',
         const PayinBroadcastNotSent(PayinNotSentReason.deadlinePassed),
       ),
     );
@@ -212,9 +212,9 @@ void main() {
     await _settle();
     expect(
       answer.answer,
-      isA<GateAdmitted<PayinBroadcastOutcome>>().having(
-        (a) => a.result,
-        'result',
+      isA<Ok<PayinBroadcastOutcome, ExchangeWriteBusyFailure>>().having(
+        (r) => r.value,
+        'value',
         const PayinHandedToPayjoin('pj-1', 'original-tx'),
       ),
     );

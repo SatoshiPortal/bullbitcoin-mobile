@@ -40,10 +40,7 @@ final _events = <String, PayFlowEvent>{
   'detourLoaded': PayDetourLoaded(Ok(payContext)),
   'source': const PaySourcePicked(payAppWallet),
   'order': PayOrderChanged(
-    OrderCreateAnswered(
-      1,
-      GateAdmitted(Ok<Order, ExchangeWriteFailure>(payOrder())),
-    ),
+    OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(payOrder())),
   ),
   'confirm': PayConfirmPressed(payNow),
   'spendFees': const PaySpendChanged(SpendFeesLoaded(1, payFees)),
@@ -199,10 +196,7 @@ void main() {
   test('an unknown create re-reads; Retry never resends', () {
     final next = payOrderingState.next(
       const PayOrderChanged(
-        OrderCreateAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        OrderCreateAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
     );
     expect(
@@ -298,15 +292,13 @@ void main() {
       PayOrderChanged(
         OrderCreateAnswered(
           1,
-          GateAdmitted(
-            Err(
-              ExchangeWriteRefusedFailure(
-                ExchangeRefusal(
-                  orderLimit: const ExchangeOrderLimit(
-                    ExchangeOrderAmountBound.minimum,
-                    20,
-                    'CAD',
-                  ),
+          Err(
+            ExchangeWriteRefusedFailure(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
                 ),
               ),
             ),

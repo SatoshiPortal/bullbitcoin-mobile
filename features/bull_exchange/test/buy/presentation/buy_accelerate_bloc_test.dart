@@ -24,8 +24,7 @@ final _quote = AccelerateQuote(
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<Result<BuyOrder, ExchangeWriteFailure>>> answer =
-      Completer();
+  Completer<Result<BuyOrder, ExchangeGatedWriteFailure>> answer = Completer();
   Result<Order, ExchangeReadFailure> reread = Ok(
     buyOrder(status: OrderStatus.inProgress),
   );
@@ -88,9 +87,7 @@ void main() {
       ..add(const AccelerateConfirmPressed());
     await _settle();
     expect(calls.log, ['load b-1', 'accelerate 1']);
-    calls.answer.complete(
-      GateAdmitted(Ok(buyOrder(status: OrderStatus.inProgress))),
-    );
+    calls.answer.complete(Ok(buyOrder(status: OrderStatus.inProgress)));
     await _settle();
     expect(bloc.state, isA<AccelerateDone>());
     expect(calls.sessions, {buySession});
@@ -101,7 +98,7 @@ void main() {
     bloc.add(const AccelerateConfirmPressed());
     await _settle();
     calls.answer.complete(
-      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+      const Err(ExchangeWriteOutcomeUnknownFailure('lost')),
     );
     await _settle();
     expect(calls.log.last, 'read b-1');

@@ -78,9 +78,7 @@ ConfirmSend<WithdrawConfirmTarget> _confirmFor(
         RequirementInteracEvent(InteracContinuePressed()),
       ),
     ],
-    WithdrawOrderChanged(
-      OrderCreateAnswered(1, GateAdmitted(Ok(withdrawOrder()))),
-    ),
+    WithdrawOrderChanged(OrderCreateAnswered(1, Ok(withdrawOrder()))),
   ];
   final review = applyWithdraw(withdrawRecipientState, events);
   final next = review.next(const WithdrawConfirmPressed());
@@ -96,7 +94,13 @@ Future<_Orders> _confirm(ConfirmSend<WithdrawConfirmTarget> send) async {
   expect(answer.attempt, send.attempt);
   expect(
     answer.answer,
-    isA<GateAdmitted<Result<WithdrawOrder, ExchangeWriteFailure>>>(),
+    isNot(
+      isA<Err<WithdrawOrder, ExchangeGatedWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteBusyFailure>(),
+      ),
+    ),
   );
   return orders;
 }

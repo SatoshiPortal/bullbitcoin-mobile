@@ -181,10 +181,7 @@ void main() {
   test('an unknown accelerate is never sent again', () {
     final verifying = _apply(_confirming, const [
       AccelerateConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
     ]).state;
     final pending = _apply(verifying, [
@@ -217,10 +214,7 @@ void main() {
   test('Back from a refused accelerate returns to the fee page', () {
     final failed = _apply(_confirming, const [
       AccelerateConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
       ),
     ]).state;
     expect(

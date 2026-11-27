@@ -23,16 +23,17 @@ LimitCancelState _apply(LimitCancelState state, List<LimitCancelEvent> events) {
 final _idle = CancelIdle(_active);
 final _sending = _apply(_idle, const [CancelPressed()]);
 final _checking = _apply(_sending, const [
-  CancelAnswered(1, CancelAnsweredUnsure()),
+  CancelAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('unsure'))),
 ]);
 final _unverified = _apply(_checking, const [
   CancelChecked(1, Err(ExchangeUnreachableFailure('down', isNetwork: true))),
 ]);
-final _done = _apply(_sending, [
-  CancelAnswered(1, CancelAnsweredOrder(_cancelled)),
-]);
+final _done = _apply(_sending, [CancelAnswered(1, Ok(_cancelled))]);
 final _ended = _apply(_sending, const [
-  CancelAnswered(1, CancelAnsweredSessionRejected()),
+  CancelAnswered(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
 ]);
 
 final _states = <String, LimitCancelState>{
@@ -46,7 +47,7 @@ final _states = <String, LimitCancelState>{
 
 final _events = <String, LimitCancelEvent>{
   'pressed': const CancelPressed(),
-  'answered': CancelAnswered(1, CancelAnsweredOrder(_cancelled)),
+  'answered': CancelAnswered(1, Ok(_cancelled)),
   'checked': CancelChecked(1, Ok(_cancelled)),
   'retry': const CancelRetryPressed(),
 };
@@ -117,7 +118,12 @@ void main() {
   });
 
   test('an unsure answer re-reads; the re-read decides (LIM-3)', () {
-    final next = _sending.next(const CancelAnswered(1, CancelAnsweredUnsure()));
+    final next = _sending.next(
+      const CancelAnswered(
+        1,
+        Err(ExchangeWriteOutcomeUnknownFailure('unsure')),
+      ),
+    );
     expect(next.effects, [CancelRead(_active.id, 1)]);
     final executed = next.state.next(CancelChecked(1, Ok(_executed))).state;
     expect(
@@ -133,7 +139,9 @@ void main() {
         .next(
           const CancelAnswered(
             1,
-            CancelAnsweredGateRefused(WriteGateBusy(FinancialWriteKind.payin)),
+            Err(
+              ExchangeWriteBusyFailure(WriteGateBusy(FinancialWriteKind.payin)),
+            ),
           ),
         )
         .state;
@@ -153,7 +161,7 @@ void main() {
   test('an answer for another attempt is a stay', () {
     expect(
       identical(
-        _sending.next(CancelAnswered(2, CancelAnsweredOrder(_cancelled))).state,
+        _sending.next(CancelAnswered(2, Ok(_cancelled))).state,
         _sending,
       ),
       isTrue,

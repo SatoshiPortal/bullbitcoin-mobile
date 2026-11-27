@@ -47,11 +47,7 @@ void main() {
       ),
     ).execute(buySession, send);
     expect(answer.attempt, send.attempt);
-    expect(
-      (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
-          .result,
-      isA<Ok<BuyOrder, ExchangeWriteFailure>>(),
-    );
+    expect(answer.answer, isA<Ok<BuyOrder, ExchangeWriteFailure>>());
     expect(orders.log, ['accelerate b-1']);
     expect(environments, [ExchangeEnvironment.mainnet]);
   });
@@ -69,8 +65,7 @@ void main() {
       ),
     ).execute(buySession, _send());
     expect(
-      (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
-          .result,
+      answer.answer,
       isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
         (r) => r.failure,
         'failure',

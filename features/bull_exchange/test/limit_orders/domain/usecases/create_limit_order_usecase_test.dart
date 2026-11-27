@@ -24,10 +24,7 @@ void main() {
       _exchange(orders, limitSession),
     ).execute(limitSession, send);
     expect(answer.attempt, send.attempt);
-    final result =
-        (answer.answer
-                as GateAdmitted<Result<LimitOrder, ExchangeWriteFailure>>)
-            .result;
+    final result = answer.answer;
     expect((result as Ok<LimitOrder, ExchangeWriteFailure>).value.id, 'lo-1');
     expect(orders.log, ['create 200.0 CAD 80000.0 bc1qdefault']);
   });
@@ -37,16 +34,7 @@ void main() {
     final answer = await CreateLimitOrderUsecase(
       _exchange(orders, limitOtherSession),
     ).execute(limitSession, limitCreateSend());
-    expect(
-      answer.answer,
-      isNot(
-        isA<GateAdmitted<Result<LimitOrder, ExchangeWriteFailure>>>().having(
-          (a) => a.result,
-          'result',
-          isA<Ok<LimitOrder, ExchangeWriteFailure>>(),
-        ),
-      ),
-    );
+    expect(answer.answer, isNot(isA<Ok<LimitOrder, ExchangeWriteFailure>>()));
     expect(orders.log, isEmpty);
   });
 
@@ -57,8 +45,7 @@ void main() {
       _exchange(orders, limitSession),
     ).execute(limitSession, limitCreateSend());
     expect(
-      (answer.answer as GateAdmitted<Result<LimitOrder, ExchangeWriteFailure>>)
-          .result,
+      answer.answer,
       isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
         (r) => r.failure,
         'failure',

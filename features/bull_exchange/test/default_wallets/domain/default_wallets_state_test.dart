@@ -75,9 +75,9 @@ final _states = <DefaultWalletsState>[
   _ready(const SlotEditing('bc1qnew'), lightning: _lnSaving), // 11
 ];
 
-GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>> _saveAnswer(
+Result<DefaultWallet, ExchangeGatedWriteFailure> _saveAnswer(
   Result<DefaultWallet, ExchangeWriteFailure> write,
-) => GateAdmitted(write);
+) => write;
 
 /// Per event, the states that change (by index into [_states]) and what they
 /// become. Every other state stays (same instance, no effects).
@@ -220,16 +220,29 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     const SlotSaveAnswered(
       _btc,
       5,
-      GateRefused(WriteGateBusy(FinancialWriteKind.orderConfirm)),
+      Err(
+        ExchangeWriteBusyFailure(
+          WriteGateBusy(FinancialWriteKind.orderConfirm),
+        ),
+      ),
     ),
     {
       7: _ready(
-        const SlotEditing('bc1qnew', problem: ExchangeWriteBusyFailure()),
+        const SlotEditing(
+          'bc1qnew',
+          problem: ExchangeWriteBusyFailure(
+            WriteGateBusy(FinancialWriteKind.orderConfirm),
+          ),
+        ),
       ),
     },
   ),
   'save refused by the gate, unsettled': (
-    SlotSaveAnswered(_btc, 5, GateRefused(WriteGateUnsettled(_entry))),
+    SlotSaveAnswered(
+      _btc,
+      5,
+      Err(ExchangeWriteBusyFailure(WriteGateUnsettled(_entry))),
+    ),
     {7: _ready(const SlotVerifying(_saveIntent, 6), attempts: 6)},
   ),
   'save answer, stale attempt': (
@@ -241,7 +254,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     {3: _ready(const SlotUnsetting(6), attempts: 6)},
   ),
   'unset done (DW-3)': (
-    const SlotUnsetAnswered(_btc, 5, GateAdmitted(Ok(null))),
+    const SlotUnsetAnswered(_btc, 5, Ok(null)),
     {
       8: _ready(
         const SlotShowing(notice: SlotNoticeUnset()),
@@ -253,7 +266,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     const SlotUnsetAnswered(
       _btc,
       5,
-      GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('x'))),
+      Err(ExchangeWriteOutcomeUnknownFailure('x')),
     ),
     {8: _ready(const SlotVerifying(SlotUnsetIntent(), 6), attempts: 6)},
   ),
@@ -261,9 +274,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     const SlotUnsetAnswered(
       _btc,
       5,
-      GateAdmitted(
-        Err(ExchangeWriteRefusedFailure(ExchangeRefusal(httpStatus: 400))),
-      ),
+      Err(ExchangeWriteRefusedFailure(ExchangeRefusal(httpStatus: 400))),
     ),
     {
       8: _ready(
@@ -503,7 +514,7 @@ List<DefaultWalletsEvent> _answers(DefaultWalletsEffect effect) =>
         ),
       ],
       UnsetDefaultWallet(:final network, :final attempt) => [
-        SlotUnsetAnswered(network, attempt, const GateAdmitted(Ok(null))),
+        SlotUnsetAnswered(network, attempt, const Ok(null)),
       ],
       VerifyDefaultWallets(:final network, :final attempt) => [
         SlotVerified(network, attempt, const Ok(_withNew)),

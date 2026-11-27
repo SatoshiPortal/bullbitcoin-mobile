@@ -666,85 +666,75 @@ DefaultWalletsNext _saveAnswered(
   BtcNetwork network,
   String draft,
   String address,
-  GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>> answer,
+  Result<DefaultWallet, ExchangeGatedWriteFailure> answer,
 ) => switch (answer) {
-  GateAdmitted(result: Ok(:final value)) => _slot(
+  Ok(:final value) => _slot(
     ready,
     network,
     const SlotShowing(notice: SlotNoticeSaved()),
     saved: withDefaultWallet(ready.saved, network, value),
   ),
-  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) ||
-  GateRefused(
-    refusal: WriteGateUnsettled(),
+  Err(failure: ExchangeWriteOutcomeUnknownFailure()) ||
+  Err(
+    failure: ExchangeWriteBusyFailure(refusal: WriteGateUnsettled()),
   ) => _verify(ready, network, SlotSaveIntent(draft: draft, address: address)),
-  GateAdmitted(
-    result: Err(failure: ExchangeSessionRejectedFailure()) ||
-        Err(
-          failure: ExchangeWriteNotSentFailure(
-            reason: ExchangeNotSentReason.sessionChanged,
-          ),
+  Err(failure: ExchangeSessionRejectedFailure()) ||
+  Err(
+    failure: ExchangeWriteNotSentFailure(
+      reason: ExchangeNotSentReason.sessionChanged,
+    ),
+  ) => StepNext(const WalletsSessionEnded()),
+  Err(failure: ExchangeWriteRefusedFailure()) ||
+  Err(failure: ExchangeWriteNotSentFailure()) => _slot(
+    ready,
+    network,
+    SlotEditing(draft, problem: const ExchangeDefaultWalletSaveFailure()),
+  ),
+  Err(
+    failure: final ExchangeWriteBusyFailure busy &&
+        ExchangeWriteBusyFailure(
+          refusal: WriteGateBusy() || WriteGateJournalUnreadable(),
         ),
   ) =>
-    StepNext(const WalletsSessionEnded()),
-  GateAdmitted(
-    result: Err(failure: ExchangeWriteRefusedFailure()) ||
-        Err(failure: ExchangeWriteNotSentFailure()),
-  ) =>
-    _slot(
-      ready,
-      network,
-      SlotEditing(draft, problem: const ExchangeDefaultWalletSaveFailure()),
-    ),
-  GateRefused(refusal: WriteGateBusy() || WriteGateJournalUnreadable()) =>
-    _slot(
-      ready,
-      network,
-      SlotEditing(draft, problem: const ExchangeWriteBusyFailure()),
-    ),
+    _slot(ready, network, SlotEditing(draft, problem: busy)),
 };
 
 DefaultWalletsNext _unsetAnswered(
   WalletsReady ready,
   BtcNetwork network,
-  GatedWrite<Result<void, ExchangeWriteFailure>> answer,
+  Result<void, ExchangeGatedWriteFailure> answer,
 ) => switch (answer) {
-  GateAdmitted(result: Ok()) => _slot(
+  Ok() => _slot(
     ready,
     network,
     const SlotShowing(notice: SlotNoticeUnset()),
     saved: withDefaultWallet(ready.saved, network, null),
   ),
-  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) ||
-  GateRefused(
-    refusal: WriteGateUnsettled(),
+  Err(failure: ExchangeWriteOutcomeUnknownFailure()) ||
+  Err(
+    failure: ExchangeWriteBusyFailure(refusal: WriteGateUnsettled()),
   ) => _verify(ready, network, const SlotUnsetIntent()),
-  GateAdmitted(
-    result: Err(failure: ExchangeSessionRejectedFailure()) ||
-        Err(
-          failure: ExchangeWriteNotSentFailure(
-            reason: ExchangeNotSentReason.sessionChanged,
-          ),
+  Err(failure: ExchangeSessionRejectedFailure()) ||
+  Err(
+    failure: ExchangeWriteNotSentFailure(
+      reason: ExchangeNotSentReason.sessionChanged,
+    ),
+  ) => StepNext(const WalletsSessionEnded()),
+  Err(failure: ExchangeWriteRefusedFailure()) ||
+  Err(failure: ExchangeWriteNotSentFailure()) => _slot(
+    ready,
+    network,
+    const SlotShowing(
+      notice: SlotNoticeFailed(ExchangeDefaultWalletDeleteFailure()),
+    ),
+  ),
+  Err(
+    failure: final ExchangeWriteBusyFailure busy &&
+        ExchangeWriteBusyFailure(
+          refusal: WriteGateBusy() || WriteGateJournalUnreadable(),
         ),
   ) =>
-    StepNext(const WalletsSessionEnded()),
-  GateAdmitted(
-    result: Err(failure: ExchangeWriteRefusedFailure()) ||
-        Err(failure: ExchangeWriteNotSentFailure()),
-  ) =>
-    _slot(
-      ready,
-      network,
-      const SlotShowing(
-        notice: SlotNoticeFailed(ExchangeDefaultWalletDeleteFailure()),
-      ),
-    ),
-  GateRefused(refusal: WriteGateBusy() || WriteGateJournalUnreadable()) =>
-    _slot(
-      ready,
-      network,
-      const SlotShowing(notice: SlotNoticeFailed(ExchangeWriteBusyFailure())),
-    ),
+    _slot(ready, network, SlotShowing(notice: SlotNoticeFailed(busy))),
 };
 
 DefaultWalletsNext _verified(

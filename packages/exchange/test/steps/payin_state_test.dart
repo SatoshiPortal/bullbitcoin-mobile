@@ -166,29 +166,32 @@ final _events = <_E>[
     _before,
   ), // 2
   PayinBuildAnswered(2, const Ok(_built), _before), // 3
-  const PayinSendAnswered(1, GateAdmitted(PayinBroadcastAccepted('tx1'))), // 4
+  const PayinSendAnswered(1, Ok(PayinBroadcastAccepted('tx1'))), // 4
+  const PayinSendAnswered(1, Ok(PayinHandedToPayjoin('s1', 'otx'))), // 5
   const PayinSendAnswered(
     1,
-    GateAdmitted(PayinHandedToPayjoin('s1', 'otx')),
-  ), // 5
-  const PayinSendAnswered(
-    1,
-    GateAdmitted(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
+    Ok(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
   ), // 6
   const PayinSendAnswered(
     1,
-    GateAdmitted(PayinBroadcastNotSent(PayinNotSentReason.walletBusy)),
+    Ok(PayinBroadcastNotSent(PayinNotSentReason.walletBusy)),
   ), // 7
   const PayinSendAnswered(
     1,
-    GateAdmitted(PayinBroadcastNotSent(PayinNotSentReason.deadlinePassed)),
+    Ok(PayinBroadcastNotSent(PayinNotSentReason.deadlinePassed)),
   ), // 8
-  const PayinSendAnswered(1, GateAdmitted(PayinBroadcastOutcomeUnknown(null))),
+  const PayinSendAnswered(1, Ok(PayinBroadcastOutcomeUnknown(null))),
   // 9
-  const PayinSendAnswered(1, GateRefused(_busy)), // 10
-  PayinSendAnswered(1, GateRefused(WriteGateUnsettled(_ownEntry))), // 11
-  PayinSendAnswered(1, GateRefused(WriteGateUnsettled(_otherEntry))), // 12
-  const PayinSendAnswered(2, GateAdmitted(PayinBroadcastAccepted('tx1'))), // 13
+  const PayinSendAnswered(1, Err(ExchangeWriteBusyFailure(_busy))), // 10
+  PayinSendAnswered(
+    1,
+    Err(ExchangeWriteBusyFailure(WriteGateUnsettled(_ownEntry))),
+  ), // 11
+  PayinSendAnswered(
+    1,
+    Err(ExchangeWriteBusyFailure(WriteGateUnsettled(_otherEntry))),
+  ), // 12
+  const PayinSendAnswered(2, Ok(PayinBroadcastAccepted('tx1'))), // 13
   PayinRechecked(2, Ok(_o), _before), // 14
   PayinRechecked(2, Ok(_seen), _before), // 15
   PayinRechecked(2, Ok(_ended), _before), // 16
@@ -440,7 +443,7 @@ void main() {
             _policy,
             const PayinSendAnswered<String>(
               1,
-              GateAdmitted(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
+              Ok(PayinBroadcastRefused(PayinRefusal.nodeRejected)),
             ),
           )
           .state;
@@ -714,9 +717,9 @@ void main() {
       expect(answered.attempt, 1);
       expect(
         answered.answer,
-        isA<GateAdmitted<PayinBroadcastOutcome>>().having(
-          (a) => a.result,
-          'result',
+        isA<Ok<PayinBroadcastOutcome, ExchangeWriteBusyFailure>>().having(
+          (r) => r.value,
+          'value',
           const PayinBroadcastAccepted('tx1'),
         ),
       );
@@ -755,9 +758,9 @@ void main() {
       );
       expect(
         answered.answer,
-        isA<GateAdmitted<PayinBroadcastOutcome>>().having(
-          (a) => a.result,
-          'result',
+        isA<Ok<PayinBroadcastOutcome, ExchangeWriteBusyFailure>>().having(
+          (r) => r.value,
+          'value',
           const PayinBroadcastOutcomeUnknown('tx1'),
         ),
       );
@@ -798,6 +801,7 @@ void main() {
         session,
         FinancialWriteKind.orderConfirm,
         () => Future<void>.delayed(const Duration(milliseconds: 10)),
+        refused: (r) => r,
       );
       final answered = await run(
         gate,

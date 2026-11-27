@@ -2,8 +2,6 @@ import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'limit_order_cancel_state.dart';
-
 @immutable
 sealed class LimitCancelEvent {
   const LimitCancelEvent();
@@ -16,7 +14,7 @@ final class CancelPressed extends LimitCancelEvent {
 
 final class CancelAnswered extends LimitCancelEvent {
   final int attempt;
-  final LimitCancelAnswer answer;
+  final Result<LimitOrder, ExchangeGatedWriteFailure> answer;
 
   const CancelAnswered(this.attempt, this.answer);
 }

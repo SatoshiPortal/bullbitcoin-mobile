@@ -33,7 +33,7 @@ final _cancelling = _apply(_shown, const [
   DetailsCancelChanged(CancelPressed()),
 ]);
 final _cancelledShown = _apply(_cancelling, [
-  DetailsCancelChanged(CancelAnswered(1, CancelAnsweredOrder(_cancelled))),
+  DetailsCancelChanged(CancelAnswered(1, Ok(_cancelled))),
 ]);
 const _ended = DetailsSessionEnded(changed: false);
 const _closed = DetailsClosed(changed: false);
@@ -151,7 +151,12 @@ void main() {
     final ended = _cancelling
         .next(
           const DetailsCancelChanged(
-            CancelAnswered(1, CancelAnsweredSessionRejected()),
+            CancelAnswered(
+              1,
+              Err(
+                ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+              ),
+            ),
           ),
         )
         .state;

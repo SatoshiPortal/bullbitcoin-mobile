@@ -69,14 +69,7 @@ void main() {
       exchangeForTesting(orders: (_) => orders),
     ).execute(withdrawSession, send);
     expect(answer.attempt, send.attempt);
-    expect(
-      answer.answer,
-      isA<GateAdmitted<Result<WithdrawOrder, ExchangeWriteFailure>>>().having(
-        (a) => a.result,
-        'result',
-        isA<Ok<WithdrawOrder, ExchangeWriteFailure>>(),
-      ),
-    );
+    expect(answer.answer, isA<Ok<WithdrawOrder, ExchangeWriteFailure>>());
     expect(orders.placed, [
       {
         'fiatAmount': 10.0,
@@ -115,13 +108,18 @@ void main() {
       withdrawSession,
       FinancialWriteKind.orderCreate,
       () => held.future,
+      refused: (r) => r,
     );
     final answer = await CreateWithdrawOrderUsecase(
       exchangeForTesting(orders: (_) => orders, writeGate: gate),
     ).execute(withdrawSession, _send());
     expect(
       answer.answer,
-      isA<GateRefused<Result<WithdrawOrder, ExchangeWriteFailure>>>(),
+      isA<Err<WithdrawOrder, ExchangeGatedWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteBusyFailure>(),
+      ),
     );
     expect(orders.placed, isEmpty);
     held.complete();

@@ -24,16 +24,17 @@ class UpdateExchangePreferencesUsecase {
   /// through the write gate ([FinancialWriteKind.preferenceWrite]) of the
   /// session the screen opened for; without a session nothing is sent.
   @useResult
-  Future<GatedWrite<Result<void, ExchangeFailure>>> execute(
+  Future<Result<void, ExchangeFailure>> execute(
     ExchangeSession? session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
   }) async => switch (session) {
-    null => const GateAdmitted(Err(ExchangeNotAuthenticatedFailure())),
+    null => const Err(ExchangeNotAuthenticatedFailure()),
     final ExchangeSession session => await _writeGate.run(
       session,
       FinancialWriteKind.preferenceWrite,
       () => _send(session, loaded: loaded, edited: edited),
+      refused: (refusal) => Err(ExchangeWriteBusyFailure(refusal)),
     ),
   };
 

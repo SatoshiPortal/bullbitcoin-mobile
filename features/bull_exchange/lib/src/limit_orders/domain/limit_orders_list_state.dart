@@ -113,16 +113,23 @@ sealed class LimitOrdersListState {
       )
           when answered == attempt =>
         switch (answer) {
-          CancelAllDone() => _refresh(const [], attempt),
-          CancelAllGateRefused(:final refusal) => LimitOrdersListNext(
-            ListShown(orders, attempt, problem: ListCancelAllRefused(refusal)),
-          ),
-          CancelAllUnsure() => _refresh(
-            orders,
-            attempt,
-            pending: const ListCancelAllNotApplied(),
-          ),
-          CancelAllSessionRejected() => LimitOrdersListNext(
+          Ok() => _refresh(const [], attempt),
+          Err(failure: ExchangeWriteBusyFailure(:final refusal)) =>
+            LimitOrdersListNext(
+              ListShown(
+                orders,
+                attempt,
+                problem: ListCancelAllRefused(refusal),
+              ),
+            ),
+          // Refused, lost or never sent: the list read after it decides.
+          Err(
+            failure: ExchangeWriteRefusedFailure() ||
+                ExchangeWriteOutcomeUnknownFailure() ||
+                ExchangeWriteNotSentFailure(),
+          ) =>
+            _refresh(orders, attempt, pending: const ListCancelAllNotApplied()),
+          Err(failure: ExchangeSessionRejectedFailure()) => LimitOrdersListNext(
             ListSignedOut(attempt),
           ),
         },
@@ -292,31 +299,6 @@ final class ListCancellingAll extends LimitOrdersListState {
 
   @override
   int get hashCode => Object.hash(ListCancellingAll, orders.length, attempt);
-}
-
-/// What a cancel-all answered, closed.
-@immutable
-sealed class LimitCancelAllAnswer {
-  const LimitCancelAllAnswer();
-}
-
-final class CancelAllDone extends LimitCancelAllAnswer {
-  const CancelAllDone();
-}
-
-final class CancelAllGateRefused extends LimitCancelAllAnswer {
-  final WriteGateRefusal refusal;
-
-  const CancelAllGateRefused(this.refusal);
-}
-
-/// Anything else: some or all orders may be cancelled.
-final class CancelAllUnsure extends LimitCancelAllAnswer {
-  const CancelAllUnsure();
-}
-
-final class CancelAllSessionRejected extends LimitCancelAllAnswer {
-  const CancelAllSessionRejected();
 }
 
 typedef LimitOrdersListNext =

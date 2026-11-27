@@ -2,7 +2,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_failure.dart';
-import '../domain/exchange_write_gate.dart';
 import 'server_confirm_state.dart';
 
 @immutable
@@ -13,7 +12,7 @@ sealed class ServerConfirmEvent<T, C> {
 /// What the write gate and the write of [attempt] answered.
 final class ConfirmAnswered<T, C> extends ServerConfirmEvent<T, C> {
   final int attempt;
-  final GatedWrite<Result<C, ExchangeWriteFailure>> answer;
+  final Result<C, ExchangeGatedWriteFailure> answer;
 
   const ConfirmAnswered(this.attempt, this.answer);
 }

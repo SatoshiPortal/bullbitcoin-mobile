@@ -33,7 +33,7 @@ final _events = <String, DcaFlowEvent>{
   'walletsReturned': const DcaDefaultWalletsReturned(),
   'walletsLoaded': const DcaDefaultWalletsLoaded(0, Ok(DefaultWallets())),
   'confirmPressed': const DcaConfirmPressed(),
-  'confirm': DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
+  'confirm': DcaConfirmChanged(ConfirmAnswered(1, Ok(dcaPlan))),
   'back': const DcaBackPressed(),
   'donePressed': const DcaDonePressed(),
   'session': const DcaSessionChanged(buyOtherSession),
@@ -269,10 +269,7 @@ void main() {
   test('an unknown create re-reads the account, never creates again', () {
     final verifying = applyDca(dcaConfirmingState, const [
       DcaConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
     ]);
     expect(verifying.effects, [DcaConfirmEffect(ConfirmVerify(dcaPlan, 1))]);
@@ -307,9 +304,7 @@ void main() {
   test('done turns the DCA preference on', () {
     expect(
       dcaConfirmingState
-          .next(
-            DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
-          )
+          .next(DcaConfirmChanged(ConfirmAnswered(1, Ok(dcaPlan))))
           .effects,
       [const DcaActivated()],
     );
@@ -318,10 +313,7 @@ void main() {
   test('a refused create goes back to the review on Back', () {
     final failed = applyDca(dcaConfirmingState, const [
       DcaConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
       ),
     ]).state;
     expect(failed.next(const DcaBackPressed()).state, isA<DcaReview>());

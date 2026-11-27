@@ -18,7 +18,7 @@ import '../buy_usecase_fakes.dart';
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<Result<BuyOrder, ExchangeWriteFailure>>> confirmAnswer =
+  Completer<Result<BuyOrder, ExchangeGatedWriteFailure>> confirmAnswer =
       Completer();
   Result<Order, ExchangeReadFailure> reread = Ok(buyOrder());
 
@@ -51,7 +51,7 @@ final class _Calls {
     }),
     createOrder: FakeCreateBuyOrderUsecase((session, effect) async {
       _called(session, 'create ${effect.attempt}');
-      return OrderCreateAnswered(effect.attempt, GateAdmitted(Ok(buyOrder())));
+      return OrderCreateAnswered(effect.attempt, Ok(buyOrder()));
     }),
     findCreatedOrder: FakeFindCreatedBuyOrderUsecase((
       session,
@@ -168,7 +168,7 @@ void main() {
       expect(bloc.state, isA<BuyConfirming>());
       calls.reread = Ok(buyOrder(status: OrderStatus.inProgress));
       calls.confirmAnswer.complete(
-        const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        const Err(ExchangeWriteOutcomeUnknownFailure('lost')),
       );
       await _settle();
       expect(calls.log, contains('read b-1'));
@@ -208,12 +208,10 @@ void main() {
       await toReview();
       await send([BuyConfirmPressed(buyBeforeDeadline)]);
       calls.confirmAnswer.complete(
-        GateAdmitted(
-          Ok(
-            buyOrder(
-              status: OrderStatus.completed,
-              payout: OrderPayoutStatus.completed,
-            ),
+        Ok(
+          buyOrder(
+            status: OrderStatus.completed,
+            payout: OrderPayoutStatus.completed,
           ),
         ),
       );

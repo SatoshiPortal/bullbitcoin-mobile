@@ -2,8 +2,6 @@ import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'limit_orders_list_state.dart';
-
 @immutable
 sealed class LimitOrdersListEvent {
   const LimitOrdersListEvent();
@@ -33,7 +31,7 @@ final class ListCancelAllPressed extends LimitOrdersListEvent {
 
 final class ListCancelAllAnswered extends LimitOrdersListEvent {
   final int attempt;
-  final LimitCancelAllAnswer answer;
+  final Result<void, ExchangeGatedWriteFailure> answer;
 
   const ListCancelAllAnswered(this.attempt, this.answer);
 }

@@ -1226,7 +1226,7 @@ final class Exchange {
   /// ([FinancialWriteKind.defaultWalletSave]), so it never runs next to
   /// another financial write of that account or over an unsettled one.
   @useResult
-  Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>>
+  Future<Result<DefaultWallet, ExchangeGatedWriteFailure>>
   saveSessionDefaultWallet(
     ExchangeSession session, {
     required BtcNetwork walletType,
@@ -1244,13 +1244,13 @@ final class Exchange {
             address: address,
             existingRecipientId: existingRecipientId,
           ),
+    refused: refusedWrite,
   );
 
   /// Unsets a default wallet of [session]'s account through [writeGate]
   /// ([FinancialWriteKind.defaultWalletUnset]).
   @useResult
-  Future<GatedWrite<Result<void, ExchangeWriteFailure>>>
-  unsetSessionDefaultWallet(
+  Future<Result<void, ExchangeGatedWriteFailure>> unsetSessionDefaultWallet(
     ExchangeSession session, {
     required String recipientId,
     required BtcNetwork walletType,
@@ -1267,6 +1267,7 @@ final class Exchange {
             walletType: walletType,
             address: address,
           ),
+    refused: refusedWrite,
   );
 
   /// The support messages of [session]'s user; never read for a session

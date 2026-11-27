@@ -20,8 +20,7 @@ import 'package:primitives/primitives.dart';
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<Result<DcaPlan, ExchangeWriteFailure>>> answer =
-      Completer();
+  Completer<Result<DcaPlan, ExchangeGatedWriteFailure>> answer = Completer();
   Result<UserSummary, ExchangeReadFailure> reread = Ok(buySummaryWith());
 
   void _called(ExchangeSession session, String call) {
@@ -106,7 +105,7 @@ void main() {
     expect(bloc.state, isA<DcaReview>());
     await send(const [DcaConfirmPressed(), DcaConfirmPressed()]);
     expect(calls.log.where((l) => l.startsWith('create')), ['create 1']);
-    calls.answer.complete(GateAdmitted(Ok((bloc.state as DcaConfirming).plan)));
+    calls.answer.complete(Ok((bloc.state as DcaConfirming).plan));
     await _settle();
     expect(bloc.state, isA<DcaDone>());
     expect(calls.log.last, 'activate');
@@ -122,7 +121,7 @@ void main() {
       ),
     );
     calls.answer.complete(
-      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+      const Err(ExchangeWriteOutcomeUnknownFailure('lost')),
     );
     await _settle();
     expect(calls.log, contains('summary'));

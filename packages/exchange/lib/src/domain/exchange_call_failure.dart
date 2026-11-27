@@ -124,7 +124,13 @@ sealed class ExchangeReadFailure implements ExchangeFailure {}
 ///
 /// [ExchangeWriteOutcomeUnknownFailure] means the write may have happened:
 /// read the resource again before offering the write again.
-sealed class ExchangeWriteFailure implements ExchangeFailure {}
+sealed class ExchangeWriteFailure implements ExchangeGatedWriteFailure {}
+
+/// What a financial write run through the account's write gate can fail
+/// with: any [ExchangeWriteFailure], or [ExchangeWriteBusyFailure] when the
+/// gate refused it and nothing was sent. A gated write answers
+/// `Result<T, ExchangeGatedWriteFailure>`.
+sealed class ExchangeGatedWriteFailure implements ExchangeFailure {}
 
 /// What reading one page of a list can fail with. A failure is never an
 /// empty page.

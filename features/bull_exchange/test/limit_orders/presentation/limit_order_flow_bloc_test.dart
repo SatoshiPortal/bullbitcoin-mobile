@@ -16,7 +16,7 @@ import '../limit_order_usecase_fakes.dart';
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>[];
-  Completer<GatedWrite<Result<LimitOrder, ExchangeWriteFailure>>> createAnswer =
+  Completer<Result<LimitOrder, ExchangeGatedWriteFailure>> createAnswer =
       Completer();
   Result<List<LimitOrder>, ExchangeReadFailure> recent = const Ok([]);
 
@@ -138,7 +138,7 @@ void main() {
       ),
     ]);
     calls.createAnswer.complete(
-      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+      const Err(ExchangeWriteOutcomeUnknownFailure('lost')),
     );
     await _settle();
     await _settle();

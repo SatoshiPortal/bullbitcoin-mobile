@@ -58,8 +58,7 @@ void main() {
     final answer = await _save(const Ok(null), written: written);
     expect(answer.attempt, 1);
     expect(
-      (answer.answer as GateAdmitted<Result<bool, ExchangeWriteFailure>>)
-          .result,
+      answer.answer,
       isA<Err<bool, ExchangeWriteFailure>>().having(
         (r) => r.failure,
         'failure',
@@ -71,10 +70,6 @@ void main() {
 
   test('a refused save stays refused', () async {
     final answer = await _save(const Err(ExchangePreferencesSaveFailure()));
-    expect(
-      (answer.answer as GateAdmitted<Result<bool, ExchangeWriteFailure>>)
-          .result,
-      isNot(isA<Ok<bool, ExchangeWriteFailure>>()),
-    );
+    expect(answer.answer, isNot(isA<Ok<bool, ExchangeWriteFailure>>()));
   });
 }

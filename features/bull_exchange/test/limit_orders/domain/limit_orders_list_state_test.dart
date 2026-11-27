@@ -53,7 +53,7 @@ final _events = <String, LimitOrdersListEvent>{
   'refresh': const ListRefreshRequested(),
   'retry': const ListRetryPressed(),
   'cancelAll': const ListCancelAllPressed(),
-  'cancelAnswered': const ListCancelAllAnswered(1, CancelAllDone()),
+  'cancelAnswered': const ListCancelAllAnswered(1, Ok(null)),
 };
 
 const _moves = <(String, String), Type>{
@@ -129,7 +129,10 @@ void main() {
 
   test('a cancel-all reads the list again after any answer', () {
     final cancelling = _cancelling as ListCancellingAll;
-    for (final answer in const [CancelAllDone(), CancelAllUnsure()]) {
+    for (final answer in const <Result<void, ExchangeGatedWriteFailure>>[
+      Ok(null),
+      Err(ExchangeWriteOutcomeUnknownFailure('unsure')),
+    ]) {
       final next = cancelling.next(
         ListCancelAllAnswered(cancelling.attempt, answer),
       );
@@ -142,7 +145,10 @@ void main() {
     final cancelling = _cancelling as ListCancellingAll;
     final refreshing = cancelling
         .next(
-          ListCancelAllAnswered(cancelling.attempt, const CancelAllUnsure()),
+          ListCancelAllAnswered(
+            cancelling.attempt,
+            const Err(ExchangeWriteOutcomeUnknownFailure('unsure')),
+          ),
         )
         .state;
     final shown = refreshing
@@ -165,7 +171,7 @@ void main() {
           .next(
             ListCancelAllAnswered(
               cancelling.attempt,
-              const CancelAllGateRefused(WriteGateJournalUnreadable()),
+              const Err(ExchangeWriteBusyFailure(WriteGateJournalUnreadable())),
             ),
           )
           .state,

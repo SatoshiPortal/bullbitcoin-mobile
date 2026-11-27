@@ -51,9 +51,7 @@ void main() {
       ),
     ).execute(buySession, send);
     expect(answer.attempt, send.attempt);
-    final result =
-        (answer.answer as GateAdmitted<Result<DcaPlan, ExchangeWriteFailure>>)
-            .result;
+    final result = answer.answer;
     expect((result as Ok<DcaPlan, ExchangeWriteFailure>).value, dcaPlan);
     expect(orders.created, ['10.0 CAD weekly bitcoin bc1qdefault']);
     expect(environments, [ExchangeEnvironment.mainnet]);
@@ -70,8 +68,7 @@ void main() {
       ),
     ).execute(buySession, _send());
     expect(
-      (answer.answer as GateAdmitted<Result<DcaPlan, ExchangeWriteFailure>>)
-          .result,
+      answer.answer,
       isA<Err<DcaPlan, ExchangeWriteFailure>>().having(
         (r) => r.failure,
         'failure',

@@ -89,14 +89,7 @@ void main() {
       ),
       _policy(sellEnabled: true),
     ).execute(paySession, _send());
-    expect(
-      answer.answer,
-      isA<GateAdmitted<Result<Order, ExchangeWriteFailure>>>().having(
-        (a) => a.result,
-        'result',
-        isA<Ok<Order, ExchangeWriteFailure>>(),
-      ),
-    );
+    expect(answer.answer, isA<Ok<Order, ExchangeWriteFailure>>());
     expect(orders.placed, [
       {
         'orderAmount': 'FiatAmount 10.0',

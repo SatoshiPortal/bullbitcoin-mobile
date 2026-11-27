@@ -122,29 +122,43 @@ final _table = <String, (PreferencesEvent, Map<int, PreferencesState>)>{
     },
   ),
   'saved, nothing edited meanwhile': (
-    const PreferencesSaveAnswered(GateAdmitted(Ok(null))),
+    const PreferencesSaveAnswered(Ok(null)),
     {5: const PreferencesSaved(_b), 6: const PreferencesEditing(_b, _c)},
   ),
   'save failed (SET-2: saved stays what the account has)': (
-    const PreferencesSaveAnswered(GateAdmitted(Err(_saveFailure))),
+    const PreferencesSaveAnswered(Err(_saveFailure)),
     {
       5: const PreferencesSaveFailed(_a, _b, _saveFailure),
       6: const PreferencesSaveFailed(_a, _c, _saveFailure),
     },
   ),
   'save: signed out (SET-3)': (
-    const PreferencesSaveAnswered(
-      GateAdmitted(Err(ExchangeNotAuthenticatedFailure())),
-    ),
+    const PreferencesSaveAnswered(Err(ExchangeNotAuthenticatedFailure())),
     {5: const PreferencesSignedOut(), 6: const PreferencesSignedOut()},
   ),
   'save refused by the write gate': (
     const PreferencesSaveAnswered(
-      GateRefused(WriteGateBusy(FinancialWriteKind.orderConfirm)),
+      Err(
+        ExchangeWriteBusyFailure(
+          WriteGateBusy(FinancialWriteKind.orderConfirm),
+        ),
+      ),
     ),
     {
-      5: const PreferencesSaveFailed(_a, _b, ExchangeWriteBusyFailure()),
-      6: const PreferencesSaveFailed(_a, _c, ExchangeWriteBusyFailure()),
+      5: const PreferencesSaveFailed(
+        _a,
+        _b,
+        ExchangeWriteBusyFailure(
+          WriteGateBusy(FinancialWriteKind.orderConfirm),
+        ),
+      ),
+      6: const PreferencesSaveFailed(
+        _a,
+        _c,
+        ExchangeWriteBusyFailure(
+          WriteGateBusy(FinancialWriteKind.orderConfirm),
+        ),
+      ),
     },
   ),
 };
@@ -206,8 +220,8 @@ void main() {
         const PreferencesLanguageChosen('FR'),
         const PreferencesCurrencyChosen('EUR'),
         const PreferencesSavePressed(),
-        const PreferencesSaveAnswered(GateAdmitted(Ok(null))),
-        const PreferencesSaveAnswered(GateAdmitted(Err(_saveFailure))),
+        const PreferencesSaveAnswered(Ok(null)),
+        const PreferencesSaveAnswered(Err(_saveFailure)),
       ]) {
         final next = state.next(event).state;
         if (!identical(next, state)) queue.add(next);

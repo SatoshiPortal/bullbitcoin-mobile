@@ -353,13 +353,16 @@ void main() {
     Future<Result<void, ExchangeFailure>> save(
       _MockExchangeFacade facade,
       ExchangePreferences edited,
-    ) async => switch (await UpdateExchangePreferencesUsecase(
-      save: facade.savePreferences,
-      writeGate: ExchangeWriteGate(),
-    ).execute(session, loaded: loaded, edited: edited)) {
-      GateAdmitted(:final result) => result,
-      GateRefused(:final refusal) => fail('gate refused: $refusal'),
-    };
+    ) async {
+      final result = await UpdateExchangePreferencesUsecase(
+        save: facade.savePreferences,
+        writeGate: ExchangeWriteGate(),
+      ).execute(session, loaded: loaded, edited: edited);
+      if (result case Err(failure: ExchangeWriteBusyFailure(:final refusal))) {
+        fail('gate refused: $refusal');
+      }
+      return result;
+    }
 
     test('a save while another financial write runs is never sent', () async {
       final facade = _MockExchangeFacade();
@@ -370,6 +373,7 @@ void main() {
         session,
         FinancialWriteKind.orderConfirm,
         () => release.future,
+        refused: (r) => r,
       );
 
       final write =
@@ -384,10 +388,14 @@ void main() {
 
       expect(
         write,
-        isA<GateRefused<Result<void, ExchangeFailure>>>().having(
-          (w) => w.refusal,
-          'refusal',
-          isA<WriteGateBusy>(),
+        isA<Err<void, ExchangeFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteBusyFailure>().having(
+            (f) => f.refusal,
+            'refusal',
+            isA<WriteGateBusy>(),
+          ),
         ),
       );
       verifyNever(() => facade.savePreferences(any(), any()));
@@ -408,7 +416,7 @@ void main() {
           );
 
       expect(
-        (write as GateAdmitted<Result<void, ExchangeFailure>>).result,
+        write,
         isA<Err<void, ExchangeFailure>>().having(
           (r) => r.failure,
           'failure',

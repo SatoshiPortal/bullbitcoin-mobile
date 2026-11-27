@@ -50,7 +50,7 @@ final class SlotChecked extends DefaultWalletsEvent {
 final class SlotSaveAnswered extends DefaultWalletsEvent {
   final BtcNetwork network;
   final int attempt;
-  final GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>> answer;
+  final Result<DefaultWallet, ExchangeGatedWriteFailure> answer;
 
   const SlotSaveAnswered(this.network, this.attempt, this.answer);
 }
@@ -64,7 +64,7 @@ final class SlotUnsetPressed extends DefaultWalletsEvent {
 final class SlotUnsetAnswered extends DefaultWalletsEvent {
   final BtcNetwork network;
   final int attempt;
-  final GatedWrite<Result<void, ExchangeWriteFailure>> answer;
+  final Result<void, ExchangeGatedWriteFailure> answer;
 
   const SlotUnsetAnswered(this.network, this.attempt, this.answer);
 }

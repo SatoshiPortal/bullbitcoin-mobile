@@ -10,7 +10,7 @@ class SaveDefaultWalletUsecase {
 
   const SaveDefaultWalletUsecase(this._exchange);
 
-  Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>> execute(
+  Future<Result<DefaultWallet, ExchangeGatedWriteFailure>> execute(
     ExchangeSession session, {
     required BtcNetwork network,
     required String address,

@@ -4,6 +4,7 @@ import 'package:primitives/primitives.dart';
 
 import 'exchange_access.dart';
 import 'exchange_environment.dart';
+import 'exchange_failure.dart';
 import 'unknown_write_journal.dart';
 
 /// The financial writes that share one gate per account: at most one of them
@@ -69,24 +70,6 @@ final class WriteGateJournalUnreadable extends WriteGateRefusal {
   int get hashCode => (WriteGateJournalUnreadable).hashCode;
 }
 
-/// What the gate did with a write: ran it and returned its [result], or
-/// refused it.
-sealed class GatedWrite<T> {
-  const GatedWrite();
-}
-
-final class GateAdmitted<T> extends GatedWrite<T> {
-  final T result;
-
-  const GateAdmitted(this.result);
-}
-
-final class GateRefused<T> extends GatedWrite<T> {
-  final WriteGateRefusal refusal;
-
-  const GateRefused(this.refusal);
-}
-
 /// Whether an open journal entry of [kind] holds the gate. Recipient and
 /// order creates are journaled but move no money (an order still needs its
 /// confirm or payin, each gated), so they don't.
@@ -122,35 +105,43 @@ final class ExchangeWriteGate {
   FinancialWriteKind? inFlight(ExchangeEnvironment environment) =>
       _inFlight[environment];
 
-  /// Runs [write] for [session]'s account unless the gate is held. An error
-  /// thrown by [write] releases the gate and is rethrown.
-  Future<GatedWrite<T>> run<T>(
+  /// Runs [write] for [session]'s account unless the gate is held; a held
+  /// gate answers [refused] of its refusal instead, in the write's own answer
+  /// type, so a write has one answer. An error thrown by [write] releases the
+  /// gate and is rethrown.
+  Future<A> run<A>(
     ExchangeSession session,
     FinancialWriteKind kind,
-    Future<T> Function() write,
-  ) async {
+    Future<A> Function() write, {
+    required A Function(WriteGateRefusal refusal) refused,
+  }) async {
     final account = session.environment;
     final busy = _inFlight[account];
-    if (busy != null) return GateRefused(WriteGateBusy(busy));
+    if (busy != null) return refused(WriteGateBusy(busy));
     _inFlight[account] = kind;
     try {
       final journal = _journal;
       if (journal != null) {
         switch (await journal.open(account)) {
           case Err():
-            return GateRefused(const WriteGateJournalUnreadable());
+            return refused(const WriteGateJournalUnreadable());
           case Ok(:final value):
             for (final entry in value) {
               if (journalEntryHoldsGate(entry.kind) &&
                   !entry.isOverAge(clock.now())) {
-                return GateRefused(WriteGateUnsettled(entry));
+                return refused(WriteGateUnsettled(entry));
               }
             }
         }
       }
-      return GateAdmitted(await write());
+      return await write();
     } finally {
       _inFlight.remove(account);
     }
   }
 }
+
+/// The answer of a `Result` write the gate refused.
+Result<T, ExchangeGatedWriteFailure> refusedWrite<T>(
+  WriteGateRefusal refusal,
+) => Err(ExchangeWriteBusyFailure(refusal));

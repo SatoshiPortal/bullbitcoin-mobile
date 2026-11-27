@@ -42,10 +42,7 @@ final _events = <String, SellFlowEvent>{
     RequirementInteracEvent(InteracQuestionTyped('Colour?')),
   ),
   'order': SellOrderChanged(
-    OrderCreateAnswered(
-      1,
-      GateAdmitted(Ok<Order, ExchangeWriteFailure>(sellOrder())),
-    ),
+    OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(sellOrder())),
   ),
   'confirm': SellConfirmPressed(sellNow),
   'spendFees': const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
@@ -191,7 +188,7 @@ void main() {
         const SellOrderChanged(
           OrderCreateAnswered(
             1,
-            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+            Err(ExchangeWriteOutcomeUnknownFailure('lost')),
           ),
         ),
       );
@@ -424,15 +421,13 @@ void main() {
       SellOrderChanged(
         OrderCreateAnswered(
           1,
-          GateAdmitted(
-            Err(
-              ExchangeWriteRefusedFailure(
-                ExchangeRefusal(
-                  orderLimit: const ExchangeOrderLimit(
-                    ExchangeOrderAmountBound.minimum,
-                    20,
-                    'CAD',
-                  ),
+          Err(
+            ExchangeWriteRefusedFailure(
+              ExchangeRefusal(
+                orderLimit: const ExchangeOrderLimit(
+                  ExchangeOrderAmountBound.minimum,
+                  20,
+                  'CAD',
                 ),
               ),
             ),

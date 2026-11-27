@@ -1253,7 +1253,7 @@ Future<PayinSendAnswered<P>> runPayinSend<P>({
   effect.attempt,
   await gate.run(session, FinancialWriteKind.payin, () async {
     if (_pastDeadline(effect.order, now())) {
-      return const PayinBroadcastNotSent(PayinNotSentReason.deadlinePassed);
+      return const Ok(PayinBroadcastNotSent(PayinNotSentReason.deadlinePassed));
     }
     PayinBroadcastOutcome outcome;
     try {
@@ -1282,8 +1282,8 @@ Future<PayinSendAnswered<P>> runPayinSend<P>({
           PayinBroadcastNotSent():
         break;
     }
-    return outcome;
-  }),
+    return Ok(outcome);
+  }, refused: (refusal) => Err(ExchangeWriteBusyFailure(refusal))),
 );
 
 PayinNext<P> _building<P>(
@@ -1444,26 +1444,28 @@ PayinNext<P> _sent<P>(
   DepositTarget target,
   int attempt,
   PayinBuilt<P> built,
-  GatedWrite<PayinBroadcastOutcome> answer,
+  Result<PayinBroadcastOutcome, ExchangeWriteBusyFailure> answer,
 ) => switch (answer) {
-  GateRefused(refusal: WriteGateUnsettled(:final entry))
+  Err(
+    failure: ExchangeWriteBusyFailure(
+      refusal: WriteGateUnsettled(:final entry),
+    ),
+  )
       when entry.kind == UnknownWriteKind.payin &&
           entry.orderId == order.orderId =>
     _verifying(order, target, attempt, built.txid, built),
-  GateRefused(:final refusal) => StepNext(
+  Err(failure: ExchangeWriteBusyFailure(:final refusal)) => StepNext(
     PayinWriteRefused<P>(order, target, attempt, built, refusal),
   ),
-  GateAdmitted(result: PayinBroadcastAccepted(:final txid)) => _watching(
+  Ok(value: PayinBroadcastAccepted(:final txid)) => _watching(
     policy,
     order,
     target,
     txid,
   ),
-  GateAdmitted(
-    result: PayinHandedToPayjoin(:final sessionId, :final originalTxid),
-  ) =>
+  Ok(value: PayinHandedToPayjoin(:final sessionId, :final originalTxid)) =>
     _payjoin(order, target, attempt, sessionId, originalTxid),
-  GateAdmitted(result: PayinBroadcastRefused(:final reason)) => StepNext(
+  Ok(value: PayinBroadcastRefused(:final reason)) => StepNext(
     PayinSendFailed<P>(
       order,
       target,
@@ -1472,11 +1474,9 @@ PayinNext<P> _sent<P>(
       PayinSendRefused(reason),
     ),
   ),
-  GateAdmitted(
-    result: PayinBroadcastNotSent(reason: PayinNotSentReason.deadlinePassed),
-  ) =>
+  Ok(value: PayinBroadcastNotSent(reason: PayinNotSentReason.deadlinePassed)) =>
     StepNext(PayinQuoteLapsed<P>(order)),
-  GateAdmitted(result: PayinBroadcastNotSent(:final reason)) => StepNext(
+  Ok(value: PayinBroadcastNotSent(:final reason)) => StepNext(
     PayinSendFailed<P>(
       order,
       target,
@@ -1485,7 +1485,7 @@ PayinNext<P> _sent<P>(
       PayinSendNotSent(reason),
     ),
   ),
-  GateAdmitted(result: PayinBroadcastOutcomeUnknown(:final txid)) => _verifying(
+  Ok(value: PayinBroadcastOutcomeUnknown(:final txid)) => _verifying(
     order,
     target,
     attempt,

@@ -31,10 +31,7 @@ void main() {
               address: 'bc1qsaved',
             );
     expect(sent, ['bitcoin r-1 bc1qsaved']);
-    expect(
-      (write as GateAdmitted<Result<void, ExchangeWriteFailure>>).result,
-      isA<Ok<void, ExchangeWriteFailure>>(),
-    );
+    expect(write, isA<Ok<void, ExchangeGatedWriteFailure>>());
   });
 
   test('a refused unset stays refused', () async {
@@ -53,8 +50,8 @@ void main() {
           address: 'bc1qsaved',
         );
     expect(
-      (write as GateAdmitted<Result<void, ExchangeWriteFailure>>).result,
-      isA<Err<void, ExchangeWriteFailure>>().having(
+      write,
+      isA<Err<void, ExchangeGatedWriteFailure>>().having(
         (r) => r.failure,
         'failure',
         isA<ExchangeWriteRefusedFailure>(),
@@ -74,8 +71,8 @@ void main() {
             );
     expect(sent, isEmpty);
     expect(
-      (write as GateAdmitted<Result<void, ExchangeWriteFailure>>).result,
-      isA<Err<void, ExchangeWriteFailure>>().having(
+      write,
+      isA<Err<void, ExchangeGatedWriteFailure>>().having(
         (r) => r.failure,
         'failure',
         isA<ExchangeWriteNotSentFailure>(),

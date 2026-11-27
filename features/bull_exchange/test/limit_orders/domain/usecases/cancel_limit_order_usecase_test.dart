@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel_state.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
@@ -8,7 +7,7 @@ import 'package:primitives/primitives.dart';
 import '../../limit_order_fixtures.dart';
 import '../../limit_test_orders.dart';
 
-Future<LimitCancelAnswer> _cancel(
+Future<Result<LimitOrder, ExchangeGatedWriteFailure>> _cancel(
   LimitTestOrders orders, {
   ExchangeSession signedIn = limitSession,
 }) => CancelLimitOrderUsecase(
@@ -25,8 +24,8 @@ void main() {
     final answer = await _cancel(orders);
     expect(
       answer,
-      isA<CancelAnsweredOrder>().having(
-        (a) => a.order.status,
+      isA<Ok<LimitOrder, ExchangeGatedWriteFailure>>().having(
+        (a) => a.value.status,
         'status',
         LimitOrderStatus.cancelled,
       ),
@@ -41,7 +40,14 @@ void main() {
           ExchangeLimitOrderFailure(ExchangeLimitOrderProblem.cancel, 'filled'),
         ),
     );
-    expect(answer, isA<CancelAnsweredUnsure>());
+    expect(
+      answer,
+      isA<Err<LimitOrder, ExchangeGatedWriteFailure>>().having(
+        (a) => a.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
+    );
   });
 
   test('a rejected session is its own answer', () async {
@@ -51,13 +57,20 @@ void main() {
           ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
         ),
     );
-    expect(answer, isA<CancelAnsweredSessionRejected>());
+    expect(
+      answer,
+      isA<Err<LimitOrder, ExchangeGatedWriteFailure>>().having(
+        (a) => a.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 
   test('after a sign-in to another account the cancel is not sent', () async {
     final orders = LimitTestOrders()..current = limitOtherSession;
     final answer = await _cancel(orders, signedIn: limitOtherSession);
-    expect(answer, isNot(isA<CancelAnsweredOrder>()));
+    expect(answer, isNot(isA<Ok<LimitOrder, ExchangeGatedWriteFailure>>()));
     expect(orders.log, isEmpty);
   });
 }

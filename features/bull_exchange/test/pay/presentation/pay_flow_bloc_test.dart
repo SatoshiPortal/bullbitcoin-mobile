@@ -56,7 +56,7 @@ final class _Usecases {
       _called(session, 'create ${effect.attempt}');
       return OrderCreateAnswered(
         effect.attempt,
-        GateAdmitted(Ok<Order, ExchangeWriteFailure>(created ?? payOrder())),
+        Ok<Order, ExchangeWriteFailure>(created ?? payOrder()),
       );
     }),
     findCreatedOrder: FakeFindCreatedOrderUsecase((
@@ -174,7 +174,7 @@ void main() {
             send: FakeSendPayinUsecase(
               (session, effect) async => PayinSendAnswered(
                 effect.attempt,
-                const GateAdmitted(PayinBroadcastAccepted('tx-1')),
+                const Ok(PayinBroadcastAccepted('tx-1')),
               ),
             ),
             getOrder: FakeGetOrderUsecase((session, orderId) async {

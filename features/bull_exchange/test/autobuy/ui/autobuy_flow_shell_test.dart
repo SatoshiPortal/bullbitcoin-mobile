@@ -90,10 +90,7 @@ void main() {
     final verifying = _apply(_review(), const [
       AutoBuyActivatePressed(),
       AutoBuyConfirmChanged(
-        ConfirmAnswered(
-          1,
-          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
-        ),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
     ]);
     final labels = await _pump(tester, verifying, []);

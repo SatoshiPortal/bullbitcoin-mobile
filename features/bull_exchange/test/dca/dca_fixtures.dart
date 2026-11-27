@@ -58,5 +58,5 @@ final dcaConfirmingState = applyDca(dcaReviewState, const [
 ]).state;
 final dcaPlan = (dcaReviewState as DcaReview).plan;
 final dcaDoneState = applyDca(dcaConfirmingState, [
-  DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
+  DcaConfirmChanged(ConfirmAnswered(1, Ok(dcaPlan))),
 ]).state;

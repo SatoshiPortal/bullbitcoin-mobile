@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list_state.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
@@ -8,7 +7,7 @@ import 'package:primitives/primitives.dart';
 import '../../limit_order_fixtures.dart';
 import '../../limit_test_orders.dart';
 
-Future<LimitCancelAllAnswer> _cancelAll(
+Future<Result<void, ExchangeGatedWriteFailure>> _cancelAll(
   LimitTestOrders orders, {
   ExchangeSession? session = limitSession,
   ExchangeSession signedIn = limitSession,
@@ -22,7 +21,10 @@ Future<LimitCancelAllAnswer> _cancelAll(
 void main() {
   test('a done cancel-all is the answer', () async {
     final orders = LimitTestOrders()..cancelledAll = const Ok([]);
-    expect(await _cancelAll(orders), isA<CancelAllDone>());
+    expect(
+      await _cancelAll(orders),
+      isA<Ok<void, ExchangeGatedWriteFailure>>(),
+    );
     expect(orders.log, ['cancelAll']);
   });
 
@@ -31,7 +33,11 @@ void main() {
       await _cancelAll(
         LimitTestOrders()..cancelledAll = const Err(ExchangeNetworkFailure()),
       ),
-      isA<CancelAllUnsure>(),
+      isA<Err<void, ExchangeGatedWriteFailure>>().having(
+        (a) => a.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
     );
   });
 
@@ -43,7 +49,11 @@ void main() {
             ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
           ),
       ),
-      isA<CancelAllSessionRejected>(),
+      isA<Err<void, ExchangeGatedWriteFailure>>().having(
+        (a) => a.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
     );
   });
 
@@ -52,11 +62,15 @@ void main() {
     final orders = LimitTestOrders()..current = limitOtherSession;
     expect(
       await _cancelAll(orders, session: null),
-      isA<CancelAllSessionRejected>(),
+      isA<Err<void, ExchangeGatedWriteFailure>>().having(
+        (a) => a.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
     );
     expect(
       await _cancelAll(orders, signedIn: limitOtherSession),
-      isNot(isA<CancelAllDone>()),
+      isNot(isA<Ok<void, ExchangeGatedWriteFailure>>()),
     );
     expect(orders.log, isEmpty);
   });

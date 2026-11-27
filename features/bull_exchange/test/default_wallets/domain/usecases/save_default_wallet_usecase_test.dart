@@ -40,11 +40,7 @@ void main() {
           existingRecipientId: 'r-1',
         );
     expect(sent, ['liquid lq1new r-1']);
-    expect(
-      (write as GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>)
-          .result,
-      isA<Ok<DefaultWallet, ExchangeWriteFailure>>(),
-    );
+    expect(write, isA<Ok<DefaultWallet, ExchangeGatedWriteFailure>>());
   });
 
   test('an unknown outcome stays unknown', () async {
@@ -55,9 +51,8 @@ void main() {
       ),
     ).execute(dwSession, network: BtcNetwork.bitcoin, address: 'bc1q');
     expect(
-      (write as GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>)
-          .result,
-      isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+      write,
+      isA<Err<DefaultWallet, ExchangeGatedWriteFailure>>().having(
         (r) => r.failure,
         'failure',
         isA<ExchangeWriteOutcomeUnknownFailure>(),
@@ -72,9 +67,8 @@ void main() {
     ).execute(dwOtherSession, network: BtcNetwork.bitcoin, address: 'bc1q');
     expect(sent, isEmpty);
     expect(
-      (write as GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>)
-          .result,
-      isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+      write,
+      isA<Err<DefaultWallet, ExchangeGatedWriteFailure>>().having(
         (r) => r.failure,
         'failure',
         isA<ExchangeWriteNotSentFailure>().having(
@@ -104,7 +98,11 @@ void main() {
     );
     expect(
       second,
-      isA<GateRefused<Result<DefaultWallet, ExchangeWriteFailure>>>(),
+      isA<Err<DefaultWallet, ExchangeGatedWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteBusyFailure>(),
+      ),
     );
     release.complete(const Ok(_wallet));
     await first;

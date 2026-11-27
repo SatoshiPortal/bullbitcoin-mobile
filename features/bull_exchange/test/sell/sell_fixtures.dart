@@ -130,10 +130,7 @@ const sellDefaultOptions = PayinSpendOptions(
 
 final sellReviewState = applySell(sellOrderingState, [
   SellOrderChanged(
-    OrderCreateAnswered(
-      1,
-      GateAdmitted(Ok<Order, ExchangeWriteFailure>(sellOrder())),
-    ),
+    OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(sellOrder())),
   ),
   const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
 ]);

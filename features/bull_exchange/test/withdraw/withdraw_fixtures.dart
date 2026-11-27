@@ -83,7 +83,5 @@ final withdrawRecipientState = applyWithdraw(withdrawAmountState, const [
 
 final withdrawReviewState = applyWithdraw(withdrawRecipientState, [
   WithdrawRecipientPicked(withdrawBankRecipient),
-  WithdrawOrderChanged(
-    OrderCreateAnswered(1, GateAdmitted(Ok(withdrawOrder()))),
-  ),
+  WithdrawOrderChanged(OrderCreateAnswered(1, Ok(withdrawOrder()))),
 ]);

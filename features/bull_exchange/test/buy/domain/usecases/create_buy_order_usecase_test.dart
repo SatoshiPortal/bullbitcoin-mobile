@@ -78,14 +78,7 @@ void main() {
       environments: environments,
     );
     expect(answer.attempt, 1);
-    expect(
-      answer.answer,
-      isA<GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>>().having(
-        (a) => a.result,
-        'result',
-        isA<Ok<BuyOrder, ExchangeWriteFailure>>(),
-      ),
-    );
+    expect(answer.answer, isA<Ok<BuyOrder, ExchangeGatedWriteFailure>>());
     expect(orders.log, ['place lq1qreceive CAD liquid owner=true bip21=null']);
     expect(receiver.log, isEmpty);
     expect(environments, [ExchangeEnvironment.mainnet]);
@@ -108,10 +101,11 @@ void main() {
     expect(orders.log, [
       'place bc1qreceive CAD bitcoin owner=true bip21=$_bip21',
     ]);
-    final done =
-        (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
-            .result;
-    expect((done as Ok<BuyOrder, ExchangeWriteFailure>).value.bip21URI, _bip21);
+    final done = answer.answer;
+    expect(
+      (done as Ok<BuyOrder, ExchangeGatedWriteFailure>).value.bip21URI,
+      _bip21,
+    );
     expect(uris.withBip21(buyOrder()).bip21URI, _bip21);
   });
 

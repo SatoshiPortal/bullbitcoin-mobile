@@ -377,7 +377,12 @@ Future<ConfirmAnswered<T, C>> runServerConfirm<T, C>({
   required Future<Result<C, ExchangeWriteFailure>> Function(T target) confirm,
 }) async => ConfirmAnswered(
   effect.attempt,
-  await gate.run(session, policy.writeKind, () => confirm(effect.target)),
+  await gate.run(
+    session,
+    policy.writeKind,
+    () => confirm(effect.target),
+    refused: refusedWrite,
+  ),
 );
 
 ServerConfirmNext<T, C> _verifying<T, C>(T target, int attempt) => StepNext(
@@ -389,29 +394,32 @@ ServerConfirmNext<T, C> _answered<T, C>(
   ServerConfirmPolicy<T> policy,
   T target,
   int attempt,
-  GatedWrite<Result<C, ExchangeWriteFailure>> answer,
+  Result<C, ExchangeGatedWriteFailure> answer,
 ) => switch (answer) {
-  GateRefused(refusal: WriteGateUnsettled(:final entry))
+  Err(
+    failure: ExchangeWriteBusyFailure(
+      refusal: WriteGateUnsettled(:final entry),
+    ),
+  )
       when policy.matches(entry, target) =>
     _verifying(target, attempt),
-  GateRefused(:final refusal) => StepNext(
+  Err(failure: ExchangeWriteBusyFailure(:final refusal)) => StepNext(
     ConfirmWriteRefused<T, C>(target, attempt, refusal),
   ),
-  GateAdmitted(result: Ok(:final value)) => StepNext(
-    ConfirmConfirmed<T, C>(value),
+  Ok(:final value) => StepNext(ConfirmConfirmed<T, C>(value)),
+  Err(failure: ExchangeWriteRefusedFailure(:final reason)) => StepNext(
+    ConfirmFailed<T, C>(target, attempt, WriteProblemRefused(reason)),
   ),
-  GateAdmitted(
-    result: Err(failure: ExchangeWriteRefusedFailure(:final reason)),
-  ) =>
-    StepNext(ConfirmFailed<T, C>(target, attempt, WriteProblemRefused(reason))),
-  GateAdmitted(
-    result: Err(failure: ExchangeWriteNotSentFailure(:final reason)),
-  ) =>
-    StepNext(ConfirmFailed<T, C>(target, attempt, WriteProblemNotSent(reason))),
-  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) =>
-    _verifying(target, attempt),
-  GateAdmitted(result: Err(failure: ExchangeSessionRejectedFailure())) =>
-    StepNext(ConfirmSessionEnded<T, C>()),
+  Err(failure: ExchangeWriteNotSentFailure(:final reason)) => StepNext(
+    ConfirmFailed<T, C>(target, attempt, WriteProblemNotSent(reason)),
+  ),
+  Err(failure: ExchangeWriteOutcomeUnknownFailure()) => _verifying(
+    target,
+    attempt,
+  ),
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+    ConfirmSessionEnded<T, C>(),
+  ),
 };
 
 ServerConfirmNext<T, C> _checked<T, C>(

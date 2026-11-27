@@ -113,10 +113,7 @@ const payFees = FeeOptions(
 
 final payReviewState = applyPay(payOrderingState, [
   PayOrderChanged(
-    OrderCreateAnswered(
-      1,
-      GateAdmitted(Ok<Order, ExchangeWriteFailure>(payOrder())),
-    ),
+    OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(payOrder())),
   ),
   const PaySpendChanged(SpendFeesLoaded(1, payFees)),
 ]);

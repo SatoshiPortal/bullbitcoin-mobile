@@ -468,14 +468,13 @@ Future<OrderCreateAnswered<R, O>> runOrderCreate<R, O>({
   required Future<Result<O, ExchangeWriteFailure>> Function(R request) create,
   required Future<void> Function(R request) journalUnknown,
 }) async {
-  final answer = await gate.run(
+  final answer = await gate.run<Result<O, ExchangeGatedWriteFailure>>(
     session,
     FinancialWriteKind.orderCreate,
     () => create(effect.request),
+    refused: refusedWrite,
   );
-  if (answer case GateAdmitted(
-    result: Err(failure: ExchangeWriteOutcomeUnknownFailure()),
-  )) {
+  if (answer case Err(failure: ExchangeWriteOutcomeUnknownFailure())) {
     await journalUnknown(effect.request);
   }
   return OrderCreateAnswered(effect.attempt, answer);
@@ -494,38 +493,31 @@ OrderStepNext<R, O> _created<R, O>(
   OrderPolicy<O> policy,
   R request,
   int attempt,
-  GatedWrite<Result<O, ExchangeWriteFailure>> answer,
+  Result<O, ExchangeGatedWriteFailure> answer,
 ) => switch (answer) {
-  GateRefused(:final refusal) => StepNext(
+  Err(failure: ExchangeWriteBusyFailure(:final refusal)) => StepNext(
     OrderWriteRefused<R, O>(request, attempt, refusal),
   ),
-  GateAdmitted(result: Ok(:final value)) => _held(policy, value),
-  GateAdmitted(
-    result: Err(
-      failure: ExchangeWriteRefusedFailure(
-        reason: ExchangeRefusal(orderLimit: final limit?),
-      ),
+  Ok(:final value) => _held(policy, value),
+  Err(
+    failure: ExchangeWriteRefusedFailure(
+      reason: ExchangeRefusal(orderLimit: final limit?),
     ),
   ) =>
     StepNext(OrderAmountRefused<R, O>(request, limit)),
-  GateAdmitted(
-    result: Err(failure: ExchangeWriteRefusedFailure(:final reason)),
-  ) =>
-    StepNext(
-      OrderCreateFailed<R, O>(request, attempt, WriteProblemRefused(reason)),
-    ),
-  GateAdmitted(
-    result: Err(failure: ExchangeWriteNotSentFailure(:final reason)),
-  ) =>
-    StepNext(
-      OrderCreateFailed<R, O>(request, attempt, WriteProblemNotSent(reason)),
-    ),
-  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) =>
-    StepNext(OrderVerifying<R, O>(request, attempt), [
-      OrderFindCreated(request, attempt),
-    ]),
-  GateAdmitted(result: Err(failure: ExchangeSessionRejectedFailure())) =>
-    StepNext(OrderSessionEnded<R, O>()),
+  Err(failure: ExchangeWriteRefusedFailure(:final reason)) => StepNext(
+    OrderCreateFailed<R, O>(request, attempt, WriteProblemRefused(reason)),
+  ),
+  Err(failure: ExchangeWriteNotSentFailure(:final reason)) => StepNext(
+    OrderCreateFailed<R, O>(request, attempt, WriteProblemNotSent(reason)),
+  ),
+  Err(failure: ExchangeWriteOutcomeUnknownFailure()) => StepNext(
+    OrderVerifying<R, O>(request, attempt),
+    [OrderFindCreated(request, attempt)],
+  ),
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+    OrderSessionEnded<R, O>(),
+  ),
 };
 
 OrderStepNext<R, O> _found<R, O>(
