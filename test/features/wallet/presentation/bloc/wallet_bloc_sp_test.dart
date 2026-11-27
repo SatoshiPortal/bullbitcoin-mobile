@@ -13,7 +13,6 @@ import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -47,12 +46,6 @@ class _MockGetWalletsUsecase extends Mock implements GetWalletsUsecase {}
 
 class _MockCheckWalletSyncingUsecase extends Mock
     implements CheckWalletSyncingUsecase {}
-
-class _MockCheckBackupNeeded extends Mock implements CheckBackupNeededUsecase {
-  _MockCheckBackupNeeded() {
-    when(execute).thenAnswer((_) async => const Err(WalletStorageFailure()));
-  }
-}
 
 class _MockWatchStarted extends Mock
     implements WatchStartedWalletSyncsUsecase {}
@@ -181,7 +174,7 @@ WalletBloc _makeBloc({
     readWalletUsecase: _ReadWallet(),
     getWalletsUsecase: getWallets,
     checkWalletSyncingUsecase: checkWalletSyncing,
-    checkBackupNeededUsecase: _MockCheckBackupNeeded(),
+    readBackupWarning: () async => null,
     // The real wrappers over the same mocks, so assertions on the
     // coordinator and watchers still hold.
     watchWalletSyncEventsUsecase: WatchWalletSyncEventsUsecase(

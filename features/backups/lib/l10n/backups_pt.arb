@@ -85,5 +85,15 @@
   "testBackupErrorSeedNotMnemonic": "Esta carteira não tem frase de recuperação para testar.",
   "testBackupErrorCompletionFailed": "A sua frase de recuperação estava correta, mas não foi possível guardar o resultado. Tente novamente.",
   "backupCardTitle": "Proteja os seus bitcoins.",
-  "backupCardSubtitle": "Faça uma cópia de segurança da sua carteira agora."
+  "backupCardSubtitle": "Faça uma cópia de segurança da sua carteira agora.",
+  "backupWarningBackupLater": "NÃO, ENTENDO O RISCO",
+  "backupWarningBackupNow": "SIM",
+  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
+  "backupWarningLoseReasonCloudRestore": "Restaurar o seu dispositivo a partir de uma cópia de segurança na nuvem",
+  "backupWarningLoseReasonCriticalIssue": "Ocorrer um problema crítico relacionado ao aplicativo ou ao dispositivo",
+  "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
+  "backupWarningLoseReasonKeystore": "O seu dispositivo invalida o keystore ao alterar a autenticação do ecrã de bloqueio ou do dispositivo",
+  "backupWarningLoseReasonLostPhone": "Perder o telefone",
+  "backupWarningNoRecovery": "Não há como recuperar sua carteira sem um backup.",
+  "backupWarningTitle": "FAÇA BACKUP DA SUA CARTEIRA AGORA"
 }

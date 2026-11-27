@@ -232,5 +232,15 @@
   "testBackupErrorSeedNotMnemonic": "Αυτό το πορτοφόλι δεν έχει φράση ανάκτησης για δοκιμή.",
   "testBackupErrorCompletionFailed": "Η φράση ανάκτησής σας ήταν σωστή, αλλά δεν μπορέσαμε να αποθηκεύσουμε το αποτέλεσμα. Δοκιμάστε ξανά.",
   "backupCardTitle": "Προστατέψτε τα bitcoin σας.",
-  "backupCardSubtitle": "Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα."
+  "backupCardSubtitle": "Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα.",
+  "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
+  "backupWarningBackupNow": "ΝΑΙ",
+  "backupWarningDescription": "Χωρίς αντίγραφο ασφαλείας, θα χάσετε την πρόσβαση στα bitcoin σας εάν:",
+  "backupWarningLoseReasonCloudRestore": "Επαναφορά της συσκευής σας από αντίγραφο ασφαλείας στο cloud",
+  "backupWarningLoseReasonCriticalIssue": "Προκύψει κρίσιμο πρόβλημα στην εφαρμογή ή τη συσκευή",
+  "backupWarningLoseReasonDeletedApp": "Διαγράψετε την εφαρμογή",
+  "backupWarningLoseReasonKeystore": "Η συσκευή σας ακυρώνει το keystore όταν αλλάζετε την οθόνη κλειδώματος ή τον έλεγχο ταυτότητας της συσκευής",
+  "backupWarningLoseReasonLostPhone": "Χάσετε το τηλέφωνό σας",
+  "backupWarningNoRecovery": "Δεν υπάρχει τρόπος να ανακτήσετε το πορτοφόλι σας χωρίς αντίγραφο ασφαλείας.",
+  "backupWarningTitle": "ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΡΑ"
 }

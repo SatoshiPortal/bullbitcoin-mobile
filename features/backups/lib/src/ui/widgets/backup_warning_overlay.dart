@@ -1,44 +1,49 @@
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/localization/app_localizations_context.dart';
-import 'package:backups/backups.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullShapesX, BullText, Gap, BullTypographyX;
 
-class BackupWarningOverlay extends StatelessWidget {
-  const BackupWarningOverlay({super.key, required this.child});
+import '../../backups_feature.dart';
+import '../../backups_l10n.dart';
 
+class BackupWarningOverlay extends StatelessWidget {
+  final bool showWarning;
+  final VoidCallback onWarningShown;
+  final VoidCallback onDismiss;
   final Widget child;
 
+  const BackupWarningOverlay({
+    super.key,
+    required this.showWarning,
+    required this.onWarningShown,
+    required this.onDismiss,
+    required this.child,
+  });
+
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<WalletBloc, WalletState>(
-      buildWhen: (previous, current) =>
-          previous.showBackupWarning() != current.showBackupWarning(),
-      builder: (context, state) {
-        final showWarning = state.showBackupWarning();
-        return Stack(
-          children: [
-            ExcludeSemantics(excluding: showWarning, child: child),
-            if (showWarning)
-              Positioned.fill(
-                child: Semantics(
-                  scopesRoute: true,
-                  explicitChildNodes: true,
-                  child: const _BackupWarningBlocker(),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) => Stack(
+    children: [
+      ExcludeSemantics(excluding: showWarning, child: child),
+      if (showWarning)
+        Positioned.fill(
+          child: Semantics(
+            scopesRoute: true,
+            explicitChildNodes: true,
+            child: _BackupWarningBlocker(
+              onShown: onWarningShown,
+              onDismiss: onDismiss,
+            ),
+          ),
+        ),
+    ],
+  );
 }
 
 class _BackupWarningBlocker extends StatefulWidget {
-  const _BackupWarningBlocker();
+  final VoidCallback onShown;
+  final VoidCallback onDismiss;
+
+  const _BackupWarningBlocker({required this.onShown, required this.onDismiss});
 
   @override
   State<_BackupWarningBlocker> createState() => _BackupWarningBlockerState();
@@ -48,7 +53,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
   @override
   void initState() {
     super.initState();
-    context.read<WalletBloc>().add(const VerifyBackupStatus());
+    widget.onShown();
   }
 
   @override
@@ -145,11 +150,7 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
                   const Gap(12),
                   BullButton.secondary(
                     label: context.loc.backupWarningBackupLater,
-                    onPressed: () {
-                      context.read<WalletBloc>().add(
-                        const DismissBackupWarning(),
-                      );
-                    },
+                    onPressed: widget.onDismiss,
                   ),
                 ],
               ),

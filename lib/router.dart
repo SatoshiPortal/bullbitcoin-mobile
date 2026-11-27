@@ -85,7 +85,6 @@ import 'package:bull_payjoin/bull_payjoin.dart'
         PayjoinSessions;
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:overview/overview.dart' show WalletHomeAppBar;
 import 'package:bb_mobile/features/wallet/ui/widgets/silent_wallet_balance.dart'
     show SilentWalletPresentation;
@@ -110,6 +109,19 @@ class AppRouter {
       ),
     ),
   );
+
+  static Widget withBackupWarning(Widget child) =>
+      BlocSelector<WalletBloc, WalletState, bool>(
+        selector: (state) => state.showBackupWarning(),
+        builder: (context, showWarning) => BackupWarningOverlay(
+          showWarning: showWarning,
+          onWarningShown: () =>
+              context.read<WalletBloc>().add(const VerifyBackupStatus()),
+          onDismiss: () =>
+              context.read<WalletBloc>().add(const DismissBackupWarning()),
+          child: child,
+        ),
+      );
 
   static SilentFeature mountSilent({
     required GetIt locator,
@@ -373,8 +385,8 @@ class AppRouter {
             onPopInvokedWithResult: (didPop, _) {
               context.goNamed(WalletRoute.walletHome.name);
             },
-            child: BackupWarningOverlay(
-              child: Scaffold(
+            child: withBackupWarning(
+              Scaffold(
                 // The app bar of the exchange tab is rendered by the
                 // ExchangeHomeScreen itself, as an overlay.
                 appBar: tabIndex == 0 ? walletHomeAppBar() : null,

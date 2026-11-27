@@ -85,5 +85,15 @@
   "testBackupErrorSeedNotMnemonic": "У цього гаманця немає фрази відновлення для перевірки.",
   "testBackupErrorCompletionFailed": "Ваша фраза відновлення була правильною, але нам не вдалося зберегти результат. Спробуйте ще раз.",
   "backupCardTitle": "Захистіть свої біткоїни.",
-  "backupCardSubtitle": "Створіть резервну копію гаманця зараз."
+  "backupCardSubtitle": "Створіть резервну копію гаманця зараз.",
+  "backupWarningBackupLater": "НІ, Я РОЗУМІЮ РИЗИК",
+  "backupWarningBackupNow": "ТАК",
+  "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо:",
+  "backupWarningLoseReasonCloudRestore": "Відновлення пристрою з резервної копії у хмарі",
+  "backupWarningLoseReasonCriticalIssue": "Зіткнетеся з критичною проблемою застосунку чи пристрою",
+  "backupWarningLoseReasonDeletedApp": "Видалите застосунок",
+  "backupWarningLoseReasonKeystore": "Пристрій анулює keystore під час зміни блокування екрана або способу автентифікації пристрою",
+  "backupWarningLoseReasonLostPhone": "Втратите телефон",
+  "backupWarningNoRecovery": "Відновити гаманець без резервної копії неможливо.",
+  "backupWarningTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ГАМАНЦЯ ЗАРАЗ"
 }

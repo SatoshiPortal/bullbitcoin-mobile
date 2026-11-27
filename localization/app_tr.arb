@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
-  "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
-  "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
-  "backupWarningLoseReasonCriticalIssue": "Kritik bir uygulama veya cihaz sorunu oluşursa",
-  "backupWarningLoseReasonKeystore": "Kilit ekranını veya cihaz kimlik doğrulamasını değiştirdiğinizde cihazınız keystore'u geçersiz kılar",
-  "backupWarningLoseReasonCloudRestore": "Cihazınızı bir bulut yedeğinden geri yüklerseniz",
-  "backupWarningNoRecovery": "Yedek olmadan cüzdanınızı kurtarmanın hiçbir yolu yoktur.",
   "swapMax": "MAX",
   "@swapMax": {
     "description": "MAX button label"
@@ -4261,9 +4254,6 @@
   "statusScreenContinue": "Devam Et",
   "viewerAddressTab": "Adres",
   "viewerPaymentUriTab": "Ödeme URI'si",
-  "backupWarningTitle": "CÜZDANINIZI ŞİMDİ YEDEKLEYİN",
-  "backupWarningBackupNow": "EVET",
-  "backupWarningBackupLater": "HAYIR, RİSKİ ANLIYORUM",
   "transactionSwapOpenWithin24h": "Takasınızı tamamlamak için uygulamayı 24 saat içinde açın.",
   "recipientsContinue": "Devam Et",
   "recipientsTypeInteracEmail": "E-posta ile para transferi",

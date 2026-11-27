@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.dart';
@@ -131,8 +130,8 @@ class ArkShellVisualFixtures {
       routes: [
         ShellRoute(
           // These are the actual visible shell components in AppRouter.
-          builder: (_, _, child) => BackupWarningOverlay(
-            child: Scaffold(
+          builder: (_, _, child) => AppRouter.withBackupWarning(
+            Scaffold(
               appBar: AppRouter.walletHomeAppBar(),
               extendBodyBehindAppBar: true,
               body: child,

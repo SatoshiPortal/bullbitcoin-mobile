@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "백업이 없으면 다음과 같은 경우 비트코인에 접근할 수 없습니다:",
-  "backupWarningLoseReasonLostPhone": "휴대폰을 분실한 경우",
-  "backupWarningLoseReasonDeletedApp": "앱을 삭제한 경우",
-  "backupWarningLoseReasonCriticalIssue": "앱이나 기기에 심각한 문제가 발생한 경우",
-  "backupWarningLoseReasonKeystore": "잠금화면/기기 인증 방식을 변경하면 기기가 키스토어를 무효화합니다",
-  "backupWarningLoseReasonCloudRestore": "클라우드 백업으로 기기를 복원하는 경우",
-  "backupWarningNoRecovery": "백업이 없으면 지갑을 복구할 방법이 없습니다.",
   "swapMax": "최대",
   "@swapMax": {
     "description": "MAX button label"
@@ -4265,9 +4258,6 @@
   "priceFailedToLoad": "가격을 불러오지 못했습니다",
   "statusScreenTryAgain": "다시 시도",
   "statusScreenContinue": "계속",
-  "backupWarningTitle": "지금 바로 지갑을 백업하세요",
-  "backupWarningBackupNow": "예",
-  "backupWarningBackupLater": "아니요, 위험을 이해했습니다",
   "recipientsContinue": "계속",
   "recipientsTypeInteracEmail": "이메일 송금",
   "recipientsTypeBillPayment": "청구서 납부",

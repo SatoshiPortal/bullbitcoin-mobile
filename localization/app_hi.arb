@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
-  "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
-  "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
-  "backupWarningLoseReasonCriticalIssue": "कोई गंभीर ऐप अथवा डिवाइस संबंधित समस्या आती है",
-  "backupWarningLoseReasonKeystore": "जब आप लॉकस्क्रीन या डिवाइस ऑथेंटिकेशन बदलते हैं, तो आपका डिवाइस कीस्टोर (keystore) को अमान्य कर देता है",
-  "backupWarningLoseReasonCloudRestore": "अपने डिवाइस को क्लाउड बैकअप से रिस्टोर करना",
-  "backupWarningNoRecovery": "बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
   "@@locale": "hi",
   "swapMax": "मैक्स",
   "@swapMax": {
@@ -4281,18 +4274,6 @@
   "errorReportingProgramDescription": "हमारे त्रुटि रिपोर्टिंग कार्यक्रम में भाग लेकर Bull Bitcoin को बेहतर बनाने में हमारी मदद करें। इससे सीधे हमें सभी के लिए Bull Bitcoin को बेहतर बनाने में सहायता मिलती है।\n\nसक्षम होने पर, ऐप में कोई समस्या आने पर हम स्वचालित रूप से त्रुटि रिपोर्ट भेजते हैं। यह डेटा हमें दुनिया भर के हमारे उपयोगकर्ताओं के लिए क्या हो रहा है यह समझने और उसी के अनुसार सुधारों को प्राथमिकता देने में मदद करता है।\n\nहम यह जानकारी किसी तृतीय पक्ष के साथ साझा नहीं करते। हम Sentry के ओपन-सोर्स क्लाइंट का उपयोग अपने स्वयं के सेल्फ-होस्टेड बैकएंड सर्वर के साथ करते हैं।",
   "@errorReportingProgramDescription": {
     "description": "Description of the error reporting program"
-  },
-  "backupWarningTitle": "अभी अपना वॉलेट बैकअप करें",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "हाँ",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "नहीं, मैं जोखिम समझता/समझती हूँ",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
   },
   "coreScreensResolvingInputs": "लेन-देन इनपुट हल किए जा रहे हैं...",
   "coreScreensFeeRateLabel": "शुल्क दर",

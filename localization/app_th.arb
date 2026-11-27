@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
-  "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
-  "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
-  "backupWarningLoseReasonCriticalIssue": "เกิดปัญหาร้ายแรงกับแอปหรืออุปกรณ์",
-  "backupWarningLoseReasonKeystore": "อุปกรณ์ของคุณจะยกเลิกคีย์สโตร์เมื่อเปลี่ยนรหัสล็อกหน้าจอ/วิธียืนยันตัวตนของอุปกรณ์",
-  "backupWarningLoseReasonCloudRestore": "การกู้คืนอุปกรณ์ของคุณจากการสำรองข้อมูลบนคลาวด์",
-  "backupWarningNoRecovery": "หากไม่มีข้อมูลสำรอง จะไม่มีทางกู้คืนกระเป๋าเงินของคุณได้",
   "swapMax": "แม็กซ์",
   "@swapMax": {
     "description": "MAX button label"
@@ -4265,9 +4258,6 @@
   "statusScreenContinue": "อ่านต่อ",
   "viewerAddressTab": "ที่อยู่",
   "viewerPaymentUriTab": "Payment URI",
-  "backupWarningTitle": "สำรองกระเป๋าสตางค์ของคุณตอนนี้",
-  "backupWarningBackupNow": "ใช่",
-  "backupWarningBackupLater": "ไม่ ฉันเข้าใจความเสี่ยง",
   "transactionSwapOpenWithin24h": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำ Swap ของคุณให้เสร็จสมบูรณ์",
   "recipientsContinue": "อ่านต่อ",
   "recipientsTypeInteracEmail": "โอนเงินผ่านอีเมล",

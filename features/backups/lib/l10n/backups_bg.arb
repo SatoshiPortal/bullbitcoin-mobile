@@ -229,5 +229,15 @@
   "testBackupErrorSeedNotMnemonic": "Този портфейл няма фраза за възстановяване за тестване.",
   "testBackupErrorCompletionFailed": "Фразата ви за възстановяване беше правилна, но не успяхме да запазим резултата. Опитайте отново.",
   "backupCardTitle": "Защитете своите биткойни.",
-  "backupCardSubtitle": "Архивирайте портфейла си сега."
+  "backupCardSubtitle": "Архивирайте портфейла си сега.",
+  "backupWarningBackupLater": "НЕ, РАЗБИРАМ РИСКА",
+  "backupWarningBackupNow": "ДА",
+  "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
+  "backupWarningLoseReasonCloudRestore": "Възстановяване на устройството от резервно копие в облака",
+  "backupWarningLoseReasonCriticalIssue": "Възникне критичен проблем с приложението или устройството",
+  "backupWarningLoseReasonDeletedApp": "Изтриете приложението",
+  "backupWarningLoseReasonKeystore": "Устройството анулира keystore при смяна на заключения екран или удостоверяването на устройството",
+  "backupWarningLoseReasonLostPhone": "Загубите телефона си",
+  "backupWarningNoRecovery": "Без резервно копие няма начин да възстановите портфейла си.",
+  "backupWarningTitle": "АРХИВИРАЙТЕ ПОРТФЕЙЛА СИ СЕГА"
 }

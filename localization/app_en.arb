@@ -4243,46 +4243,6 @@
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
   },
-  "backupWarningTitle": "BACKUP YOUR WALLET NOW",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if:",
-  "@backupWarningDescription": {
-    "description": "Lead-in line above the list of ways the wallet can be lost"
-  },
-  "backupWarningLoseReasonLostPhone": "You lose your phone",
-  "@backupWarningLoseReasonLostPhone": {
-    "description": "Backup warning bullet: lost phone"
-  },
-  "backupWarningLoseReasonDeletedApp": "You delete the app",
-  "@backupWarningLoseReasonDeletedApp": {
-    "description": "Backup warning bullet: deleted app"
-  },
-  "backupWarningLoseReasonCriticalIssue": "A critical app or device issue occurs",
-  "@backupWarningLoseReasonCriticalIssue": {
-    "description": "Backup warning bullet: critical app or device issue"
-  },
-  "backupWarningLoseReasonKeystore": "Your device invalidates the keystore when changing the lockscreen/device authentication",
-  "@backupWarningLoseReasonKeystore": {
-    "description": "Backup warning bullet: keystore invalidation on lockscreen/auth change"
-  },
-  "backupWarningLoseReasonCloudRestore": "Restoring your device from a cloud backup",
-  "@backupWarningLoseReasonCloudRestore": {
-    "description": "Backup warning bullet: restoring device from a cloud backup"
-  },
-  "backupWarningNoRecovery": "There is no way to recover your wallet without a backup.",
-  "@backupWarningNoRecovery": {
-    "description": "Bold closing line of the backup warning"
-  },
-  "backupWarningBackupNow": "YES",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "NO, I UNDERSTAND THE RISK",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"

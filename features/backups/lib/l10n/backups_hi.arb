@@ -233,5 +233,15 @@
   "testBackupErrorSeedNotMnemonic": "इस वॉलेट में जाँचने के लिए कोई रिकवरी वाक्यांश नहीं है।",
   "testBackupErrorCompletionFailed": "आपका रिकवरी वाक्यांश सही था, लेकिन हम परिणाम सहेज नहीं सके। कृपया फिर से प्रयास करें।",
   "backupCardTitle": "अपने बिटकॉइन को सुरक्षित रखें।",
-  "backupCardSubtitle": "अभी अपने वॉलेट का बैकअप लें।"
+  "backupCardSubtitle": "अभी अपने वॉलेट का बैकअप लें।",
+  "backupWarningBackupLater": "नहीं, मैं जोखिम समझता/समझती हूँ",
+  "backupWarningBackupNow": "हाँ",
+  "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
+  "backupWarningLoseReasonCloudRestore": "अपने डिवाइस को क्लाउड बैकअप से रिस्टोर करना",
+  "backupWarningLoseReasonCriticalIssue": "कोई गंभीर ऐप अथवा डिवाइस संबंधित समस्या आती है",
+  "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
+  "backupWarningLoseReasonKeystore": "जब आप लॉकस्क्रीन या डिवाइस ऑथेंटिकेशन बदलते हैं, तो आपका डिवाइस कीस्टोर (keystore) को अमान्य कर देता है",
+  "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
+  "backupWarningNoRecovery": "बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
+  "backupWarningTitle": "अभी अपना वॉलेट बैकअप करें"
 }

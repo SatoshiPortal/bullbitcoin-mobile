@@ -97,5 +97,15 @@
   "passphraseWordsIncompleteWarning": "Ces mots seuls ne permettent pas de restaurer ce wallet. Conservez votre passphrase séparément.",
   "backupCardTitle": "Protégez vos bitcoins.",
   "backupCardSubtitle": "Sauvegardez votre portefeuille maintenant.",
-  "settingsBackupTitle": "Sauvegarde"
+  "settingsBackupTitle": "Sauvegarde",
+  "backupWarningBackupLater": "NON, JE COMPRENDS LE RISQUE",
+  "backupWarningBackupNow": "OUI",
+  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si :",
+  "backupWarningLoseReasonCloudRestore": "Restaurer votre appareil à partir d'une sauvegarde dans le cloud",
+  "backupWarningLoseReasonCriticalIssue": "Un problème critique lié à l'application ou à l'appareil survient",
+  "backupWarningLoseReasonDeletedApp": "Vous supprimez l'application",
+  "backupWarningLoseReasonKeystore": "Votre appareil invalide le keystore lorsque vous modifiez l'authentification de l'écran de verrouillage ou de l'appareil",
+  "backupWarningLoseReasonLostPhone": "Vous perdez votre téléphone",
+  "backupWarningNoRecovery": "Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
+  "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT"
 }

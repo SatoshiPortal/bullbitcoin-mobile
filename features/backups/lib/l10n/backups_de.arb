@@ -89,5 +89,15 @@
   "passphraseShow": "Passphrase anzeigen",
   "passphraseHide": "Passphrase verbergen",
   "backupCardTitle": "Schützen Sie Ihre Bitcoin.",
-  "backupCardSubtitle": "Sichern Sie jetzt Ihre Wallet."
+  "backupCardSubtitle": "Sichern Sie jetzt Ihre Wallet.",
+  "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
+  "backupWarningBackupNow": "JA",
+  "backupWarningDescription": "Ohne Backup verlieren Sie den Zugriff auf Ihre Bitcoin, wenn:",
+  "backupWarningLoseReasonCloudRestore": "Sie Ihr Gerät aus einem Cloud-Backup wiederherstellen",
+  "backupWarningLoseReasonCriticalIssue": "Ein kritisches App- oder Geräteproblem auftritt",
+  "backupWarningLoseReasonDeletedApp": "Sie die App löschen",
+  "backupWarningLoseReasonKeystore": "Ihr Gerät den Keystore ungültig macht, wenn Sie die Sperrbildschirm- oder Geräteauthentifizierung ändern",
+  "backupWarningLoseReasonLostPhone": "Sie Ihr Handy verlieren",
+  "backupWarningNoRecovery": "Ohne Backup gibt es keine Möglichkeit, Ihre Wallet wiederherzustellen.",
+  "backupWarningTitle": "SICHERN SIE IHRE WALLET JETZT"
 }

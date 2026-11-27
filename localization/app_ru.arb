@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если:",
-  "backupWarningLoseReasonLostPhone": "Потеряете телефон",
-  "backupWarningLoseReasonDeletedApp": "Удалите приложение",
-  "backupWarningLoseReasonCriticalIssue": "Столкнётесь с критической проблемой приложения или устройства",
-  "backupWarningLoseReasonKeystore": "Устройство аннулирует keystore при смене блокировки экрана или способа аутентификации устройства",
-  "backupWarningLoseReasonCloudRestore": "Восстановление устройства из облачной резервной копии",
-  "backupWarningNoRecovery": "Без резервной копии восстановить кошелёк невозможно.",
   "translationWarningDismissButton": "Понятно",
   "swapMax": "MAX",
   "importColdcardInstructionsStep10": "Завершение установки",
@@ -1410,18 +1403,6 @@
   "appInitErrorShareLogsButton": "Поделиться журналами",
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
-  },
-  "backupWarningTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ КОШЕЛЬКА СЕЙЧАС",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "ДА",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "НЕТ, Я ПОНИМАЮ РИСК",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
   },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {

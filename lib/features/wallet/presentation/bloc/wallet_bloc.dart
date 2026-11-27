@@ -18,7 +18,6 @@ import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' hide Network;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
@@ -49,7 +48,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._watchWalletSyncEventsUsecase,
     required this._syncWalletsUsecase,
     required this._getOngoingSwapsUsecase,
-    required this._checkBackupNeededUsecase,
+    required this._readBackupWarning,
     required this._getExternalTorProxyStatusUsecase,
     required this._checkSpWalletSetupForWalletUsecase,
     required this._checkSpScanningForWalletUsecase,
@@ -96,7 +95,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final RetrySwapsOnRefreshUsecase? _retrySwapsOnRefreshUsecase;
   final GetOngoingSwapsUsecase _getOngoingSwapsUsecase;
   final CheckSwapServerUsecase? _checkSwapServerUsecase;
-  final CheckBackupNeededUsecase _checkBackupNeededUsecase;
+  final Future<bool?> Function() _readBackupWarning;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
   final CheckSpWalletSetupForWalletUsecase _checkSpWalletSetupForWalletUsecase;
   final CheckSpScanningForWalletUsecase _checkSpScanningForWalletUsecase;
@@ -645,14 +644,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     final generation = ++_backupStatusGeneration;
-    final result = await _checkBackupNeededUsecase.execute();
+    final needed = await _readBackupWarning();
     if (generation != _backupStatusGeneration || emit.isDone) return;
-    switch (result) {
-      case Ok(:final value):
-        emit(state.copyWith(backupNeeded: value));
-      case Err():
-        log.warning('recoverbull.backup.status.unavailable');
-        emit(state.copyWith(backupNeeded: null));
-    }
+    if (needed == null) log.warning('recoverbull.backup.status.unavailable');
+    emit(state.copyWith(backupNeeded: needed));
   }
 }

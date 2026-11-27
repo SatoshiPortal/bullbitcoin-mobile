@@ -29,7 +29,6 @@ import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'dart:async';
 
 import 'package:electrum/electrum.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
@@ -60,13 +59,6 @@ class _MockSyncWalletsUsecase extends Mock implements SyncWalletsUsecase {}
 
 class _MockGetOngoingSwapsUsecase extends Mock
     implements GetOngoingSwapsUsecase {}
-
-class _MockCheckBackupNeededUsecase extends Mock
-    implements CheckBackupNeededUsecase {
-  _MockCheckBackupNeededUsecase() {
-    when(execute).thenAnswer((_) async => const Err(WalletStorageFailure()));
-  }
-}
 
 class _MockExternalTorStatusUsecase extends Mock
     implements GetExternalTorProxyStatusUsecase {}
@@ -103,7 +95,7 @@ WalletBloc createBloc(
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: refreshSync ?? _stubbedSync(),
     getOngoingSwapsUsecase: getUnconfirmed ?? _MockGetOngoingSwapsUsecase(),
-    checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+    readBackupWarning: () async => null,
     getExternalTorProxyStatusUsecase: externalStatus,
     checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
     checkSpScanningForWalletUsecase: _stubbedSpScanning(),
@@ -489,7 +481,7 @@ void main() {
           refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
           watchSpWalletUsecase: _stubbedSpWatch(),
           checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
-          checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+          readBackupWarning: () async => null,
           getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
         );
 
@@ -602,7 +594,7 @@ void main() {
         refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
         watchSpWalletUsecase: _stubbedSpWatch(),
         checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
-        checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+        readBackupWarning: () async => null,
         getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
       );
       try {
@@ -843,7 +835,7 @@ void main() {
         refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
         watchSpWalletUsecase: _stubbedSpWatch(),
         checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
-        checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+        readBackupWarning: () async => null,
         getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
       );
       addTearDown(bloc.close);
@@ -909,7 +901,7 @@ WalletBloc _blocWithFailingLoad(
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
     watchSpWalletUsecase: _stubbedSpWatch(),
     checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
-    checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+    readBackupWarning: () async => null,
     getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
   );
 }
@@ -1015,7 +1007,7 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
     watchSpWalletUsecase: _stubbedSpWatch(),
     checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
-    checkBackupNeededUsecase: _MockCheckBackupNeededUsecase(),
+    readBackupWarning: () async => null,
     getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
   );
 }

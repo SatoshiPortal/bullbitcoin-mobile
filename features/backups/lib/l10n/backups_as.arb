@@ -214,5 +214,15 @@
   "testBackupErrorSeedNotMnemonic": "এই ৱালেটত পৰীক্ষা কৰিবলৈ কোনো পুনৰুদ্ধাৰ বাক্যাংশ নাই।",
   "testBackupErrorCompletionFailed": "আপোনাৰ পুনৰুদ্ধাৰ বাক্যাংশ শুদ্ধ আছিল, কিন্তু আমি ফলাফল সংৰক্ষণ কৰিব নোৱাৰিলোঁ। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "backupCardTitle": "আপোনাৰ বিটক'ইন সুৰক্ষিত কৰক।",
-  "backupCardSubtitle": "এতিয়াই আপোনাৰ ৱালেট বেকআপ কৰক।"
+  "backupCardSubtitle": "এতিয়াই আপোনাৰ ৱালেট বেকআপ কৰক।",
+  "backupWarningBackupLater": "নহয়, মই বিপদৰ বিষয়ে জানো",
+  "backupWarningBackupNow": "হয়",
+  "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
+  "backupWarningLoseReasonCloudRestore": "ক্লাউড বেকআপৰ পৰা আপোনাৰ ডিভাইচ ৰিষ্টোৰ কৰা",
+  "backupWarningLoseReasonCriticalIssue": "কোনো গুৰুতৰ এপ্প বা ডিভাইচ সম্পৰ্কীয় সমস্যা হ'লে",
+  "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
+  "backupWarningLoseReasonKeystore": "আপুনি লকস্ক্ৰীন বা ডিভাইচ অথেণ্টিকেশ্বন সলালে আপোনাৰ ডিভাইচে কীষ্টোৰ (keystore) অবৈধ কৰি দিয়ে",
+  "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
+  "backupWarningNoRecovery": "বেকআপ অবিহনে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰাৰ কোনো উপায় নাই।",
+  "backupWarningTitle": "এতিয়াই আপোনাৰ WALLET বেকআপ কৰক"
 }

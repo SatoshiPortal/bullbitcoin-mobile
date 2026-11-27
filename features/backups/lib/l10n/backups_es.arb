@@ -97,5 +97,15 @@
   "backupCardSubtitle": "Haz una copia de seguridad de tu billetera ahora.",
   "backupSettingsMoneySection": "Copia de seguridad de los fondos",
   "backupSettingsDataSection": "Copia de seguridad de los datos",
-  "backupSettingsAutomaticBackup": "Copia de seguridad automática"
+  "backupSettingsAutomaticBackup": "Copia de seguridad automática",
+  "backupWarningBackupLater": "NO, ENTIENDO EL RIESGO",
+  "backupWarningBackupNow": "SÍ",
+  "backupWarningDescription": "Sin una copia de seguridad, perderás el acceso a tus bitcoin si:",
+  "backupWarningLoseReasonCloudRestore": "Restaurar tu dispositivo desde una copia de seguridad en la nube",
+  "backupWarningLoseReasonCriticalIssue": "Ocurre un problema crítico relacionado con la aplicación o el dispositivo",
+  "backupWarningLoseReasonDeletedApp": "Eliminas la aplicación",
+  "backupWarningLoseReasonKeystore": "Tu dispositivo invalida el keystore al cambiar la autenticación del dispositivo o de la pantalla de bloqueo",
+  "backupWarningLoseReasonLostPhone": "Pierdes tu teléfono",
+  "backupWarningNoRecovery": "No hay forma de recuperar tu billetera sin una copia de seguridad.",
+  "backupWarningTitle": "RESPALDA TU BILLETERA AHORA"
 }

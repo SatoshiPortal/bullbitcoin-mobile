@@ -233,5 +233,15 @@
   "testBackupErrorSeedNotMnemonic": "Is wallet mein jaanchne ke liye koi recovery phrase nahin hai.",
   "testBackupErrorCompletionFailed": "Aapka recovery phrase sahi tha, lekin hum parinaam save nahin kar sake. Kripya phir se prayas karein.",
   "backupCardTitle": "Apne bitcoin ko surakshit rakho.",
-  "backupCardSubtitle": "Abhi apne wallet ka backup lo."
+  "backupCardSubtitle": "Abhi apne wallet ka backup lo.",
+  "backupWarningBackupLater": "NAHI, MUJHE RISK SAMAJH AA GAYA",
+  "backupWarningBackupNow": "HAAN",
+  "backupWarningDescription": "Backup ke bina, aap apne bitcoin access kho denge agar:",
+  "backupWarningLoseReasonCloudRestore": "Apne device ko cloud backup se restore karna",
+  "backupWarningLoseReasonCriticalIssue": "Koi critical app ya device issue aata hai",
+  "backupWarningLoseReasonDeletedApp": "Aap app delete karte hain",
+  "backupWarningLoseReasonKeystore": "Jab aap lockscreen ya device authentication change karte hain, tab aapka device keystore ko invalid kar deta hai",
+  "backupWarningLoseReasonLostPhone": "Aap apna phone kho dete hain",
+  "backupWarningNoRecovery": "Backup ke bina wallet recover karne ka koi tarika nahi hai.",
+  "backupWarningTitle": "ABHI APNA WALLET BACKUP KARO"
 }

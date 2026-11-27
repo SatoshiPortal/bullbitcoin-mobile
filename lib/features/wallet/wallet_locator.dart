@@ -22,7 +22,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:overview/setup.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_backup_needed_usecase.dart';
+import 'package:backups/backups.dart' show BackupsFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/read_wallet_usecase.dart';
@@ -70,11 +70,6 @@ class WalletLocator {
         syncFinished: electrum.finished.map((event) => event.key.id),
       );
     });
-    locator.registerFactory<CheckBackupNeededUsecase>(
-      () => CheckBackupNeededUsecase(
-        backupWarning: locator<RecoverBullFacade>().backupWarningNeeded,
-      ),
-    );
     // Usecase
     locator.registerFactory<GetOngoingSwapsUsecase>(
       () => GetOngoingSwapsUsecase(swapStore: locator<SwapStore>()),
@@ -140,7 +135,9 @@ class WalletLocator {
         checkSwapServerUsecase: CheckSwapServerUsecase(
           boltz: locator<BoltzSwaps>(),
         ),
-        checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
+        readBackupWarning: () => BackupsFeature.readWarningNeeded(
+          locator<RecoverBullFacade>().backupWarningNeeded,
+        ),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),
         checkSpFeatureGateForWalletUsecase:

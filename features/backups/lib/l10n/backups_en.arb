@@ -292,5 +292,45 @@
   "backupCardSubtitle": "Back up your wallet now.",
   "@backupCardSubtitle": {
     "description": "Subtitle of the backup reminder card on the home screen"
+  },
+  "backupWarningBackupLater": "NO, I UNDERSTAND THE RISK",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
+  },
+  "backupWarningBackupNow": "YES",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if:",
+  "@backupWarningDescription": {
+    "description": "Lead-in line above the list of ways the wallet can be lost"
+  },
+  "backupWarningLoseReasonCloudRestore": "Restoring your device from a cloud backup",
+  "@backupWarningLoseReasonCloudRestore": {
+    "description": "Backup warning bullet: restoring device from a cloud backup"
+  },
+  "backupWarningLoseReasonCriticalIssue": "A critical app or device issue occurs",
+  "@backupWarningLoseReasonCriticalIssue": {
+    "description": "Backup warning bullet: critical app or device issue"
+  },
+  "backupWarningLoseReasonDeletedApp": "You delete the app",
+  "@backupWarningLoseReasonDeletedApp": {
+    "description": "Backup warning bullet: deleted app"
+  },
+  "backupWarningLoseReasonKeystore": "Your device invalidates the keystore when changing the lockscreen/device authentication",
+  "@backupWarningLoseReasonKeystore": {
+    "description": "Backup warning bullet: keystore invalidation on lockscreen/auth change"
+  },
+  "backupWarningLoseReasonLostPhone": "You lose your phone",
+  "@backupWarningLoseReasonLostPhone": {
+    "description": "Backup warning bullet: lost phone"
+  },
+  "backupWarningNoRecovery": "There is no way to recover your wallet without a backup.",
+  "@backupWarningNoRecovery": {
+    "description": "Bold closing line of the backup warning"
+  },
+  "backupWarningTitle": "BACKUP YOUR WALLET NOW",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
   }
 }
