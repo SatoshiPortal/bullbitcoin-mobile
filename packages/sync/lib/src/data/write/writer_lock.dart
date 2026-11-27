@@ -33,6 +33,7 @@ final class WriterLock {
     String documentsDirectory,
     WalletKey key, {
     LeaseDiagnostics? diagnostics,
+    bool existingOnly = false,
   }) {
     final trace =
         diagnostics ??
@@ -43,7 +44,10 @@ final class WriterLock {
     var busySource = LeaseBusySource.leaseOpen;
     Database? db;
     try {
-      db = _open((path as Ok<String, SyncFailure>).value);
+      db = _open(
+        (path as Ok<String, SyncFailure>).value,
+        existingOnly: existingOnly,
+      );
       if (db == null) return const Err(SyncStorageFailure());
       busySource = LeaseBusySource.leaseBegin;
       db.execute('BEGIN IMMEDIATE');
@@ -118,9 +122,12 @@ final class WriterLock {
     }
   }
 
-  static Database? _open(String path) {
-    File(path).parent.createSync(recursive: true);
-    final db = sqlite3.open(path);
+  static Database? _open(String path, {bool existingOnly = false}) {
+    if (!existingOnly) File(path).parent.createSync(recursive: true);
+    final db = sqlite3.open(
+      path,
+      mode: existingOnly ? OpenMode.readWrite : OpenMode.readWriteCreate,
+    );
     try {
       db.execute('PRAGMA busy_timeout = 0');
       // Refuse an unexpected journal configuration; no WAL lock semantics.

@@ -8,6 +8,7 @@ import 'package:sqlite3/sqlite3.dart';
 import '../../domain/ports/freeze_store_port.dart';
 import '../../domain/ports/input_reservation_port.dart';
 import '../../domain/ports/funding_reservation_port.dart';
+import '../../domain/ports/read_admission_port.dart';
 import '../input_reservations.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
@@ -35,7 +36,7 @@ import 'writer_session.dart';
 /// stores; it does so before any sync pass can run.
 final class ForegroundStores {
   final String documentsDirectory;
-  final WalletWriterRepository writer;
+  final NativeWalletWriterRepository _writer;
   final SqliteWalletRevisionReader _revisions;
 
   /// Hydrates native handles for sync's own projections; never lent out.
@@ -59,7 +60,7 @@ final class ForegroundStores {
 
   ForegroundStores._(
     this.documentsDirectory,
-    this.writer,
+    this._writer,
     this._revisions,
     this.reader,
     this.spendGate,
@@ -71,6 +72,11 @@ final class ForegroundStores {
   );
 
   WalletRevisionReaderPort get revisions => _revisions;
+  WalletWriterRepository get writer => _writer;
+
+  @internal
+  Future<Result<ReadLease, SyncFailure>> acquireExistingRead(WalletKey key) =>
+      _writer.acquire(key, existingOnly: true);
 
   /// Read only the already-open SQLite connection, without publishing a
   /// revision event or calling any recovery or native-store code.

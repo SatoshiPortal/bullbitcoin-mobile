@@ -113,8 +113,7 @@ final class WalletSnapshotReader {
       role: LeaseRole.reader,
       intent: LeaseIntent.snapshot,
     );
-    final previous = _pending[key] ?? Future<void>.value();
-    final operation = previous.then((_) async {
+    return _serialize(key, () async {
       final result = await trace.run(
         () => _readAdmitted<T>(descriptor, hydrate),
       );
@@ -135,6 +134,11 @@ final class WalletSnapshotReader {
       }
       return result;
     });
+  }
+
+  Future<R> _serialize<R>(WalletKey key, Future<R> Function() run) async {
+    final previous = _pending[key] ?? Future<void>.value();
+    final operation = previous.then((_) => run());
     final tail = operation.then<void>(
       (_) {},
       onError: (Object _, StackTrace _) {},
@@ -146,6 +150,90 @@ final class WalletSnapshotReader {
       if (identical(_pending[key], tail)) {
         _pending.remove(key);
       }
+    }
+  }
+
+  /// Strict financial reads share the reader queue, but never publish or use
+  /// its native cache. The temporary handle is disposed before lease release.
+  Future<Result<BigInt, SyncFailure>> readBalance(
+    WalletRevision expected,
+    WalletCatalogPort catalog, {
+    required bool Function() isCurrent,
+    required Future<Result<ReadLease, SyncFailure>> Function(WalletKey)
+    acquireExisting,
+    required Future<BigInt> Function(Object) map,
+    Future<void> Function()? beforeHydration,
+  }) async {
+    if (!isCurrent()) return const Err(SyncClosedFailure());
+    final key = expected.key;
+    final lookup = await catalog.find(key);
+    if (!isCurrent()) return const Err(SyncClosedFailure());
+    if (lookup case Err(:final failure)) return Err(failure);
+    final descriptor =
+        (lookup as Ok<PublicWalletDescriptor, SyncFailure>).value;
+    if (descriptor.key != key) return const Err(SyncInvalidCatalogFailure());
+    if (nativeDescriptorFailure(descriptor) case final failure?) {
+      return Err(failure);
+    }
+    return _serialize(key, () async {
+      if (!isCurrent()) return const Err(SyncClosedFailure());
+      final acquired = await acquireExisting(key);
+      if (acquired case Err(:final failure)) {
+        return Err(isCurrent() ? failure : const SyncClosedFailure());
+      }
+      final lease = (acquired as Ok<ReadLease, SyncFailure>).value;
+      Object? wallet;
+      try {
+        if (!isCurrent()) return const Err(SyncClosedFailure());
+        if (lease.revision != expected) return const Err(SyncBusyFailure());
+        final ready = await readiness.check(
+          descriptor,
+          expected,
+          requiredSchemaVersion,
+        );
+        if (!isCurrent()) return const Err(SyncClosedFailure());
+        if (ready case Err(:final failure)) return Err(failure);
+        final proof = (ready as Ok<WalletReadReady, SyncFailure>).value;
+        if (proof.revision != expected ||
+            proof.schemaVersion != requiredSchemaVersion) {
+          return const Err(SyncBusyFailure());
+        }
+        if (beforeHydration != null) await beforeHydration();
+        _checkAdmission(isCurrent);
+        final hydrated = switch (descriptor) {
+          BitcoinWalletDescriptor() => await _bitcoin(descriptor, isCurrent),
+          LiquidWalletDescriptor() => await _liquid(
+            descriptor,
+            proof,
+            isCurrent,
+          ),
+        };
+        wallet = hydrated;
+        _checkAdmission(isCurrent);
+        final total = await map(hydrated);
+        _checkAdmission(isCurrent);
+        return Ok(total);
+      } on _ReadFailure catch (error) {
+        return Err(error.failure);
+      } on Exception catch (error) {
+        return Err(
+          isLiquidStatusConflict(error)
+              ? const SyncNeedsRepairFailure()
+              : const SyncStorageFailure(),
+        );
+      } finally {
+        try {
+          if (wallet != null) _disposeUnpublished(wallet);
+        } finally {
+          await lease.release();
+        }
+      }
+    });
+  }
+
+  static void _checkAdmission(bool Function()? isCurrent) {
+    if (isCurrent?.call() == false) {
+      throw const _ReadFailure(SyncClosedFailure());
     }
   }
 
@@ -345,7 +433,10 @@ final class WalletSnapshotReader {
     }
   }
 
-  Future<bdk.Wallet> _bitcoin(BitcoinWalletDescriptor descriptor) async {
+  Future<bdk.Wallet> _bitcoin(
+    BitcoinWalletDescriptor descriptor, [
+    bool Function()? isCurrent,
+  ]) async {
     final network = descriptor.key.network;
     if (network != BitcoinNetwork.mainnet &&
         network != BitcoinNetwork.testnet &&
@@ -354,6 +445,7 @@ final class WalletSnapshotReader {
     }
     final source = nativeWalletStoragePath(documentsDirectory, descriptor.key);
     await _require(source, FileSystemEntityType.file);
+    _checkAdmission(isCurrent);
     final kind = network == BitcoinNetwork.mainnet
         ? bdk.NetworkKind.main
         : bdk.NetworkKind.test;
@@ -393,8 +485,9 @@ final class WalletSnapshotReader {
 
   Future<lwk.Wallet> _liquid(
     LiquidWalletDescriptor descriptor,
-    WalletReadReady ready,
-  ) async {
+    WalletReadReady ready, [
+    bool Function()? isCurrent,
+  ]) async {
     final network = switch (descriptor.key.network) {
       LiquidNetwork.mainnet => lwk.LiquidNetwork.mainnet,
       LiquidNetwork.testnet => lwk.LiquidNetwork.testnet,
@@ -403,6 +496,7 @@ final class WalletSnapshotReader {
     };
     final source = nativeWalletStoragePath(documentsDirectory, descriptor.key);
     await _require(source, FileSystemEntityType.directory);
+    _checkAdmission(isCurrent);
     // The writer records the SDK's canonical relative path when initializing.
     // Never derive it by calling Wallet.init on an absent directory.
     final relative = ready.liquidCachePath;
@@ -415,12 +509,16 @@ final class WalletSnapshotReader {
     for (final segment in relative.split('/')) {
       checked = '$checked/$segment';
       await _require(checked, FileSystemEntityType.directory);
+      _checkAdmission(isCurrent);
     }
     await for (final entry in Directory(checked).list(followLinks: false)) {
+      _checkAdmission(isCurrent);
       if (RegExp(r'^[0-9]{12}$').hasMatch(entry.path.split('/').last)) {
         await _require(entry.path, FileSystemEntityType.file);
+        _checkAdmission(isCurrent);
       }
     }
+    _checkAdmission(isCurrent);
     return lwk.Wallet.init(
       network: network,
       dbpath: source,

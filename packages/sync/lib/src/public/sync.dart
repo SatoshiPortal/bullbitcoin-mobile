@@ -44,10 +44,11 @@ import '../domain/wallet_values.dart';
 final class Sync {
   final ForegroundStores _stores;
   final WalletProjections _projections;
+  final NativeFrameSource _source;
   final _Cell<bool> _recoveryPending;
   Future<void>? _closing;
 
-  Sync._(this._stores, this._projections)
+  Sync._(this._stores, this._projections, this._source)
     : _recoveryPending = _Cell(_stores.recoveredMetadata);
 
   /// Opens or creates the package stores, quarantining unreadable revision
@@ -83,16 +84,18 @@ final class Sync {
     );
     stores.freezes.demand();
     final ownerCatalogue = catalog is SecretsWalletCatalog ? catalog : null;
+    final source = NativeFrameSource(stores.reader, catalog);
     return Sync._(
       stores,
       WalletProjections(
         revisions: stores.revisions,
         changes: stores.changes,
-        source: NativeFrameSource(stores.reader, catalog),
+        source: source,
         freezes: stores.freezes,
         catalogueSignal: ownerCatalogue?.walletCatalogue,
         bindCatalogue: ownerCatalogue?.bindWalletCatalogue,
       ),
+      source,
     );
   }
 
@@ -175,6 +178,28 @@ extension SyncForegroundStores on Sync {
 
   BigInt? retainedTotal(WalletCatalogueStamp catalogue, WalletRevision stamp) =>
       _projections.retainedTotal(catalogue, stamp);
+
+  Future<Result<WalletRevision, SyncFailure>> retainBalance(
+    WalletKey key,
+    WalletCatalogueStamp catalogue,
+    WalletCatalogPort bound, {
+    required bool Function() isCurrent,
+    Future<void> Function()? beforeHydration,
+    Future<void> Function()? beforePublication,
+  }) => _projections.retainBalance(
+    key,
+    catalogue,
+    isCurrent: isCurrent,
+    readCommitted: () => _stores.retainedRevision(key),
+    mapBalance: (stamp) => _source.loadBalance(
+      stamp,
+      bound,
+      isCurrent: isCurrent,
+      acquireExisting: _stores.acquireExistingRead,
+      beforeHydration: beforeHydration,
+    ),
+    beforePublication: beforePublication,
+  );
 
   Future<Result<WalletRevision, SyncFailure>> loadFromCatalogue(
     Wallet wallet,

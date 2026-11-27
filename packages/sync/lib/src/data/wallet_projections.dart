@@ -132,6 +132,50 @@ final class WalletProjections {
 
   _Slot _slot(WalletKey key) => _slots.putIfAbsent(key, _Slot.new);
 
+  /// Retains only the scalar. Does not publish a general-purpose wallet frame
+  /// (which would wake observers and schedule address or freeze reads).
+  Future<Result<WalletRevision, SyncFailure>> retainBalance(
+    WalletKey key,
+    WalletCatalogueStamp catalogue, {
+    required bool Function() isCurrent,
+    required Result<WalletRevisionState, SyncFailure> Function() readCommitted,
+    required Future<Result<BigInt, SyncFailure>> Function(WalletRevision)
+    mapBalance,
+    Future<void> Function()? beforePublication,
+  }) {
+    bool current() => !_closed && isCurrent();
+    if (!current()) return Future.value(const Err(SyncClosedFailure()));
+    final slot = _slot(key);
+    final run = slot.tail.then<Result<WalletRevision, SyncFailure>>((_) async {
+      if (!current()) return const Err(SyncClosedFailure());
+      final epoch = slot.epoch;
+      final initial = readCommitted();
+      if (initial case Err(:final failure)) return Err(failure);
+      final stamp =
+          (initial as Ok<WalletRevisionState, SyncFailure>).value.stamp;
+      final balance = await mapBalance(stamp);
+      if (!current()) return const Err(SyncClosedFailure());
+      if (balance case Err(:final failure)) return Err(failure);
+      if (beforePublication != null) await beforePublication();
+      if (!current()) return const Err(SyncClosedFailure());
+      if (slot.epoch != epoch) return const Err(SyncNotFoundFailure());
+      final settled = readCommitted();
+      if (settled case Err(:final failure)) return Err(failure);
+      if ((settled as Ok<WalletRevisionState, SyncFailure>).value.stamp !=
+          stamp) {
+        return const Err(SyncBusyFailure());
+      }
+      slot.financial = (
+        catalogue: catalogue,
+        stamp: stamp,
+        totalSat: (balance as Ok<BigInt, SyncFailure>).value,
+      );
+      return Ok(stamp);
+    });
+    slot.tail = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return run;
+  }
+
   /// The active generation of [key], from revision metadata only.
   Future<Result<int, SyncFailure>> generation(WalletKey key) async {
     if (_closed) return const Err(SyncClosedFailure());

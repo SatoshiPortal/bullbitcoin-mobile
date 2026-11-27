@@ -2,9 +2,11 @@ import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
+import '../../domain/ports/read_admission_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
 import '../../domain/sync_failure.dart';
 import '../../domain/wallet_key.dart';
+import '../../domain/wallet_revision.dart';
 import '../../domain/wallet_values.dart';
 import '../wallet_projections.dart';
 import '../write/datasources/native_store_errors.dart';
@@ -19,6 +21,29 @@ final class NativeFrameSource implements CatalogueFrameSource {
   final WalletCatalogPort _catalog;
 
   NativeFrameSource(this._reader, this._catalog);
+
+  Future<Result<BigInt, SyncFailure>> loadBalance(
+    WalletRevision expected,
+    WalletCatalogPort catalog, {
+    required bool Function() isCurrent,
+    required Future<Result<ReadLease, SyncFailure>> Function(WalletKey)
+    acquireExisting,
+    Future<void> Function()? beforeHydration,
+  }) => _reader.readBalance(
+    expected,
+    catalog,
+    isCurrent: isCurrent,
+    acquireExisting: acquireExisting,
+    beforeHydration: beforeHydration,
+    map: (wallet) async => switch (wallet) {
+      final bdk.Wallet wallet => BigInt.from(wallet.balance().total.toSat()),
+      final lwk.Wallet wallet => await liquidPolicyBalance(
+        wallet,
+        isCurrent: isCurrent,
+      ),
+      _ => throw StateError('Unsupported native wallet handle'),
+    },
+  );
 
   @override
   Future<Result<LoadedFrame, SyncFailure>> load(

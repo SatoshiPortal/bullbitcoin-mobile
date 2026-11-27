@@ -33,6 +33,8 @@ Every `WalletCatalogPort` read must complete, with either a value or a failure. 
 
 `package:sync/inventory.dart` adapts the Secrets inventory to this port. A foreground catalog captures its live grant before each read and discards the result if that grant expires; `captureForeground` binds a read-only port to one explicit grant for callers that must retain that identity across several reads. A background catalog reads only the persisted background grants and does not follow foreground view changes or locking.
 
+For an exact local balance, capture a `RetainedBalanceDemand` for a full `WalletKey` before scheduling work. Its synchronous environment snapshot must be absent during a transition and advance its epoch even when the committed environment is unchanged. `demandRetainedBalance` requires a successfully initialized owner and an existing store and reader lease; it never opens a runtime, provisions, syncs, or retries. It maps only the total, even when the revision has not changed, and returns the exact native revision. Recheck the demand before using that receipt with `readRetainedBalance`: the getter itself only checks the catalogue and native revision, not the environment epoch. `retainedBalanceChanges` is a wake-up signal without data, not a native revision event. Catalogue or environment renewal requires a new explicit demand; no startup or UI consumer is installed by this API.
+
 ## Transactions
 
 `transactions.dart` publishes wallet-independent Bitcoin and Liquid transaction values used by signed-transaction review. These provide review projections, while the history types in `sync.dart` describe a wallet’s view of its activity. Import the library for the view you need; neither exposes native handles.
