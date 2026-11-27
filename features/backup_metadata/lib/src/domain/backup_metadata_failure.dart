@@ -32,6 +32,12 @@ final class BackupMetadataIncompatibleFailure extends BackupMetadataFailure {
   const BackupMetadataIncompatibleFailure();
 }
 
+/// The account behind the destination is not the one the user confirmed.
+/// Nothing is sent until they reconnect and choose again.
+final class BackupMetadataAccountChangedFailure extends BackupMetadataFailure {
+  const BackupMetadataAccountChangedFailure();
+}
+
 final class BackupMetadataUnexpectedFailure extends BackupMetadataFailure {
   const BackupMetadataUnexpectedFailure();
 }

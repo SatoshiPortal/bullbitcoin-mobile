@@ -1,10 +1,19 @@
 import 'package:labels/backup.dart';
 import 'package:primitives/primitives.dart';
 
+/// A public descriptor without its checksum: the form in which two copies of
+/// one descriptor are compared.
+String canonicalDescriptor(String descriptor) =>
+    descriptor.trim().split('#').first;
+
 /// One public Bitcoin account, identified by its network and two public
 /// descriptors. The wallet identifier of the machine that wrote it is not
 /// part of the identity: restoring matches on this public material only.
 final class BackupWallet {
+  /// The identifier on the machine that holds this description. Only a hint to
+  /// attribute records: a restore maps it to the local wallet the public
+  /// descriptors match.
+  final String walletId;
   final BitcoinNetwork network;
   final ScriptType scriptType;
   final String externalDescriptor;
@@ -14,6 +23,7 @@ final class BackupWallet {
   final bool watchOnly;
 
   const BackupWallet({
+    required this.walletId,
     required this.network,
     required this.scriptType,
     required this.externalDescriptor,
@@ -47,10 +57,15 @@ final class BackupContent {
   final List<BackupWallet> wallets;
   final List<BackupDerivation> derivations;
 
+  /// Free-text fields left out because they looked like secret material. The
+  /// count only: what they said is never kept.
+  final int excluded;
+
   BackupContent({
     required this.labels,
     required List<BackupWallet> wallets,
     required List<BackupDerivation> derivations,
+    this.excluded = 0,
   }) : wallets = List.unmodifiable(wallets),
        derivations = List.unmodifiable(derivations);
 }

@@ -32,6 +32,17 @@ typedef BackupSelection = ({
   int generation,
   String lineage,
   Set<String> groups,
+
+  /// A destination and account granted but not yet confirmed. It sends
+  /// nothing and is not shown as on; only a confirmation turns it into the
+  /// selection.
+  BackupDestination? pendingDestination,
+  String? pendingAccount,
+
+  /// The single-use identifier of the staged intent and the exact groups it
+  /// was shown with.
+  String? pendingToken,
+  Set<String> pendingGroups,
 });
 
 String randomHex(int bytes) {
@@ -193,7 +204,9 @@ final class BackupMetadataStore {
     state.execute('''
       CREATE TABLE selection (
         view TEXT PRIMARY KEY, destination TEXT, account TEXT,
-        generation INTEGER NOT NULL, lineage TEXT NOT NULL
+        generation INTEGER NOT NULL, lineage TEXT NOT NULL,
+        pending_destination TEXT, pending_account TEXT,
+        pending_token TEXT, pending_groups TEXT
       );
       CREATE TABLE included_groups (
         view TEXT NOT NULL, id TEXT NOT NULL, PRIMARY KEY (view, id)
@@ -242,6 +255,7 @@ final class BackupMetadataState {
       _view,
     ]).single;
     final destination = row['destination'] as String?;
+    final pending = row['pending_destination'] as String?;
     return (
       destination: destination == null
           ? null
@@ -249,6 +263,15 @@ final class BackupMetadataState {
       account: row['account'] as String?,
       generation: row['generation'] as int,
       lineage: row['lineage'] as String,
+      pendingDestination: pending == null
+          ? null
+          : BackupDestination.values.byName(pending),
+      pendingAccount: row['pending_account'] as String?,
+      pendingToken: row['pending_token'] as String?,
+      pendingGroups: {
+        for (final id in ((row['pending_groups'] as String?) ?? '').split(','))
+          if (id.isNotEmpty) id,
+      },
       groups: {
         for (final group in _db.select(
           'SELECT id FROM included_groups WHERE view = ?',
@@ -258,6 +281,34 @@ final class BackupMetadataState {
       },
     );
   }
+
+  /// Records a granted destination and account, with the groups they were
+  /// shown with, without turning anything on. Staging again replaces the
+  /// intent and its identifier, so an earlier confirmation can never be used.
+  /// Returns the new single-use identifier.
+  String stage(
+    BackupDestination destination,
+    String account,
+    Set<String> groups,
+  ) {
+    final token = randomHex(16);
+    _db.execute(
+      'UPDATE selection SET pending_destination = ?, pending_account = ?, pending_token = ?, pending_groups = ? WHERE view = ?',
+      [
+        destination.name,
+        account,
+        token,
+        (groups.toList()..sort()).join(','),
+        _view,
+      ],
+    );
+    return token;
+  }
+
+  void clearStaged() => _db.execute(
+    'UPDATE selection SET pending_destination = NULL, pending_account = NULL, pending_token = NULL, pending_groups = NULL WHERE view = ?',
+    [_view],
+  );
 
   void configure({
     required BackupDestination? destination,
@@ -269,7 +320,7 @@ final class BackupMetadataState {
         previous.destination != destination || previous.account != account;
     _atomic(() {
       _db.execute(
-        'UPDATE selection SET destination = ?, account = ?, generation = ? WHERE view = ?',
+        'UPDATE selection SET destination = ?, account = ?, generation = ?, pending_destination = NULL, pending_account = NULL, pending_token = NULL, pending_groups = NULL WHERE view = ?',
         [
           destination?.name,
           account,
@@ -355,6 +406,18 @@ final class BackupMetadataState {
         ),
       ),
   ];
+
+  /// The latest time a generation of this lineage became durable.
+  DateTime? lastVerified(String lineage) {
+    final rows = _db.select(
+      'SELECT max(verified_at) AS at FROM verified WHERE lineage = ?',
+      [lineage],
+    );
+    final at = rows.single['at'] as int?;
+    return at == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(at, isUtc: true);
+  }
 
   Set<String> owned(
     BackupDestination destination,

@@ -28,6 +28,7 @@ import '../data/inventory_repository.dart';
 import '../data/inventory_store.dart';
 import '../data/secrets_database.drift.dart' show DerivationsCompanion;
 import '../domain/access_attempt.dart';
+import '../domain/backup_candidate.dart';
 import '../domain/domain.dart';
 import '../domain/inventory_backup_verification.dart';
 import '../domain/metadata_backup_wallet.dart';
@@ -333,6 +334,64 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
         : const Err(inventorySessionChangedFailure);
   }
 
+  /// Test seam: a wallet row visible to [view] only, as a second view would
+  /// hold one. No public operation can create a view yet.
+  @visibleForTesting
+  Future<void> insertWalletInViewForTesting({
+    required String view,
+    required RegisteredWallet wallet,
+  }) async {
+    final database = _store.database;
+    await database.customStatement(
+      'INSERT OR IGNORE INTO views (id, name, background_enabled) VALUES (?, ?, 1)',
+      [view, view],
+    );
+    await database.customStatement(
+      '''INSERT INTO wallets (id, secret_fingerprint, master_fingerprint, signer,
+         network, xpub, external_descriptor, internal_descriptor, label, birthday,
+         is_default) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+      [
+        wallet.id,
+        wallet.secretFingerprint,
+        wallet.masterFingerprint,
+        wallet.signer,
+        wallet.network,
+        wallet.xpub,
+        wallet.externalDescriptor,
+        wallet.internalDescriptor,
+        wallet.label,
+        wallet.birthday,
+        wallet.isDefault ? 1 : 0,
+      ],
+    );
+    await database.customStatement(
+      'INSERT INTO view_members (view_id, member) VALUES (?, ?)',
+      [
+        view,
+        wallet.secretFingerprint == null
+            ? 'wallet:${wallet.id}'
+            : 'secret:${wallet.secretFingerprint}',
+      ],
+    );
+  }
+
+  /// Test seam: makes an existing wallet visible to [view] too.
+  @visibleForTesting
+  Future<void> shareWalletWithViewForTesting({
+    required String view,
+    required String walletId,
+  }) async {
+    final database = _store.database;
+    await database.customStatement(
+      'INSERT OR IGNORE INTO views (id, name, background_enabled) VALUES (?, ?, 1)',
+      [view, view],
+    );
+    await database.customStatement(
+      'INSERT INTO view_members (view_id, member) VALUES (?, ?)',
+      [view, 'wallet:$walletId'],
+    );
+  }
+
   Future<void> close() {
     lock();
     return _store.close();
@@ -374,26 +433,63 @@ extension MetadataBackupInventory on SecretsInventory {
   });
 }
 
+/// One live session as a backup client sees it: the durable view it reads and
+/// whether the authority still holds the exact generation it was issued in.
+///
+/// A lock revokes it for good: reopening the same view later is a new
+/// generation, so an operation started before the lock can never continue
+/// after it. [view] is only an identity to partition state by; it grants
+/// nothing.
+final class BackupSession {
+  /// The durable identifier of the view; stable across sessions.
+  final String view;
+  final SecretsInventory _inventory;
+  final int _generation;
+
+  BackupSession._(this.view, this._inventory, this._generation);
+
+  /// False as soon as the session ended, including when the view was reopened.
+  bool get isCurrent =>
+      _inventory._unlocked && _inventory._session == _generation;
+}
+
 /// Metadata backup operations that cannot reach a seed or a descriptor
-/// outside the projection above.
+/// outside the projection above. Every operation takes the [BackupSession] it
+/// belongs to and refuses to run once that session is no longer current.
 extension MetadataBackupRestore on SecretsInventory {
-  /// An opaque token for the view this session reads. A caller that keeps
-  /// state per view uses it as the partition key, and compares it again
-  /// before it publishes or applies anything.
+  /// The live session. Backup state is partitioned by its [BackupSession.view]
+  /// and every effect re-checks [BackupSession.isCurrent] immediately before
+  /// it starts.
   @useResult
-  Future<Result<String, SecretFailure>> backupViewScope() =>
-      _inSession((_) async => const Ok(defaultViewId));
+  Future<Result<BackupSession, SecretFailure>> backupSession() => _inSession(
+    (generation) async => Ok(BackupSession._(defaultViewId, this, generation)),
+  );
+
+  /// The Bitcoin wallets of [network] visible in this session's view, each with
+  /// a verdict of exclusivity decided by Secrets from the real memberships and
+  /// the BIP138 recipient keys (see `InventoryRepository.backupCandidates`).
+  /// Nothing of another view is ever returned.
+  @useResult
+  Future<Result<List<BackupCandidate>, SecretFailure>> backupCandidates(
+    BackupSession session,
+    BitcoinNetwork network,
+  ) => _inBackupSession(
+    session,
+    (view) => _wallets.backupCandidates(view, network),
+  );
 
   /// The visible wallet whose network and two public descriptors equal the
   /// given ones. Never matched by identifier.
   @useResult
   Future<Result<String, SecretFailure>> matchPublicWallet({
+    required BackupSession session,
     required BitcoinNetwork network,
     required String external,
     required String internal,
-  }) => _inSession(
-    (_) => _wallets.matchPublicWallet(
-      view: defaultViewId,
+  }) => _inBackupSession(
+    session,
+    (view) => _wallets.matchPublicWallet(
+      view: view,
       network: network,
       external: external,
       internal: internal,
@@ -405,36 +501,58 @@ extension MetadataBackupRestore on SecretsInventory {
   @useResult
   Future<Result<({bool label, bool birthday}), SecretFailure>>
   restorePublicWalletProperties({
+    required BackupSession session,
     required BitcoinNetwork network,
     required String external,
     required String internal,
     required String? label,
     required DateTime? birthday,
-  }) => _inSession(
-    (_) => _wallets.restorePublicProperties(
-      view: defaultViewId,
+  }) => _inBackupSession(
+    session,
+    (view) => _wallets.restorePublicProperties(
+      view: view,
       network: network,
       external: external,
       internal: internal,
       label: label,
       birthday: birthday,
     ),
+    isWrite: true,
   );
 
   /// Merges archived BIP85 records of one parent. All or nothing; it can
   /// add rows and make a child more restricted, never fewer, so the next
-  /// index can only rise. It does not lift any recovery block.
+  /// index can only rise. It does not lift any recovery block and never
+  /// authorizes a new child.
   @useResult
   Future<Result<DerivationMergeReport, SecretFailure>> mergeDerivationArchive({
+    required BackupSession session,
     required Fingerprint parent,
     required List<RecordedDerivation> records,
-  }) => _inSession(
-    (_) => _derivations.merge(
-      view: defaultViewId,
-      parent: parent,
-      records: records,
-    ),
+  }) => _inBackupSession(
+    session,
+    (view) => _derivations.merge(view: view, parent: parent, records: records),
+    isWrite: true,
   );
+
+  Future<Result<T, SecretFailure>> _inBackupSession<T>(
+    BackupSession session,
+    Future<Result<T, SecretFailure>> Function(String view) run, {
+    bool isWrite = false,
+  }) async {
+    if (!session.isCurrent) {
+      return const Err(inventorySessionChangedFailure);
+    }
+    Result<T, SecretFailure>? ran;
+    final result = await _inSession((_) async => ran = await run(session.view));
+    // A write whose transaction committed before the lock reports what
+    // happened: hiding a committed change behind a failure would let the
+    // caller retry or journal the wrong state.
+    if (isWrite && result is Err) {
+      if (ran case final Ok<T, SecretFailure> committed) return committed;
+    }
+    return result;
+  }
 }
 
 /// Scope for background sync. Only descriptors in views with an active

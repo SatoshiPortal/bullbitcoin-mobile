@@ -11,6 +11,7 @@ import 'domain/usecases/apply_restore_usecase.dart';
 import 'domain/usecases/configure_backup_usecase.dart';
 import 'domain/usecases/discover_backups_usecase.dart';
 import 'domain/usecases/get_backup_status_usecase.dart';
+import 'domain/usecases/get_backup_summary_usecase.dart';
 import 'domain/usecases/preview_restore_usecase.dart';
 import 'domain/usecases/run_backup_usecase.dart';
 import 'presentation/backup_metadata_restore_cubit.dart';
@@ -37,9 +38,10 @@ abstract final class BackupMetadataLocator {
     locator
       ..registerSingleton(RunBackupUsecase(repository))
       ..registerSingleton(GetBackupStatusUsecase(repository))
+      ..registerSingleton(GetBackupSummaryUsecase(repository))
       ..registerSingleton(ConfigureBackupUsecase(repository))
       ..registerSingleton(DiscoverBackupsUsecase(repository))
-      ..registerSingleton(PreviewRestoreUsecase(labels, secrets))
+      ..registerSingleton(PreviewRestoreUsecase(labels))
       ..registerSingleton(ApplyRestoreUsecase(labels, secrets))
       ..registerFactory(
         () => BackupMetadataSettingsCubit(locator(), locator(), locator()),

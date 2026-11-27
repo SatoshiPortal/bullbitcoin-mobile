@@ -53,6 +53,7 @@ final class BackupsFeature {
     Access access = const Access(),
     Widget Function(BuildContext)? dataBackup,
     String Function(BuildContext)? dataBackupStatus,
+    Listenable? dataBackupChanges,
   }) {
     return BackupsFeature._(
       GoRoute(
@@ -74,6 +75,7 @@ final class BackupsFeature {
                 ? null
                 : () => context.pushNamed(_dataBackupRoute),
             automaticBackupStatus: dataBackupStatus,
+            automaticBackupChanges: dataBackupChanges,
           ),
         ),
         routes: [

@@ -29,25 +29,52 @@ final class SecretsRestoreReport {
   });
 }
 
+/// The live session an operation belongs to: the durable view it reads and
+/// whether the authority still holds the exact generation it was issued in.
+///
+/// Every effect (journal write, upload, deletion, an owner's write, the
+/// delivery of a discovery or a preview) asks [isCurrent] immediately before
+/// it starts. A lock ends it for good, and reopening the same view is a new
+/// session.
+abstract interface class BackupSessionRef {
+  /// Identifies the view to partition state by. It grants nothing.
+  String get view;
+
+  bool get isCurrent;
+}
+
 /// The Secrets owner's side of a metadata backup: the BIP85 registry, the
-/// public wallet match and the view scope. It never reaches a seed.
+/// public wallet match and the session. It never reaches a seed.
 abstract interface class BackupSecretsPort {
-  /// An opaque token naming the view the inventory reads now.
+  /// The live session; an error while the inventory is locked.
   @useResult
-  Future<Result<String, BackupMetadataFailure>> viewScope();
+  Future<Result<BackupSessionRef, BackupMetadataFailure>> session();
+
+  /// The Bitcoin wallets of [network] visible in the session's view, each with
+  /// Secrets' verdict of exclusivity (true: its BIP138 recipient keys are its
+  /// own in every view). A wallet absent from the answer is not trusted.
+  /// Nothing of another view is returned.
+  @useResult
+  Future<Result<Map<String, bool>, BackupMetadataFailure>> exclusivity(
+    BackupSessionRef session,
+    BitcoinNetwork network,
+  );
 
   /// The recorded BIP85 children of the group's seed; empty for watch-only.
   @useResult
   Future<Result<List<BackupDerivation>, BackupMetadataFailure>> derivations(
+    BackupSessionRef session,
     BackupGroup group,
   );
 
   /// Applies the wallet metadata and the registry of [content] to [group] and
   /// reports each owner's share. Public wallets are matched by network and
   /// descriptors; the registry is merged monotonically, all or nothing.
-  /// Idempotent: a second call changes nothing more.
+  /// Idempotent: a second call changes nothing more. Refused once [session]
+  /// is no longer current.
   @useResult
   Future<Result<SecretsRestoreReport, BackupMetadataFailure>> restore(
+    BackupSessionRef session,
     BackupGroup group,
     BackupContent content,
   );

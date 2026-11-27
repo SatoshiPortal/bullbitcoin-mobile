@@ -95,19 +95,34 @@ void main() {
     },
   );
 
-  test('publishes on each account change, including switching back', () async {
-    await enable();
-    await run();
+  test(
+    'a changed account sends nothing until the user chooses again',
+    () async {
+      await enable();
+      await run();
+      expect(storage.created, 1);
 
-    storage.accountId = 'b';
-    await run();
-    expect(storage.objects, hasLength(1));
+      storage.accountId = 'b';
+      final changed = await run();
+      expect(changed.failure, isA<BackupMetadataAccountChangedFailure>());
+      expect(changed.actionNeeded, BackupActionReason.accountChanged);
+      expect(storage.created, 1, reason: 'nothing was sent to the new account');
+      expect(storage.objects, isEmpty);
 
-    storage.accountId = 'a';
-    await run();
-    expect(storage.objects, hasLength(2));
-    expect(storage.created, 3);
-  });
+      // The grant is back on the confirmed account: the run resumes.
+      storage.accountId = 'a';
+      expect((await run()).failure, isNull);
+      expect(storage.created, 1, reason: 'unchanged content is not re-sent');
+
+      // Choosing the other account again is an explicit configuration.
+      storage.accountId = 'b';
+      storage.discoveryAccountId = 'b';
+      await enable();
+      await run();
+      expect(storage.created, 2);
+      expect(storage.objects, hasLength(1));
+    },
+  );
 
   test(
     'reconciles a create whose acknowledgement was lost on restart',
@@ -493,7 +508,7 @@ void main() {
       destination: storage.destination,
       storedAt: null,
       content: _content(0),
-      scope: 'scope',
+      scope: secrets.live,
     );
     final result = await ApplyRestoreUsecase(
       labels,
@@ -571,7 +586,7 @@ void main() {
     await run();
     expect(storage.created, 1);
 
-    secrets.scope = 'other-view';
+    secrets.reopen('other-view');
     final status = (await repository().status()).fold(
       (value) => value,
       (failure) => throw StateError('$failure'),
@@ -607,13 +622,13 @@ void main() {
     );
     expect(storage.deleted, hasLength(1));
     expect(storage.objects, hasLength(1));
-    secrets.scope = 'scope';
+    secrets.reopen('scope');
     expect((await run()).included, isTrue);
   });
 
   test('a view change during a run publishes nothing', () async {
     await enable();
-    labels.onCapture = () => secrets.scope = 'other-view';
+    labels.onCapture = () => secrets.reopen('other-view');
     final status = await run();
     expect(status.failure, isA<BackupMetadataScopeChangedFailure>());
     expect(storage.created, 0);
@@ -625,8 +640,8 @@ void main() {
     final backup = (await repository().discover(
       storage.destination,
     )).fold((value) => value.single, (failure) => throw StateError('$failure'));
-    expect(backup.scope, 'scope');
-    secrets.scope = 'other-view';
+    expect(backup.scope.view, 'scope');
+    secrets.reopen('other-view');
     final plan = MergePlan(
       groupId: 'group',
       baseDigest: 'x',
@@ -636,7 +651,7 @@ void main() {
       freezes: [],
     );
     expect(
-      await PreviewRestoreUsecase(labels, secrets).execute(backup),
+      await PreviewRestoreUsecase(labels).execute(backup),
       isA<Err<MergePlan, BackupMetadataFailure>>().having(
         (error) => error.failure,
         'failure',
@@ -670,10 +685,10 @@ void main() {
       destination: storage.destination,
       storedAt: null,
       content: _content(0),
-      scope: 'scope',
+      scope: secrets.live,
     );
     expect(
-      await PreviewRestoreUsecase(labels, secrets).execute(backup),
+      await PreviewRestoreUsecase(labels).execute(backup),
       isA<Err<MergePlan, BackupMetadataFailure>>(),
     );
   });
@@ -688,7 +703,7 @@ void main() {
       destination: storage.destination,
       storedAt: null,
       content: _content(0),
-      scope: 'scope',
+      scope: secrets.live,
     );
     final plan = MergePlan(
       groupId: 'group',
@@ -716,6 +731,375 @@ void main() {
     )).fold((value) => value, (failure) => throw StateError('$failure'));
     expect(second.isPartial, isFalse);
     expect(secrets.restored, hasLength(2), reason: 'idempotent, run again');
+  });
+
+  group('a lock and reopening revoke every effect', () {
+    test('during the encryption nothing is journaled or uploaded', () async {
+      await enable();
+      final status = await (() async {
+        final result = await repository(
+          null,
+          _HookedCodec(const _Codec(), onEncrypt: () async => secrets.reopen()),
+        ).run();
+        return result.fold(
+          (value) => value.groups.single,
+          (failure) => throw StateError('$failure'),
+        );
+      })();
+      expect(status.failure, isA<BackupMetadataScopeChangedFailure>());
+      expect(storage.created, 0);
+      // The journal holds no intent: a later run starts clean.
+      expect((await run()).failure, isNull);
+      expect(storage.created, 1);
+    });
+
+    test('during the discovery nothing is handed back', () async {
+      await enable();
+      await run();
+      storage.onRead = () async => secrets.reopen();
+      final result = await repository().discover(storage.destination);
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataScopeChangedFailure>(),
+      );
+    });
+
+    test('during the preview no plan is handed back', () async {
+      await enable();
+      await run();
+      storage.onRead = null;
+      final backup = (await repository().discover(storage.destination)).fold(
+        (value) => value.single,
+        (failure) => throw StateError('$failure'),
+      );
+      labels
+        ..failPreview = false
+        ..onPreview = () => secrets.reopen();
+      final result = await PreviewRestoreUsecase(labels).execute(backup);
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataScopeChangedFailure>(),
+      );
+    });
+
+    test('between the owners the second one is not asked', () async {
+      await enable();
+      await run();
+      final backup = (await repository().discover(storage.destination)).fold(
+        (value) => value.single,
+        (failure) => throw StateError('$failure'),
+      );
+      secrets.onRestore = () => secrets.reopen();
+      labels.failApply = false;
+      final plan = MergePlan(
+        groupId: 'group',
+        baseDigest: 'x',
+        additions: [],
+        unchanged: 0,
+        conflicts: [],
+        freezes: [],
+      );
+      final result = await ApplyRestoreUsecase(
+        labels,
+        secrets,
+      ).execute(backup, plan, MergeChoices({}));
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataScopeChangedFailure>(),
+      );
+      expect(secrets.restored, hasLength(1));
+      expect(labels.applied, 0);
+    });
+
+    test('before the deletion nothing is removed', () async {
+      await enable();
+      await run();
+      storage.onList = () async => secrets.reopen();
+      final result = await repository().configure(
+        destination: null,
+        groups: {},
+        deleteOwnedFiles: true,
+      );
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataScopeChangedFailure>(),
+      );
+      expect(storage.deleted, isEmpty);
+      expect(storage.objects, hasLength(1));
+    });
+  });
+
+  test(
+    'an interrupted turn-on leaves nothing active at the next start',
+    () async {
+      // The user chose a destination and the account was granted, then the app
+      // died before the confirmation: nothing was confirmed.
+      expect(
+        await repository().configure(
+          destination: storage.destination,
+          groups: {},
+          deleteOwnedFiles: false,
+        ),
+        isA<Ok>(),
+      );
+      final restarted = repository();
+      final status = (await restarted.status()).fold(
+        (value) => value,
+        (failure) => throw StateError('$failure'),
+      );
+      expect(
+        status.destination,
+        isNull,
+        reason: 'a destination without groups is not on',
+      );
+      expect(
+        (await restarted.summary()).fold((v) => v.enabled, (_) => true),
+        isFalse,
+      );
+      expect(storage.created, 0);
+    },
+  );
+
+  group('a confirmation is bound to the exact choice shown', () {
+    Future<BackupConfirmation> stage([
+      Set<String> groups = const {'group'},
+    ]) async => (await repository().stage(
+      storage.destination,
+      groups,
+    )).fold((value) => value, (failure) => throw StateError('$failure'));
+
+    Future<bool> enabled() async => (await repository().summary()).fold(
+      (value) => value.enabled,
+      (_) => throw StateError('summary'),
+    );
+
+    test('the exact confirmation turns it on, once', () async {
+      final confirmation = await stage();
+      expect(await enabled(), isFalse);
+      expect(await repository().include({'group'}, confirmation), isA<Ok>());
+      expect(await enabled(), isTrue);
+      // Replaying it finds nothing staged any more.
+      expect(
+        await repository().include({'group'}, confirmation),
+        isA<Err<void, BackupMetadataFailure>>(),
+      );
+    });
+
+    test('a revoked session confirms nothing', () async {
+      final confirmation = await stage();
+      secrets.reopen();
+      expect(
+        await repository().include({'group'}, confirmation),
+        isA<Err<void, BackupMetadataFailure>>(),
+      );
+      expect(await enabled(), isFalse);
+    });
+
+    test('a different account staged since confirms nothing', () async {
+      final confirmation = await stage();
+      storage.discoveryAccountId = 'b';
+      await stage();
+      expect(
+        await repository().include({'group'}, confirmation),
+        isA<Err<void, BackupMetadataFailure>>(),
+      );
+      expect(await enabled(), isFalse);
+    });
+
+    test(
+      'a selection written since, another generation, confirms nothing',
+      () async {
+        final confirmation = await stage();
+        storage.discoveryAccountId = 'b';
+        await enable();
+        expect(await enabled(), isTrue);
+        expect(
+          await repository().include({'other'}, confirmation),
+          isA<Err<void, BackupMetadataFailure>>(),
+        );
+        final selected = (await repository().status()).fold(
+          (value) => value.groups.single.included,
+          (_) => throw StateError('status'),
+        );
+        expect(selected, isTrue, reason: 'the earlier selection is untouched');
+      },
+    );
+
+    test(
+      'an older confirmation for the same account is refused once replaced',
+      () async {
+        final first = await stage();
+        final second = await stage();
+        expect(
+          await repository().include({'group'}, first),
+          isA<Err<void, BackupMetadataFailure>>(),
+          reason: 'the replaced intent must not turn anything on',
+        );
+        expect(await enabled(), isFalse);
+        expect(await repository().include({'group'}, second), isA<Ok>());
+        expect(await enabled(), isTrue);
+      },
+    );
+
+    test(
+      'an old confirmation with other groups is refused, shown or replaced',
+      () async {
+        // Same destination, same account, other groups.
+        final first = await stage({'group'});
+        final second = await stage({'other'});
+        expect(
+          await repository().include({'group'}, first),
+          isA<Err<void, BackupMetadataFailure>>(),
+          reason: 'replaced by the second staging',
+        );
+        expect(
+          await repository().include({'group'}, second),
+          isA<Err<void, BackupMetadataFailure>>(),
+          reason: 'the groups are not the ones shown',
+        );
+        expect(await enabled(), isFalse);
+        expect(await repository().include({'other'}, second), isA<Ok>());
+        expect(await enabled(), isTrue);
+      },
+    );
+
+    test('a declined intent cannot be confirmed afterwards', () async {
+      final confirmation = await stage();
+      expect(await repository().discardStaged(), isA<Ok>());
+      expect(
+        await repository().include({'group'}, confirmation),
+        isA<Err<void, BackupMetadataFailure>>(),
+      );
+      expect(await enabled(), isFalse);
+    });
+
+    test('declining drops the staged destination', () async {
+      await stage();
+      expect(await repository().discardStaged(), isA<Ok>());
+      final status = (await repository().status()).fold(
+        (value) => value,
+        (_) => throw StateError('status'),
+      );
+      expect(status.destination, isNull);
+    });
+  });
+
+  group('revocation reaches the point of effect', () {
+    test('after the authorization nothing is selected', () async {
+      storage.onAuthorize = () async => secrets.reopen();
+      final result = await repository().configure(
+        destination: storage.destination,
+        groups: {'group'},
+        deleteOwnedFiles: false,
+      );
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataScopeChangedFailure>(),
+      );
+      storage.onAuthorize = null;
+      final summary = (await repository().summary()).fold(
+        (value) => value,
+        (failure) => throw StateError('$failure'),
+      );
+      expect(summary.enabled, isFalse);
+    });
+
+    test('before the deactivation the selection is kept', () async {
+      await enable();
+      storage.onList = () async => secrets.reopen();
+      final result = await repository().configure(
+        destination: null,
+        groups: {},
+        deleteOwnedFiles: true,
+      );
+      expect(
+        result.fold((_) => null, (failure) => failure),
+        isA<BackupMetadataScopeChangedFailure>(),
+      );
+      storage.onList = null;
+      final summary = (await repository().summary()).fold(
+        (value) => value,
+        (failure) => throw StateError('$failure'),
+      );
+      expect(
+        summary.enabled,
+        isTrue,
+        reason: 'still on: nothing was turned off',
+      );
+    });
+
+    test('a retired intent is not discarded by a revoked session', () async {
+      await enable();
+      // An upload whose answer was lost: the intent stays in the journal.
+      storage.failAfterCreate = true;
+      await run();
+      storage.failAfterCreate = false;
+      // The object never arrived (or was removed): reconciling would retire
+      // the intent, a journal write.
+      storage.objects.clear();
+      var lists = 0;
+      storage.onList = () async {
+        if (++lists == 1) secrets.reopen();
+      };
+
+      Future<bool> hasIntent() =>
+          BackupMetadataStore(path: path, key: testJournalKey).locked((
+            state,
+          ) async {
+            final selection = state.selection;
+            final destination = selection.destination;
+            final account = selection.account;
+            if (destination == null || account == null) return false;
+            return state.intent((
+                  destination: destination,
+                  account: account,
+                  group: 'group',
+                  lineage: selection.lineage,
+                  generation: selection.generation,
+                )) !=
+                null;
+          }, view: secrets.live.view);
+
+      expect(await hasIntent(), isTrue, reason: 'precondition');
+      final status = await run();
+      expect(status.failure, isA<BackupMetadataScopeChangedFailure>());
+      storage.onList = null;
+      expect(
+        await hasIntent(),
+        isTrue,
+        reason: 'a revoked session must not retire the intent',
+      );
+    });
+
+    test(
+      'before the acknowledgement of an upload nothing is acknowledged',
+      () async {
+        await enable();
+        var lists = 0;
+        // The first listing opens the run; the second one confirms the upload.
+        storage.onList = () async {
+          if (++lists == 2) secrets.reopen();
+        };
+        final status = await run();
+        expect(status.failure, isA<BackupMetadataScopeChangedFailure>());
+        expect(storage.created, 1, reason: 'the upload was admitted before');
+        expect(status.lastDurableBackup, isNull);
+        storage.onList = null;
+        // The next run reconciles the intent instead of sending it again.
+        expect((await run()).lastDurableBackup, isNotNull);
+        expect(storage.created, 1);
+      },
+    );
+  });
+
+  test('a group whose key is shared is reported and never published', () async {
+    inventory.ambiguous = true;
+    await enable();
+    final status = await run();
+    expect(status.failure, isA<BackupMetadataIncompatibleFailure>());
+    expect(status.actionNeeded, BackupActionReason.ambiguous);
+    expect(storage.created, 0);
+    expect(labels.captures, 0, reason: 'its labels are not even read');
   });
 
   test('separate isolates serialize access to the same state path', () async {
@@ -814,28 +1198,48 @@ final class _Labels implements BackupLabelsPort {
   int revision = 0;
   int skipped = 0;
   int applied = 0;
+  int captures = 0;
   bool failApply = true;
   void Function()? onCapture;
+  void Function()? onPreview;
+  bool failPreview = true;
 
   @override
   Stream<void> get changes => const Stream.empty();
 
   @override
   Future<Result<LabelsSnapshot, BackupMetadataFailure>> capture(
+    BackupSessionRef session,
     BackupGroup group,
   ) async {
+    captures++;
     onCapture?.call();
     return Ok(_snapshot(revision, skipped: skipped));
   }
 
   @override
   Future<Result<MergePlan, BackupMetadataFailure>> preview(
+    BackupSessionRef session,
     BackupGroup group,
     LabelsSnapshot incoming,
-  ) async => const Err(BackupMetadataUnexpectedFailure());
+  ) async {
+    onPreview?.call();
+    if (failPreview) return const Err(BackupMetadataUnexpectedFailure());
+    return Ok(
+      MergePlan(
+        groupId: group.id,
+        baseDigest: 'base',
+        additions: const [],
+        unchanged: 0,
+        conflicts: const [],
+        freezes: const [],
+      ),
+    );
+  }
 
   @override
   Future<Result<ApplyReport, BackupMetadataFailure>> apply(
+    BackupSessionRef session,
     MergePlan plan,
     MergeChoices choices,
   ) async {
@@ -926,4 +1330,34 @@ final class _BrokenCodec implements BackupMetadataCodec {
     }
     return const _Codec().decode(group, envelope);
   }
+}
+
+/// Wraps a codec so a test can act while the envelope is being encrypted.
+final class _HookedCodec implements BackupMetadataCodec {
+  final BackupMetadataCodec inner;
+  final Future<void> Function() onEncrypt;
+
+  const _HookedCodec(this.inner, {required this.onEncrypt});
+
+  @override
+  Result<PreparedBackup, BackupMetadataFailure> prepare(
+    BackupGroup group,
+    BackupContent content,
+  ) => inner
+      .prepare(group, content)
+      .map(
+        (prepared) => (
+          digest: prepared.digest,
+          encrypt: () async {
+            await onEncrypt();
+            return prepared.encrypt();
+          },
+        ),
+      );
+
+  @override
+  Future<Result<BackupContent?, BackupMetadataFailure>> decode(
+    BackupGroup group,
+    Uint8List envelope,
+  ) => inner.decode(group, envelope);
 }

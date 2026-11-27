@@ -9,14 +9,18 @@ import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../domain/backup_metadata_failure.dart';
+import '../domain/entities/backup_confirmation.dart';
 import '../domain/entities/backup_content.dart';
 import '../domain/entities/backup_status.dart';
+import '../domain/entities/backup_summary.dart';
 import '../domain/entities/discovered_backup.dart';
 import '../domain/ports/backup_inventory_port.dart';
 import '../domain/ports/backup_labels_port.dart';
 import '../domain/ports/backup_secrets_port.dart';
 import '../domain/repositories/backup_metadata_codec.dart';
 import '../domain/repositories/backup_metadata_repository.dart';
+import '../domain/content_sanitizer.dart';
+import 'backup_content_localizer.dart';
 import 'backup_metadata_store.dart';
 
 const backupMetadataNamePrefix = 'bull-data-';
@@ -52,7 +56,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
 
   Future<Result<BackupRunStatus, BackupMetadataFailure>> _inspect({
     required bool write,
-  }) => _locked((state, view) async {
+  }) => _locked((state, live) async {
     final inventory = _value(await _inventory.read());
     var selection = state.selection;
     final destination = selection.destination;
@@ -68,6 +72,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         ],
         unsupported: inventory.unsupported,
         unattributedCount: 0,
+        account: selection.account,
       );
     }
 
@@ -76,12 +81,12 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       final session = await _authorize(destination, interactive: false);
       authorized = session;
       if (session.account.id != selection.account) {
-        state.configure(
-          destination: destination,
-          account: session.account.id,
-          groups: selection.groups,
+        // The account behind the grant is not the one the user confirmed:
+        // nothing is sent until they choose again (reconnect).
+        throw const _OperationFailure(
+          BackupMetadataAccountChangedFailure(),
+          BackupActionReason.accountChanged,
         );
-        selection = state.selection;
       }
       final listed = await _list(session);
       final groups = <BackupGroupStatus>[];
@@ -89,6 +94,20 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       for (final group in inventory.groups) {
         if (!selection.groups.contains(group.id)) {
           groups.add(BackupGroupStatus(group: group, included: false));
+          continue;
+        }
+        if (group.ambiguous) {
+          // Its public key is carried by another wallet, possibly in another
+          // view: it is never captured nor published.
+          groups.add(
+            BackupGroupStatus(
+              group: group,
+              included: true,
+              pendingChanges: true,
+              failure: const BackupMetadataIncompatibleFailure(),
+              actionNeeded: BackupActionReason.ambiguous,
+            ),
+          );
           continue;
         }
         final scope = (
@@ -99,15 +118,16 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
           generation: selection.generation,
         );
         LabelsSnapshot? snapshot;
+        var excluded = 0;
         BackupMetadataFailure? failure;
         BackupActionReason? reason;
         String? digest;
         List<BackupGeneration>? durable;
         try {
           if (write) {
-            await _reconcile(state, scope, session, listed);
+            await _reconcile(state, live, scope, session, listed);
           }
-          final captured = _value(await _labels.capture(group));
+          final captured = _value(await _labels.capture(live, group));
           snapshot = captured;
           unattributedCount = max(
             unattributedCount,
@@ -118,24 +138,26 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
               BackupActionReason.incompleteCapture,
             );
           }
-          final content = BackupContent(
-            labels: captured,
-            wallets: group.wallets,
-            derivations: _value(await _secrets.derivations(group)),
+          final content = sanitizeContent(
+            BackupContent(
+              labels: captured,
+              wallets: group.wallets,
+              derivations: _value(await _secrets.derivations(live, group)),
+            ),
           );
+          excluded = content.excluded;
           final prepared = _value(_codec.prepare(group, content));
           digest = prepared.digest;
           if (write && state.intent(scope) == null) {
-            await _requireView(view);
+            _admit(live);
             final latest = state.verified(scope).firstOrNull;
             if (latest == null ||
                 latest.digest != digest ||
                 !await _canSkipWrite(scope, session, listed, latest)) {
-              await _requireView(view);
-              await _create(state, scope, session, listed, prepared);
+              await _create(state, live, scope, session, listed, prepared);
             }
-            await _requireView(view);
-            durable = await _prune(state, scope, session, listed);
+            _admit(live);
+            durable = await _prune(state, live, scope, session, listed);
           }
         } on _OperationFailure catch (error) {
           failure = error.failure;
@@ -166,6 +188,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
                 latest?.digest != digest ||
                 state.intent(scope) != null,
             skippedCount: snapshot?.skippedCount ?? 0,
+            excluded: excluded,
             failure: failure,
             actionNeeded: reason,
           ),
@@ -176,6 +199,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         groups: List.unmodifiable(groups),
         unsupported: inventory.unsupported,
         unattributedCount: unattributedCount,
+        account: selection.account,
       );
     } on _OperationFailure catch (error) {
       return BackupRunStatus(
@@ -203,6 +227,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
 
   Future<void> _reconcile(
     BackupMetadataState state,
+    BackupSessionRef live,
     BackupScope scope,
     StorageSession session,
     Map<String, StoredObject> listed,
@@ -220,6 +245,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     if (object == null) {
       // A create can finish after its response was lost. Retire this name
       // before retrying, so a late object never aliases a new attempt.
+      _admit(live);
       state.discardIntent(scope);
       return;
     }
@@ -227,6 +253,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     if (read case Err(failure: BackupStorageTooLargeFailure())) {
       // Our own writes never exceed the cap, so the listed bytes are not the
       // ones this intent wrote.
+      _admit(live);
       state.discardIntent(scope);
       return;
     }
@@ -237,14 +264,16 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       // keeps the intent by throwing above. Retire the intent without
       // acknowledging or pruning the damaged object, so this run uploads a
       // fresh generation under a new name instead of reconciling it forever.
+      _admit(live);
       state.discardIntent(scope);
       return;
     }
-    await _confirm(state, scope, session, listed, object, intent);
+    await _confirm(state, live, scope, session, listed, object, intent);
   }
 
   Future<void> _create(
     BackupMetadataState state,
+    BackupSessionRef live,
     BackupScope scope,
     StorageSession session,
     Map<String, StoredObject> listed,
@@ -257,6 +286,10 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         BackupActionReason.tooLarge,
       );
     }
+    // Encryption took time: the session may have ended, or been reopened as a
+    // new one, since. The check, the journal write and the start of the
+    // upload follow one another without yielding.
+    _admit(live);
     final name = '$backupMetadataNamePrefix${randomHex(8)}.bip138';
     final BackupIntent intent = (
       name: name,
@@ -272,8 +305,11 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         bytes: bytes,
       ),
     );
+    // Not admitted again, on purpose: the upload was admitted above and this
+    // only records the object it created. Skipping it would leave an object on
+    // the destination that the journal never learns it owns.
     state.recordCreated(scope, object.id);
-    await _verifyCreated(state, scope, session, listed, object, intent);
+    await _verifyCreated(state, live, scope, session, listed, object, intent);
   }
 
   /// Confirms an object this run has just created. A mismatch keeps the
@@ -281,6 +317,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   /// reconciles it.
   Future<void> _verifyCreated(
     BackupMetadataState state,
+    BackupSessionRef live,
     BackupScope scope,
     StorageSession session,
     Map<String, StoredObject> listed,
@@ -301,11 +338,12 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     if (sha256.convert(bytes).toString() != intent.envelopeDigest) {
       throw const _OperationFailure.unexpected();
     }
-    await _confirm(state, scope, session, listed, object, intent);
+    await _confirm(state, live, scope, session, listed, object, intent);
   }
 
   Future<void> _confirm(
     BackupMetadataState state,
+    BackupSessionRef live,
     BackupScope scope,
     StorageSession session,
     Map<String, StoredObject> listed,
@@ -325,6 +363,9 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       return;
     }
 
+    // An acknowledgement is a journal write: it needs the live session. The
+    // intent stays, and a later run reconciles it.
+    _admit(live);
     state.acknowledge(
       scope,
       intent,
@@ -383,6 +424,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
 
   Future<List<BackupGeneration>> _prune(
     BackupMetadataState state,
+    BackupSessionRef live,
     BackupScope scope,
     StorageSession session,
     Map<String, StoredObject> listed,
@@ -404,7 +446,14 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     for (final old in durable.skip(2)) {
       final object = listed[old.objectId];
       if (object == null) continue;
-      await _delete(state, scope.destination, session, scope.lineage, object);
+      await _delete(
+        state,
+        live,
+        scope.destination,
+        session,
+        scope.lineage,
+        object,
+      );
       listed.remove(old.objectId);
     }
     return durable.take(2).toList();
@@ -413,7 +462,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   @override
   Future<Result<List<DiscoveredBackup>, BackupMetadataFailure>> discover(
     BackupDestination destination,
-  ) => _locked((_, view) async {
+  ) => _locked((_, live) async {
     final inventory = _value(await _inventory.read());
     final session = await _authorizeForDiscovery(destination);
     try {
@@ -452,8 +501,8 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
                   group: group,
                   destination: destination,
                   storedAt: object.createdAt ?? object.modifiedAt,
-                  content: backup,
-                  scope: view,
+                  content: localizeContent(group, sanitizeContent(backup)),
+                  scope: live,
                 ),
               );
             case Ok():
@@ -469,6 +518,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
         // reporting an empty destination would hide a damaged backup.
         throw _OperationFailure(decodeFailure, BackupActionReason.unexpected);
       }
+      _admit(live);
       return List<DiscoveredBackup>.unmodifiable(discovered);
     } finally {
       await session.close();
@@ -476,17 +526,86 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   });
 
   @override
+  Future<Result<BackupSummary, BackupMetadataFailure>> summary() =>
+      _locked((state, live) async {
+        final selection = state.selection;
+        return BackupSummary(
+          enabled: selection.destination != null && selection.groups.isNotEmpty,
+          lastDurableBackup: state.lastVerified(selection.lineage),
+        );
+      });
+
+  @override
+  Future<Result<BackupConfirmation, BackupMetadataFailure>> stage(
+    BackupDestination destination,
+    Set<String> groups,
+  ) => _locked((state, live) async {
+    final session = await _authorize(destination, interactive: true);
+    try {
+      _admit(live);
+      final token = state.stage(destination, session.account.id, groups);
+      return BackupConfirmation(
+        destination: destination,
+        account: session.account.id,
+        generation: state.selection.generation,
+        session: live,
+        token: token,
+        groups: Set.unmodifiable(groups),
+      );
+    } finally {
+      session.dispose();
+    }
+  });
+
+  @override
+  Future<Result<void, BackupMetadataFailure>> discardStaged() =>
+      _locked((state, live) async {
+        _admit(live);
+        state.clearStaged();
+      });
+
+  @override
+  Future<Result<void, BackupMetadataFailure>> include(
+    Set<String> groups,
+    BackupConfirmation confirmation,
+  ) => _locked((state, live) async {
+    final selection = state.selection;
+    // One conditional write of exactly what was shown: the destination and
+    // account that were granted, the generation they replace, the session.
+    if (!confirmation.session.isCurrent ||
+        confirmation.session.view != live.view ||
+        selection.pendingDestination != confirmation.destination ||
+        selection.pendingAccount != confirmation.account ||
+        selection.pendingToken != confirmation.token ||
+        selection.pendingGroups.length != groups.length ||
+        !selection.pendingGroups.containsAll(groups) ||
+        groups.length != confirmation.groups.length ||
+        !confirmation.groups.containsAll(groups) ||
+        selection.generation != confirmation.generation) {
+      throw const _OperationFailure(
+        BackupMetadataScopeChangedFailure(),
+        BackupActionReason.unexpected,
+      );
+    }
+    _admit(live);
+    state.configure(
+      destination: confirmation.destination,
+      account: confirmation.account,
+      groups: groups,
+    );
+  });
+
+  @override
   Future<Result<void, BackupMetadataFailure>> configure({
     required BackupDestination? destination,
     required Set<String> groups,
     required bool deleteOwnedFiles,
-  }) => _locked((state, view) async {
+  }) => _locked((state, live) async {
     final previous = state.selection;
     final previousDestination = previous.destination;
     if (destination == null &&
         deleteOwnedFiles &&
         previousDestination != null) {
-      await _requireView(view);
       final session = await _authorize(previousDestination, interactive: false);
       try {
         if (session.account.id != previous.account) {
@@ -503,6 +622,7 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
           if (object != null) {
             await _delete(
               state,
+              live,
               previousDestination,
               session,
               previous.lineage,
@@ -515,11 +635,19 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
       }
     }
     if (destination == null) {
+      _admit(live);
       state.configure(destination: null, account: null, groups: groups);
       return;
     }
     final session = await _authorize(destination, interactive: true);
     try {
+      // The grant may have taken time (a chooser): the session may have ended.
+      _admit(live);
+      if (groups.isEmpty) {
+        // Nothing is chosen: granted, not on.
+        state.stage(destination, session.account.id, const {});
+        return;
+      }
       state.configure(
         destination: destination,
         account: session.account.id,
@@ -532,16 +660,21 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
 
   Future<void> _delete(
     BackupMetadataState state,
+    BackupSessionRef live,
     BackupDestination destination,
     StorageSession session,
     String lineage,
     StoredObject object,
   ) async {
+    _admit(live);
     final result = await session.delete(object);
     if (result case Err(:final failure)
         when failure is! BackupStorageNotFoundFailure) {
       _storageValue(result);
     }
+    // Not admitted again, on purpose: the deletion was admitted just above and
+    // this forgets the object it removed. Keeping the entry would make a later
+    // run delete a name that is already gone.
     state.forget(destination, session.account.id, lineage, object.id);
   }
 
@@ -579,12 +712,11 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
     };
   }
 
-  /// Revokes an operation whose view is no longer the active one, before it
-  /// publishes, deletes or applies anything.
-  Future<void> _requireView(String view) async {
-    final current = await _secrets.viewScope();
-    if (current is! Ok<String, BackupMetadataFailure> ||
-        current.value != view) {
+  /// Revokes an operation whose session ended, before an effect starts. It is
+  /// synchronous: the check and the effect's first step cannot be separated by
+  /// a lock.
+  void _admit(BackupSessionRef live) {
+    if (!live.isCurrent) {
       throw const _OperationFailure(
         BackupMetadataScopeChangedFailure(),
         BackupActionReason.unexpected,
@@ -593,16 +725,16 @@ final class BackupMetadataRepositoryImpl implements BackupMetadataRepository {
   }
 
   Future<Result<T, BackupMetadataFailure>> _locked<T>(
-    Future<T> Function(BackupMetadataState, String view) action,
+    Future<T> Function(BackupMetadataState, BackupSessionRef live) action,
   ) async {
-    final scope = await _secrets.viewScope();
-    if (scope is! Ok<String, BackupMetadataFailure>) {
+    final opened = await _secrets.session();
+    if (opened is! Ok<BackupSessionRef, BackupMetadataFailure>) {
       return const Err(BackupMetadataNotReadyFailure());
     }
-    final view = scope.value;
+    final live = opened.value;
     try {
       return Ok(
-        await _store.locked((state) => action(state, view), view: view),
+        await _store.locked((state) => action(state, live), view: live.view),
       );
     } on _OperationFailure catch (error) {
       return Err(error.failure);

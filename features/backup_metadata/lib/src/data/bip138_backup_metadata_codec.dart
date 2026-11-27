@@ -7,6 +7,7 @@ import 'package:primitives/primitives.dart';
 import 'package:rust_bindings/rust_bindings.dart';
 
 import '../domain/backup_metadata_failure.dart';
+import '../domain/content_sanitizer.dart';
 import '../domain/entities/backup_content.dart';
 import '../domain/entities/backup_inventory.dart';
 import '../domain/repositories/backup_metadata_codec.dart';
@@ -47,6 +48,11 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
     BackupGroup group,
     BackupContent content,
   ) {
+    // Secret-shaped text must have been left out already; refusing here makes
+    // a missed call a failure, never a leak.
+    if (sanitizeContent(content).excluded != content.excluded) {
+      return const Err(BackupMetadataIncompatibleFailure());
+    }
     try {
       final descriptors = _descriptors(group);
       if (descriptors.isEmpty ||
@@ -185,6 +191,7 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       'wallets': [
         for (final wallet in wallets)
           {
+            'id': wallet.walletId,
             'network': wallet.network.env.name,
             'script': wallet.scriptType.name,
             'external': wallet.externalDescriptor,
@@ -290,19 +297,38 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
     if (accounts == null || labels == null || vendor == null) {
       throw const _Rejected();
     }
-    final document = _object(jsonDecode(utf8.decode(vendor.bytes)));
+    final document = _only(
+      _object(jsonDecode(utf8.decode(vendor.bytes))),
+      const {'v', 'kind', 'liquid', 'attribution', 'wallets', 'derivations'},
+      required: const {
+        'v',
+        'kind',
+        'liquid',
+        'attribution',
+        'wallets',
+        'derivations',
+      },
+    );
     if (document['v'] != 2) throw const _Rejected();
     final kind = document['kind'];
     if (kind != 'seed' && kind != 'watch') throw const _Rejected();
     // A file of the other kind is not this group's file.
     if ((kind == 'watch') != group.isWatchOnly) return null;
 
-    final container = _object(jsonDecode(utf8.decode(accounts.bytes)));
+    final container = _only(
+      _object(jsonDecode(utf8.decode(accounts.bytes))),
+      const {'version', 'network', 'accounts'},
+      required: const {'version', 'network', 'accounts'},
+    );
     if (container['version'] != 'BIP139-1') throw const _Rejected();
     if (container['network'] != group.network.env.name) return null;
     final fromContainer = <String>{};
     for (final account in _list(container['accounts'])) {
-      final data = _object(account);
+      final data = _only(
+        _object(account),
+        const {'type', 'descriptor'},
+        required: const {'type', 'descriptor'},
+      );
       if (data['type'] != 'multi_bip380') throw const _Rejected();
       final pair = _list(data['descriptor']);
       if (pair.length != 2) throw const _Rejected();
@@ -316,7 +342,29 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
     }
     final wallets = <BackupWallet>[];
     for (final entry in walletsJson) {
-      final data = _object(entry);
+      final data = _only(
+        _object(entry),
+        const {
+          'id',
+          'network',
+          'script',
+          'external',
+          'internal',
+          'label',
+          'birthday',
+          'watch',
+        },
+        required: const {
+          'id',
+          'network',
+          'script',
+          'external',
+          'internal',
+          'label',
+          'birthday',
+          'watch',
+        },
+      );
       final scriptType = ScriptType.values
           .where((value) => value.name == data['script'])
           .firstOrNull;
@@ -336,6 +384,7 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       }
       wallets.add(
         BackupWallet(
+          walletId: _text(data['id'], required: true)!,
           network: group.network,
           scriptType: scriptType,
           externalDescriptor: external,
@@ -351,16 +400,31 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       for (final wallet in wallets) wallet.internalDescriptor,
     };
     // The descriptors the file is encrypted to are the descriptors of its
-    // accounts, and the file must be reachable from this group.
+    // accounts.
     if (fromVendor.length != fromContainer.length ||
-        !fromVendor.containsAll(fromContainer) ||
-        !fromVendor.any(group.bitcoinPublicDescriptors.contains)) {
+        !fromVendor.containsAll(fromContainer)) {
       throw const _Rejected();
+    }
+    // A file belongs to a group only when every descriptor matches exactly,
+    // checksums aside: sharing one key with another account is not a match.
+    final local = {
+      for (final descriptor in group.bitcoinPublicDescriptors)
+        canonicalDescriptor(descriptor),
+    };
+    final archived = {
+      for (final descriptor in fromVendor) canonicalDescriptor(descriptor),
+    };
+    if (local.length != archived.length || !local.containsAll(archived)) {
+      return null;
     }
 
     final attribution = <(BackupLabelType, String), String>{};
     for (final entry in _list(document['attribution'])) {
-      final data = _object(entry);
+      final data = _only(
+        _object(entry),
+        const {'type', 'ref', 'wallet'},
+        required: const {'type', 'ref', 'wallet'},
+      );
       final type = _type(data['type']);
       attribution[(type, _text(data['ref'], required: true)!)] = _text(
         data['wallet'],
@@ -371,7 +435,11 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
     final lines = utf8.decode(labels.bytes).split('\n');
     for (final line in lines) {
       if (line.isEmpty) continue;
-      final data = _object(jsonDecode(line));
+      final data = _only(
+        _object(jsonDecode(line)),
+        const {'type', 'ref', 'label', 'origin', 'spendable'},
+        required: const {'type', 'ref'},
+      );
       final type = _type(data['type']);
       final ref = _text(data['ref'], required: true)!;
       final spendable = data['spendable'];
@@ -389,7 +457,11 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       );
     }
     for (final entry in _list(document['liquid'])) {
-      final data = _object(entry);
+      final data = _only(
+        _object(entry),
+        const {'type', 'ref', 'label', 'origin', 'spendable', 'wallet'},
+        required: const {'type', 'ref'},
+      );
       final spendable = data['spendable'];
       if (spendable != null && spendable is! bool) throw const _Rejected();
       records.add(
@@ -412,11 +484,12 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
     }
     final derivations = [
       for (final entry in derivationsJson)
-        BackupDerivation(
-          path: _text(_object(entry)['path'], required: true)!,
-          application: _text(_object(entry)['application'], required: true)!,
-          status: _text(_object(entry)['status'], required: true)!,
-          alias: _text(_object(entry)['alias']),
+        _derivation(
+          _only(
+            _object(entry),
+            const {'path', 'application', 'status', 'alias'},
+            required: const {'path', 'application', 'status', 'alias'},
+          ),
         ),
     ];
     return BackupContent(
@@ -428,6 +501,27 @@ final class Bip138BackupMetadataCodec implements BackupMetadataCodec {
       wallets: wallets,
       derivations: derivations,
     );
+  }
+
+  static BackupDerivation _derivation(Map<String, Object?> data) =>
+      BackupDerivation(
+        path: _text(data['path'], required: true)!,
+        application: _text(data['application'], required: true)!,
+        status: _text(data['status'], required: true)!,
+        alias: _text(data['alias']),
+      );
+
+  /// A closed object: nothing but the listed keys, and every required one.
+  static Map<String, Object?> _only(
+    Map<String, Object?> data,
+    Set<String> allowed, {
+    required Set<String> required,
+  }) {
+    if (!allowed.containsAll(data.keys) ||
+        !data.keys.toSet().containsAll(required)) {
+      throw const _Rejected();
+    }
+    return data;
   }
 
   static BackupLabelType _type(Object? value) =>

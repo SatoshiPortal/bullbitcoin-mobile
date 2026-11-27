@@ -2,222 +2,30 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:backup_metadata/backup_metadata.dart';
-import 'package:backup_metadata/setup.dart' hide MetadataBackupInventory;
-import 'package:backup_metadata/src/data/backup_metadata_repository_impl.dart';
-import 'package:backup_metadata/src/data/metadata_backup_inventory.dart' as bm;
+import 'package:backup_metadata/setup.dart'
+    show BackupInventoryPort, MetadataBackupLabels;
 import 'package:backup_metadata/src/domain/usecases/apply_restore_usecase.dart';
-import 'package:backup_metadata/src/domain/usecases/preview_restore_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/backup.dart';
 import 'package:primitives/primitives.dart';
 import 'package:rust_bindings/rust_bindings.dart';
 import 'package:secrets/metadata_backup.dart';
+import 'package:secrets/storage.dart' show SecretsInventory;
 import 'package:secrets/secrets.dart' show Language, WalletSigner;
-import 'package:secrets/storage.dart' show RegisteredWallet;
 
-import 'support/fake_backup_secrets.dart' show testJournalKey;
+import 'package:labels/testing.dart';
+
+import 'support/flow_harness.dart';
+import 'support/round_trip_support.dart';
 import 'support/memory_backup_storage.dart';
 import 'support/open_inventory.dart';
 
-const _seedWords =
-    'abandon abandon abandon abandon abandon abandon '
-    'abandon abandon abandon abandon abandon about';
-const _watchWords =
-    'legal winner thank year wave sausage worth useful '
-    'legal winner thank yellow';
-const _txid =
-    'aa00aa00aa00aa00aa00aa00aa00aa00aa00aa00aa00aa00aa00aa00aa00aa00';
-
-/// Labels with the freeze semantics the engine relies on, in memory. The
-/// durable Labels owner has its own tests; this keeps the round trip about
-/// what travels and what each owner is asked to apply.
-final class _MemoryLabels implements BackupLabelsPort {
-  final Map<String, (BackupLabelRecord, String)> entries = {};
-  final Set<String> frozen = {};
-  bool failApply = false;
-  int appliedRuns = 0;
-
-  void add(BackupLabelRecord record, String walletId) =>
-      entries['${record.chain.name}|${record.type.name}|${record.ref}'] = (
-        record,
-        walletId,
-      );
-
-  @override
-  Stream<void> get changes => const Stream.empty();
-
-  @override
-  Future<Result<LabelsSnapshot, BackupMetadataFailure>> capture(
-    BackupGroup group,
-  ) async {
-    final wallets = {...group.bitcoinWalletIds, ...group.liquidWalletIds};
-    return Ok(
-      LabelsSnapshot(
-        records: [
-          for (final (record, wallet) in entries.values)
-            if (wallets.contains(wallet)) record,
-        ],
-        unattributedCount: 0,
-        skippedCount: 0,
-      ),
-    );
-  }
-
-  @override
-  Future<Result<MergePlan, BackupMetadataFailure>> preview(
-    BackupGroup group,
-    LabelsSnapshot incoming,
-  ) async {
-    final additions = <BackupLabelRecord>[];
-    var unchanged = 0;
-    for (final record in incoming.records) {
-      final key = '${record.chain.name}|${record.type.name}|${record.ref}';
-      if (entries.containsKey(key)) {
-        unchanged++;
-      } else {
-        additions.add(record);
-      }
-    }
-    return Ok(
-      MergePlan(
-        groupId: group.id,
-        baseDigest: 'base',
-        additions: additions,
-        unchanged: unchanged,
-        conflicts: const [],
-        freezes: [
-          for (final record in incoming.records)
-            if (record.spendable == false && record.walletId != null)
-              FreezeRequest(walletId: record.walletId!, outpoint: record.ref),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Future<Result<ApplyReport, BackupMetadataFailure>> apply(
-    MergePlan plan,
-    MergeChoices choices,
-  ) async {
-    if (failApply) return const Err(BackupMetadataUnexpectedFailure());
-    appliedRuns++;
-    for (final record in plan.additions) {
-      add(record, record.walletId ?? 'unattributed');
-    }
-    frozen.addAll(plan.freezes.map((freeze) => freeze.outpoint));
-    return Ok(
-      ApplyReport(
-        labelsApplied: plan.additions.length,
-        labelsUnchanged: plan.unchanged,
-        labelsRejected: const {},
-        freezes: {
-          for (final freeze in plan.freezes) freeze: FreezeOutcome.applied,
-        },
-      ),
-    );
-  }
-}
-
-/// The engine of one phone over its real inventory and journal.
-final class _Engine {
-  final Phone phone;
-  final MemoryBackupStorage storage;
-  final _MemoryLabels labels = _MemoryLabels();
-  late final MetadataBackupSecrets secretsPort = MetadataBackupSecrets(
-    phone.inventory,
-  );
-  late final BackupMetadataStore store = BackupMetadataStore(
-    path: phone.journalPath,
-    key: testJournalKey,
-  );
-  late final bm.MetadataBackupInventory inventoryPort =
-      bm.MetadataBackupInventory(
-        wallets: () => phone.inventory.metadataBackupWallets(phone.secrets),
-        store: store,
-        secrets: secretsPort,
-        hasSilentPaymentsWallet: () async => false,
-        defaultBitcoinWalletLabel: 'Default',
-        unnamedWalletLabel: 'Unnamed',
-        backupVerified: (_, _) async => true,
-      );
-  late final BackupMetadataRepositoryImpl repository =
-      BackupMetadataRepositoryImpl(
-        store: store,
-        inventory: inventoryPort,
-        labels: labels,
-        secrets: secretsPort,
-        codec: const Bip138BackupMetadataCodec(),
-        storages: [storage],
-      );
-
-  _Engine(this.phone, this.storage);
-
-  Future<List<BackupGroup>> groups() async {
-    // The foreground prepares the journal before the inventory reads it.
-    await store.locked((_) async {}, view: 'all');
-    return valueOf(await inventoryPort.read()).groups;
-  }
-
-  Future<void> backUpEverything() async {
-    final ids = {for (final group in await groups()) group.id};
-    valueOf(
-      await repository.configure(
-        destination: storage.destination,
-        groups: ids,
-        deleteOwnedFiles: false,
-      ),
-    );
-    final status = valueOf(await repository.run());
-    for (final group in status.groups) {
-      expect(group.failure, isNull, reason: '${group.actionNeeded}');
-      expect(group.pendingChanges, isFalse);
-    }
-  }
-
-  Future<RestoreReport> restore(
-    DiscoveredBackup backup, {
-    bool expectPartial = false,
-  }) async {
-    final plan = valueOf(
-      await PreviewRestoreUsecase(labels, secretsPort).execute(backup),
-    );
-    final result = await ApplyRestoreUsecase(
-      labels,
-      secretsPort,
-    ).execute(backup, plan, MergeChoices({}));
-    final report = valueOf(result);
-    expect(report.isPartial, expectPartial);
-    return report;
-  }
-}
-
-RegisteredWallet _wallet({
-  required String id,
-  required String network,
-  required String external,
-  required String internal,
-  String? parent,
-  String signer = 'local',
-  String? label,
-  String? birthday,
-  bool isDefault = false,
-}) => RegisteredWallet(
-  id: id,
-  secretFingerprint: parent,
-  masterFingerprint: parent ?? '0a1b2c3d',
-  signer: signer,
-  network: network,
-  xpub: 'public-marker',
-  externalDescriptor: external,
-  internalDescriptor: internal,
-  label: label,
-  birthday: birthday,
-  isDefault: isDefault,
-);
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(BullSdk.init);
+  setUpAll(() async {
+    await BullSdk.init();
+    await loadTestFonts();
+  });
 
   late Directory root;
   late MemoryBackupStorage storage;
@@ -253,7 +61,7 @@ void main() {
   /// gaps and revocations, and a watch-only account with its own labels.
   Future<
     ({
-      _Engine engine,
+      Engine engine,
       String seedWalletId,
       String watchWalletId,
       ({String external, String internal}) seed,
@@ -264,17 +72,17 @@ void main() {
     final a = await phone('a');
     final secret = valueOf(
       await a.secrets.import(
-        words: _seedWords.split(' '),
+        words: seedWords.split(' '),
         language: Language.english,
       ),
     );
-    final seed = await descriptorsOf(a, _seedWords);
-    final watch = await descriptorsOf(a, _watchWords);
+    final seed = await descriptorsOf(a, seedWords);
+    final watch = await descriptorsOf(a, watchWords);
     final seedId = 'wpkh([${secret.id.hex}/84h/1h/0h])';
     const watchId = 'wpkh([0a1b2c3d/84h/1h/0h])';
     valueOf(
       await a.inventory.registerWallet(
-        _wallet(
+        registeredWallet(
           id: seedId,
           network: 'bitcoinTestnet',
           external: seed.external,
@@ -288,7 +96,7 @@ void main() {
     );
     valueOf(
       await a.inventory.registerWallet(
-        _wallet(
+        registeredWallet(
           id: watchId,
           network: 'bitcoinTestnet',
           external: watch.external,
@@ -313,6 +121,7 @@ void main() {
     valueOf(await a.inventory.setDerivationActive(children[2], active: false));
     valueOf(
       await a.inventory.mergeDerivationArchive(
+        session: valueOf(await a.inventory.backupSession()),
         parent: secret.id,
         records: [
           RecordedDerivation(
@@ -326,13 +135,13 @@ void main() {
       ),
     );
 
-    final engine = _Engine(a, storage);
+    final engine = Engine(a, storage);
     engine.labels
       ..add(
         BackupLabelRecord(
           chain: BackupLabelChain.bitcoin,
           type: BackupLabelType.tx,
-          ref: _txid,
+          ref: txid,
           label: 'rent',
           walletId: seedId,
         ),
@@ -342,7 +151,7 @@ void main() {
         BackupLabelRecord(
           chain: BackupLabelChain.bitcoin,
           type: BackupLabelType.output,
-          ref: '$_txid:1',
+          ref: '$txid:1',
           spendable: false,
           walletId: seedId,
         ),
@@ -371,21 +180,22 @@ void main() {
 
   /// Phone B: new inventory and new journal. The user re-imports the seed and
   /// the public account, which arrive with no label and no birthday.
-  Future<_Engine> freshPhone({
+  Future<Engine> freshPhone({
     required ({String external, String internal}) seed,
     required ({String external, String internal}) watch,
     String watchId = 'wpkh([99999999/84h/1h/0h])',
+    LabelBackupsFixture? real,
   }) async {
     final b = await phone('b');
     final secret = valueOf(
       await b.secrets.import(
-        words: _seedWords.split(' '),
+        words: seedWords.split(' '),
         language: Language.english,
       ),
     );
     valueOf(
       await b.inventory.registerWallet(
-        _wallet(
+        registeredWallet(
           id: 'wpkh([${secret.id.hex}/84h/1h/0h])',
           network: 'bitcoinTestnet',
           external: seed.external,
@@ -397,7 +207,7 @@ void main() {
     );
     valueOf(
       await b.inventory.registerWallet(
-        _wallet(
+        registeredWallet(
           id: watchId,
           network: 'bitcoinTestnet',
           external: watch.external,
@@ -406,10 +216,10 @@ void main() {
         ),
       ),
     );
-    return _Engine(b, storage);
+    return Engine(b, storage, real: real);
   }
 
-  Future<List<DiscoveredBackup>> discover(_Engine engine) async =>
+  Future<List<DiscoveredBackup>> discover(Engine engine) async =>
       valueOf(await engine.repository.discover(storage.destination));
 
   test(
@@ -426,7 +236,7 @@ void main() {
       final watchBackup = backups.singleWhere(
         (backup) => backup.group.isWatchOnly,
       );
-      expect(seedBackup.scope, 'all');
+      expect(seedBackup.scope.view, 'all');
 
       final seedReport = await b.restore(seedBackup);
       final watchReport = await b.restore(watchBackup);
@@ -479,7 +289,7 @@ void main() {
 
       // Labels and freezes.
       expect(b.labels.entries.keys, hasLength(3));
-      expect(b.labels.frozen, {'$_txid:1'});
+      expect(b.labels.frozen, {'$txid:1'});
     },
   );
 
@@ -538,6 +348,7 @@ void main() {
       // This phone already allocated far beyond the archive.
       valueOf(
         await b.phone.inventory.mergeDerivationArchive(
+          session: valueOf(await b.phone.inventory.backupSession()),
           parent: Fingerprint(parent),
           records: [
             RecordedDerivation(
@@ -589,7 +400,7 @@ void main() {
           wallets: const [],
           derivations: const [],
         ),
-        scope: 'all',
+        scope: valueOf(await b.secretsPort.session()),
       );
       final plan = MergePlan(
         groupId: forced.group.id,
@@ -636,4 +447,334 @@ void main() {
       }
     }
   });
+
+  test('with the real Labels, a re-imported watch-only keeps its label and freeze under its new id', () async {
+    // Phone A: a watch-only account with a label and a frozen coin.
+    final a = await phone('a');
+    final watch = await descriptorsOf(a, watchWords);
+    const oldId = 'wpkh([0a1b2c3d/84h/1h/0h])';
+    valueOf(
+      await a.inventory.registerWallet(
+        registeredWallet(
+          id: oldId,
+          network: 'bitcoinTestnet',
+          external: watch.external,
+          internal: watch.internal,
+          signer: 'remote',
+          label: 'Cold storage',
+        ),
+      ),
+    );
+    final fixtureA = LabelBackupsFixture.open();
+    addTearDown(fixtureA.close);
+    fixtureA.own(oldId, txid, 1);
+    await fixtureA.freeze(oldId, txid, 1);
+    await fixtureA.addTransactionLabel(
+      walletId: oldId,
+      txId: txid,
+      label: 'cold rent',
+    );
+    final source = Engine(a, storage, real: fixtureA);
+    await source.backUpEverything();
+    expect(storage.created, 1);
+
+    // Phone B: the same public account, re-imported under another id.
+    final b = await phone('b');
+    const newId = 'wpkh([99999999/84h/1h/0h])';
+    valueOf(
+      await b.inventory.registerWallet(
+        registeredWallet(
+          id: newId,
+          network: 'bitcoinTestnet',
+          external: watch.external,
+          internal: watch.internal,
+          signer: 'remote',
+        ),
+      ),
+    );
+    final fixtureB = LabelBackupsFixture.open();
+    addTearDown(fixtureB.close);
+    fixtureB.own(newId, txid, 1);
+    final target = Engine(b, storage, real: fixtureB);
+    await target.store.locked((_) async {}, view: 'all');
+
+    final backup = (await discover(target)).single;
+    expect(backup.content.wallets.single.walletId, newId);
+    final report = await target.restore(backup);
+
+    expect(report.labels?.freezes.values, [FreezeOutcome.applied]);
+    expect(await fixtureB.frozen(), [(walletId: newId, txId: txid, vout: 1)]);
+    final labels = await fixtureB.labels();
+    expect(labels.single.label, 'cold rent');
+    expect(labels.single.origin, newId, reason: 'attributed to the new id');
+  });
+
+  test('a key present in another view is never published nor restored', () async {
+    final a = await sourcePhone();
+    final b = await freshPhone(seed: a.seed, watch: a.watch);
+    // The same public key of the seed account, held by a wallet of a second
+    // view, its checksum spelled differently.
+    await b.phone.inventory.insertWalletInViewForTesting(
+      view: 'other',
+      wallet: registeredWallet(
+        id: 'wpkh([abcdef01/84h/1h/0h])',
+        network: 'bitcoinTestnet',
+        external: '${a.seed.external}#abcd1234',
+        internal: '${a.seed.internal}#abcd1234',
+        signer: 'remote',
+      ),
+    );
+
+    final before = storage.created;
+    final ids = {for (final group in await b.groups()) group.id};
+    valueOf(
+      await b.repository.configure(
+        destination: storage.destination,
+        groups: ids,
+        deleteOwnedFiles: false,
+      ),
+    );
+    final status = valueOf(await b.repository.run());
+    final seedGroup = status.groups.singleWhere(
+      (entry) => !entry.group.isWatchOnly,
+    );
+    expect(seedGroup.group.ambiguous, isTrue);
+    expect(seedGroup.failure, isA<BackupMetadataIncompatibleFailure>());
+    expect(storage.created, before, reason: 'nothing of it was published');
+    // And a file another phone published for that key is attributed to no one.
+    expect(
+      (await discover(b)).where((backup) => !backup.group.isWatchOnly),
+      isEmpty,
+    );
+  });
+
+  test(
+    'a label that is a recovery phrase is left out, counted and never written',
+    () async {
+      final a = await sourcePhone();
+      const phrase =
+          'abandon abandon abandon abandon abandon abandon '
+          'abandon abandon abandon abandon abandon about';
+      final seedId = (await a.engine.groups())
+          .firstWhere((g) => !g.isWatchOnly)
+          .bitcoinWalletIds
+          .single;
+      a.engine.labels.add(
+        BackupLabelRecord(
+          chain: BackupLabelChain.bitcoin,
+          type: BackupLabelType.tx,
+          ref: 'dd' * 32,
+          label: phrase,
+          walletId: seedId,
+        ),
+        seedId,
+      );
+      final status = valueOf(await a.engine.repository.run());
+      expect(status.excluded, 1);
+      expect(status.groups.where((g) => g.excluded > 0), hasLength(1));
+      for (final bytes in storage.objects.values) {
+        final items = await bip138Decrypt(
+          bytes: bytes,
+          candidatePublicDescriptors: [a.seed.external, a.watch.external],
+        );
+        final plaintext = items!.map((item) => utf8.decode(item.bytes)).join();
+        expect(plaintext, isNot(contains('abandon')));
+        expect(plaintext, isNot(contains('dd' * 32)));
+      }
+    },
+  );
+
+  group(
+    'Labels is withdrawn the session down to its transaction and each freeze',
+    () {
+      test(
+        'between the inventory read and the transaction nothing is written',
+        () async {
+          final a = await sourcePhone();
+          final fixture = LabelBackupsFixture.open();
+          addTearDown(fixture.close);
+          final b = await freshPhone(
+            seed: a.seed,
+            watch: a.watch,
+            real: fixture,
+          );
+          final backup = (await discover(b))
+              .singleWhere((item) => !item.group.isWatchOnly);
+          fixture.own(backup.group.bitcoinWalletIds.single, txid, 1);
+          final plan = valueOf(
+            await b.labelsPort.preview(
+              backup.scope,
+              backup.group,
+              backup.content.labels,
+            ),
+          );
+
+          // The adapter re-reads the inventory; the lock lands right after.
+          final adapter = MetadataBackupLabels(
+            inventory: _LockAfterRead(b.inventoryPort, b.phone.inventory),
+            backups: fixture.backups,
+          );
+          final session = valueOf(await b.secretsPort.session());
+          final result = await adapter.apply(session, plan, MergeChoices({}));
+
+          expect(
+            result.fold((_) => null, (failure) => failure),
+            isA<BackupMetadataScopeChangedFailure>(),
+          );
+          expect(await fixture.labels(), isEmpty);
+          expect(await fixture.frozen(), isEmpty);
+        },
+      );
+
+      test('between two freezes the second one is not applied', () async {
+        final a = await sourcePhone();
+        final seedId = (await a.engine.groups())
+            .firstWhere((group) => !group.isWatchOnly)
+            .bitcoinWalletIds
+            .single;
+        a.engine.labels.add(
+          BackupLabelRecord(
+            chain: BackupLabelChain.bitcoin,
+            type: BackupLabelType.output,
+            ref: '$txid:2',
+            spendable: false,
+            walletId: seedId,
+          ),
+          seedId,
+        );
+        valueOf(await a.engine.repository.run());
+
+        final fixture = LabelBackupsFixture.open();
+        addTearDown(fixture.close);
+        final b = await freshPhone(seed: a.seed, watch: a.watch, real: fixture);
+        // The newest copy first: the file was rewritten with the second freeze.
+        final backup = (await discover(b))
+            .firstWhere((item) => !item.group.isWatchOnly);
+        final walletId = backup.group.bitcoinWalletIds.single;
+        fixture
+          ..own(walletId, txid, 1)
+          ..own(walletId, txid, 2);
+        final plan = valueOf(
+          await b.labelsPort.preview(
+            backup.scope,
+            backup.group,
+            backup.content.labels,
+          ),
+        );
+        expect(plan.freezes, hasLength(2));
+
+        // The lock lands after the first coin is frozen.
+        var frozen = 0;
+        fixture.onFreeze = () {
+          if (++frozen == 1) b.phone.inventory.lock();
+        };
+        final result = await b.labelsPort.apply(
+          backup.scope,
+          plan,
+          MergeChoices({}),
+        );
+        final report = valueOf(result);
+
+        expect(report.freezes.values, [
+          FreezeOutcome.applied,
+          FreezeOutcome.failed,
+        ]);
+        expect(await fixture.frozen(), hasLength(1));
+      });
+    },
+  );
+
+  testWidgets(
+    'after an interruption a new engine resumes from the UI without duplicates',
+    (tester) async {
+      late LabelBackupsFixture fixture;
+      late Engine second;
+      late DiscoveredBackup seedBackup;
+      late String seedWalletId;
+
+      // Real IO (native codec, SQLite, files) runs outside the fake clock.
+      await tester.runAsync(() async {
+        final a = await sourcePhone();
+        fixture = LabelBackupsFixture.open();
+        final first = await freshPhone(
+          seed: a.seed,
+          watch: a.watch,
+          real: fixture,
+        );
+        seedBackup = (await discover(first))
+            .singleWhere((backup) => !backup.group.isWatchOnly);
+        seedWalletId = seedBackup.group.bitcoinWalletIds.single;
+        fixture.own(seedWalletId, txid, 1);
+
+        // Secrets commits its part, then the app dies before Labels is asked.
+        final committed = valueOf(
+          await first.secretsPort.restore(
+            seedBackup.scope,
+            seedBackup.group,
+            seedBackup.content,
+          ),
+        );
+        expect(committed.derivationsAdded, 4);
+        expect(await fixture.frozen(), isEmpty);
+        expect(await fixture.labels(), isEmpty);
+
+        // A new engine over the same phone, journal and destination.
+        second = Engine(first.phone, storage, real: fixture);
+      });
+      addTearDown(fixture.close);
+
+      /// Lets real IO finish, frame by frame, until [finder] shows up.
+      Future<void> settleUntil(Finder finder) async {
+        for (var i = 0; i < 40 && finder.evaluate().isEmpty; i++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 250)),
+          );
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+        expect(finder, findsWidgets);
+      }
+
+      await pumpFlowOver(tester, second);
+      await settleUntil(find.text('Restore from backup'));
+      await tester.tap(find.text('Restore from backup'));
+      await settleUntil(find.text(seedBackup.group.displayName));
+      await tester.tap(find.text(seedBackup.group.displayName));
+      await settleUntil(find.text('Restore'));
+      await tester.tap(find.text('Restore').last);
+      await settleUntil(find.text('Labels restored'));
+
+      expect(find.text('Labels restored'), findsOneWidget);
+      await tester.runAsync(() async {
+        // Nothing twice: Secrets did not add its children again, Labels wrote
+        // once.
+        expect(
+          valueOf(await second.phone.inventory.listDerivations()),
+          hasLength(4),
+        );
+        expect(await fixture.frozen(), [
+          (walletId: seedWalletId, txId: txid, vout: 1),
+        ]);
+        expect(
+          (await fixture.labels()).where((l) => l.reference == txid),
+          hasLength(1),
+        );
+      });
+    },
+  );
+}
+
+/// An inventory port whose read is followed by a lock, as if the user locked
+/// the app while the adapter was looking at it.
+final class _LockAfterRead implements BackupInventoryPort {
+  final BackupInventoryPort inner;
+  final SecretsInventory inventory;
+
+  _LockAfterRead(this.inner, this.inventory);
+
+  @override
+  Future<Result<BackupInventory, BackupMetadataFailure>> read() async {
+    final result = await inner.read();
+    inventory.lock();
+    return result;
+  }
 }

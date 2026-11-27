@@ -37,11 +37,12 @@ final class MetadataBackupInventory implements BackupInventoryPort {
   Future<Result<BackupInventory, BackupMetadataFailure>> read() async {
     try {
       final unsupported = <UnsupportedWallet>[];
-      final scope = await _secrets.viewScope();
-      if (scope is! Ok<String, BackupMetadataFailure>) {
+      final live = await _secrets.session();
+      if (live is! Ok<BackupSessionRef, BackupMetadataFailure>) {
         return const Err(BackupMetadataNotReadyFailure());
       }
-      final view = scope.value;
+      final session = live.value;
+      final view = session.view;
       final result = await _wallets();
       if (result is! Ok<List<secrets.MetadataBackupWallet>, SecretFailure>) {
         return const Err(BackupMetadataUnexpectedFailure());
@@ -49,10 +50,28 @@ final class MetadataBackupInventory implements BackupInventoryPort {
       final groups =
           <(Fingerprint, NetworkEnv), List<secrets.MetadataBackupWallet>>{};
       final watchOnly = <secrets.MetadataBackupWallet>[];
-      final shared = _shared(result.value);
-      bool ambiguous(Iterable<secrets.MetadataBackupWallet> wallets) => wallets
-          .expand((wallet) => wallet.bitcoinPublicDescriptors)
-          .any((descriptor) => shared.contains(_canonical(descriptor)));
+      // Secrets decides, from the real memberships and the BIP138 recipient
+      // keys, which wallets are the only holders of theirs in every view. A
+      // group with a wallet that is not, or that Secrets did not name, is
+      // reported and never backed up.
+      final exclusive = <BitcoinNetwork, Map<String, bool>>{};
+      for (final wallet in result.value) {
+        final network = wallet.network;
+        if (network is! BitcoinNetwork || exclusive.containsKey(network)) {
+          continue;
+        }
+        final found = await _secrets.exclusivity(session, network);
+        if (found is! Ok<Map<String, bool>, BackupMetadataFailure>) {
+          return Err(
+            (found as Err<Map<String, bool>, BackupMetadataFailure>).failure,
+          );
+        }
+        exclusive[network] = found.value;
+      }
+      bool ambiguous(
+        BitcoinNetwork network,
+        Iterable<secrets.MetadataBackupWallet> wallets,
+      ) => wallets.any((wallet) => exclusive[network]?[wallet.id] != true);
       for (final wallet in result.value) {
         final network = wallet.network;
         final reference = wallet.secret;
@@ -135,7 +154,7 @@ final class MetadataBackupInventory implements BackupInventoryPort {
             seedBackupVerified: await _backupVerified(reference, network),
             wallets: [for (final wallet in bitcoin) _account(wallet)],
             secretReference: reference.hex,
-            ambiguous: ambiguous(bitcoin),
+            ambiguous: ambiguous(network, bitcoin),
           ),
         );
       }
@@ -163,7 +182,7 @@ final class MetadataBackupInventory implements BackupInventoryPort {
             // reported as a verified seed backup.
             seedBackupVerified: false,
             wallets: [_account(wallet)],
-            ambiguous: ambiguous([wallet]),
+            ambiguous: ambiguous(network, [wallet]),
           ),
         );
       }
@@ -173,28 +192,10 @@ final class MetadataBackupInventory implements BackupInventoryPort {
     }
   }
 
-  /// Descriptors that more than one wallet of the view carries. A group that
-  /// owns one is still backed up, but a restore could not tell which wallet
-  /// to change: it is neither offered nor applied.
-  static Set<String> _shared(List<secrets.MetadataBackupWallet> wallets) {
-    final owners = <String, Set<String>>{};
-    for (final wallet in wallets) {
-      for (final descriptor in wallet.bitcoinPublicDescriptors) {
-        (owners[_canonical(descriptor)] ??= {}).add(wallet.id);
-      }
-    }
-    return {
-      for (final entry in owners.entries)
-        if (entry.value.length > 1) entry.key,
-    };
-  }
-
-  static String _canonical(String descriptor) =>
-      descriptor.trim().split('#').first;
-
   static BackupWallet _account(secrets.MetadataBackupWallet wallet) {
     final network = wallet.network as BitcoinNetwork;
     return BackupWallet(
+      walletId: wallet.id,
       network: network,
       scriptType: wallet.scriptType ?? ScriptType.bip84,
       externalDescriptor: wallet.bitcoinPublicDescriptors.first,

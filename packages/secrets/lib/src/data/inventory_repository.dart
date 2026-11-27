@@ -1,7 +1,10 @@
 import 'package:meta/meta.dart';
+import 'package:bip32_keys/bip32_keys.dart';
+import 'package:convert/convert.dart' show hex;
 import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
 
+import '../domain/backup_candidate.dart';
 import '../domain/domain.dart';
 import '../domain/metadata_backup_wallet.dart';
 import '../domain/registered_wallet.dart';
@@ -145,12 +148,98 @@ final class InventoryRepository {
     };
   }
 
+  /// The Bitcoin wallets of [network] visible in [view], each with a verdict of
+  /// exclusivity for its BIP138 recipient keys.
+  ///
+  /// A recipient key is the x-only public key of an extended public key in the
+  /// descriptor, the way the BIP138 binding extracts it: the descriptor's text,
+  /// its checksum, its script and its derivation do not matter. A wallet is
+  /// exclusive only if its whole row is visible in no other view (its
+  /// membership, `wallet:<id>` or `secret:<fingerprint>`, belongs to [view]
+  /// alone) and none of its keys is carried by another wallet of the network,
+  /// in any view. Only [view]'s own wallets are returned: nothing of another
+  /// view, descriptor or identifier, ever leaves.
+  Future<Result<List<BackupCandidate>, SecretFailure>> backupCandidates(
+    String view,
+    BitcoinNetwork network,
+  ) => boundary(() async {
+    final rows = await _database
+        .customSelect(
+          '''
+          SELECT w.id AS id, w.network AS network,
+            w.external_descriptor AS external_descriptor,
+            w.internal_descriptor AS internal_descriptor,
+            (SELECT count(*) FROM view_members m WHERE m.member =
+              CASE WHEN w.secret_fingerprint IS NULL THEN 'wallet:' || w.id
+                   ELSE 'secret:' || w.secret_fingerprint END) AS views,
+            EXISTS (SELECT 1 FROM view_members m WHERE m.view_id = ? AND
+              m.member = CASE WHEN w.secret_fingerprint IS NULL
+                THEN 'wallet:' || w.id
+                ELSE 'secret:' || w.secret_fingerprint END) AS visible
+          FROM wallets w
+          ORDER BY w.id
+          ''',
+          variables: [Variable(view)],
+          readsFrom: {_database.wallets, _database.viewMembers},
+        )
+        .get();
+    // Holders are compared across every network and every view: a network only
+    // filters which wallets are reported, never who else carries a key.
+    final extracted = <String, ({Set<String> keys, bool complete})>{};
+    final owners = <String, Set<String>>{};
+    for (final row in rows) {
+      final id = row.read<String>('id');
+      final external = extractRecipientKeys(
+        row.read<String>('external_descriptor'),
+      );
+      final internal = extractRecipientKeys(
+        row.read<String>('internal_descriptor'),
+      );
+      final own = {...external.keys, ...internal.keys};
+      extracted[id] = (
+        keys: own,
+        complete: external.complete && internal.complete,
+      );
+      for (final key in own) {
+        (owners[key] ??= {}).add(id);
+      }
+    }
+    final wanted = storedWalletNetwork(network);
+    return List<BackupCandidate>.unmodifiable([
+      for (final row in rows)
+        if (row.read<int>('visible') == 1 &&
+            row.read<String>('network') == wanted)
+          BackupCandidate(
+            walletId: row.read<String>('id'),
+            exclusive: _isExclusive(
+              views: row.read<int>('views'),
+              extraction: extracted[row.read<String>('id')],
+              owners: owners,
+            ),
+          ),
+    ]);
+  }, orElse: FetchSecretFailure.new);
+
+  /// Exclusive only with a key to speak for: no extraction, a failed one or a
+  /// key another wallet carries is never a positive verdict.
+  static bool _isExclusive({
+    required int views,
+    required ({Set<String> keys, bool complete})? extraction,
+    required Map<String, Set<String>> owners,
+  }) =>
+      views == 1 &&
+      extraction != null &&
+      extraction.complete &&
+      extraction.keys.isNotEmpty &&
+      extraction.keys.every((key) => owners[key]?.length == 1);
+
   List<QueryRow> _matches(
     List<QueryRow> rows,
     String external,
     String internal,
   ) {
-    String canonical(String descriptor) => descriptor.trim().split('#').first;
+    String canonical(String descriptor) =>
+        canonicalPublicDescriptor(descriptor);
     return [
       for (final row in rows)
         if (decodeWalletRegistration(row.data) != null &&
@@ -547,3 +636,45 @@ final class InventoryRepository {
 final class _InvalidRegistration implements Exception {
   const _InvalidRegistration();
 }
+
+/// A descriptor without its checksum, the form two copies of one public
+/// descriptor are compared in.
+String canonicalPublicDescriptor(String descriptor) =>
+    descriptor.trim().split('#').first;
+
+/// The BIP138 recipient keys of a descriptor: the x-only public key of each
+/// extended public key in it, hex. Private keys, literal keys and anything that
+/// does not parse yield none.
+({Set<String> keys, bool complete}) extractRecipientKeys(String descriptor) {
+  final keys = <String>{};
+  var complete = true;
+  for (final match in _extendedPublicKey.allMatches(descriptor)) {
+    try {
+      final key = Bip32Keys.fromBase58(
+        match.group(0) ?? '',
+        bypassVersion: true,
+      );
+      final bytes = key.public;
+      // Compressed point: drop the parity byte.
+      if (key.private == null && bytes.length == 33) {
+        keys.add(hex.encode(bytes.sublist(1)));
+      } else {
+        complete = false;
+      }
+    } on FormatException {
+      complete = false;
+    } on ArgumentError {
+      complete = false;
+    }
+  }
+  return (keys: keys, complete: complete);
+}
+
+/// The BIP138 recipient keys of a descriptor, hex; empty when none could be
+/// extracted.
+Set<String> recipientKeys(String descriptor) =>
+    extractRecipientKeys(descriptor).keys;
+
+final _extendedPublicKey = RegExp(
+  r'[xyztuvXYZTUV]pub[1-9A-HJ-NP-Za-km-z]{100,112}',
+);

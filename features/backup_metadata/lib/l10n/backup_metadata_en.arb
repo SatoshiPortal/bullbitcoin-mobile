@@ -5,7 +5,7 @@
   "whatIsSaved": "What is saved",
   "labels": "Labels",
   "labelsDescription": "Your notes on transactions, addresses and coins, and which coins are frozen.",
-  "neverRecoveryPhrase": "Never your recovery phrase",
+  "neverRecoveryPhrase": "Your recovery phrase is not retrieved from your wallet for this copy",
   "physicalBackup": "Keep your physical backup: without the wallet, this copy can’t be opened.",
   "whoCanRead": "Who can read it",
   "privacy": "Encrypted on this phone. Anyone with the wallet’s recovery phrase or its public key (xpub) can open it.",
@@ -65,6 +65,63 @@
   "failureIncompatible": "This backup does not match the data on this phone. Nothing was changed for that part.",
   "defaultBitcoinWallet": "Default Bitcoin wallet",
   "unnamedWallet": "Unnamed wallet",
+  "failureAccountChanged": "The account behind this backup changed. Choose it again to continue; nothing was sent.",
+  "restoreSecretsFailed": "Your wallet details and BIP85 list could not be restored.",
+  "restoreRegistryRefused": "The BIP85 list in this backup does not match the one on this phone, so it was not restored.",
+  "restoreLabelsFailed": "Your labels and frozen coins could not be restored.",
+  "retryRestore": "Try again",
+  "walletsRestored": "{count, plural, one{1 wallet name and date restored} other{{count} wallet names and dates restored}}",
+  "@walletsRestored": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "registryRestored": "{count, plural, one{1 BIP85 child restored} other{{count} BIP85 children restored}}",
+  "@registryRestored": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "confirmTitle": "Confirm your backup",
+  "confirmMessage": "BULL will save an encrypted copy of the data of these wallets to {provider}.",
+  "@confirmMessage": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmAccount": "Account: {account}",
+  "@confirmAccount": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "unknownAccount": "unknown",
+  "confirmAction": "Confirm and back up",
+  "statusOn": "On · no backup yet",
+  "excludedRecords": "{count, plural, one{1 text field resembled secret material and was filtered when preparing the backup.} other{{count} text fields resembled secret material and were filtered when preparing the backup.}} An ordinary note can resemble a recovery phrase. If appropriate, edit the local text before the next backup.",
+  "restoreFilteredFields": "{count, plural, one{1 text field resembled secret material and was filtered when reading this archive.} other{{count} text fields resembled secret material and were filtered when reading this archive.}} An ordinary note can resemble a recovery phrase. This count does not include fields omitted before the archive was created.",
+  "@restoreFilteredFields": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@excludedRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "failureUnexpected": "Something went wrong. Please try again.",
   "privacyProvider": "{provider} can’t open it without those credentials.",
   "@privacyProvider": {

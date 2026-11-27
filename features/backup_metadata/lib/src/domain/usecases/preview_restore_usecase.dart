@@ -4,26 +4,32 @@ import 'package:primitives/primitives.dart';
 import '../backup_metadata_failure.dart';
 import '../entities/discovered_backup.dart';
 import '../ports/backup_labels_port.dart';
-import '../ports/backup_secrets_port.dart';
 
 final class PreviewRestoreUsecase {
   final BackupLabelsPort _labels;
-  final BackupSecretsPort _secrets;
 
-  const PreviewRestoreUsecase(this._labels, this._secrets);
+  const PreviewRestoreUsecase(this._labels);
 
-  /// Nothing is shown for a backup discovered in another view.
+  /// Nothing is shown for a backup of a session that ended, including one whose
+  /// view was reopened since: the plan is checked again after it is computed,
+  /// immediately before it is handed out.
   Future<Result<MergePlan, BackupMetadataFailure>> execute(
     DiscoveredBackup backup,
   ) async {
     if (backup.group.ambiguous) {
       return const Err(BackupMetadataIncompatibleFailure());
     }
-    final scope = await _secrets.viewScope();
-    if (scope is! Ok<String, BackupMetadataFailure> ||
-        scope.value != backup.scope) {
+    if (!backup.scope.isCurrent) {
       return const Err(BackupMetadataScopeChangedFailure());
     }
-    return _labels.preview(backup.group, backup.content.labels);
+    final plan = await _labels.preview(
+      backup.scope,
+      backup.group,
+      backup.content.labels,
+    );
+    if (!backup.scope.isCurrent) {
+      return const Err(BackupMetadataScopeChangedFailure());
+    }
+    return plan;
   }
 }

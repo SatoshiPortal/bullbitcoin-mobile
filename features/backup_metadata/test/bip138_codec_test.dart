@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:backup_metadata/backup_metadata.dart';
 import 'package:backup_metadata/setup.dart';
+import 'package:backup_metadata/src/domain/content_sanitizer.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' show Language, Mnemonic;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/backup.dart';
 import 'package:primitives/primitives.dart';
@@ -16,6 +18,7 @@ const _codec = Bip138BackupMetadataCodec();
 
 BackupWallet _wallet({String? label = 'Savings', bool watchOnly = false}) =>
     BackupWallet(
+      walletId: 'wallet',
       network: BitcoinNetwork.testnet,
       scriptType: ScriptType.bip84,
       externalDescriptor: _external,
@@ -163,6 +166,57 @@ void main() {
     expect(digest(_content()), isNot(digest(base)));
   });
 
+  for (final language in [
+    Language.simplifiedChinese,
+    Language.traditionalChinese,
+  ]) {
+    test('a ${language.label} phrase with no separator never reaches the '
+        'decrypted archive', () async {
+      final phrase = Mnemonic(List.filled(16, 0), language).words.join();
+      final group = _group();
+      final dirty = BackupContent(
+        labels: LabelsSnapshot(
+          records: [
+            BackupLabelRecord(
+              chain: BackupLabelChain.bitcoin,
+              type: BackupLabelType.tx,
+              ref: 'aa' * 32,
+              label: phrase,
+            ),
+            BackupLabelRecord(
+              chain: BackupLabelChain.bitcoin,
+              type: BackupLabelType.tx,
+              ref: 'cc' * 32,
+              label: 'rent',
+            ),
+          ],
+          unattributedCount: 0,
+          skippedCount: 0,
+        ),
+        wallets: [_wallet(label: phrase)],
+        derivations: [
+          BackupDerivation(
+            path: "128169'/32'/0'",
+            application: 'hex',
+            status: 'active',
+            alias: phrase,
+          ),
+        ],
+      );
+      final clean = sanitizeContent(dirty);
+      expect(clean.excluded, 3);
+      final items = await bip138Decrypt(
+        bytes: await _encrypt(group, clean),
+        candidatePublicDescriptors: [_external, _internal],
+      );
+      expect(items, isNotNull);
+      if (items == null) return;
+      final text = items.map((item) => utf8.decode(item.bytes)).join('\n');
+      expect(text, isNot(contains(phrase)));
+      expect(text, contains('rent'));
+    });
+  }
+
   test(
     'the decrypted plaintext holds a closed set of fields and no secret',
     () async {
@@ -197,6 +251,7 @@ void main() {
       expect(
         (document['wallets'] as List).single.keys,
         unorderedEquals([
+          'id',
           'network',
           'script',
           'external',
@@ -339,5 +394,234 @@ void main() {
       ),
     );
     await expectRejected(await forge((doc) => doc, extraItem: true));
+  });
+
+  group('the reader is closed', () {
+    Future<Uint8List> reseal(
+      List<Bip138Item> Function(List<Bip138Item> items) edit,
+    ) async {
+      final items = (await bip138Decrypt(
+        bytes: await _encrypt(_group(), _content(derivations: _children)),
+        candidatePublicDescriptors: [_external, _internal],
+      ))!;
+      return bip138Encrypt(
+        publicDescriptors: [_external, _internal],
+        items: edit(items),
+        padded: true,
+      );
+    }
+
+    bool isVendor(Bip138Item item) =>
+        item.contentType is Bip138ContentType_Vendor;
+    bool isNumber(Bip138Item item, int number) =>
+        item.contentType is Bip138ContentType_Bip &&
+        (item.contentType as Bip138ContentType_Bip).number == number;
+
+    Uint8List encode(Object value) =>
+        Uint8List.fromList(utf8.encode(jsonEncode(value)));
+
+    Map<String, Object?> asMap(Bip138Item item) =>
+        (jsonDecode(utf8.decode(item.bytes)) as Map).cast<String, Object?>();
+
+    List<Bip138Item> editJson(
+      List<Bip138Item> items,
+      bool Function(Bip138Item) pick,
+      Map<String, Object?> Function(Map<String, Object?>) edit,
+    ) => [
+      for (final item in items)
+        pick(item)
+            ? Bip138Item(
+                contentType: item.contentType,
+                bytes: encode(edit(asMap(item))),
+              )
+            : item,
+    ];
+
+    Map<String, Object?> withExtra(Map<String, Object?> data) => {
+      ...data,
+      'extra': 'x',
+    };
+
+    Map<String, Object?> firstOf(Map<String, Object?> doc, String key) =>
+        ((doc[key] as List).first as Map).cast<String, Object?>();
+
+    final cases = <String, List<Bip138Item> Function(List<Bip138Item>)>{
+      'a vendor field': (items) => editJson(items, isVendor, withExtra),
+      'a wallet field': (items) => editJson(
+        items,
+        isVendor,
+        (doc) => {
+          ...doc,
+          'wallets': [withExtra(firstOf(doc, 'wallets'))],
+        },
+      ),
+      'a registry field': (items) => editJson(
+        items,
+        isVendor,
+        (doc) => {
+          ...doc,
+          'derivations': [withExtra(firstOf(doc, 'derivations'))],
+        },
+      ),
+      'an attribution field': (items) => editJson(
+        items,
+        isVendor,
+        (doc) => {
+          ...doc,
+          'attribution': [withExtra(firstOf(doc, 'attribution'))],
+        },
+      ),
+      'a Liquid record field': (items) => editJson(
+        items,
+        isVendor,
+        (doc) => {
+          ...doc,
+          'liquid': [withExtra(firstOf(doc, 'liquid'))],
+        },
+      ),
+      'a container field': (items) =>
+          editJson(items, (item) => isNumber(item, 139), withExtra),
+      'an account field': (items) => editJson(
+        items,
+        (item) => isNumber(item, 139),
+        (doc) => {
+          ...doc,
+          'accounts': [withExtra(firstOf(doc, 'accounts'))],
+        },
+      ),
+      'a BIP-329 field': (items) => [
+        for (final item in items)
+          isNumber(item, 329)
+              ? Bip138Item(
+                  contentType: item.contentType,
+                  bytes: Uint8List.fromList(
+                    utf8.encode(
+                      utf8
+                          .decode(item.bytes)
+                          .split('\n')
+                          .where((line) => line.isNotEmpty)
+                          .map(
+                            (line) =>
+                                '${jsonEncode({...jsonDecode(line) as Map, 'extra': 1})}\n',
+                          )
+                          .join(),
+                    ),
+                  ),
+                )
+              : item,
+      ],
+    };
+
+    test('control: the same envelope, unedited, decodes', () async {
+      final result = await _codec.decode(
+        _group(),
+        await reseal((items) => items),
+      );
+      expect(result.fold((value) => value, (_) => null), isNotNull);
+    });
+
+    for (final entry in cases.entries) {
+      test('it refuses ${entry.key} it did not write', () async {
+        final result = await _codec.decode(_group(), await reseal(entry.value));
+        expect(result.fold((value) => value, (_) => null), isNull);
+      });
+    }
+
+    test('a forged phrase in a label or a name is ignored and counted', () async {
+      const phrase =
+          'abandon abandon abandon abandon abandon abandon '
+          'abandon abandon abandon abandon abandon about';
+      final result = await _codec.decode(
+        _group(),
+        await reseal(
+          (items) => [
+            for (final item in items)
+              if (isVendor(item))
+                Bip138Item(
+                  contentType: item.contentType,
+                  bytes: encode({
+                    ...asMap(item),
+                    'wallets': [
+                      {...firstOf(asMap(item), 'wallets'), 'label': phrase},
+                    ],
+                  }),
+                )
+              else if (isNumber(item, 329))
+                Bip138Item(
+                  contentType: item.contentType,
+                  bytes: Uint8List.fromList(
+                    utf8.encode(
+                      '${jsonEncode({'type': 'tx', 'ref': 'aa' * 32, 'label': phrase})}\n',
+                    ),
+                  ),
+                )
+              else
+                item,
+          ],
+        ),
+      );
+      final raw = result.fold((value) => value, (_) => null);
+      expect(raw, isNotNull, reason: 'the envelope is well formed');
+      final clean = sanitizeContent(raw!);
+      expect(clean.excluded, 2);
+      expect(clean.wallets.single.label, isNull);
+      expect(
+        clean.labels.records.where(
+          (record) => (record.label ?? '').contains('abandon'),
+        ),
+        isEmpty,
+      );
+    });
+
+    test('the writer refuses content that was not sanitized', () {
+      final unsafe = BackupContent(
+        labels: LabelsSnapshot(
+          records: [
+            BackupLabelRecord(
+              chain: BackupLabelChain.bitcoin,
+              type: BackupLabelType.tx,
+              ref: 'aa' * 32,
+              label:
+                  'abandon abandon abandon abandon abandon abandon '
+                  'abandon abandon abandon abandon abandon about',
+            ),
+          ],
+          unattributedCount: 0,
+          skippedCount: 0,
+        ),
+        wallets: [_wallet()],
+        derivations: const [],
+      );
+      expect(
+        _codec.prepare(_group(), unsafe),
+        isA<Err<PreparedBackup, BackupMetadataFailure>>(),
+      );
+    });
+
+    test('a missing required field is refused too', () async {
+      final result = await _codec.decode(
+        _group(),
+        await reseal(
+          (items) =>
+              editJson(items, isVendor, (doc) => {...doc}..remove('wallets')),
+        ),
+      );
+      expect(result.fold((value) => value, (_) => null), isNull);
+    });
+  });
+
+  test('a file belongs to a group only when every descriptor matches', () async {
+    final bytes = await _encrypt(_group(), _content());
+    expect(await _decode(_group(), bytes), isNotNull);
+    // One more key in the group: sharing a descriptor is not a match.
+    const extra =
+        'wpkh(xpub661MyMwAqRbcEYS8w7XLSVeEsBXy79zSzH1J8vCdxAZningWLdN3zgtU6RpmZnd4aqWHHnM5UyKSsvyBgU61Xo1DJ8wYJfuTHfCzDdfJhT4)';
+    expect(
+      await _decode(_group(descriptors: [_external, _internal, extra]), bytes),
+      isNull,
+    );
+    // One key fewer: neither.
+    expect(await _decode(_group(descriptors: [_external]), bytes), isNull);
+    expect(canonicalDescriptor('$_external#abcd1234'), _external);
   });
 }

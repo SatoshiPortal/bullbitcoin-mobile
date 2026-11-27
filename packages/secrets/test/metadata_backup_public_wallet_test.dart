@@ -18,12 +18,14 @@ void main() {
   late Directory directory;
   late RuntimeAdmission admission;
   late SecretsInventory inventory;
+  late BackupSession session;
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('public-wallet-');
     final opened = await openFreshInventory(directory);
     inventory = opened.inventory;
     admission = opened.admission;
+    session = valueOf(await inventory.backupSession());
   });
 
   tearDown(() async {
@@ -64,6 +66,7 @@ void main() {
         String external = _external,
         String internal = _internal,
       }) => inventory.matchPublicWallet(
+        session: session,
         network: network,
         external: external,
         internal: internal,
@@ -95,6 +98,7 @@ void main() {
       ),
     );
     final result = await inventory.matchPublicWallet(
+      session: session,
       network: BitcoinNetwork.testnet,
       external: _external,
       internal: _internal,
@@ -119,6 +123,7 @@ void main() {
       );
       final applied = valueOf(
         await inventory.restorePublicWalletProperties(
+          session: session,
           network: BitcoinNetwork.testnet,
           external: _external,
           internal: _internal,
@@ -135,6 +140,7 @@ void main() {
 
       final again = valueOf(
         await inventory.restorePublicWalletProperties(
+          session: session,
           network: BitcoinNetwork.testnet,
           external: _external,
           internal: _internal,
@@ -148,6 +154,7 @@ void main() {
       expect(registration.birthday, DateTime.utc(2025, 1, 2));
 
       final missing = await inventory.restorePublicWalletProperties(
+        session: session,
         network: BitcoinNetwork.testnet,
         external: "wpkh([aaaaaaaa/84'/1'/0']tpubZ/0/*)",
         internal: "wpkh([aaaaaaaa/84'/1'/0']tpubZ/1/*)",
@@ -158,12 +165,11 @@ void main() {
     },
   );
 
-  test(
-    'the view scope is opaque and fails when the inventory is locked',
-    () async {
-      expect(valueOf(await inventory.backupViewScope()), isNotEmpty);
-      inventory.lock();
-      expect(await inventory.backupViewScope(), isA<Err>());
-    },
-  );
+  test('the backup session names its view and ends with the lock', () async {
+    expect(session.view, isNotEmpty);
+    expect(session.isCurrent, isTrue);
+    inventory.lock();
+    expect(session.isCurrent, isFalse);
+    expect(await inventory.backupSession(), isA<Err>());
+  });
 }

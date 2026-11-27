@@ -13,6 +13,7 @@ import '../domain/entities/discovered_backup.dart';
 import '../presentation/backup_metadata_failure_l10n.dart';
 import '../presentation/backup_metadata_restore_cubit.dart';
 import '../presentation/backup_metadata_settings_cubit.dart';
+import '../domain/entities/restore_report.dart';
 import 'backup_metadata_restore_views.dart';
 import 'backup_metadata_views.dart';
 import 'widgets/backup_metadata_widgets.dart';
@@ -44,7 +45,9 @@ class BackupMetadataFlow extends StatefulWidget {
 
 class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
   _Step? _step;
-  late BackupDestination _selected = widget.destinations.first;
+
+  /// Nothing is preselected: the user picks the provider.
+  BackupDestination? _selected;
   Set<String> _chosen = {};
 
   @override
@@ -58,6 +61,7 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
         BackupMetadataSettingsReady(:final status) => status,
         BackupMetadataSettingsLoading(:final previous) => previous,
         BackupMetadataSettingsFailed(:final previous) => previous,
+        BackupMetadataSettingsConfirming(:final status) => status,
         BackupMetadataSettingsInitial() => null,
       };
 
@@ -68,13 +72,26 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
       BackupMetadataSettingsState
     >(
       bloc: widget.settings,
-      listenWhen: (_, current) => current is BackupMetadataSettingsReady,
+      listenWhen: (_, current) =>
+          current is BackupMetadataSettingsReady ||
+          current is BackupMetadataSettingsConfirming ||
+          current is BackupMetadataSettingsFailed,
       listener: (context, state) {
+        if (state is BackupMetadataSettingsFailed && _step != null) {
+          BullSnackBar.show(
+            context,
+            message: state.failure.toTranslated(context),
+          );
+        }
+        if (state is BackupMetadataSettingsConfirming) {
+          _confirm(context, state);
+          return;
+        }
         if (state is BackupMetadataSettingsReady && _step == null) {
           final destination = state.status.destination;
           setState(() {
             _step = destination == null ? _Step.intro : _Step.status;
-            if (destination != null) _selected = destination;
+            _selected = destination;
           });
         }
       },
@@ -97,7 +114,14 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
             onBack: status.destination == null
                 ? widget.onClose
                 : () => setState(() => _step = _Step.status),
-            onContinue: () => setState(() => _step = _Step.wallets),
+            onContinue: _selected == null
+                ? null
+                : () => setState(() => _step = _Step.wallets),
+            // Restoring needs no activation and sends nothing: the discovery
+            // only reads.
+            onRestore: status.destination != null || _restoreSource == null
+                ? null
+                : _startRestore,
           ),
           _Step.wallets => _wallets(context, status),
           _Step.status => _statusView(context, status),
@@ -109,8 +133,49 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
 
   // ---------------------------------------------------------------- wallets
 
+  BackupDestination? get _restoreSource =>
+      _selected ??
+      (widget.destinations.length == 1 ? widget.destinations.first : null);
+
+  void _startRestore() {
+    final source = _restoreSource;
+    if (source == null) return;
+    widget.restore.discover(source);
+    setState(() => _step = _Step.restore);
+  }
+
+  Future<void> _confirm(
+    BuildContext context,
+    BackupMetadataSettingsConfirming state,
+  ) async {
+    final names = [
+      for (final entry in state.status.groups)
+        if (state.groups.contains(entry.group.id)) entry.group.displayName,
+    ];
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialog) => BackupMetadataConfirmDialog(
+        destination: state.destination,
+        account: state.confirmation.account,
+        wallets: names,
+        onCancel: () => Navigator.of(dialog).pop(false),
+        onConfirm: () => Navigator.of(dialog).pop(true),
+      ),
+    );
+    if (!mounted) return;
+    if (confirmed == true) {
+      await widget.settings.confirm();
+      if (mounted) setState(() => _step = _Step.status);
+    } else {
+      await widget.settings.decline();
+      if (mounted) setState(() => _step = _Step.intro);
+    }
+  }
+
   Widget _wallets(BuildContext context, BackupRunStatus status) {
     final l10n = BackupMetadataLocalizations.of(context);
+    final destination = _selected ?? status.destination;
     final included = {
       for (final group in status.groups)
         if (group.included) group.group.id,
@@ -148,16 +213,12 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
       onBack: () => setState(
         () => _step = status.destination == null ? _Step.intro : _Step.status,
       ),
-      onTurnOn: chosen.isEmpty
+      onTurnOn: chosen.isEmpty || destination == null
           ? null
-          : () async {
-              await widget.settings.configure(
-                destination: _selected,
-                groups: chosen,
-              );
-              await widget.settings.backupNow();
-              if (mounted) setState(() => _step = _Step.status);
-            },
+          : () => widget.settings.turnOn(
+              destination: destination,
+              groups: chosen,
+            ),
     );
   }
 
@@ -165,7 +226,8 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
 
   Widget _statusView(BuildContext context, BackupRunStatus status) {
     final l10n = BackupMetadataLocalizations.of(context);
-    final destination = status.destination ?? _selected;
+    final destination =
+        status.destination ?? _selected ?? widget.destinations.first;
     final provider = backupDestinationLabel(l10n, destination);
     final groups = [
       for (final group in status.groups)
@@ -202,6 +264,7 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
           : BackupMetadataStatus.upToDate,
       detail: detail,
       changesWaiting: waiting,
+      excluded: status.excluded,
       groups: [
         for (final group in groups)
           BackupMetadataGroupStatus(
@@ -219,8 +282,10 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
       walletTotal: status.groups.length,
       destination: destination,
       onBack: widget.onClose,
+      // Reconnecting is a new choice: the provider, the account and the wallets
+      // are confirmed again before anything is sent.
       onReconnect: needsAction
-          ? () => widget.settings.configure(
+          ? () => widget.settings.turnOn(
               destination: destination,
               groups: {for (final group in groups) group.group.id},
             )
@@ -269,7 +334,9 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
     return BlocBuilder<BackupMetadataRestoreCubit, BackupMetadataRestoreState>(
       bloc: widget.restore,
       builder: (context, state) {
-        void back() => setState(() => _step = _Step.status);
+        void back() => setState(
+          () => _step = status.destination == null ? _Step.intro : _Step.status,
+        );
         return switch (state) {
           BackupMetadataRestoreInitial() ||
           BackupMetadataRestoreLoading() => _Waiting(onBack: back),
@@ -316,45 +383,57 @@ class _BackupMetadataFlowState extends State<BackupMetadataFlow> {
               labelsToAdd: plan.additions.length,
               coinsToFreeze: plan.freezes.length,
               alreadySame: plan.unchanged,
+              filteredFields: backup.content.excluded,
               onBack: back,
               onRestore: widget.restore.apply,
             ),
-          BackupMetadataRestoreReported(:final report) =>
-            BackupMetadataRestoreResultView(
-              labelsRestored: report.labels?.labelsApplied ?? 0,
-              coinsFrozen:
-                  report.labels?.freezes.values
-                      .where((outcome) => outcome == FreezeOutcome.applied)
-                      .length ??
-                  0,
-              coinsPending:
-                  report.labels?.freezes.values
-                      .where(
-                        (outcome) => outcome == FreezeOutcome.pendingDiscovery,
-                      )
-                      .length ??
-                  0,
-              coinsFailed:
-                  (report.labels?.freezes.values
-                          .where(
-                            (outcome) =>
-                                outcome == FreezeOutcome.failed ||
-                                outcome == FreezeOutcome.notOwned,
-                          )
-                          .length ??
-                      0) +
-                  (report.isPartial ? 1 : 0),
-              labelsRejected:
-                  report.labels?.labelsRejected.values.fold<int>(
-                    0,
-                    (a, b) => a + b,
-                  ) ??
-                  0,
-              onDone: back,
-              onRetryFreezes: report.isPartial ? widget.restore.apply : null,
-            ),
+          BackupMetadataRestoreReported(:final report) => _result(
+            context,
+            report,
+            back,
+          ),
         };
       },
+    );
+  }
+
+  Widget _result(
+    BuildContext context,
+    RestoreReport report,
+    VoidCallback back,
+  ) {
+    final freezes = report.labels?.freezes.values ?? const <FreezeOutcome>[];
+    int count(bool Function(FreezeOutcome) test) => freezes.where(test).length;
+    final secrets = report.secrets;
+    return BackupMetadataRestoreResultView(
+      labelsRestored: report.labels?.labelsApplied ?? 0,
+      coinsFrozen: count((outcome) => outcome == FreezeOutcome.applied),
+      coinsPending: count(
+        (outcome) => outcome == FreezeOutcome.pendingDiscovery,
+      ),
+      coinsFailed: count(
+        (outcome) =>
+            outcome == FreezeOutcome.failed ||
+            outcome == FreezeOutcome.notOwned,
+      ),
+      labelsRejected:
+          report.labels?.labelsRejected.values.fold<int>(0, (a, b) => a + b) ??
+          0,
+      walletsRestored:
+          (secrets?.walletLabelsApplied ?? 0) +
+          (secrets?.walletBirthdaysApplied ?? 0),
+      registryAdded:
+          (secrets?.derivationsAdded ?? 0) + (secrets?.derivationsUpdated ?? 0),
+      // Each owner's state is its own: a failed Secrets step is never counted
+      // as a failed freeze, and a refused registry is never a full success.
+      secretsFailed: report.secretsFailure != null,
+      registryRefused: secrets?.derivationsRefused ?? false,
+      labelsStepFailed: report.labelsFailure != null,
+      excluded: report.excluded,
+      onDone: back,
+      onRetry: report.isPartial || count((o) => o != FreezeOutcome.applied) > 0
+          ? widget.restore.apply
+          : null,
     );
   }
 

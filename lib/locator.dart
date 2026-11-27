@@ -121,10 +121,10 @@ class AppLocator {
     unawaited(locator<RecoverBullFacade>().checkAtColdStart());
   }
 
-  /// Data backup: composed only when the build turns it on, and even then it
-  /// writes nothing until the user chooses a destination.
+  /// Data backup: always composed, inert until the user turns it on and
+  /// confirms a destination, an account and wallets. The setting is the
+  /// selection kept in its encrypted journal: off by default, persistent.
   static void setupDataBackup(GetIt locator, {required String journalPath}) {
-    if (!_dataBackupEnabled) return;
     final secrets = locator<Secrets>();
     final keys = secrets.databaseKeys(module: 'backup_metadata');
     final feature = BackupMetadataFeature.open(
@@ -710,6 +710,3 @@ class AppLocator {
     return const Ok(null);
   }
 }
-
-/// Off unless the build says otherwise (`--dart-define=DATA_BACKUP=true`).
-const _dataBackupEnabled = bool.fromEnvironment('DATA_BACKUP');

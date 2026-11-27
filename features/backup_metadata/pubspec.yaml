@@ -21,7 +21,9 @@ dependencies:
     sdk: flutter
   intl: any
   material_ui: ^1.11.0
+  bip39_mnemonic: ^4.1.0
   crypto: ^3.0.7
+  unorm_dart: ^0.3.2
   flutter_bloc: ^9.1.1
   get_it: ^9.1.1
   meta: ^1.17.0

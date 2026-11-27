@@ -113,6 +113,20 @@ void main() {
         isNot(contains('group-ids.sqlite')),
       );
 
+      // Secrets says a wallet is not exclusive: its group is reported, with
+      // the other group untouched; a wallet Secrets does not name is not
+      // trusted either.
+      secretsPort.shared = {'bitcoin'};
+      secretsPort.walletIds = {'bitcoin', 'liquid-only'};
+      final flagged =
+          (await open().read() as Ok<BackupInventory, BackupMetadataFailure>)
+              .value;
+      expect(flagged.groups.first.ambiguous, isTrue, reason: 'not exclusive');
+      expect(flagged.groups.last.ambiguous, isTrue, reason: 'not named');
+      secretsPort
+        ..shared = const {}
+        ..walletIds = {'bitcoin', 'testnet', 'liquid-only'};
+
       final unprepared = await MetadataBackupInventory(
         wallets: () async =>
             Ok<List<MetadataBackupWallet>, SecretFailure>(wallets),

@@ -14,6 +14,6 @@ export 'src/data/metadata_backup_secrets.dart' show MetadataBackupSecrets;
 export 'src/domain/ports/backup_inventory_port.dart' show BackupInventoryPort;
 export 'src/domain/ports/backup_labels_port.dart' show BackupLabelsPort;
 export 'src/domain/ports/backup_secrets_port.dart'
-    show BackupSecretsPort, SecretsRestoreReport;
+    show BackupSecretsPort, BackupSessionRef, SecretsRestoreReport;
 export 'src/domain/repositories/backup_metadata_codec.dart'
     show BackupMetadataCodec, PreparedBackup;

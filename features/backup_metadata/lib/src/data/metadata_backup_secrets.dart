@@ -16,14 +16,30 @@ final class MetadataBackupSecrets implements BackupSecretsPort {
   const MetadataBackupSecrets(this._inventory);
 
   @override
-  Future<Result<String, BackupMetadataFailure>> viewScope() async =>
-      switch (await _inventory.backupViewScope()) {
-        Ok(:final value) => Ok(value),
+  Future<Result<BackupSessionRef, BackupMetadataFailure>> session() async =>
+      switch (await _inventory.backupSession()) {
+        Ok(:final value) => Ok(_SecretsSession(value)),
         Err() => const Err(BackupMetadataNotReadyFailure()),
       };
 
   @override
+  Future<Result<Map<String, bool>, BackupMetadataFailure>> exclusivity(
+    BackupSessionRef session,
+    BitcoinNetwork network,
+  ) async {
+    final handle = _handle(session);
+    if (handle == null) return const Err(BackupMetadataScopeChangedFailure());
+    return switch (await _inventory.backupCandidates(handle, network)) {
+      Ok(:final value) => Ok({
+        for (final candidate in value) candidate.walletId: candidate.exclusive,
+      }),
+      Err() => const Err(BackupMetadataUnexpectedFailure()),
+    };
+  }
+
+  @override
   Future<Result<List<BackupDerivation>, BackupMetadataFailure>> derivations(
+    BackupSessionRef session,
     BackupGroup group,
   ) async {
     final parent = group.secretReference;
@@ -45,27 +61,31 @@ final class MetadataBackupSecrets implements BackupSecretsPort {
 
   @override
   Future<Result<SecretsRestoreReport, BackupMetadataFailure>> restore(
+    BackupSessionRef session,
     BackupGroup group,
     BackupContent content,
   ) async {
+    final handle = _handle(session);
+    if (handle == null || !session.isCurrent) {
+      return const Err(BackupMetadataScopeChangedFailure());
+    }
     // Only the accounts this group already owns on this phone: a backup
     // authenticated for one group never edits another group's wallet.
-    final own = {
-      for (final wallet in group.wallets)
-        (wallet.externalDescriptor, wallet.internalDescriptor),
-    };
+    // Compared without checksums: the same descriptor may carry either.
+    (String, String) key(BackupWallet wallet) => (
+      canonicalDescriptor(wallet.externalDescriptor),
+      canonicalDescriptor(wallet.internalDescriptor),
+    );
+    final own = {for (final wallet in group.wallets) key(wallet)};
     final candidates = [
       for (final wallet in content.wallets)
-        if (own.contains((
-          wallet.externalDescriptor,
-          wallet.internalDescriptor,
-        )))
-          wallet,
+        if (own.contains(key(wallet))) wallet,
     ];
     // Resolve every match before the first write: an ambiguous one is
     // refused as a whole.
     for (final wallet in candidates) {
       final match = await _inventory.matchPublicWallet(
+        session: handle,
         network: wallet.network,
         external: wallet.externalDescriptor,
         internal: wallet.internalDescriptor,
@@ -80,6 +100,7 @@ final class MetadataBackupSecrets implements BackupSecretsPort {
     var birthdays = 0;
     for (final wallet in candidates) {
       final applied = await _inventory.restorePublicWalletProperties(
+        session: handle,
         network: wallet.network,
         external: wallet.externalDescriptor,
         internal: wallet.internalDescriptor,
@@ -108,6 +129,7 @@ final class MetadataBackupSecrets implements BackupSecretsPort {
         return const Err(BackupMetadataUnexpectedFailure());
       }
       final merged = await _inventory.mergeDerivationArchive(
+        session: handle,
         parent: fingerprint,
         records: [
           for (final record in content.derivations)
@@ -142,4 +164,19 @@ final class MetadataBackupSecrets implements BackupSecretsPort {
       ),
     );
   }
+}
+
+BackupSession? _handle(BackupSessionRef session) =>
+    session is _SecretsSession ? session._session : null;
+
+final class _SecretsSession implements BackupSessionRef {
+  final BackupSession _session;
+
+  const _SecretsSession(this._session);
+
+  @override
+  String get view => _session.view;
+
+  @override
+  bool get isCurrent => _session.isCurrent;
 }

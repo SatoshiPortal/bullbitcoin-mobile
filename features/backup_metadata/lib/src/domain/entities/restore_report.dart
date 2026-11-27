@@ -12,12 +12,21 @@ final class RestoreReport {
   final SecretsRestoreReport? secrets;
   final BackupMetadataFailure? secretsFailure;
 
+  /// Fields of the file ignored because they looked like secret material.
+  final int excluded;
+
   const RestoreReport({
     this.labels,
     this.labelsFailure,
     this.secrets,
     this.secretsFailure,
+    this.excluded = 0,
   });
 
-  bool get isPartial => labelsFailure != null || secretsFailure != null;
+  /// Anything left undone: an owner failed, or the BIP85 registry conflicted
+  /// with this phone's and was refused. Never reported as complete.
+  bool get isPartial =>
+      labelsFailure != null ||
+      secretsFailure != null ||
+      (secrets?.derivationsRefused ?? false);
 }

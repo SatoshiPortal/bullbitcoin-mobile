@@ -30,12 +30,14 @@ void main() {
   late Directory directory;
   late RuntimeAdmission admission;
   late SecretsInventory inventory;
+  late BackupSession session;
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('bip85-merge-');
     final opened = await openFreshInventory(directory);
     inventory = opened.inventory;
     admission = opened.admission;
+    session = valueOf(await inventory.backupSession());
     valueOf(await inventory.registerWallet(localWallet('one', _parent.hex)));
   });
 
@@ -53,6 +55,7 @@ void main() {
     () async {
       final report = valueOf(
         await inventory.mergeDerivationArchive(
+          session: session,
           parent: _parent,
           records: [
             _hex(0),
@@ -90,6 +93,7 @@ void main() {
       );
       final report = valueOf(
         await inventory.mergeDerivationArchive(
+          session: session,
           parent: _parent,
           records: [
             _hex(0, alias: 'theirs'),
@@ -106,6 +110,7 @@ void main() {
       expect(
         valueOf(
           await inventory.mergeDerivationArchive(
+            session: session,
             parent: _parent,
             records: [_hex(0), _hex(1)],
           ),
@@ -186,6 +191,7 @@ void main() {
     ];
     for (final records in bad) {
       final result = await inventory.mergeDerivationArchive(
+        session: session,
         parent: _parent,
         records: records,
       );
@@ -196,6 +202,7 @@ void main() {
 
   test('a parent outside the active view is refused', () async {
     final result = await inventory.mergeDerivationArchive(
+      session: session,
       parent: Fingerprint('89abcdef'),
       records: [_hex(0, parent: Fingerprint('89abcdef'))],
     );
@@ -213,6 +220,7 @@ void main() {
     );
     expect(
       await inventory.mergeDerivationArchive(
+        session: session,
         parent: _parent,
         records: [mnemonic("39'/0'/12'/2'")],
       ),
@@ -221,6 +229,7 @@ void main() {
     for (final path in ["39'/10'/12'/0'", "39'/0'/13'/0'", "39'/0'/12'"]) {
       expect(
         await inventory.mergeDerivationArchive(
+          session: session,
           parent: _parent,
           records: [mnemonic(path)],
         ),

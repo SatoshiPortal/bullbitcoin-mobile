@@ -211,12 +211,20 @@ final class LabelBackupRepository {
   ) async {
     return _run(() async {
       if (scope.groupId != plan.groupId) throw const _StalePlan();
-      final writes = await _database.transaction(
-        () => _applyLabels(scope, plan, choices),
-      );
+      if (!scope.authority()) throw const _Revoked();
+      final writes = await _database.transaction(() async {
+        final written = await _applyLabels(scope, plan, choices);
+        // The last word before the commit: a withdrawn authorization rolls the
+        // whole transaction back.
+        if (!scope.authority()) throw const _Revoked();
+        return written;
+      });
       final freezes = <FreezeRequest, FreezeOutcome>{};
       for (final request in plan.freezes) {
-        freezes[request] = await _applyFreeze(scope, request);
+        // Each freeze is its own effect after the transaction: asked again.
+        freezes[request] = scope.authority()
+            ? await _applyFreeze(scope, request)
+            : FreezeOutcome.failed;
       }
       return ApplyReport(
         labelsApplied: writes.applied,
@@ -378,6 +386,9 @@ final class LabelBackupRepository {
         ],
       );
       if (verified.isEmpty) return FreezeOutcome.pendingDiscovery;
+      // The ownership check took time: the caller may have withdrawn since.
+      // Asked again immediately before the write.
+      if (!scope.authority()) return FreezeOutcome.failed;
       // Sync uses an insert-if-absent for durable freezes.
       await _walletFreeze.freeze(verified);
       return FreezeOutcome.applied;
@@ -393,6 +404,8 @@ final class LabelBackupRepository {
       return Ok(await operation());
     } on _StalePlan {
       return const Err(LabelBackupStalePlanFailure());
+    } on _Revoked {
+      return const Err(LabelBackupRevokedFailure());
     } on Exception {
       return const Err(LabelUnexpectedFailure());
     }
@@ -476,6 +489,10 @@ final class _LabelWrites {
 
 final class _StalePlan implements Exception {
   const _StalePlan();
+}
+
+final class _Revoked implements Exception {
+  const _Revoked();
 }
 
 String? _resolveOrigin(String? origin, Set<String> wallets) {

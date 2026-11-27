@@ -17,8 +17,6 @@ import 'package:transactions/transactions.dart' show Transactions;
 import 'package:primitives/primitives.dart' show Err, NetworkEnv, Result;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart';
-import 'package:backup_metadata/backup_metadata_ui.dart'
-    show BackupMetadataLocalizations;
 import 'package:backup_metadata/setup.dart' show BackupMetadataFeature;
 import 'package:backups/backups.dart';
 import 'package:bull_recoverbull/storage.dart';
@@ -379,7 +377,10 @@ class AppRouter {
                     )
                   : null,
               dataBackupStatus: locator.isRegistered<BackupMetadataFeature>()
-                  ? (context) => BackupMetadataLocalizations.of(context).off
+                  ? locator<BackupMetadataFeature>().statusLabel
+                  : null,
+              dataBackupChanges: locator.isRegistered<BackupMetadataFeature>()
+                  ? locator<BackupMetadataFeature>().summary
                   : null,
             ).route,
           ],
