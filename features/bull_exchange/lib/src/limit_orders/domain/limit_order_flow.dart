@@ -4,6 +4,8 @@ import 'package:meta/meta.dart';
 
 import 'entities/limit_order_amount_limits.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// The limit-order create flow (composition §5, Limit column): session →
 /// account load → intro → target price → destination → amount (limits from
 /// the destination's rail) → review (rate read again) → server confirm of
@@ -296,19 +298,22 @@ const limitOrderCreatePolicy = ServerConfirmPolicy<LimitOrderRequest>(
 /// the recent orders hold it.
 ConfirmCheck<LimitOrder> limitOrderCreateCheck(
   LimitOrderRequest request,
-  ExchangeRead<List<LimitOrder>> recent,
+  Result<List<LimitOrder>, ExchangeReadFailure> recent,
 ) => switch (recent) {
-  ReadGot(:final value) => switch (findCreatedLimitOrder(
+  Ok(:final value) => switch (findCreatedLimitOrder(
     request.draft.journalRequest,
     value,
   )) {
     final order? => ConfirmSeenApplied(order),
     null => const ConfirmSeenNotApplied(),
   },
-  ReadSessionRejected() => const ConfirmCheckSessionRejected(),
-  ReadMissing() ||
-  ReadUnreachable() ||
-  ReadMalformed() => ConfirmCheckFailed(ReadProblem.of(recent)!),
+  Err(failure: ExchangeSessionRejectedFailure()) =>
+    const ConfirmCheckSessionRejected(),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => ConfirmCheckFailed(ReadProblem.of(recent)!),
 };
 
 const _destinationPolicy = PickPolicy<DestinationOption, Destination>(
@@ -591,7 +596,7 @@ sealed class LimitFlowEvent {
 
 final class LimitContextLoaded extends LimitFlowEvent {
   final int attempt;
-  final ExchangeRead<LimitOrderContext> read;
+  final Result<LimitOrderContext, ExchangeReadFailure> read;
 
   const LimitContextLoaded(this.attempt, this.read);
 }
@@ -648,7 +653,7 @@ final class LimitDiscountChanged extends LimitFlowEvent {
 final class LimitTargetRateArrived extends LimitFlowEvent {
   final Market market;
   final int attempt;
-  final ExchangeRead<LimitOrderRate> read;
+  final Result<LimitOrderRate, ExchangeReadFailure> read;
 
   const LimitTargetRateArrived(this.market, this.attempt, this.read);
 }
@@ -672,7 +677,7 @@ final class LimitKycReturned extends LimitFlowEvent {
 
 /// The account read again after the KYC detour.
 final class LimitDetourLoaded extends LimitFlowEvent {
-  final ExchangeRead<LimitOrderContext> read;
+  final Result<LimitOrderContext, ExchangeReadFailure> read;
 
   const LimitDetourLoaded(this.read);
 }
@@ -680,7 +685,7 @@ final class LimitDetourLoaded extends LimitFlowEvent {
 /// The review's rate read of [attempt] answered [read].
 final class LimitReviewRateArrived extends LimitFlowEvent {
   final int attempt;
-  final ExchangeRead<LimitOrderRate> read;
+  final Result<LimitOrderRate, ExchangeReadFailure> read;
 
   const LimitReviewRateArrived(this.attempt, this.read);
 }
@@ -965,9 +970,11 @@ LimitFlowNext _target(LimitTarget state, LimitFlowEvent event) {
       }
       final kept = loading.kept;
       return switch (read) {
-        ReadGot(:final value) => ready(PricedTarget.at(market, value)),
-        ReadSessionRejected() => _ended,
-        ReadMissing() || ReadUnreachable() || ReadMalformed() => switch (kept) {
+        Ok(:final value) => ready(PricedTarget.at(market, value)),
+        Err(failure: ExchangeSessionRejectedFailure()) => _ended,
+        Err(failure: ExchangeMissingFailure()) ||
+        Err(failure: ExchangeUnreachableFailure()) ||
+        Err(failure: ExchangeMalformedFailure()) => switch (kept) {
           final kept? => ready(kept, problem: ReadProblem.of(read)),
           null => LimitFlowNext(
             LimitTarget(
@@ -1154,7 +1161,7 @@ LimitFlowNext _amountNext(
           transitionAmountEntry(
             limitAmountPolicy(target, destination),
             next.state,
-            AmountRateArrived(market, ReadGot(target.limitPrice)),
+            AmountRateArrived(market, Ok(target.limitPrice)),
           ),
         );
       // The detour page opens KYC; its return is LimitKycReturned. Over the
@@ -1215,7 +1222,7 @@ LimitFlowNext _amount(LimitAmount state, LimitFlowEvent event) {
     case LimitDetourLoaded(:final read):
       return switch (state.amount) {
         AmountKycDetour() => switch (read) {
-          ReadGot(value: final context) => _amountNext(
+          Ok(value: final context) => _amountNext(
             LimitOpen(state.open.session, context),
             state.target,
             state.destination,
@@ -1225,11 +1232,11 @@ LimitFlowNext _amount(LimitAmount state, LimitFlowEvent event) {
               AmountDetourReturned(context.amountContext),
             ),
           ),
-          ReadSessionRejected() => _ended,
+          Err(failure: ExchangeSessionRejectedFailure()) => _ended,
           // The detour page stays; returning again reads again.
-          ReadMissing() ||
-          ReadUnreachable() ||
-          ReadMalformed() => LimitFlowNext.stay(state),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(failure: ExchangeMalformedFailure()) => LimitFlowNext.stay(state),
         },
         AmountNoMarket() ||
         AmountEditing() ||
@@ -1301,14 +1308,16 @@ LimitFlowNext _review(LimitReview state, LimitFlowEvent event) {
         LimitReview(state.open, state.request, state.attempt, check),
       );
       return switch (read) {
-        ReadGot(:final value)
+        Ok(:final value)
             when state.request.target.limitPrice < value.indexPrice =>
           checked(ReviewLive(value)),
-        ReadGot(:final value) => checked(ReviewTargetAbove(value)),
-        ReadMissing() ||
-        ReadUnreachable() ||
-        ReadMalformed() => checked(ReviewCheckFailed(ReadProblem.of(read)!)),
-        ReadSessionRejected() => _ended,
+        Ok(:final value) => checked(ReviewTargetAbove(value)),
+        Err(failure: ExchangeMissingFailure()) ||
+        Err(failure: ExchangeUnreachableFailure()) ||
+        Err(
+          failure: ExchangeMalformedFailure(),
+        ) => checked(ReviewCheckFailed(ReadProblem.of(read)!)),
+        Err(failure: ExchangeSessionRejectedFailure()) => _ended,
       };
     case LimitRetryPressed():
       return switch (state.check) {

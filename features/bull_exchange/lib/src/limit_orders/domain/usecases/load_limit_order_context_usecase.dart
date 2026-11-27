@@ -24,7 +24,7 @@ class LoadLimitOrderContextUsecase {
     this._listed,
   );
 
-  Future<ExchangeRead<LimitOrderContext>> execute(
+  Future<Result<LimitOrderContext, ExchangeReadFailure>> execute(
     ExchangeSession session,
   ) async {
     final (summary, defaults, wallets, entries) = await (
@@ -41,19 +41,36 @@ class LoadLimitOrderContextUsecase {
       Err() => const <UnknownWrite>[],
     };
     return switch ((summaryRead, defaults)) {
-      (ReadGot(value: final s), ReadGot(value: final d)) => ReadGot(
+      (Ok(value: final s), Ok(value: final d)) => Ok(
         LimitOrderContext(s, d, wallets, open),
       ),
-      (ReadSessionRejected(:final why), _) ||
-      (_, ReadSessionRejected(:final why)) => ReadSessionRejected(why),
-      (ReadUnreachable(:final reason, :final isNetwork), _) ||
+      (Err(failure: ExchangeSessionRejectedFailure(:final why)), _) ||
       (
         _,
-        ReadUnreachable(:final reason, :final isNetwork),
-      ) => ReadUnreachable(reason, isNetwork: isNetwork),
-      (ReadMalformed(:final reason), _) ||
-      (_, ReadMalformed(:final reason)) => ReadMalformed(reason),
-      (ReadMissing(), _) || (_, ReadMissing()) => const ReadMissing(),
+        Err(failure: ExchangeSessionRejectedFailure(:final why)),
+      ) => Err(ExchangeSessionRejectedFailure(why)),
+      (
+        Err(
+          failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+        ),
+        _,
+      ) ||
+      (
+        _,
+        Err(
+          failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+        ),
+      ) => Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork)),
+      (Err(failure: ExchangeMalformedFailure(:final reason)), _) ||
+      (
+        _,
+        Err(failure: ExchangeMalformedFailure(:final reason)),
+      ) => Err(ExchangeMalformedFailure(reason)),
+      (Err(failure: ExchangeMissingFailure()), _) ||
+      (
+        _,
+        Err(failure: ExchangeMissingFailure()),
+      ) => const Err(ExchangeMissingFailure()),
     };
   }
 

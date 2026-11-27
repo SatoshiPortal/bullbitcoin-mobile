@@ -11,7 +11,9 @@ class LoadAutoBuyContextUsecase {
 
   const LoadAutoBuyContextUsecase(this._exchange, this._getUserSummary);
 
-  Future<ExchangeRead<AutoBuyContext>> execute(ExchangeSession session) async {
+  Future<Result<AutoBuyContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) async {
     // One after the other: a record `.wait` would wrap a programmer error
     // of either read in a ParallelWaitError instead of rethrowing it.
     final read = await _getUserSummary.execute(session);
@@ -23,14 +25,20 @@ class LoadAutoBuyContextUsecase {
       Err() => const <UnknownWrite>[],
     };
     return switch (read) {
-      ReadGot(:final value) => ReadGot(AutoBuyContext(value, open)),
-      ReadMissing() => const ReadMissing(),
-      ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable(
-        reason,
-        isNetwork: isNetwork,
+      Ok(:final value) => Ok(AutoBuyContext(value, open)),
+      Err(failure: ExchangeMissingFailure()) => const Err(
+        ExchangeMissingFailure(),
       ),
-      ReadSessionRejected(:final why) => ReadSessionRejected(why),
-      ReadMalformed(:final reason) => ReadMalformed(reason),
+      Err(
+        failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+      ) =>
+        Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork)),
+      Err(failure: ExchangeSessionRejectedFailure(:final why)) => Err(
+        ExchangeSessionRejectedFailure(why),
+      ),
+      Err(failure: ExchangeMalformedFailure(:final reason)) => Err(
+        ExchangeMalformedFailure(reason),
+      ),
     };
   }
 }

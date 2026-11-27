@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 /// The re-read after a create whose outcome is unknown: settles the journal
 /// entries the exchange can decide first, so a create seen here no longer
@@ -10,7 +11,7 @@ class GetRecentLimitOrdersUsecase {
 
   const GetRecentLimitOrdersUsecase(this._exchange);
 
-  Future<ExchangeRead<List<LimitOrder>>> execute(
+  Future<Result<List<LimitOrder>, ExchangeReadFailure>> execute(
     ExchangeSession session,
   ) async {
     final _ = await _exchange.reconcileUnknownWrites(session);

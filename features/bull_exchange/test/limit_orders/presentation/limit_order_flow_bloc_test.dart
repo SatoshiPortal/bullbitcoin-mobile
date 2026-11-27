@@ -15,8 +15,9 @@ import '../limit_order_usecase_fakes.dart';
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>[];
-  Completer<GatedWrite<ExchangeWrite<LimitOrder>>> createAnswer = Completer();
-  ExchangeRead<List<LimitOrder>> recent = const ReadGot([]);
+  Completer<GatedWrite<Result<LimitOrder, ExchangeWriteFailure>>> createAnswer =
+      Completer();
+  Result<List<LimitOrder>, ExchangeReadFailure> recent = const Ok([]);
 
   LimitFlowBloc bloc({
     required ExchangeSession? session,
@@ -27,7 +28,7 @@ final class _Calls {
     loadContext: FakeLoadLimitOrderContextUsecase((session) async {
       sessions.add(session);
       log.add('load');
-      return ReadGot(
+      return Ok(
         LimitOrderContext(
           userSummary(),
           limitDefaultWallets(),
@@ -38,7 +39,7 @@ final class _Calls {
     }),
     getRate: FakeGetLimitOrderRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
-      return ReadGot(limitOrderRate());
+      return Ok(limitOrderRate());
     }),
     getReceiveAddress: FakeGetLimitReceiveAddressUsecase((option) async {
       log.add('receive ${option.walletId}');
@@ -121,7 +122,7 @@ void main() {
     expect(calls.log.where((l) => l.startsWith('create')), ['create 1']);
     expect(calls.sessions, [limitSession, limitSession]);
     final request = (bloc.state as LimitCreating).request;
-    calls.recent = ReadGot([
+    calls.recent = Ok([
       LimitOrder(
         id: 'lo-7',
         number: 'LO-7',
@@ -136,7 +137,7 @@ void main() {
       ),
     ]);
     calls.createAnswer.complete(
-      const GateAdmitted(WriteOutcomeUnknown('lost')),
+      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
     );
     await _settle();
     await _settle();

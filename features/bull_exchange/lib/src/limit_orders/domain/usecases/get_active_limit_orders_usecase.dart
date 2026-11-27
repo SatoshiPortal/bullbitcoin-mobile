@@ -10,7 +10,7 @@ class GetActiveLimitOrdersUsecase {
 
   /// The active limit orders of [session]'s account; without a session the
   /// answer is the signed-out one.
-  Future<ExchangeRead<List<LimitOrder>>> execute(
+  Future<Result<List<LimitOrder>, ExchangeReadFailure>> execute(
     ExchangeSession? session,
   ) async => readOfResult(switch (session) {
     null => const Err(ExchangeNotAuthenticatedFailure()),

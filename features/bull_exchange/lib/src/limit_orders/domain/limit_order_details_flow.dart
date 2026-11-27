@@ -4,6 +4,8 @@ import 'package:meta/meta.dart';
 
 import 'limit_order_cancel.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// One limit order's details and its cancel: load → shown (with the cancel
 /// step) → closed. Leaving says whether the order changed, so the list
 /// that opened it reads again (LIM-3, LIM-5).
@@ -107,7 +109,7 @@ sealed class LimitDetailsEvent {
 
 final class DetailsLoaded extends LimitDetailsEvent {
   final int attempt;
-  final ExchangeRead<LimitOrder> read;
+  final Result<LimitOrder, ExchangeReadFailure> read;
 
   const DetailsLoaded(this.attempt, this.read);
 }
@@ -225,15 +227,14 @@ LimitDetailsNext transitionLimitDetails(
     )
         when answered == attempt =>
       switch (read) {
-        ReadGot(value: final order) => LimitDetailsNext(
+        Ok(value: final order) => LimitDetailsNext(
           DetailsShown(session, CancelIdle(order)),
         ),
-        ReadSessionRejected() => const LimitDetailsNext(
-          DetailsSessionEnded(changed: false),
-        ),
-        ReadMissing() ||
-        ReadUnreachable() ||
-        ReadMalformed() => LimitDetailsNext(
+        Err(failure: ExchangeSessionRejectedFailure()) =>
+          const LimitDetailsNext(DetailsSessionEnded(changed: false)),
+        Err(failure: ExchangeMissingFailure()) ||
+        Err(failure: ExchangeUnreachableFailure()) ||
+        Err(failure: ExchangeMalformedFailure()) => LimitDetailsNext(
           DetailsFailed(session, orderId, attempt, ReadProblem.of(read)!),
         ),
       },

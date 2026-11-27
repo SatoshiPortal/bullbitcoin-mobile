@@ -3,6 +3,7 @@ import 'package:bull_exchange/src/autobuy/domain/autobuy_switch.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 
 AutoBuySwitchState _apply(
   AutoBuySwitchState state,
@@ -19,7 +20,10 @@ const _on = SwitchShown(active: true, restricted: false);
 final _deactivating = _apply(_on, const [SwitchDeactivatePressed()]);
 final _unverified = _apply(_deactivating, const [
   SwitchConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+    ConfirmAnswered(
+      1,
+      GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+    ),
   ),
   SwitchConfirmChanged(
     ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),
@@ -39,7 +43,10 @@ final _events = <String, AutoBuySwitchEvent>{
   'deactivate': const SwitchDeactivatePressed(),
   'retry': const SwitchRetryPressed(),
   'confirm': const SwitchConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+    ConfirmAnswered(
+      1,
+      GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+    ),
   ),
 };
 
@@ -84,7 +91,14 @@ void main() {
       for (final event in [
         ..._events.values,
         const SwitchConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteSessionRejected())),
+          ConfirmAnswered(
+            1,
+            GateAdmitted(
+              Err(
+                ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+              ),
+            ),
+          ),
         ),
       ]) {
         reached.add(transitionAutoBuySwitch(state, event).state.runtimeType);
@@ -115,9 +129,7 @@ void main() {
     () {
       final verified = transitionAutoBuySwitch(
         _deactivating,
-        const SwitchConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteDone(false))),
-        ),
+        const SwitchConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(false)))),
       );
       expect(
         verified.state,
@@ -143,7 +155,10 @@ void main() {
   test('a write the re-read shows not applied says so, offered again', () {
     final failed = _apply(_deactivating, const [
       SwitchConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
       SwitchConfirmChanged(ConfirmVerified(1, ConfirmSeenNotApplied())),
     ]);

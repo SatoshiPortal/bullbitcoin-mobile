@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../limit_order_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _active = limitOrder();
 final _cancelled = limitOrder(status: LimitOrderStatus.cancelled);
 final _executed = limitOrder(status: LimitOrderStatus.executed);
@@ -22,7 +24,7 @@ final _checking = _apply(_sending, const [
   CancelAnswered(1, CancelAnsweredUnsure()),
 ]);
 final _unverified = _apply(_checking, const [
-  CancelChecked(1, ReadUnreachable('down', isNetwork: true)),
+  CancelChecked(1, Err(ExchangeUnreachableFailure('down', isNetwork: true))),
 ]);
 final _done = _apply(_sending, [
   CancelAnswered(1, CancelAnsweredOrder(_cancelled)),
@@ -43,7 +45,7 @@ final _states = <String, LimitCancelState>{
 final _events = <String, LimitCancelEvent>{
   'pressed': const CancelPressed(),
   'answered': CancelAnswered(1, CancelAnsweredOrder(_cancelled)),
-  'checked': CancelChecked(1, ReadGot(_cancelled)),
+  'checked': CancelChecked(1, Ok(_cancelled)),
   'retry': const CancelRetryPressed(),
 };
 
@@ -126,7 +128,7 @@ void main() {
     expect(next.effects, [CancelRead(_active.id, 1)]);
     final executed = transitionLimitCancel(
       next.state,
-      CancelChecked(1, ReadGot(_executed)),
+      CancelChecked(1, Ok(_executed)),
     ).state;
     expect(
       executed,

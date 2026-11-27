@@ -10,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../limit_order_fixtures.dart';
 import '../limit_order_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 Future<void> _settle() async {
   for (var i = 0; i < 4; i++) {
     await Future<void>.delayed(Duration.zero);
@@ -19,7 +21,7 @@ Future<void> _settle() async {
 /// The details use cases as fakes answering [reads] in turn and [cancel];
 /// every call is logged, with the session it got where it takes one.
 final class _Calls {
-  final List<ExchangeRead<LimitOrder>> reads;
+  final List<Result<LimitOrder, ExchangeReadFailure>> reads;
   final LimitCancelAnswer cancel;
   final log = <String>[];
   final sessions = <ExchangeSession>{};
@@ -46,8 +48,8 @@ final class _Calls {
 void main() {
   test('a failed cancel shows the order as read again (LIM-3)', () async {
     final calls = _Calls([
-      ReadGot(limitOrder()),
-      ReadGot(limitOrder(status: LimitOrderStatus.executed)),
+      Ok(limitOrder()),
+      Ok(limitOrder(status: LimitOrderStatus.executed)),
     ]);
     final bloc = calls.bloc();
     addTearDown(bloc.close);
@@ -71,7 +73,7 @@ void main() {
 
   test('a cancelled order closes as changed', () async {
     final calls = _Calls(
-      [ReadGot(limitOrder())],
+      [Ok(limitOrder())],
       cancel: CancelAnsweredOrder(
         limitOrder(status: LimitOrderStatus.cancelled),
       ),
@@ -90,7 +92,7 @@ void main() {
   });
 
   test('a missing order is not found, not a network failure', () async {
-    final bloc = _Calls([const ReadMissing()]).bloc();
+    final bloc = _Calls([const Err(ExchangeMissingFailure())]).bloc();
     addTearDown(bloc.close);
     await _settle();
     expect(
@@ -104,7 +106,7 @@ void main() {
   });
 
   test('without a session nothing runs', () async {
-    final calls = _Calls([ReadGot(limitOrder())]);
+    final calls = _Calls([Ok(limitOrder())]);
     final bloc = calls.bloc(session: null);
     addTearDown(bloc.close);
     await _settle();

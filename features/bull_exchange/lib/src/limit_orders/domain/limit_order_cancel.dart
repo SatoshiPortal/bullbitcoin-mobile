@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// Cancelling one limit order (LIM-3). Every state holds the order as last
 /// read, so the page never shows a status the exchange did not report. Any
@@ -210,7 +211,7 @@ final class CancelAnswered extends LimitCancelEvent {
 
 final class CancelChecked extends LimitCancelEvent {
   final int attempt;
-  final ExchangeRead<LimitOrder> read;
+  final Result<LimitOrder, ExchangeReadFailure> read;
 
   const CancelChecked(this.attempt, this.read);
 }
@@ -321,11 +322,15 @@ LimitCancelNext transitionLimitCancel(
   )
       when answered == attempt =>
     switch (read) {
-      ReadGot(value: final reread) => _settled(reread, attempt),
-      ReadSessionRejected() => StepNext(CancelSessionEnded(order, attempt)),
-      ReadMissing() || ReadUnreachable() || ReadMalformed() => StepNext(
-        CancelUnverified(order, attempt, ReadProblem.of(read)!),
+      Ok(value: final reread) => _settled(reread, attempt),
+      Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+        CancelSessionEnded(order, attempt),
       ),
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(
+        failure: ExchangeMalformedFailure(),
+      ) => StepNext(CancelUnverified(order, attempt, ReadProblem.of(read)!)),
     },
   (
     CancelChecking(),

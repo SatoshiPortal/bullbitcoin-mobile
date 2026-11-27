@@ -11,7 +11,7 @@ import 'package:secrets/testing.dart';
 import '../../../buy/buy_test_ports.dart';
 import '../../limit_order_fixtures.dart';
 
-Future<ExchangeRead<LimitOrderContext>> _load({
+Future<Result<LimitOrderContext, ExchangeReadFailure>> _load({
   Result<UserSummary, ExchangeFailure>? summary,
   Result<DefaultWallets, ExchangeFailure>? wallets,
   ExchangeSession signedIn = limitSession,
@@ -63,7 +63,7 @@ void main() {
       inventory: inventory,
       listed: listed,
     );
-    final context = (read as ReadGot<LimitOrderContext>).value;
+    final context = (read as Ok<LimitOrderContext, ExchangeReadFailure>).value;
     expect(
       [for (final w in context.appWallets) '${w.walletId} ${w.rail.name}'],
       ['w-a liquid', 'w-b bitcoin'],
@@ -77,7 +77,10 @@ void main() {
 
   test('a wallet list that cannot be read offers no app wallet', () async {
     final read = await _load();
-    expect((read as ReadGot<LimitOrderContext>).value.appWallets, isEmpty);
+    expect(
+      (read as Ok<LimitOrderContext, ExchangeReadFailure>).value.appWallets,
+      isEmpty,
+    );
   });
 
   test('the default wallets of another session are a session rejection, '
@@ -87,11 +90,19 @@ void main() {
         signedIn: limitOtherSession,
         summary: const Err(ExchangeNetworkFailure()),
       ),
-      isA<ReadSessionRejected<LimitOrderContext>>(),
+      isA<Err<LimitOrderContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
     );
     expect(
       await _load(summary: const Err(ExchangeNetworkFailure())),
-      isA<ReadUnreachable<LimitOrderContext>>(),
+      isA<Err<LimitOrderContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
     );
   });
 }

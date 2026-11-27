@@ -40,7 +40,7 @@ void main() {
       session: limitSession,
       getActiveOrders: FakeGetActiveLimitOrdersUsecase((_) async {
         log.add('list');
-        return ReadGot(orders(++reads));
+        return Ok(orders(++reads));
       }),
       cancelAllOrders: FakeCancelAllLimitOrdersUsecase((session) async {
         sessions.add(session);

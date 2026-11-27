@@ -8,7 +8,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../autobuy_fixtures.dart';
 
-Future<ExchangeRead<AutoBuyContext>> _load(
+Future<Result<AutoBuyContext, ExchangeReadFailure>> _load(
   Result<UserSummary, ExchangeFailure> summary, {
   List<ExchangeEnvironment?>? asked,
 }) {
@@ -31,7 +31,7 @@ void main() {
   test('opens with the session summary and the journal', () async {
     final asked = <ExchangeEnvironment?>[];
     final read = await _load(Ok(autoBuySummary(active: true)), asked: asked);
-    final context = (read as ReadGot<AutoBuyContext>).value;
+    final context = (read as Ok<AutoBuyContext, ExchangeReadFailure>).value;
     expect(context.summary.autoBuy.isActive, isTrue);
     expect(context.openEntries, isEmpty);
     expect(asked, [ExchangeEnvironment.mainnet]);
@@ -44,11 +44,19 @@ void main() {
           ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
         ),
       ),
-      isA<ReadSessionRejected<AutoBuyContext>>(),
+      isA<Err<AutoBuyContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
     );
     expect(
       await _load(const Err(ExchangeNetworkFailure())),
-      isA<ReadUnreachable<AutoBuyContext>>(),
+      isA<Err<AutoBuyContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
     );
   });
 }

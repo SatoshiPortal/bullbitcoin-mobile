@@ -1,6 +1,7 @@
 import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 UserSummary userSummary({
   List<UserBalance> balances = const [
@@ -73,7 +74,7 @@ ConfirmSend<LimitOrderRequest> limitCreateSend() {
     limitFlowStart(limitSession).state,
     LimitContextLoaded(
       1,
-      ReadGot(
+      Ok(
         LimitOrderContext(
           userSummary(),
           limitDefaultWallets(),
@@ -85,7 +86,7 @@ ConfirmSend<LimitOrderRequest> limitCreateSend() {
   );
   for (final event in <LimitFlowEvent>[
     const LimitContinuePressed(),
-    LimitTargetRateArrived(ExchangeCatalog.cad, 1, ReadGot(limitOrderRate())),
+    LimitTargetRateArrived(ExchangeCatalog.cad, 1, Ok(limitOrderRate())),
     const LimitPriceTyped(80000),
     const LimitContinuePressed(),
     const LimitDestinationChanged(
@@ -96,7 +97,7 @@ ConfirmSend<LimitOrderRequest> limitCreateSend() {
     const LimitContinuePressed(),
     const LimitAmountChanged(AmountTyped('200')),
     const LimitContinuePressed(),
-    LimitReviewRateArrived(1, ReadGot(limitOrderRate())),
+    LimitReviewRateArrived(1, Ok(limitOrderRate())),
     const LimitConfirmPressed(),
   ]) {
     next = transitionLimitFlow(next.state, event);

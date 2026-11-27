@@ -10,6 +10,8 @@ import 'package:material_ui/material_ui.dart';
 
 import '../autobuy_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 AutoBuyFlowState _apply(AutoBuyFlowState state, List<AutoBuyFlowEvent> events) {
   var next = state;
   for (final event in events) {
@@ -20,7 +22,7 @@ AutoBuyFlowState _apply(AutoBuyFlowState state, List<AutoBuyFlowEvent> events) {
 
 AutoBuyFlowState _review({bool active = false}) =>
     _apply(autoBuyFlowStart(autoBuySession).state, [
-      AutoBuyContextLoaded(1, ReadGot(autoBuyContext(active: active))),
+      AutoBuyContextLoaded(1, Ok(autoBuyContext(active: active))),
       const AutoBuyGetStartedPressed(),
       const AutoBuyWalletsContinued(autoBuyWallets),
     ]);
@@ -87,7 +89,10 @@ void main() {
     final verifying = _apply(_review(), const [
       AutoBuyActivatePressed(),
       AutoBuyConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
     ]);
     final labels = await _pump(tester, verifying, []);
@@ -99,7 +104,7 @@ void main() {
     final restricted = _apply(autoBuyFlowStart(autoBuySession).state, [
       AutoBuyContextLoaded(
         1,
-        ReadGot(
+        Ok(
           autoBuyContext(
             groups: const ['KYC_IDENTITY_VERIFIED', 'RESTRICTED_FULL'],
           ),

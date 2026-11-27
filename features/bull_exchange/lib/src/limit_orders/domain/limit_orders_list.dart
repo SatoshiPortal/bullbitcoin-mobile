@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The exchange keeps at most this many limit orders active per account.
 const maximumActiveLimitOrders = 5;
@@ -201,7 +202,7 @@ sealed class LimitOrdersListEvent {
 
 final class ListLoaded extends LimitOrdersListEvent {
   final int attempt;
-  final ExchangeRead<List<LimitOrder>> read;
+  final Result<List<LimitOrder>, ExchangeReadFailure> read;
 
   const ListLoaded(this.attempt, this.read);
 }
@@ -288,11 +289,13 @@ LimitOrdersListNext transitionLimitOrdersList(
   )
       when answered == attempt =>
     LimitOrdersListNext(switch (read) {
-      ReadGot(:final value) => ListShown(value, attempt),
-      ReadSessionRejected() => ListSignedOut(attempt),
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => ListFailed(attempt, ReadProblem.of(read)!),
+      Ok(:final value) => ListShown(value, attempt),
+      Err(failure: ExchangeSessionRejectedFailure()) => ListSignedOut(attempt),
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(
+        failure: ExchangeMalformedFailure(),
+      ) => ListFailed(attempt, ReadProblem.of(read)!),
     }),
   (
     ListLoading(),
@@ -334,13 +337,15 @@ LimitOrdersListNext transitionLimitOrdersList(
   )
       when answered == attempt =>
     LimitOrdersListNext(switch (read) {
-      ReadGot(:final value) => ListShown(
+      Ok(:final value) => ListShown(
         value,
         attempt,
         problem: value.isEmpty ? null : pending,
       ),
-      ReadSessionRejected() => ListSignedOut(attempt),
-      ReadMissing() || ReadUnreachable() || ReadMalformed() => ListShown(
+      Err(failure: ExchangeSessionRejectedFailure()) => ListSignedOut(attempt),
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(failure: ExchangeMalformedFailure()) => ListShown(
         orders,
         attempt,
         problem: ListRefreshFailed(ReadProblem.of(read)!),

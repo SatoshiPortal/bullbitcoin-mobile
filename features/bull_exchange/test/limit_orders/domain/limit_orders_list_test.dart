@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../limit_order_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 List<LimitOrder> _orders(int count) =>
     List.generate(count, (i) => limitOrder(id: 'lo-$i'));
 
@@ -22,12 +24,15 @@ LimitOrdersListState _apply(
 
 const _loading = ListLoading(1);
 final _failed = _apply(_loading, const [
-  ListLoaded(1, ReadUnreachable('down', isNetwork: true)),
+  ListLoaded(1, Err(ExchangeUnreachableFailure('down', isNetwork: true))),
 ]);
 final _signedOut = _apply(_loading, const [
-  ListLoaded(1, ReadSessionRejected(ExchangeSessionRejection.server)),
+  ListLoaded(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
+  ),
 ]);
-final _shown = _apply(_loading, [ListLoaded(1, ReadGot(_two))]);
+final _shown = _apply(_loading, [ListLoaded(1, Ok(_two))]);
 final _refreshing = _apply(_shown, const [ListRefreshRequested()]);
 final _cancelling = _apply(_shown, const [ListCancelAllPressed()]);
 
@@ -42,7 +47,7 @@ final _states = <String, LimitOrdersListState>{
 
 /// Answers of attempt 1: only the first load's are current.
 final _events = <String, LimitOrdersListEvent>{
-  'loaded': ListLoaded(1, ReadGot(_two)),
+  'loaded': ListLoaded(1, Ok(_two)),
   'refresh': const ListRefreshRequested(),
   'retry': const ListRetryPressed(),
   'cancelAll': const ListCancelAllPressed(),
@@ -115,7 +120,7 @@ void main() {
       identical(
         transitionLimitOrdersList(
           cancelling,
-          ListLoaded(refreshing.attempt, ReadGot(_two)),
+          ListLoaded(refreshing.attempt, Ok(_two)),
         ).state,
         cancelling,
       ),
@@ -143,7 +148,7 @@ void main() {
     ).state;
     final shown = transitionLimitOrdersList(
       refreshing,
-      ListLoaded(refreshing.attempt, ReadGot(_two)),
+      ListLoaded(refreshing.attempt, Ok(_two)),
     ).state;
     expect(
       shown,
@@ -180,7 +185,7 @@ void main() {
         refreshing,
         ListLoaded(
           refreshing.attempt,
-          const ReadUnreachable('down', isNetwork: true),
+          const Err(ExchangeUnreachableFailure('down', isNetwork: true)),
         ),
       ).state,
       isA<ListShown>()

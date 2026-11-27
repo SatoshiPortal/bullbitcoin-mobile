@@ -11,6 +11,8 @@ import '../../account/account_usecase_fakes.dart';
 import '../autobuy_fixtures.dart';
 import '../autobuy_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// The AutoBuy use cases as fakes; every call is logged with the session
 /// it got.
 final class _Calls {
@@ -28,14 +30,16 @@ final class _Calls {
         _called(session, 'write ${effect.target.enabled} ${effect.attempt}');
         return ConfirmAnswered(
           effect.attempt,
-          const GateAdmitted(WriteOutcomeUnknown('verify after write')),
+          const GateAdmitted(
+            Err(ExchangeWriteOutcomeUnknownFailure('verify after write')),
+          ),
         );
       });
 
   FakeGetUserSummaryUsecase get summary =>
       FakeGetUserSummaryUsecase((session) async {
         _called(session, 'summary');
-        return ReadGot(autoBuySummary(active: activeAfterWrite));
+        return Ok(autoBuySummary(active: activeAfterWrite));
       });
 
   AutoBuyFlowBloc flow({ExchangeSession? session = autoBuySession}) =>
@@ -44,7 +48,7 @@ final class _Calls {
         accessChanges: const Stream.empty(),
         loadContext: FakeLoadAutoBuyContextUsecase((session) async {
           _called(session, 'load');
-          return ReadGot(autoBuyContext());
+          return Ok(autoBuyContext());
         }),
         saveAutoBuy: save,
         getUserSummary: summary,

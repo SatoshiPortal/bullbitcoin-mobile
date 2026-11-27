@@ -8,7 +8,7 @@ final class LimitTestOrders extends Fake implements LimitOrdersRepository {
   Result<List<LimitOrder>, ExchangeFailure>? active;
   Result<List<LimitOrder>, ExchangeFailure>? recent;
   Result<LimitOrder, ExchangeFailure>? read;
-  ExchangeWrite<LimitOrder>? created;
+  Result<LimitOrder, ExchangeWriteFailure>? created;
   Result<LimitOrder, ExchangeFailure>? cancelled;
   Result<List<LimitOrder>, ExchangeFailure>? cancelledAll;
   Result<LimitOrderRate, ExchangeFailure>? rate;
@@ -59,13 +59,15 @@ final class LimitTestOrders extends Fake implements LimitOrdersRepository {
   }
 
   @override
-  Future<ExchangeWrite<LimitOrder>> create(
+  Future<Result<LimitOrder, ExchangeWriteFailure>> create(
     ExchangeSession session,
     LimitOrderDraft draft,
   ) async {
     sessions.add(session);
     if (_stale(session)) {
-      return const WriteNotSent(ExchangeNotSentReason.sessionChanged);
+      return const Err(
+        ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+      );
     }
     log.add(
       'create ${draft.fiatAmount} ${draft.currency.code} '

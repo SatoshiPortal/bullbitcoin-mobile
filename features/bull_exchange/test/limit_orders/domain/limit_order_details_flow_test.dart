@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../limit_order_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _active = limitOrder();
 final _cancelled = limitOrder(status: LimitOrderStatus.cancelled);
 
@@ -21,9 +23,9 @@ LimitDetailsState _apply(
 
 final _loading = limitDetailsStart(limitSession, _active.id).state;
 final _failed = _apply(_loading, const [
-  DetailsLoaded(1, ReadUnreachable('down', isNetwork: true)),
+  DetailsLoaded(1, Err(ExchangeUnreachableFailure('down', isNetwork: true))),
 ]);
-final _shown = _apply(_loading, [DetailsLoaded(1, ReadGot(_active))]);
+final _shown = _apply(_loading, [DetailsLoaded(1, Ok(_active))]);
 final _cancelling = _apply(_shown, const [
   DetailsCancelChanged(CancelPressed()),
 ]);
@@ -43,7 +45,7 @@ final _states = <String, LimitDetailsState>{
 };
 
 final _events = <String, LimitDetailsEvent>{
-  'loaded': DetailsLoaded(1, ReadGot(_active)),
+  'loaded': DetailsLoaded(1, Ok(_active)),
   'retry': const DetailsRetryPressed(),
   'cancel': const DetailsCancelChanged(CancelPressed()),
   'back': const DetailsBackPressed(),

@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The AutoBuy activation flow (composition §5, AutoBuy column): session →
 /// account load → intro (restriction gate) → KYC gate → exchange default
@@ -118,15 +119,18 @@ List<UnknownWrite> autoBuyEntries(List<UnknownWrite> entries) => [
 /// What a re-read of the account shows about [target].
 ConfirmCheck<bool> autoBuyCheck(
   AutoBuyTarget target,
-  ExchangeRead<UserSummary> read,
+  Result<UserSummary, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(:final value) when value.autoBuy.isActive == target.enabled =>
+  Ok(:final value) when value.autoBuy.isActive == target.enabled =>
     ConfirmSeenApplied(value.autoBuy.isActive),
-  ReadGot() => const ConfirmSeenNotApplied(),
-  ReadSessionRejected() => const ConfirmCheckSessionRejected(),
-  ReadMissing() ||
-  ReadUnreachable() ||
-  ReadMalformed() => ConfirmCheckFailed(ReadProblem.of(read)!),
+  Ok() => const ConfirmSeenNotApplied(),
+  Err(failure: ExchangeSessionRejectedFailure()) =>
+    const ConfirmCheckSessionRejected(),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => ConfirmCheckFailed(ReadProblem.of(read)!),
 };
 
 typedef AutoBuyConfirmState = ServerConfirmState<AutoBuyTarget, bool>;
@@ -256,7 +260,7 @@ sealed class AutoBuyFlowEvent {
 
 final class AutoBuyContextLoaded extends AutoBuyFlowEvent {
   final int attempt;
-  final ExchangeRead<AutoBuyContext> read;
+  final Result<AutoBuyContext, ExchangeReadFailure> read;
 
   const AutoBuyContextLoaded(this.attempt, this.read);
 }
@@ -284,7 +288,7 @@ final class AutoBuyKycReturned extends AutoBuyFlowEvent {
 
 /// The account read again after the KYC web view.
 final class AutoBuyKycReloaded extends AutoBuyFlowEvent {
-  final ExchangeRead<AutoBuyContext> read;
+  final Result<AutoBuyContext, ExchangeReadFailure> read;
 
   const AutoBuyKycReloaded(this.read);
 }
@@ -501,7 +505,7 @@ AutoBuyFlowNext _kyc(AutoBuyKyc state, AutoBuyFlowEvent event) {
       };
     case AutoBuyKycReloaded(:final read):
       return switch ((state.kyc, read)) {
-        (KycGateInKyc(), ReadGot(value: final context)) => _kycNext(
+        (KycGateInKyc(), Ok(value: final context)) => _kycNext(
           AutoBuyOpen(state.open.session, context),
           state.cleared,
           transitionKycGate(
@@ -509,11 +513,14 @@ AutoBuyFlowNext _kyc(AutoBuyKyc state, AutoBuyFlowEvent event) {
             KycGateReturned(context.summary.kycGroups),
           ).state,
         ),
-        (KycGateInKyc(), ReadSessionRejected()) => _ended,
+        (KycGateInKyc(), Err(failure: ExchangeSessionRejectedFailure())) =>
+          _ended,
         // The read failed: the account is checked again on the next return.
         (
           KycGateInKyc(:final market, :final amount),
-          ReadMissing() || ReadUnreachable() || ReadMalformed(),
+          Err(failure: ExchangeMissingFailure()) ||
+              Err(failure: ExchangeUnreachableFailure()) ||
+              Err(failure: ExchangeMalformedFailure()),
         ) =>
           AutoBuyFlowNext(
             AutoBuyKyc(
@@ -524,11 +531,11 @@ AutoBuyFlowNext _kyc(AutoBuyKyc state, AutoBuyFlowEvent event) {
           ),
         (
           KycGateRequired() || KycGatePassed() || KycGateLeft(),
-          ReadGot() ||
-              ReadSessionRejected() ||
-              ReadMissing() ||
-              ReadUnreachable() ||
-              ReadMalformed(),
+          Ok() ||
+              Err(failure: ExchangeSessionRejectedFailure()) ||
+              Err(failure: ExchangeMissingFailure()) ||
+              Err(failure: ExchangeUnreachableFailure()) ||
+              Err(failure: ExchangeMalformedFailure()),
         ) =>
           AutoBuyFlowNext.stay(state),
       };

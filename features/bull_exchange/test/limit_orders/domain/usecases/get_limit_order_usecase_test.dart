@@ -7,7 +7,7 @@ import 'package:primitives/primitives.dart';
 import '../../limit_order_fixtures.dart';
 import '../../limit_test_orders.dart';
 
-Future<ExchangeRead<LimitOrder>> _read(LimitTestOrders orders) =>
+Future<Result<LimitOrder, ExchangeReadFailure>> _read(LimitTestOrders orders) =>
     GetLimitOrderUsecase(exchangeForTesting(limitOrders: orders))
         .execute(limitSession, 'lo-1');
 
@@ -15,7 +15,7 @@ void main() {
   test('reads the order by id', () async {
     final orders = LimitTestOrders()..read = Ok(limitOrder());
     final read = await _read(orders);
-    expect((read as ReadGot<LimitOrder>).value.id, 'lo-1');
+    expect((read as Ok<LimitOrder, ExchangeReadFailure>).value.id, 'lo-1');
     expect(orders.log, ['get lo-1']);
   });
 
@@ -31,13 +31,21 @@ void main() {
             ),
           ),
       ),
-      isA<ReadMissing<LimitOrder>>(),
+      isA<Err<LimitOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeMissingFailure>(),
+      ),
     );
     expect(
       await _read(
         LimitTestOrders()..read = const Err(ExchangeNetworkFailure()),
       ),
-      isA<ReadUnreachable<LimitOrder>>(),
+      isA<Err<LimitOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
     );
   });
 }

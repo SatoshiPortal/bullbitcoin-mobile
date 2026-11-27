@@ -18,15 +18,17 @@ Exchange _exchange(LimitTestOrders orders, ExchangeSession signedIn) =>
 
 void main() {
   test('a done create answers the order the exchange made', () async {
-    final orders = LimitTestOrders()..created = WriteDone(limitOrder());
+    final orders = LimitTestOrders()..created = Ok(limitOrder());
     final send = limitCreateSend();
     final answer = await CreateLimitOrderUsecase(
       _exchange(orders, limitSession),
     ).execute(limitSession, send);
     expect(answer.attempt, send.attempt);
     final result =
-        (answer.answer as GateAdmitted<ExchangeWrite<LimitOrder>>).result;
-    expect((result as WriteDone<LimitOrder>).value.id, 'lo-1');
+        (answer.answer
+                as GateAdmitted<Result<LimitOrder, ExchangeWriteFailure>>)
+            .result;
+    expect((result as Ok<LimitOrder, ExchangeWriteFailure>).value.id, 'lo-1');
     expect(orders.log, ['create 200.0 CAD 80000.0 bc1qdefault']);
   });
 
@@ -38,10 +40,10 @@ void main() {
     expect(
       answer.answer,
       isNot(
-        isA<GateAdmitted<ExchangeWrite<LimitOrder>>>().having(
+        isA<GateAdmitted<Result<LimitOrder, ExchangeWriteFailure>>>().having(
           (a) => a.result,
           'result',
-          isA<WriteDone<LimitOrder>>(),
+          isA<Ok<LimitOrder, ExchangeWriteFailure>>(),
         ),
       ),
     );
@@ -50,13 +52,18 @@ void main() {
 
   test('an unknown outcome is kept, never read as created', () async {
     final orders = LimitTestOrders()
-      ..created = const WriteOutcomeUnknown('lost');
+      ..created = const Err(ExchangeWriteOutcomeUnknownFailure('lost'));
     final answer = await CreateLimitOrderUsecase(
       _exchange(orders, limitSession),
     ).execute(limitSession, limitCreateSend());
     expect(
-      (answer.answer as GateAdmitted<ExchangeWrite<LimitOrder>>).result,
-      isA<WriteOutcomeUnknown<LimitOrder>>(),
+      (answer.answer as GateAdmitted<Result<LimitOrder, ExchangeWriteFailure>>)
+          .result,
+      isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
     );
   });
 }

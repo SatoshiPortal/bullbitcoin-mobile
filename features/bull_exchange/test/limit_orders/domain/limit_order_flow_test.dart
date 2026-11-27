@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../limit_order_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _summary = userSummary(
   balances: const [
     UserBalance(amount: 500, currencyCode: 'CAD'),
@@ -39,7 +41,7 @@ final _loading = limitFlowStart(limitSession).state;
 final _noBalance = _apply(_loading, [
   LimitContextLoaded(
     1,
-    ReadGot(
+    Ok(
       _context(
         summary: userSummary(
           balances: const [UserBalance(amount: 0, currencyCode: 'CAD')],
@@ -48,10 +50,10 @@ final _noBalance = _apply(_loading, [
     ),
   ),
 ]).state;
-final _intro = _apply(_loading, [LimitContextLoaded(1, ReadGot(_ctx))]).state;
+final _intro = _apply(_loading, [LimitContextLoaded(1, Ok(_ctx))]).state;
 final _target = _apply(_intro, [
   const LimitContinuePressed(),
-  LimitTargetRateArrived(ExchangeCatalog.cad, 1, ReadGot(_rate)),
+  LimitTargetRateArrived(ExchangeCatalog.cad, 1, Ok(_rate)),
 ]).state;
 final _destination = _apply(_target, const [LimitContinuePressed()]).state;
 final _amount = _apply(_destination, const [
@@ -62,14 +64,10 @@ final _review = _apply(_amount, const [
   LimitAmountChanged(AmountTyped('200')),
   LimitContinuePressed(),
 ]).state;
-final _live = _apply(_review, [
-  LimitReviewRateArrived(1, ReadGot(_rate)),
-]).state;
+final _live = _apply(_review, [LimitReviewRateArrived(1, Ok(_rate))]).state;
 final _creating = _apply(_live, const [LimitConfirmPressed()]).state;
 final _doneState = _apply(_creating, [
-  LimitConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(WriteDone(limitOrder()))),
-  ),
+  LimitConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(limitOrder())))),
 ]).state;
 const _sessionEnded = LimitSessionEnded();
 const _closedState = LimitClosed();
@@ -89,7 +87,7 @@ final _states = <String, LimitFlowState>{
 };
 
 final _events = <String, LimitFlowEvent>{
-  'contextLoaded': LimitContextLoaded(1, ReadGot(_ctx)),
+  'contextLoaded': LimitContextLoaded(1, Ok(_ctx)),
   'retry': const LimitRetryPressed(),
   'continue': const LimitContinuePressed(),
   'back': const LimitBackPressed(),
@@ -99,15 +97,15 @@ final _events = <String, LimitFlowEvent>{
   'currency': const LimitCurrencyChosen(ExchangeCatalog.eur),
   'price': const LimitPriceTyped(80000),
   'discount': const LimitDiscountChanged(5),
-  'targetRate': LimitTargetRateArrived(ExchangeCatalog.cad, 1, ReadGot(_rate)),
+  'targetRate': LimitTargetRateArrived(ExchangeCatalog.cad, 1, Ok(_rate)),
   'destination': const LimitDestinationChanged(PickChose(_btcOption)),
   'amount': const LimitAmountChanged(AmountTyped('5')),
   'kycReturned': const LimitKycReturned(),
-  'detourLoaded': LimitDetourLoaded(ReadGot(_ctx)),
-  'reviewRate': LimitReviewRateArrived(1, ReadGot(_rate)),
+  'detourLoaded': LimitDetourLoaded(Ok(_ctx)),
+  'reviewRate': LimitReviewRateArrived(1, Ok(_rate)),
   'confirmPressed': const LimitConfirmPressed(),
   'confirm': LimitConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(WriteDone(limitOrder()))),
+    ConfirmAnswered(1, GateAdmitted(Ok(limitOrder()))),
   ),
 };
 
@@ -229,7 +227,10 @@ void main() {
     test('a failed load has a Retry that loads again', () {
       final failed = transitionLimitFlow(
         _loading,
-        const LimitContextLoaded(1, ReadUnreachable('down', isNetwork: true)),
+        const LimitContextLoaded(
+          1,
+          Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+        ),
       );
       expect(
         (failed.state as LimitLoading).load,
@@ -251,7 +252,9 @@ void main() {
           _loading,
           const LimitContextLoaded(
             1,
-            ReadSessionRejected(ExchangeSessionRejection.server),
+            Err(
+              ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+            ),
           ),
         ).state,
         isA<LimitSessionEnded>(),
@@ -286,7 +289,7 @@ void main() {
         const LimitTargetRateArrived(
           ExchangeCatalog.eur,
           2,
-          ReadUnreachable('down', isNetwork: true),
+          Err(ExchangeUnreachableFailure('down', isNetwork: true)),
         ),
       ).state;
       final step = (failed as LimitTarget).step as TargetReady;
@@ -301,8 +304,8 @@ void main() {
         const LimitCurrencyChosen(ExchangeCatalog.eur),
       ).state;
       for (final stale in [
-        LimitTargetRateArrived(ExchangeCatalog.eur, 1, ReadGot(_rate)),
-        LimitTargetRateArrived(ExchangeCatalog.cad, 2, ReadGot(_rate)),
+        LimitTargetRateArrived(ExchangeCatalog.eur, 1, Ok(_rate)),
+        LimitTargetRateArrived(ExchangeCatalog.cad, 2, Ok(_rate)),
       ]) {
         expect(
           identical(transitionLimitFlow(switching, stale).state, switching),
@@ -314,7 +317,11 @@ void main() {
     test('a first read that fails has a Retry; Continue waits', () {
       final failed = _apply(_intro, const [
         LimitContinuePressed(),
-        LimitTargetRateArrived(ExchangeCatalog.cad, 1, ReadMalformed('bad')),
+        LimitTargetRateArrived(
+          ExchangeCatalog.cad,
+          1,
+          Err(ExchangeMalformedFailure('bad')),
+        ),
       ]);
       expect((failed.state as LimitTarget).step, isA<TargetFailed>());
       expect(
@@ -500,7 +507,7 @@ void main() {
       expect(returned.effects, [const LimitReloadForDetour()]);
       final reloaded = transitionLimitFlow(
         detour,
-        LimitDetourLoaded(ReadGot(_ctx)),
+        LimitDetourLoaded(Ok(_ctx)),
       ).state;
       expect((reloaded as LimitAmount).amount, isA<AmountEditing>());
     });
@@ -520,7 +527,7 @@ void main() {
     test('a target at or above the new index price offers no Confirm', () {
       final above = transitionLimitFlow(
         _review,
-        LimitReviewRateArrived(1, ReadGot(limitOrderRate(indexPrice: 90000))),
+        LimitReviewRateArrived(1, Ok(limitOrderRate(indexPrice: 90000))),
       ).state;
       expect((above as LimitReview).check, isA<ReviewTargetAbove>());
       expect(
@@ -535,7 +542,10 @@ void main() {
     test('a failed read has a Retry with a new attempt', () {
       final failed = transitionLimitFlow(
         _review,
-        const LimitReviewRateArrived(1, ReadUnreachable('x', isNetwork: true)),
+        const LimitReviewRateArrived(
+          1,
+          Err(ExchangeUnreachableFailure('x', isNetwork: true)),
+        ),
       ).state;
       expect(transitionLimitFlow(failed, const LimitRetryPressed()).effects, [
         const LimitFetchReviewRate(ExchangeCatalog.cad, 2),
@@ -589,7 +599,10 @@ void main() {
       final unknown = transitionLimitFlow(
         _creating,
         const LimitConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+          ConfirmAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+          ),
         ),
       );
       expect(
@@ -627,7 +640,7 @@ void main() {
         address: limitBitcoinAddress,
       );
       expect(
-        limitOrderCreateCheck(request, ReadGot([limitOrder(), order])),
+        limitOrderCreateCheck(request, Ok([limitOrder(), order])),
         isA<ConfirmSeenApplied<LimitOrder>>().having(
           (c) => c.confirmed,
           'order',
@@ -635,7 +648,7 @@ void main() {
         ),
       );
       expect(
-        limitOrderCreateCheck(request, ReadGot([limitOrder()])),
+        limitOrderCreateCheck(request, Ok([limitOrder()])),
         isA<ConfirmSeenNotApplied<LimitOrder>>(),
       );
     });
@@ -647,7 +660,11 @@ void main() {
           ConfirmAnswered(
             1,
             GateAdmitted(
-              WriteRefused(ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429')),
+              Err(
+                ExchangeWriteRefusedFailure(
+                  ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
+                ),
+              ),
             ),
           ),
         ),

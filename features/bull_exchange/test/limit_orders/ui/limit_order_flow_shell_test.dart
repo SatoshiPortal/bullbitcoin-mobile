@@ -11,6 +11,8 @@ import 'package:material_ui/material_ui.dart';
 
 import '../limit_order_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 LimitFlowState _apply(LimitFlowState state, List<LimitFlowEvent> events) {
   var next = state;
   for (final event in events) {
@@ -27,7 +29,7 @@ const _btcOption = DestinationOptionDefaultWallet(
 final _intro = _apply(limitFlowStart(limitSession).state, [
   LimitContextLoaded(
     1,
-    ReadGot(
+    Ok(
       LimitOrderContext(
         userSummary(),
         limitDefaultWallets(),
@@ -39,7 +41,7 @@ final _intro = _apply(limitFlowStart(limitSession).state, [
 ]);
 final _destination = _apply(_intro, [
   const LimitContinuePressed(),
-  LimitTargetRateArrived(ExchangeCatalog.cad, 1, ReadGot(limitOrderRate())),
+  LimitTargetRateArrived(ExchangeCatalog.cad, 1, Ok(limitOrderRate())),
   const LimitContinuePressed(),
 ]);
 final _review = _apply(_destination, const [
@@ -49,7 +51,7 @@ final _review = _apply(_destination, const [
   LimitContinuePressed(),
 ]);
 final _live = _apply(_review, [
-  LimitReviewRateArrived(1, ReadGot(limitOrderRate())),
+  LimitReviewRateArrived(1, Ok(limitOrderRate())),
 ]);
 
 Widget _payoutField({
@@ -132,7 +134,7 @@ void main() {
 
   testWidgets('a target above the index price says so', (tester) async {
     final above = _apply(_review, [
-      LimitReviewRateArrived(1, ReadGot(limitOrderRate(indexPrice: 90000))),
+      LimitReviewRateArrived(1, Ok(limitOrderRate(indexPrice: 90000))),
     ]);
     final labels = await _pump(tester, above, []);
     expect(find.text(labels.limitOrderInvalidTargetError), findsOneWidget);
@@ -145,7 +147,10 @@ void main() {
     final verifying = _apply(_live, const [
       LimitConfirmPressed(),
       LimitConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
     ]);
     final labels = await _pump(tester, verifying, []);
@@ -160,7 +165,11 @@ void main() {
         ConfirmAnswered(
           1,
           GateAdmitted(
-            WriteRefused(ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429')),
+            Err(
+              ExchangeWriteRefusedFailure(
+                ExchangeRefusal(apiCode: 'ERR_ORDTRG_LOMAX429'),
+              ),
+            ),
           ),
         ),
       ),
@@ -173,9 +182,7 @@ void main() {
     final events = <LimitFlowEvent>[];
     final done = _apply(_live, [
       const LimitConfirmPressed(),
-      LimitConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteDone(limitOrder()))),
-      ),
+      LimitConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(limitOrder())))),
     ]);
     final labels = await _pump(tester, done, events);
     await tester.tap(_button(labels.limitOrdersViewOrder));

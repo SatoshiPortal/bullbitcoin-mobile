@@ -14,7 +14,10 @@ void main() {
     final read = await GetLimitOrderRateUsecase(
       exchangeForTesting(limitOrders: orders),
     ).execute(limitSession, ExchangeCatalog.eur);
-    expect((read as ReadGot<LimitOrderRate>).value.indexPrice, 90000);
+    expect(
+      (read as Ok<LimitOrderRate, ExchangeReadFailure>).value.indexPrice,
+      90000,
+    );
     expect(orders.log, ['rate EUR']);
   });
 
@@ -25,6 +28,13 @@ void main() {
           ..rate = const Err(ExchangeNetworkFailure()),
       ),
     ).execute(limitSession, ExchangeCatalog.cad);
-    expect(read, isA<ReadUnreachable<LimitOrderRate>>());
+    expect(
+      read,
+      isA<Err<LimitOrderRate, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

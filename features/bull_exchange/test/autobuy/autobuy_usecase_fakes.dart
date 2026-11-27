@@ -3,16 +3,20 @@ import 'package:bull_exchange/src/autobuy/domain/usecases/load_autobuy_context_u
 import 'package:bull_exchange/src/autobuy/domain/usecases/save_autobuy_preference_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 final class FakeLoadAutoBuyContextUsecase implements LoadAutoBuyContextUsecase {
-  final Future<ExchangeRead<AutoBuyContext>> Function(ExchangeSession session)
+  final Future<Result<AutoBuyContext, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeLoadAutoBuyContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<AutoBuyContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<AutoBuyContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeSaveAutoBuyPreferenceUsecase

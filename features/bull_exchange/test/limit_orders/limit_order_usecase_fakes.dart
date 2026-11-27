@@ -17,7 +17,7 @@ import 'package:primitives/primitives.dart';
 
 final class FakeLoadLimitOrderContextUsecase
     implements LoadLimitOrderContextUsecase {
-  final Future<ExchangeRead<LimitOrderContext>> Function(
+  final Future<Result<LimitOrderContext, ExchangeReadFailure>> Function(
     ExchangeSession session,
   )
   answer;
@@ -25,12 +25,13 @@ final class FakeLoadLimitOrderContextUsecase
   FakeLoadLimitOrderContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<LimitOrderContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<LimitOrderContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeGetLimitOrderRateUsecase implements GetLimitOrderRateUsecase {
-  final Future<ExchangeRead<LimitOrderRate>> Function(
+  final Future<Result<LimitOrderRate, ExchangeReadFailure>> Function(
     ExchangeSession session,
     Market market,
   )
@@ -39,7 +40,7 @@ final class FakeGetLimitOrderRateUsecase implements GetLimitOrderRateUsecase {
   FakeGetLimitOrderRateUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<LimitOrderRate>> execute(
+  Future<Result<LimitOrderRate, ExchangeReadFailure>> execute(
     ExchangeSession session,
     Market market,
   ) => answer(session, market);
@@ -88,18 +89,21 @@ final class FakeCreateLimitOrderUsecase implements CreateLimitOrderUsecase {
 
 final class FakeGetRecentLimitOrdersUsecase
     implements GetRecentLimitOrdersUsecase {
-  final Future<ExchangeRead<List<LimitOrder>>> Function(ExchangeSession session)
+  final Future<Result<List<LimitOrder>, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeGetRecentLimitOrdersUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<List<LimitOrder>>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<List<LimitOrder>, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeGetLimitOrderUsecase implements GetLimitOrderUsecase {
-  final Future<ExchangeRead<LimitOrder>> Function(
+  final Future<Result<LimitOrder, ExchangeReadFailure>> Function(
     ExchangeSession session,
     String orderId,
   )
@@ -108,7 +112,7 @@ final class FakeGetLimitOrderUsecase implements GetLimitOrderUsecase {
   FakeGetLimitOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<LimitOrder>> execute(
+  Future<Result<LimitOrder, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) => answer(session, orderId);
@@ -130,7 +134,7 @@ final class FakeCancelLimitOrderUsecase implements CancelLimitOrderUsecase {
 
 final class FakeGetActiveLimitOrdersUsecase
     implements GetActiveLimitOrdersUsecase {
-  final Future<ExchangeRead<List<LimitOrder>>> Function(
+  final Future<Result<List<LimitOrder>, ExchangeReadFailure>> Function(
     ExchangeSession? session,
   )
   answer;
@@ -138,8 +142,9 @@ final class FakeGetActiveLimitOrdersUsecase
   FakeGetActiveLimitOrdersUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<List<LimitOrder>>> execute(ExchangeSession? session) =>
-      answer(session);
+  Future<Result<List<LimitOrder>, ExchangeReadFailure>> execute(
+    ExchangeSession? session,
+  ) => answer(session);
 }
 
 final class FakeCancelAllLimitOrdersUsecase

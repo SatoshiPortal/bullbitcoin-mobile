@@ -3,23 +3,23 @@ import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 
 /// Reads one limit order of the exchange's current session; an order the
-/// exchange does not know is [ReadMissing], not a failure.
+/// exchange does not know is [ExchangeMissingFailure], not a failure.
 class GetLimitOrderUsecase {
   final Exchange _exchange;
 
   const GetLimitOrderUsecase(this._exchange);
 
-  Future<ExchangeRead<LimitOrder>> execute(
+  Future<Result<LimitOrder, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) async => switch (await _exchange.limitOrders.get(session, orderId)) {
-    Ok(:final value) => ReadGot(value),
+    Ok(:final value) => Ok(value),
     Err(
       failure: ExchangeLimitOrderFailure(
         problem: ExchangeLimitOrderProblem.notFound,
       ),
     ) =>
-      const ReadMissing(),
+      const Err(ExchangeMissingFailure()),
     Err(:final failure) => readOfExchangeFailure(failure),
   };
 }

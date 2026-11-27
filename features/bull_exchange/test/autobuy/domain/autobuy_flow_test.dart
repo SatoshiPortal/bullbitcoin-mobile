@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../autobuy_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 AutoBuyFlowState _apply(AutoBuyFlowState state, List<AutoBuyFlowEvent> events) {
   var next = state;
   for (final event in events) {
@@ -15,9 +17,9 @@ AutoBuyFlowState _apply(AutoBuyFlowState state, List<AutoBuyFlowEvent> events) {
 
 final _ctx = autoBuyContext();
 final _loading = autoBuyFlowStart(autoBuySession).state;
-final _intro = _apply(_loading, [AutoBuyContextLoaded(1, ReadGot(_ctx))]);
+final _intro = _apply(_loading, [AutoBuyContextLoaded(1, Ok(_ctx))]);
 final _kyc = _apply(_loading, [
-  AutoBuyContextLoaded(1, ReadGot(autoBuyContext(groups: const []))),
+  AutoBuyContextLoaded(1, Ok(autoBuyContext(groups: const []))),
   const AutoBuyGetStartedPressed(),
 ]);
 final _wallets = _apply(_intro, const [AutoBuyGetStartedPressed()]);
@@ -26,7 +28,7 @@ final _review = _apply(_wallets, const [
 ]);
 final _activating = _apply(_review, const [AutoBuyActivatePressed()]);
 final _done = _apply(_activating, const [
-  AutoBuyConfirmChanged(ConfirmAnswered(1, GateAdmitted(WriteDone(true)))),
+  AutoBuyConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(true)))),
 ]);
 const _ended = AutoBuySessionEnded();
 const _closed = AutoBuyClosed();
@@ -44,17 +46,17 @@ final _states = <String, AutoBuyFlowState>{
 };
 
 final _events = <String, AutoBuyFlowEvent>{
-  'loaded': AutoBuyContextLoaded(1, ReadGot(_ctx)),
+  'loaded': AutoBuyContextLoaded(1, Ok(_ctx)),
   'retry': const AutoBuyRetryPressed(),
   'back': const AutoBuyBackPressed(),
   'donePressed': const AutoBuyDonePressed(),
   'getStarted': const AutoBuyGetStartedPressed(),
   'kycReturned': const AutoBuyKycReturned(),
-  'kycReloaded': AutoBuyKycReloaded(ReadGot(_ctx)),
+  'kycReloaded': AutoBuyKycReloaded(Ok(_ctx)),
   'walletsContinued': const AutoBuyWalletsContinued(autoBuyWallets),
   'activate': const AutoBuyActivatePressed(),
   'confirm': const AutoBuyConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(WriteDone(true))),
+    ConfirmAnswered(1, GateAdmitted(Ok(true))),
   ),
   'session': const AutoBuySessionChanged(autoBuyOtherSession),
 };
@@ -137,7 +139,10 @@ void main() {
   test('a load failure is its own state with a Retry (AB-1)', () {
     final failed = transitionAutoBuyFlow(
       _loading,
-      const AutoBuyContextLoaded(1, ReadUnreachable('x', isNetwork: true)),
+      const AutoBuyContextLoaded(
+        1,
+        Err(ExchangeUnreachableFailure('x', isNetwork: true)),
+      ),
     ).state;
     expect(
       (failed as AutoBuyLoading).load,
@@ -152,7 +157,7 @@ void main() {
     final restricted = _apply(_loading, [
       AutoBuyContextLoaded(
         1,
-        ReadGot(
+        Ok(
           autoBuyContext(
             groups: const ['KYC_IDENTITY_VERIFIED', 'RESTRICTED_FULL'],
           ),
@@ -176,16 +181,13 @@ void main() {
     final returned = transitionAutoBuyFlow(_kyc, const AutoBuyKycReturned());
     expect(returned.effects, [const AutoBuyReloadForKyc()]);
     expect(
-      transitionAutoBuyFlow(
-        returned.state,
-        AutoBuyKycReloaded(ReadGot(_ctx)),
-      ).state,
+      transitionAutoBuyFlow(returned.state, AutoBuyKycReloaded(Ok(_ctx))).state,
       isA<AutoBuyWallets>(),
     );
     expect(
       transitionAutoBuyFlow(
         returned.state,
-        AutoBuyKycReloaded(ReadGot(autoBuyContext(groups: const []))),
+        AutoBuyKycReloaded(Ok(autoBuyContext(groups: const []))),
       ).state,
       isA<AutoBuyKyc>(),
     );
@@ -208,7 +210,7 @@ void main() {
     'an active account sees it is active, with Done and no Activate (AB-2)',
     () {
       final active = _apply(_loading, [
-        AutoBuyContextLoaded(1, ReadGot(autoBuyContext(active: true))),
+        AutoBuyContextLoaded(1, Ok(autoBuyContext(active: true))),
         const AutoBuyGetStartedPressed(),
         const AutoBuyWalletsContinued(autoBuyWallets),
       ]);
@@ -235,7 +237,10 @@ void main() {
     final unknown = transitionAutoBuyFlow(
       next.state,
       const AutoBuyConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
     );
     expect(unknown.effects, [
@@ -271,7 +276,7 @@ void main() {
       );
       expect(autoBuyEntries([entry, other]), [entry]);
       final review = _apply(_loading, [
-        AutoBuyContextLoaded(1, ReadGot(autoBuyContext(entries: [entry]))),
+        AutoBuyContextLoaded(1, Ok(autoBuyContext(entries: [entry]))),
         const AutoBuyGetStartedPressed(),
         const AutoBuyWalletsContinued(autoBuyWallets),
       ]);
@@ -289,17 +294,19 @@ void main() {
   test('the verify-after-write check reads the account', () {
     const on = AutoBuyTarget(enabled: true);
     expect(
-      autoBuyCheck(on, ReadGot(autoBuySummary(active: true))),
+      autoBuyCheck(on, Ok(autoBuySummary(active: true))),
       isA<ConfirmSeenApplied<bool>>(),
     );
     expect(
-      autoBuyCheck(on, ReadGot(autoBuySummary())),
+      autoBuyCheck(on, Ok(autoBuySummary())),
       isA<ConfirmSeenNotApplied<bool>>(),
     );
     expect(
       autoBuyCheck(
         on,
-        const ReadSessionRejected(ExchangeSessionRejection.server),
+        const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
       ),
       isA<ConfirmCheckSessionRejected<bool>>(),
     );

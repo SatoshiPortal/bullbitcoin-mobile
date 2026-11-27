@@ -36,7 +36,10 @@ void main() {
               const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
         ),
       ).execute(limitSession);
-      expect((read as ReadGot<List<LimitOrder>>).value.single.id, 'lo-7');
+      expect(
+        (read as Ok<List<LimitOrder>, ExchangeReadFailure>).value.single.id,
+        'lo-7',
+      );
       // The reconcile's re-read of the recent orders, then the list read.
       expect(orders.log, ['recent', 'recent']);
       expect(orders.sessions, [limitSession, limitSession]);
@@ -52,6 +55,13 @@ void main() {
           ),
       ),
     ).execute(limitSession);
-    expect(read, isA<ReadSessionRejected<List<LimitOrder>>>());
+    expect(
+      read,
+      isA<Err<List<LimitOrder>, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 }

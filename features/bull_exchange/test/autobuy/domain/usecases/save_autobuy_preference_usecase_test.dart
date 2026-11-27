@@ -12,7 +12,7 @@ import '../../autobuy_fixtures.dart';
 ConfirmSend<AutoBuyTarget> _send() {
   var next = transitionAutoBuyFlow(
     autoBuyFlowStart(autoBuySession).state,
-    AutoBuyContextLoaded(1, ReadGot(autoBuyContext())),
+    AutoBuyContextLoaded(1, Ok(autoBuyContext())),
   );
   for (final event in const <AutoBuyFlowEvent>[
     AutoBuyGetStartedPressed(),
@@ -57,8 +57,13 @@ void main() {
     final answer = await _save(const Ok(null), written: written);
     expect(answer.attempt, 1);
     expect(
-      (answer.answer as GateAdmitted<ExchangeWrite<bool>>).result,
-      isA<WriteOutcomeUnknown<bool>>(),
+      (answer.answer as GateAdmitted<Result<bool, ExchangeWriteFailure>>)
+          .result,
+      isA<Err<bool, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
     );
     expect(written, ['mainnet autoBuy=true']);
   });
@@ -66,8 +71,9 @@ void main() {
   test('a refused save stays refused', () async {
     final answer = await _save(const Err(ExchangePreferencesSaveFailure()));
     expect(
-      (answer.answer as GateAdmitted<ExchangeWrite<bool>>).result,
-      isNot(isA<WriteDone<bool>>()),
+      (answer.answer as GateAdmitted<Result<bool, ExchangeWriteFailure>>)
+          .result,
+      isNot(isA<Ok<bool, ExchangeWriteFailure>>()),
     );
   });
 }
