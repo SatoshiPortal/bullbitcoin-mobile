@@ -180,13 +180,18 @@ void main() {
 }
 
 Color? _serviceColor(WidgetTester tester) => tester
-    .widget<BullSettingsEntryItem>(
-      find.ancestor(
-        of: find.text('Services'),
-        matching: find.byType(BullSettingsEntryItem),
-      ),
+    .widget<Icon>(
+      find
+          .descendant(
+            of: find.ancestor(
+              of: find.text('Services'),
+              matching: find.byType(BullSettingsEntryItem),
+            ),
+            matching: find.byType(Icon),
+          )
+          .first,
     )
-    .iconColor;
+    .color;
 
 Future<void> _mount(
   WidgetTester tester, {

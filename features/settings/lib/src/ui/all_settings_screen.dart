@@ -27,12 +27,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
   late final _serviceHealth = widget.watchServiceHealth();
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<SettingsServiceHealth>(
-    stream: _serviceHealth,
-    builder: (context, snapshot) => _build(context, snapshot.data),
-  );
-
-  Widget _build(BuildContext context, SettingsServiceHealth? serviceHealth) {
+  Widget build(BuildContext context) {
     final menu = widget.menuOf(context);
     final labels = widget.labelsOf(context);
     final appVersion = menu.appVersion;
@@ -57,20 +52,15 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ))
                   BullSettingsEntryItem(
                     icon: item.icon,
-                    leading: item.homeIcon,
+                    leading: item.indicatesServiceHealth
+                        ? _ServiceHealthIcon(
+                            icon: item.icon,
+                            health: _serviceHealth,
+                          )
+                        : item.homeIcon,
                     title: item.title,
                     isSuperUser: item.isSuperuser,
                     onTap: () => item.open(context),
-                    iconColor: item.indicatesServiceHealth
-                        ? switch (serviceHealth) {
-                            null || SettingsServiceHealth.checking =>
-                              context.bull.textMuted,
-                            SettingsServiceHealth.healthy =>
-                              context.bull.success,
-                            SettingsServiceHealth.unhealthy =>
-                              context.bull.error,
-                          }
-                        : null,
                   ),
               ],
             ),
@@ -106,4 +96,27 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       ),
     );
   }
+}
+
+/// Colours the service-status glyph from its own subscription, so a health
+/// update repaints this icon alone instead of rebuilding the whole menu
+/// (registry + every entry) on the frame that carries the update.
+class _ServiceHealthIcon extends StatelessWidget {
+  final IconData icon;
+  final Stream<SettingsServiceHealth> health;
+
+  const _ServiceHealthIcon({required this.icon, required this.health});
+
+  @override
+  Widget build(BuildContext context) => StreamBuilder<SettingsServiceHealth>(
+    stream: health,
+    builder: (context, snapshot) => Icon(
+      icon,
+      color: switch (snapshot.data) {
+        null || SettingsServiceHealth.checking => context.bull.textMuted,
+        SettingsServiceHealth.healthy => context.bull.success,
+        SettingsServiceHealth.unhealthy => context.bull.error,
+      },
+    ),
+  );
 }
