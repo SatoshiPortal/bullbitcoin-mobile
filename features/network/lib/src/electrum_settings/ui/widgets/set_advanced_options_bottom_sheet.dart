@@ -184,7 +184,6 @@ class _SetAdvancedOptionsBottomSheetState
                               child: Text(
                                 context.loc.electrumStopGap,
                                 style: context.bullType.body.copyWith(
-                                  fontWeight: FontWeight.w500,
                                   color: context.bull.textMuted,
                                 ),
                               ),
@@ -288,7 +287,6 @@ class _SetAdvancedOptionsBottomSheetState
                               child: Text(
                                 context.loc.electrumTimeout,
                                 style: context.bullType.body.copyWith(
-                                  fontWeight: FontWeight.w500,
                                   color: context.bull.textMuted,
                                 ),
                               ),
@@ -405,7 +403,6 @@ class _SetAdvancedOptionsBottomSheetState
                               child: Text(
                                 context.loc.electrumRetryCount,
                                 style: context.bullType.body.copyWith(
-                                  fontWeight: FontWeight.w500,
                                   color: context.bull.textMuted,
                                 ),
                               ),
