@@ -24,7 +24,7 @@ class BuildPayinUsecase {
 
   const BuildPayinUsecase(this._spend);
 
-  Future<PayinBuildResult<PayinSpend>> execute(
+  Future<Result<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>> execute(
     PayinBuild<PayinSpend> effect,
   ) async {
     final amountSat = (effect.order.payinAmount * 100000000).round();
@@ -36,13 +36,14 @@ class BuildPayinUsecase {
       ),
       LiquidDeposit(:final address) => _buildLiquid(effect, address, amountSat),
       // No app wallet pays a Lightning invoice (BitcoinRail.canBeAppWallet).
-      LightningInvoiceDeposit() => const PayinBuildFailed(
-        PayinBuildProblem.invalid,
+      LightningInvoiceDeposit() => const Err(
+        ExchangePayinBuildFailure(PayinBuildProblem.invalid),
       ),
     };
   }
 
-  Future<PayinBuildResult<PayinSpend>> _buildBitcoin(
+  Future<Result<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>>
+  _buildBitcoin(
     PayinBuild<PayinSpend> effect,
     String address,
     int amountSat,
@@ -65,7 +66,7 @@ class BuildPayinUsecase {
       case Ok(:final value):
         prepared = value;
       case Err(:final failure):
-        return PayinBuildFailed(payinBuildProblemOf(failure));
+        return Err(ExchangePayinBuildFailure(payinBuildProblemOf(failure)));
     }
     final bip21 = effect.order.payjoinBip21;
     final deadline = effect.order.confirmationDeadline;
@@ -77,9 +78,11 @@ class BuildPayinUsecase {
       try {
         txid = (await BitcoinTx.fromPsbt(prepared.unsignedPsbt)).txid;
       } on Object {
-        return const PayinBuildFailed(PayinBuildProblem.unexpected);
+        return const Err(
+          ExchangePayinBuildFailure(PayinBuildProblem.unexpected),
+        );
       }
-      return PayinBuildOk(
+      return Ok(
         PayinBuilt(
           effect.spend,
           txid,
@@ -99,9 +102,11 @@ class BuildPayinUsecase {
       case Ok(value: final signed):
         final txid = await _txidOfSigned(signed);
         if (txid == null) {
-          return const PayinBuildFailed(PayinBuildProblem.unexpected);
+          return const Err(
+            ExchangePayinBuildFailure(PayinBuildProblem.unexpected),
+          );
         }
-        return PayinBuildOk(
+        return Ok(
           PayinBuilt(
             effect.spend,
             txid,
@@ -109,11 +114,12 @@ class BuildPayinUsecase {
           ),
         );
       case Err(:final failure):
-        return PayinBuildFailed(payinBuildProblemOf(failure));
+        return Err(ExchangePayinBuildFailure(payinBuildProblemOf(failure)));
     }
   }
 
-  Future<PayinBuildResult<PayinSpend>> _buildLiquid(
+  Future<Result<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>>
+  _buildLiquid(
     PayinBuild<PayinSpend> effect,
     String address,
     int amountSat,
@@ -128,22 +134,24 @@ class BuildPayinUsecase {
       case Ok(:final value):
         prepared = value;
       case Err(:final failure):
-        return PayinBuildFailed(payinBuildProblemOf(failure));
+        return Err(ExchangePayinBuildFailure(payinBuildProblemOf(failure)));
     }
     switch (await _spend.signLiquid(prepared: prepared)) {
       case Ok(value: final signed):
         return switch (decodeLiquidPset(signed.signedPset)) {
-          Ok(value: final decoded) => PayinBuildOk(
+          Ok(value: final decoded) => Ok(
             PayinBuilt(
               effect.spend,
               decoded.txid,
               SignedLiquidPayin<SignedLiquidSpend>(signed),
             ),
           ),
-          Err() => const PayinBuildFailed(PayinBuildProblem.unexpected),
+          Err() => const Err(
+            ExchangePayinBuildFailure(PayinBuildProblem.unexpected),
+          ),
         };
       case Err(:final failure):
-        return PayinBuildFailed(payinBuildProblemOf(failure));
+        return Err(ExchangePayinBuildFailure(payinBuildProblemOf(failure)));
     }
   }
 }

@@ -10,6 +10,7 @@ import 'package:bull_exchange/src/payin/domain/usecases/watch_payjoin_usecase.da
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/src/payin/spend_options_runner.dart';
+import 'package:primitives/primitives.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:fees/fees.dart';
@@ -18,16 +19,16 @@ import 'package:sync/sync.dart' show Coin;
 import '../orders/order_usecase_fakes.dart';
 
 final class FakeBuildPayinUsecase implements BuildPayinUsecase {
-  final Future<PayinBuildResult<PayinSpend>> Function(
-    PayinBuild<PayinSpend> effect,
-  )
+  final Future<Result<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>>
+  Function(PayinBuild<PayinSpend> effect)
   answer;
 
   FakeBuildPayinUsecase(this.answer);
 
   @override
-  Future<PayinBuildResult<PayinSpend>> execute(PayinBuild<PayinSpend> effect) =>
-      answer(effect);
+  Future<Result<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>> execute(
+    PayinBuild<PayinSpend> effect,
+  ) => answer(effect);
 }
 
 final class FakeSendPayinUsecase implements SendPayinUsecase {

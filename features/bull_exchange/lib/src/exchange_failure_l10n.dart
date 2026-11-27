@@ -2,6 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 
 import 'exchange_l10n.dart';
+import 'payin/payin_l10n.dart';
 
 /// User-facing, localized message for each [ExchangeFailure]. The `sealed`
 /// switch makes a missing message a compile error. Never returns the raw
@@ -21,6 +22,7 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeSessionClearFailure() => context.loc.exchangeErrorSigningOut,
     ExchangePlatformNotAllowedFailure() =>
       context.loc.exchangePlatformNotAllowedError,
+    ExchangePayinBuildFailure(:final problem) => problem.toTranslated(context),
     ExchangePreferencesSaveFailure() ||
     ExchangePreferencesSaveOutcomeUnknownFailure() =>
       context.loc.exchangeErrorSavingPreferences,

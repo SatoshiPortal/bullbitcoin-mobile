@@ -75,8 +75,8 @@ void main() {
         .execute(_build(const OnchainDeposit('bc1q-deposit')));
     expect(
       result,
-      isA<PayinBuildFailed<PayinSpend>>().having(
-        (r) => r.problem,
+      isA<Err<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>>().having(
+        (r) => r.failure.problem,
         'problem',
         PayinBuildProblem.insufficientFunds,
       ),
@@ -99,8 +99,8 @@ void main() {
     final result = await BuildPayinUsecase(spend).execute(_build(payinTarget));
     expect(
       result,
-      isA<PayinBuildFailed<PayinSpend>>().having(
-        (r) => r.problem,
+      isA<Err<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>>().having(
+        (r) => r.failure.problem,
         'problem',
         PayinBuildProblem.signingRefused,
       ),
@@ -114,8 +114,8 @@ void main() {
         .execute(_build(const LiquidDeposit('lq1-deposit')));
     expect(
       result,
-      isA<PayinBuildFailed<PayinSpend>>().having(
-        (r) => r.problem,
+      isA<Err<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>>().having(
+        (r) => r.failure.problem,
         'problem',
         PayinBuildProblem.walletBusy,
       ),
@@ -129,8 +129,8 @@ void main() {
         .execute(_build(const LightningInvoiceDeposit('lnbc1')));
     expect(
       result,
-      isA<PayinBuildFailed<PayinSpend>>().having(
-        (r) => r.problem,
+      isA<Err<PayinBuilt<PayinSpend>, ExchangePayinBuildFailure>>().having(
+        (r) => r.failure.problem,
         'problem',
         PayinBuildProblem.invalid,
       ),

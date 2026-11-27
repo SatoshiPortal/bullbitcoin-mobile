@@ -158,14 +158,14 @@ const _rejected = Err<Order, ExchangeReadFailure>(
 );
 
 final _events = <_E>[
-  PayinBuildAnswered(1, const PayinBuildOk(_built), _before), // 0
-  PayinBuildAnswered(1, const PayinBuildOk(_built), _after), // 1
+  PayinBuildAnswered(1, const Ok(_built), _before), // 0
+  PayinBuildAnswered(1, const Ok(_built), _after), // 1
   PayinBuildAnswered(
     1,
-    const PayinBuildFailed(PayinBuildProblem.insufficientFunds),
+    const Err(ExchangePayinBuildFailure(PayinBuildProblem.insufficientFunds)),
     _before,
   ), // 2
-  PayinBuildAnswered(2, const PayinBuildOk(_built), _before), // 3
+  PayinBuildAnswered(2, const Ok(_built), _before), // 3
   const PayinSendAnswered(1, GateAdmitted(PayinBroadcastAccepted('tx1'))), // 4
   const PayinSendAnswered(
     1,

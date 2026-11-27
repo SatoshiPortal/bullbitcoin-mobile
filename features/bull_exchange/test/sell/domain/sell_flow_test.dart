@@ -49,7 +49,7 @@ final _events = <String, SellFlowEvent>{
   'payin': SellPayinChanged(
     PayinBuildAnswered<PayinSpend>(
       1,
-      const PayinBuildFailed(PayinBuildProblem.insufficientFunds),
+      const Err(ExchangePayinBuildFailure(PayinBuildProblem.insufficientFunds)),
       sellNow,
     ),
   ),

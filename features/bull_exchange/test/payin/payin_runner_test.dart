@@ -28,7 +28,7 @@ void main() {
       fakePayin(
         build: FakeBuildPayinUsecase((effect) async {
           calls.add('build ${effect.walletId}');
-          return const PayinBuildOk(payinBuilt);
+          return const Ok(payinBuilt);
         }),
         send: FakeSendPayinUsecase((session, effect) async {
           calls.add('send ${effect.built.txid} ${session.sessionId}');

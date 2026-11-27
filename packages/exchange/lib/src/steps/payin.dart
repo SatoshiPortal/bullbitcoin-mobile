@@ -231,36 +231,6 @@ final class PayinBuilt<P> extends _PayinValue {
   List<Object?> get props => [spend, txid, payload];
 }
 
-enum PayinBuildProblem {
-  insufficientFunds,
-  feeTooLow,
-  walletBusy,
-  consolidationRequired,
-  signingRefused,
-  notAuthorized,
-  invalid,
-  unexpected,
-}
-
-/// What building (preparing and signing) the payin gave. Nothing is sent
-/// while building.
-@immutable
-sealed class PayinBuildResult<P> {
-  const PayinBuildResult();
-}
-
-final class PayinBuildOk<P> extends PayinBuildResult<P> {
-  final PayinBuilt<P> built;
-
-  const PayinBuildOk(this.built);
-}
-
-final class PayinBuildFailed<P> extends PayinBuildResult<P> {
-  final PayinBuildProblem problem;
-
-  const PayinBuildFailed(this.problem);
-}
-
 /// Why nothing went out.
 @immutable
 sealed class PayinProblem extends _PayinValue {
@@ -761,10 +731,11 @@ sealed class PayinEvent<P> {
   const PayinEvent();
 }
 
-/// What building [attempt] gave, read at [at].
+/// What building (preparing and signing) [attempt] gave, read at [at].
+/// Nothing is sent while building.
 final class PayinBuildAnswered<P> extends PayinEvent<P> {
   final int attempt;
-  final PayinBuildResult<P> result;
+  final Result<PayinBuilt<P>, ExchangePayinBuildFailure> result;
   final DateTime at;
 
   const PayinBuildAnswered(this.attempt, this.result, this.at);
@@ -1174,14 +1145,14 @@ PayinNext<P> _built<P>(
   DepositTarget target,
   PayinWalletSpend spend,
   int attempt,
-  PayinBuildResult<P> result,
+  Result<PayinBuilt<P>, ExchangePayinBuildFailure> result,
   DateTime at,
 ) => switch (result) {
-  PayinBuildOk(:final built) =>
+  Ok(value: final built) =>
     _pastDeadline(order, at)
         ? StepNext(PayinQuoteLapsed<P>(order))
         : _broadcasting(order, target, attempt, built),
-  PayinBuildFailed(:final problem) => StepNext(
+  Err(failure: ExchangePayinBuildFailure(:final problem)) => StepNext(
     PayinSendFailed<P>(
       order,
       target,

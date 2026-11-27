@@ -190,3 +190,24 @@ final class ExchangeWriteNotSentFailure extends ExchangeFailure
 
   const ExchangeWriteNotSentFailure(this.reason);
 }
+
+/// Why the wallet could not build (prepare and sign) a payin. Nothing was
+/// sent.
+enum PayinBuildProblem {
+  insufficientFunds,
+  feeTooLow,
+  walletBusy,
+  consolidationRequired,
+  signingRefused,
+  notAuthorized,
+  invalid,
+  unexpected,
+}
+
+/// The wallet could not build (prepare and sign) the payin of an order, for
+/// [problem]. Nothing was sent.
+final class ExchangePayinBuildFailure extends ExchangeFailure {
+  final PayinBuildProblem problem;
+
+  const ExchangePayinBuildFailure(this.problem);
+}

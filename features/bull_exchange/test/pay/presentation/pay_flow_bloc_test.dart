@@ -80,7 +80,9 @@ final class _Usecases {
         fakePayin(
           build: FakeBuildPayinUsecase((effect) async {
             log.add('build ${effect.walletId}');
-            return const PayinBuildFailed(PayinBuildProblem.insufficientFunds);
+            return const Err(
+              ExchangePayinBuildFailure(PayinBuildProblem.insufficientFunds),
+            );
           }),
           getOrder: FakeGetOrderUsecase(
             (session, orderId) async =>
@@ -160,7 +162,7 @@ void main() {
           created: sinpe,
           payin: (log) => fakePayin(
             build: FakeBuildPayinUsecase(
-              (effect) async => PayinBuildOk(
+              (effect) async => Ok(
                 PayinBuilt(
                   effect.spend,
                   'tx-1',
