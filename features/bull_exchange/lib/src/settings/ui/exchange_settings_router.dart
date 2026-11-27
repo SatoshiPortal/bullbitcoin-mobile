@@ -126,11 +126,11 @@ class ExchangeSettingsRouter {
         builder: (context) => ExchangeSecurityScreen(
           securityUrl: switch (config.networkOf(context)) {
             NetworkEnv.mainnet => Uri.parse(
-              ExchangeDefaults.bbAuthUrl,
-            ).resolve('/settings'),
+              ExchangeDefaults.bbAccountSecurityUrl,
+            ),
             NetworkEnv.testnet => Uri.parse(
-              ExchangeDefaults.bbAuthTestUrl,
-            ).resolve('/settings'),
+              ExchangeDefaults.bbAccountSecurityTestUrl,
+            ),
             null || NetworkEnv.regtest || NetworkEnv.signet => null,
           },
         ),
