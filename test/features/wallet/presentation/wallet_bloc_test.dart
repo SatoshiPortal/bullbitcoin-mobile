@@ -837,8 +837,7 @@ void main() {
         checkWalletSyncingUsecase: syncing,
         watchWalletSyncEventsUsecase: _stubbedWatchers(),
         syncWalletsUsecase: _stubbedSync(),
-        getUnconfirmedIncomingBalanceUsecase:
-            _MockGetUnconfirmedIncomingBalanceUsecase(),
+        getOngoingSwapsUsecase: _MockGetOngoingSwapsUsecase(),
         checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
         checkSpScanningForWalletUsecase: _stubbedSpScanning(),
         refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
