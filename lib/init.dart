@@ -444,11 +444,6 @@ class Bull {
       } on Exception {
         // Statistics are optional and must not block wallet startup.
       }
-      await prepareBackgroundWalletStores(
-        openNotifications: () => locator<PaymentNotificationStore>().open(),
-      );
-      await locator<BackgroundSchedule>().apply();
-
       await Report.recordMigration();
       initialized = true;
       return const Ok(null);
@@ -460,6 +455,21 @@ class Bull {
           await admission.close();
         }
       }
+    }
+  }
+
+  static Future<void> startBackgroundWork() async {
+    try {
+      await prepareBackgroundWalletStores(
+        openNotifications: () => locator<PaymentNotificationStore>().open(),
+      );
+    } on Exception {
+      log.warning('Background wallet store preparation failed');
+    }
+    try {
+      await locator<BackgroundSchedule>().apply();
+    } on Exception {
+      log.warning('Background schedule initialization failed');
     }
   }
 }
