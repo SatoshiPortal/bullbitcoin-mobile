@@ -2,8 +2,6 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart' show ReadProblem, StepNext;
 import 'package:meta/meta.dart';
 
-import 'default_wallets_failure.dart';
-
 import 'package:primitives/primitives.dart';
 
 /// What checking a typed address said.
@@ -77,7 +75,7 @@ final class SlotNoticeUnset extends SlotNotice {
 }
 
 final class SlotNoticeFailed extends SlotNotice {
-  final DefaultWalletsFailure failure;
+  final ExchangeFailure failure;
 
   const SlotNoticeFailed(this.failure);
 
@@ -111,7 +109,7 @@ final class SlotShowing extends WalletSlot {
 
 final class SlotEditing extends WalletSlot {
   final String draft;
-  final DefaultWalletsFailure? problem;
+  final ExchangeFailure? problem;
 
   const SlotEditing(this.draft, {this.problem});
 
@@ -759,7 +757,10 @@ DefaultWalletsNext _savePressed(
     return _slot(
       ready,
       network,
-      SlotEditing(draft, problem: const DefaultWalletsEmptyAddressFailure()),
+      SlotEditing(
+        draft,
+        problem: const ExchangeDefaultWalletAddressEmptyFailure(),
+      ),
     );
   }
   if (ready.slots.mutating) return StepNext.stay(ready);
@@ -797,12 +798,15 @@ DefaultWalletsNext _checked(
   WalletAddressInvalid() => _slot(
     ready,
     network,
-    SlotEditing(draft, problem: DefaultWalletsInvalidAddressFailure(network)),
+    SlotEditing(
+      draft,
+      problem: ExchangeDefaultWalletAddressInvalidFailure(network),
+    ),
   ),
   WalletAddressCheckFailed() => _slot(
     ready,
     network,
-    SlotEditing(draft, problem: const DefaultWalletsSaveFailure()),
+    SlotEditing(draft, problem: const ExchangeDefaultWalletSaveFailure()),
   ),
 };
 
@@ -890,13 +894,13 @@ DefaultWalletsNext _saveAnswered(
     _slot(
       ready,
       network,
-      SlotEditing(draft, problem: const DefaultWalletsSaveFailure()),
+      SlotEditing(draft, problem: const ExchangeDefaultWalletSaveFailure()),
     ),
   GateRefused(refusal: WriteGateBusy() || WriteGateJournalUnreadable()) =>
     _slot(
       ready,
       network,
-      SlotEditing(draft, problem: const DefaultWalletsBusyFailure()),
+      SlotEditing(draft, problem: const ExchangeWriteBusyFailure()),
     ),
 };
 
@@ -932,14 +936,14 @@ DefaultWalletsNext _unsetAnswered(
       ready,
       network,
       const SlotShowing(
-        notice: SlotNoticeFailed(DefaultWalletsDeleteFailure()),
+        notice: SlotNoticeFailed(ExchangeDefaultWalletDeleteFailure()),
       ),
     ),
   GateRefused(refusal: WriteGateBusy() || WriteGateJournalUnreadable()) =>
     _slot(
       ready,
       network,
-      const SlotShowing(notice: SlotNoticeFailed(DefaultWalletsBusyFailure())),
+      const SlotShowing(notice: SlotNoticeFailed(ExchangeWriteBusyFailure())),
     ),
 };
 
@@ -961,7 +965,10 @@ DefaultWalletsNext _verified(
           : _slot(
               ready,
               network,
-              SlotEditing(draft, problem: const DefaultWalletsSaveFailure()),
+              SlotEditing(
+                draft,
+                problem: const ExchangeDefaultWalletSaveFailure(),
+              ),
               saved: value,
             ),
     SlotUnsetIntent() =>
@@ -976,7 +983,7 @@ DefaultWalletsNext _verified(
               ready,
               network,
               const SlotShowing(
-                notice: SlotNoticeFailed(DefaultWalletsDeleteFailure()),
+                notice: SlotNoticeFailed(ExchangeDefaultWalletDeleteFailure()),
               ),
               saved: value,
             ),

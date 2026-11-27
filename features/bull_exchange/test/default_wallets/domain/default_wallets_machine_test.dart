@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/default_wallets/domain/default_wallets_failure.dart';
 import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -123,7 +122,10 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     {
       4: _ready(const SlotChecking('bc1qnew', 6), attempts: 6),
       5: _ready(
-        const SlotEditing('  ', problem: DefaultWalletsEmptyAddressFailure()),
+        const SlotEditing(
+          '  ',
+          problem: ExchangeDefaultWalletAddressEmptyFailure(),
+        ),
       ),
     },
   ),
@@ -137,7 +139,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
       6: _ready(
         const SlotEditing(
           'bc1qnew',
-          problem: DefaultWalletsInvalidAddressFailure(_btc),
+          problem: ExchangeDefaultWalletAddressInvalidFailure(_btc),
         ),
       ),
     },
@@ -146,7 +148,10 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     const SlotChecked(_btc, 5, WalletAddressCheckFailed()),
     {
       6: _ready(
-        const SlotEditing('bc1qnew', problem: DefaultWalletsSaveFailure()),
+        const SlotEditing(
+          'bc1qnew',
+          problem: ExchangeDefaultWalletSaveFailure(),
+        ),
       ),
     },
   ),
@@ -178,7 +183,10 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     ),
     {
       7: _ready(
-        const SlotEditing('bc1qnew', problem: DefaultWalletsSaveFailure()),
+        const SlotEditing(
+          'bc1qnew',
+          problem: ExchangeDefaultWalletSaveFailure(),
+        ),
       ),
     },
   ),
@@ -214,7 +222,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     ),
     {
       7: _ready(
-        const SlotEditing('bc1qnew', problem: DefaultWalletsBusyFailure()),
+        const SlotEditing('bc1qnew', problem: ExchangeWriteBusyFailure()),
       ),
     },
   ),
@@ -258,7 +266,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     {
       8: _ready(
         const SlotShowing(
-          notice: SlotNoticeFailed(DefaultWalletsDeleteFailure()),
+          notice: SlotNoticeFailed(ExchangeDefaultWalletDeleteFailure()),
         ),
       ),
     },
@@ -271,7 +279,10 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     const SlotVerified(_btc, 5, Ok(_saved)),
     {
       9: _ready(
-        const SlotEditing('bc1qnew', problem: DefaultWalletsSaveFailure()),
+        const SlotEditing(
+          'bc1qnew',
+          problem: ExchangeDefaultWalletSaveFailure(),
+        ),
       ),
     },
   ),
@@ -430,7 +441,7 @@ void main() {
         ).state,
         _ready(
           const SlotShowing(
-            notice: SlotNoticeFailed(DefaultWalletsDeleteFailure()),
+            notice: SlotNoticeFailed(ExchangeDefaultWalletDeleteFailure()),
           ),
         ),
       );

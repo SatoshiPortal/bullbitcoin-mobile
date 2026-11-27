@@ -11,7 +11,9 @@ import '../../domain/usecases/unset_default_wallet_usecase.dart';
 import '../../domain/usecases/validate_default_wallet_destination_usecase.dart';
 import '../../domain/usecases/verify_default_wallets_usecase.dart';
 import '../../presentation/default_wallets_bloc.dart';
-import '../../presentation/default_wallets_failure_l10n.dart';
+
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
+
 import '../../domain/default_wallets_machine.dart';
 
 typedef DefaultWalletsFooterBuilder = Widget Function(
