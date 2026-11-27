@@ -182,16 +182,18 @@ Future<void> main({bool isInitialized = false}) async {
         receiver.pjUri,
       ]);
       final stdoutDone = process.stdout.drain<void>();
-      final stderrDone = process.stderr.drain<void>();
+      final stderrText = process.stderr.transform(utf8.decoder).join();
       try {
         final exitCode = await process.exitCode.timeout(
           const Duration(seconds: 120),
         );
-        expect(exitCode, 0, reason: 'The isolated Payjoin peer failed');
+        if (exitCode != 0) {
+          fail('The isolated Payjoin peer failed: ${await stderrText}');
+        }
       } finally {
         process.kill();
         await stdoutDone;
-        await stderrDone;
+        await stderrText;
         await directory.delete(recursive: true);
       }
 
