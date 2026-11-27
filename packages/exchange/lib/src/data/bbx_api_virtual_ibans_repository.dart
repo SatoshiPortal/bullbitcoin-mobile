@@ -3,19 +3,43 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/entities/virtual_iban.dart';
+import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
+import '../domain/repositories/virtual_ibans_repository.dart';
 
-final class BbxApiVirtualIbanRepository {
-  final bbx.Bbx _api;
+/// Runs a call on a client of [environment]'s session.
+typedef RunVirtualIbanOperation =
+    Future<Result<T, ExchangeFailure>> Function<T>(
+      ExchangeEnvironment environment,
+      Future<Result<T, ExchangeFailure>> Function(bbx.Bbx) operation,
+    );
+
+/// [VirtualIbansRepository] on the `bbx_api` package.
+final class BbxApiVirtualIbansRepository implements VirtualIbansRepository {
+  final RunVirtualIbanOperation _run;
 
   static const _optionNotAvailableCode = 'ERR_RCP_PO404';
   static const _euResidencyRequiredCode = 'ERR_RCP_400_001';
 
-  const BbxApiVirtualIbanRepository(this._api);
+  const BbxApiVirtualIbansRepository({required this._run});
 
-  Future<Result<VirtualIban?, ExchangeFailure>> find() async {
+  @override
+  Future<Result<VirtualIban?, ExchangeFailure>> find(
+    ExchangeEnvironment environment,
+  ) => _run(environment, findOn);
+
+  @override
+  Future<Result<VirtualIban, ExchangeFailure>> create(
+    ExchangeEnvironment environment,
+  ) => _run(environment, createOn);
+
+  /// The lookup on a client already opened, for calls that read the virtual
+  /// IBAN under the same session as another read.
+  static Future<Result<VirtualIban?, ExchangeFailure>> findOn(
+    bbx.Bbx api,
+  ) async {
     try {
-      final result = await _api.recipients.findVirtualIban();
+      final result = await api.recipients.findVirtualIban();
       return switch (result) {
         Ok(:final value) => Ok(value == null ? null : _toDomain(value)),
         // The API refuses to list virtual IBANs to a user who has none yet
@@ -32,9 +56,11 @@ final class BbxApiVirtualIbanRepository {
     }
   }
 
-  Future<Result<VirtualIban, ExchangeFailure>> create() async {
+  static Future<Result<VirtualIban, ExchangeFailure>> createOn(
+    bbx.Bbx api,
+  ) async {
     try {
-      return (await _api.recipients.createVirtualIban())
+      return (await api.recipients.createVirtualIban())
           .map(_toDomain)
           .mapErr(
             (failure) => _failureFrom(failure, 'create the virtual IBAN'),

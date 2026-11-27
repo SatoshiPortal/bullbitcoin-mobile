@@ -4,7 +4,7 @@ import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-final class _VirtualIbans implements ExchangeVirtualIbans {
+final class _VirtualIbans implements VirtualIbansRepository {
   final Future<Result<VirtualIban?, ExchangeFailure>> Function(
     ExchangeEnvironment environment,
   )

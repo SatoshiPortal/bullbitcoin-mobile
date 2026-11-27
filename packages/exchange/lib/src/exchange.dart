@@ -8,7 +8,7 @@ import 'package:preferences/preferences.dart';
 
 import 'data/bbx_api_account_repository.dart';
 import 'data/bbx_api_exchange_recipient_repository.dart';
-import 'data/bbx_api_funding_rails.dart';
+import 'data/bbx_api_funding_repository.dart';
 import 'data/bbx_api_kyc_repository.dart';
 import 'data/bbx_api_limit_orders_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
@@ -16,14 +16,16 @@ import 'data/bbx_api_order_stats_repository.dart';
 import 'data/bbx_api_orders_repository.dart';
 import 'data/bbx_api_support_chat_repository.dart';
 import 'data/bbx_api_user_repository.dart';
-import 'data/bbx_api_virtual_iban_repository.dart';
+import 'data/bbx_api_virtual_ibans_repository.dart';
 import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
 import 'data/journaling_orders_repository.dart';
 import 'data/journaling_exchange_recipients.dart';
 import 'data/pending_orders.dart';
+import 'domain/catalog/jurisdiction.dart';
 import 'domain/entities/announcement.dart';
+import 'domain/entities/funding_institution.dart';
 import 'domain/entities/btc_network.dart';
 import 'domain/entities/confidential_sepa_availability.dart';
 import 'domain/entities/default_wallet.dart';
@@ -37,18 +39,19 @@ import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
 import 'domain/entities/virtual_iban.dart';
 import 'domain/exchange_access.dart';
+import 'funding/funding_request.dart';
 import 'domain/exchange_availability.dart';
 import 'domain/exchange_basic_auth.dart';
 import 'domain/exchange_account_deletion_outcome.dart';
 import 'domain/exchange_call_result.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
-import 'domain/exchange_funding.dart';
 import 'domain/exchange_kyc_configuration.dart';
 import 'domain/repositories/orders_repository.dart';
-import 'domain/exchange_virtual_ibans.dart';
 import 'domain/exchange_write_gate.dart';
+import 'domain/repositories/funding_repository.dart';
 import 'domain/repositories/limit_orders_repository.dart';
+import 'domain/repositories/virtual_ibans_repository.dart';
 import 'domain/order_create_journal.dart';
 import 'domain/unknown_write_journal.dart';
 import 'setup/exchange_access_lifecycle.dart';
@@ -160,8 +163,8 @@ final class Exchange {
   final ExchangeChatOperations _chat;
   final ExchangeNotificationOperations _notifications;
   final LimitOrdersRepository limitOrders;
-  final ExchangeFunding funding;
-  final ExchangeVirtualIbans virtualIbans;
+  final FundingRepository funding;
+  final VirtualIbansRepository virtualIbans;
   final ExchangeKycConfigurationRepository? _kyc;
   final Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()
   _getConfidentialSepaAvailability;
@@ -348,21 +351,6 @@ final class Exchange {
     );
     final fundingReturnUrl =
         paymentReturnUrl ?? Uri.parse('https://app.bullbitcoin.com');
-    Future<ExchangeRead<T>> fundRead<T>(
-      ExchangeSession session,
-      Future<ExchangeRead<T>> Function(BbxApiFundingRails) call,
-    ) async => switch (await withClient<ExchangeRead<T>>(
-      (client) async => Ok(
-        await call(
-          BbxApiFundingRails(client, paymentReturnUrl: fundingReturnUrl),
-        ),
-      ),
-      environment: session.environment,
-      completionCheck: _CompletionCheck.read,
-    )) {
-      Ok(:final value) => value,
-      Err(:final failure) => readOfFailure<T>(failure),
-    };
     ExchangeNotificationService? notificationService;
     bool closed = false;
     ExchangeNotificationService service() {
@@ -593,38 +581,22 @@ final class Exchange {
           }
         },
       ),
-      ExchangeFundingImpl(
-        account: (session) => fundRead(session, (rails) => rails.account()),
-        instructions: (session, request) =>
-            fundRead(session, (rails) => rails.instructions(request)),
-        institutions: (session, jurisdiction) =>
-            fundRead(session, (rails) => rails.institutions(jurisdiction)),
-        consent: (session) async =>
-            switch (await withClient<ExchangeWrite<void>>(
-              (client) async => Ok(
-                await BbxApiFundingRails(
-                  client,
-                  paymentReturnUrl: fundingReturnUrl,
-                ).consent(),
-              ),
-              environment: session.environment,
-              completionCheck: _CompletionCheck.write,
-            )) {
-              Ok(:final value) => value,
-              Err(:final failure) => writeNotRun<void>(failure),
-            },
-        consentOnAccount: (session) =>
-            fundRead(session, (rails) => rails.consentOnAccount()),
+      BbxApiFundingRepository(
+        read: <T>(session, operation) => withClient<T>(
+          operation,
+          environment: session.environment,
+          completionCheck: _CompletionCheck.read,
+        ),
+        write: <T>(session, operation) => withClient<T>(
+          operation,
+          environment: session.environment,
+          completionCheck: _CompletionCheck.write,
+        ),
+        paymentReturnUrl: fundingReturnUrl,
       ),
-      ExchangeVirtualIbansImpl(
-        find: (environment) => withClient(
-          (client) => BbxApiVirtualIbanRepository(client).find(),
-          environment: environment,
-        ),
-        create: (environment) => withClient(
-          (client) => BbxApiVirtualIbanRepository(client).create(),
-          environment: environment,
-        ),
+      BbxApiVirtualIbansRepository(
+        run: <T>(environment, operation) =>
+            withClient<T>(operation, environment: environment),
       ),
       kyc == null
           ? null
@@ -641,7 +613,7 @@ final class Exchange {
               return const Ok(ConfidentialSepaAvailability.unavailable);
             }
         }
-        return (await BbxApiVirtualIbanRepository(client).find()).map(
+        return (await BbxApiVirtualIbansRepository.findOn(client)).map(
           (iban) => iban is ActiveVirtualIban
               ? ConfidentialSepaAvailability.ready
               : ConfidentialSepaAvailability.needsVirtualIban,
@@ -1309,8 +1281,8 @@ Exchange exchangeForTesting({
   ExchangeChatOperations? chat,
   ExchangeNotificationOperations? notifications,
   LimitOrdersRepository? limitOrders,
-  ExchangeFunding? funding,
-  ExchangeVirtualIbans? virtualIbans,
+  FundingRepository? funding,
+  VirtualIbansRepository? virtualIbans,
   Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
   getConfidentialSepaAvailability,
   ExchangeRecipients? recipients,
@@ -1378,22 +1350,8 @@ Exchange exchangeForTesting({
         close: () async {},
       ),
   limitOrders ?? const _UnexpectedLimitOrders(),
-  funding ??
-      ExchangeFundingImpl(
-        account: (_) => throw StateError('Unexpected funding account read'),
-        instructions: (_, _) =>
-            throw StateError('Unexpected funding instructions request'),
-        institutions: (_, _) =>
-            throw StateError('Unexpected funding institution lookup'),
-        consent: (_) => throw StateError('Unexpected funding consent'),
-        consentOnAccount: (_) =>
-            throw StateError('Unexpected funding consent re-read'),
-      ),
-  virtualIbans ??
-      ExchangeVirtualIbansImpl(
-        find: (_) => throw StateError('Unexpected virtual IBAN lookup'),
-        create: (_) => throw StateError('Unexpected virtual IBAN creation'),
-      ),
+  funding ?? const _UnexpectedFunding(),
+  virtualIbans ?? const _UnexpectedVirtualIbans(),
   null,
   getConfidentialSepaAvailability ??
       () => throw StateError('Unexpected Confidential SEPA availability check'),
@@ -1463,4 +1421,48 @@ final class _UnexpectedLimitOrders implements LimitOrdersRepository {
   Future<Result<LimitOrderRate, ExchangeFailure>> getRate(
     String currencyCode,
   ) => throw StateError('Unexpected limit order rate');
+}
+
+/// [exchangeForTesting]'s funding when a test gives none.
+final class _UnexpectedFunding implements FundingRepository {
+  const _UnexpectedFunding();
+
+  @override
+  Future<ExchangeRead<FundingAccount>> account(ExchangeSession session) =>
+      throw StateError('Unexpected funding account read');
+
+  @override
+  Future<ExchangeRead<FundingAnswer>> instructions(
+    ExchangeSession session,
+    FundingRequest request,
+  ) => throw StateError('Unexpected funding instructions request');
+
+  @override
+  Future<ExchangeRead<List<FundingInstitution>>> institutions(
+    ExchangeSession session,
+    Jurisdiction jurisdiction,
+  ) => throw StateError('Unexpected funding institution lookup');
+
+  @override
+  Future<ExchangeWrite<void>> consent(ExchangeSession session) =>
+      throw StateError('Unexpected funding consent');
+
+  @override
+  Future<ExchangeRead<bool>> consentOnAccount(ExchangeSession session) =>
+      throw StateError('Unexpected funding consent re-read');
+}
+
+/// [exchangeForTesting]'s virtual IBANs when a test gives none.
+final class _UnexpectedVirtualIbans implements VirtualIbansRepository {
+  const _UnexpectedVirtualIbans();
+
+  @override
+  Future<Result<VirtualIban?, ExchangeFailure>> find(
+    ExchangeEnvironment environment,
+  ) => throw StateError('Unexpected virtual IBAN lookup');
+
+  @override
+  Future<Result<VirtualIban, ExchangeFailure>> create(
+    ExchangeEnvironment environment,
+  ) => throw StateError('Unexpected virtual IBAN creation');
 }

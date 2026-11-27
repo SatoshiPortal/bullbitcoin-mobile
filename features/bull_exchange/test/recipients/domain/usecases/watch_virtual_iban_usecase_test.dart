@@ -11,7 +11,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}
 
-class _FakeVirtualIbanRepository implements ExchangeVirtualIbans {
+class _FakeVirtualIbanRepository implements VirtualIbansRepository {
   final List<Result<VirtualIban?, ExchangeFailure>> findResults;
   final Result<VirtualIban, ExchangeFailure> createResult;
   int finds = 0;

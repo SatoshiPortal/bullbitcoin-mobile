@@ -12,7 +12,7 @@ import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../funding/funding_instructions.dart';
 import '../funding/funding_request.dart';
-import 'bbx_api_virtual_iban_repository.dart';
+import 'bbx_api_virtual_ibans_repository.dart';
 import 'exchange_call_classifier.dart';
 import 'read_user_summary.dart';
 
@@ -31,7 +31,7 @@ final class BbxApiFundingRails {
     final user = summary.value;
     final ExchangeRead<ConfidentialSepaAvailability> confidentialSepa =
         user.isEligibleForConfidentialSepa
-        ? switch (await BbxApiVirtualIbanRepository(_api).find()) {
+        ? switch (await BbxApiVirtualIbansRepository.findOn(_api)) {
             Ok(value: ActiveVirtualIban()) => const ReadGot(
               ConfidentialSepaAvailability.ready,
             ),

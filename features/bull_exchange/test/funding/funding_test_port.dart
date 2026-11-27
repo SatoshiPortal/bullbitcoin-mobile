@@ -4,7 +4,7 @@ import 'package:exchange/funding.dart';
 /// The funding calls of one test: each answers what it was given and
 /// throws when the test gave none; every call is logged with the session
 /// it got.
-final class FundingTestPort implements ExchangeFunding {
+final class FundingTestPort implements FundingRepository {
   ExchangeRead<FundingAccount>? accountAnswer;
   ExchangeRead<FundingAnswer>? instructionsAnswer;
   ExchangeRead<List<FundingInstitution>>? institutionsAnswer;
