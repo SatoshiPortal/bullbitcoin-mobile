@@ -41,6 +41,8 @@ import 'package:views/setup.dart' show ViewsFeature;
 import 'package:exchange/exchange.dart' show Exchange;
 import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart' show exchangeForTesting;
+import 'package:bull_exchange/bull_exchange.dart' show PayRoute, SellRoute;
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinSender;
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -482,6 +484,9 @@ void main() {
         ),
       );
       final router = AppRouter.router;
+      expect(locator.isRegistered<PayjoinSender>(), isFalse);
+      expect(router.namedLocation(PayRoute.pay.name), PayRoute.pay.path);
+      expect(router.namedLocation(SellRoute.sell.name), SellRoute.sell.path);
       expect(promptFactories, 0);
       addTearDown(() async {
         router.dispose();

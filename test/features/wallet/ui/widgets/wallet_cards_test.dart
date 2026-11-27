@@ -1,7 +1,10 @@
+import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:overview/overview.dart';
 import 'package:preferences/preferences.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart'
+    show BitcoinUnit, BitcoinNetwork, LiquidNetwork, ScriptType, SignerEntity;
+import 'package:sync/sync.dart' show WalletKey;
 import 'package:bb_mobile/localizations.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:settings/testing.dart';
@@ -63,6 +66,7 @@ Widget _buildCards({
 Widget _buildCardsRouter({
   required _MockWalletBloc walletBloc,
   required _MockSettingsCubit settingsCubit,
+  Widget cards = const WalletCards(),
 }) {
   final navigatorKey = GlobalKey<NavigatorState>();
   final router = GoRouter(
@@ -79,7 +83,7 @@ Widget _buildCardsRouter({
           ],
           child: Settings.amountScope(
             navigatorKey: navigatorKey,
-            child: const Scaffold(body: WalletCards()),
+            child: Scaffold(body: cards),
           ),
         ),
       ),
@@ -121,6 +125,101 @@ void main() {
   setUp(() {
     walletBloc = _MockWalletBloc();
     settingsCubit = _MockSettingsCubit();
+  });
+
+  testWidgets('the picker returns exact local wallet identities', (
+    tester,
+  ) async {
+    final local = Wallet(
+      origin: 'bitcoin',
+      network: Network.bitcoinRegtest,
+      isDefault: true,
+      xpubFingerprint: '00000000',
+      scriptType: ScriptType.bip84,
+      xpub: '',
+      externalPublicDescriptor: '',
+      internalPublicDescriptor: '',
+      signer: SignerEntity.local,
+      signerDevice: null,
+      balanceSat: BigInt.from(1000),
+    );
+    final unavailable = local.copyWith(
+      origin: 'liquid',
+      network: Network.liquidRegtest,
+      isDefault: false,
+      label: 'Savings',
+      balanceSat: null,
+    );
+    _stubBlocs(
+      walletBloc: walletBloc,
+      settingsCubit: settingsCubit,
+      walletState: WalletState(
+        wallets: [
+          local.copyWith(
+            origin: 'remote',
+            label: 'Remote',
+            isDefault: false,
+            signer: SignerEntity.remote,
+          ),
+          local,
+          local.copyWith(
+            origin: 'watch',
+            label: 'Watch-only',
+            isDefault: false,
+            signer: SignerEntity.none,
+          ),
+          unavailable,
+        ],
+        syncStatus: {local.id: true},
+        isSpWalletSetup: true,
+        isSpFeatureEnabled: true,
+      ),
+      settingsState: _settingsState(isSuperuser: true),
+    );
+    final selected = <({WalletKey key, String? label, bool isDefault})>[];
+    await tester.pumpWidget(
+      _buildCardsRouter(
+        walletBloc: walletBloc,
+        settingsCubit: settingsCubit,
+        cards: Builder(
+          builder: (context) =>
+              WalletCards.pickLocalSigner(context, selected.add),
+        ),
+      ),
+    );
+    final context = tester.element(find.byType(WalletCards));
+    final l10n = AppLocalizations.of(context);
+    final bitcoin = find.text(l10n.globalDefaultBitcoinWalletLabel);
+    final liquid = find.text('Savings');
+    expect(find.text('Remote'), findsNothing);
+    expect(find.text('Watch-only'), findsNothing);
+    expect(find.text(l10n.walletLoadFailed), findsOneWidget);
+    expect(
+      tester.getTopLeft(bitcoin).dy,
+      lessThan(tester.getTopLeft(liquid).dy),
+    );
+    expect(
+      tester.widgetList<WalletCard>(find.byType(WalletCard)).first.isSyncing,
+      isTrue,
+    );
+    await tester.tap(bitcoin);
+    await tester.tap(liquid);
+    expect(selected, [
+      (
+        key: WalletKey(id: 'bitcoin:regtest', network: BitcoinNetwork.regtest),
+        label: null,
+        isDefault: true,
+      ),
+      (
+        key: WalletKey(id: 'liquid:regtest', network: LiquidNetwork.regtest),
+        label: 'Savings',
+        isDefault: false,
+      ),
+    ]);
+    await tester.tap(find.text('Silent Payments'));
+    await tester.pumpAndSettle();
+    expect(find.text('SP Detail'), findsOneWidget);
+    expect(selected, hasLength(2));
   });
 
   Future<void> pumpCards(
