@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_unread_support_count_usecase.dart';
@@ -10,7 +9,7 @@ import 'package:bull_exchange/src/support_chat/domain/usecases/watch_support_cha
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 
-typedef ChatResult<T> = Future<Result<T, ExchangeSupportChatFailure>>;
+typedef ChatResult<T> = Future<Result<T, ExchangeFailure>>;
 
 final class FakeGetSupportChatMessagesUsecase
     implements GetSupportChatMessagesUsecase {

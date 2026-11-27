@@ -1,5 +1,3 @@
-import '../exchange_support_chat_failure.dart';
-
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
@@ -10,7 +8,7 @@ class GetSupportChatMessagesUsecase {
   const GetSupportChatMessagesUsecase({required this._exchange});
 
   @useResult
-  Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>> execute(
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> execute(
     ExchangeSession? session, {
     int? page,
     int? pageSize,
@@ -26,11 +24,10 @@ class GetSupportChatMessagesUsecase {
         ),
       }).mapErr(
         (failure) => switch (failure) {
-          ExchangeNotAuthenticatedFailure() => const NotAuthenticatedFailure(),
-          ExchangeChatLoadMessagesFailure() => LoadMessagesFailure(
-            failure.logMessage,
-          ),
-          _ => const ExchangeSupportChatUnexpectedFailure(),
+          ExchangeNotAuthenticatedFailure() =>
+            const ExchangeChatNotAuthenticatedFailure(),
+          ExchangeChatLoadMessagesFailure() => failure,
+          _ => const ExchangeUnexpectedFailure(),
         },
       );
 }

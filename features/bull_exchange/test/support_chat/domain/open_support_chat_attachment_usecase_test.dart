@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/open_support_chat_attachment_usecase.dart';
 import 'package:exchange/exchange.dart';
@@ -55,7 +54,7 @@ void main() {
 
       expect(
         await open.execute(_chatSession, 'att-1'),
-        isA<Ok<void, ExchangeSupportChatFailure>>(),
+        isA<Ok<void, ExchangeFailure>>(),
       );
 
       final escaped = File('${tempDir.parent.path}/outside_the_sandbox.txt');
@@ -85,7 +84,7 @@ void main() {
 
         expect(
           await open.execute(_chatSession, 'att-2'),
-          isA<Ok<void, ExchangeSupportChatFailure>>(),
+          isA<Ok<void, ExchangeFailure>>(),
         );
 
         expect(File('${tempDir.path}/receipt.pdf').existsSync(), isTrue);
@@ -100,8 +99,8 @@ void main() {
     );
     final result = await open.execute(_chatSession, 'att-3');
     expect(
-      (result as Err<void, ExchangeSupportChatFailure>).failure,
-      isA<FetchFileDataFailure>(),
+      (result as Err<void, ExchangeFailure>).failure,
+      isA<ExchangeChatAttachmentEmptyFailure>(),
     );
   });
 
@@ -122,8 +121,8 @@ void main() {
     );
     final result = await open.execute(_chatSession, 'att-4');
     expect(
-      (result as Err<void, ExchangeSupportChatFailure>).failure,
-      isA<LoadAttachmentFailure>(),
+      (result as Err<void, ExchangeFailure>).failure,
+      isA<ExchangeChatLoadAttachmentFailure>(),
     );
   });
 }

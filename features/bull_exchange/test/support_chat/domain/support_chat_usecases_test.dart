@@ -1,5 +1,4 @@
 import 'package:exchange/exchange.dart';
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/src/support_chat/domain/repositories/attachment_picker_repository.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/pick_image_attachments_usecase.dart';
@@ -13,13 +12,12 @@ void main() {
   group('PickImageAttachmentsUsecase', () {
     test('forwards the repository result untouched', () async {
       final repository = _MockAttachmentPickerRepository();
-      const failure = PickFilesFailure('boom');
+      const failure = ExchangeChatPickImagesFailure('boom');
       when(() => repository.pickImages()).thenAnswer(
         (_) async =>
-            const Err<
-              List<SupportChatMessageAttachment>,
-              ExchangeSupportChatFailure
-            >(failure),
+            const Err<List<SupportChatMessageAttachment>, ExchangeFailure>(
+              failure,
+            ),
       );
 
       final usecase = PickImageAttachmentsUsecase(repository: repository);

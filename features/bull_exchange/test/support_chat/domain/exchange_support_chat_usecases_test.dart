@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/send_support_chat_message_usecase.dart';
@@ -88,10 +87,7 @@ void main() {
           pageSize: 10,
         );
 
-        expect(
-          (result as Err).failure,
-          isA<ExchangeSupportChatUnexpectedFailure>(),
-        );
+        expect((result as Err).failure, isA<ExchangeUnexpectedFailure>());
       },
     );
 
@@ -117,7 +113,7 @@ void main() {
 
         final result = await usecase.execute(_chatSession, text: 'hi');
 
-        expect((result as Err).failure, isA<SendMessageFailure>());
+        expect((result as Err).failure, isA<ExchangeChatSendMessageFailure>());
       },
     );
 
@@ -144,7 +140,10 @@ void main() {
 
         final result = await usecase.execute(_chatSession, 'a1');
 
-        expect((result as Err).failure, isA<LoadAttachmentFailure>());
+        expect(
+          (result as Err).failure,
+          isA<ExchangeChatLoadAttachmentFailure>(),
+        );
       },
     );
   });

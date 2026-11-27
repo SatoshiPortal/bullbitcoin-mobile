@@ -3,8 +3,6 @@ import 'package:exchange/steps.dart' show StepNext;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'exchange_support_chat_failure.dart';
-
 /// Messages per page the thread asks for. A shorter page is the start of
 /// the thread.
 const supportChatPageSize = 10;
@@ -109,7 +107,7 @@ final class ChatThreadLoading extends ChatThread {
 
 /// The first page failed: shown with Retry, never as an empty thread.
 final class ChatThreadLoadFailed extends ChatThread {
-  final ExchangeSupportChatFailure failure;
+  final ExchangeFailure failure;
 
   const ChatThreadLoadFailed(this.failure);
 
@@ -208,7 +206,7 @@ final class ChatComposer {
   final String text;
   final List<SupportChatMessageAttachment> attachments;
   final ChatAttaching attaching;
-  final ExchangeSupportChatFailure? problem;
+  final ExchangeFailure? problem;
 
   const ChatComposer({
     this.text = '',
@@ -221,7 +219,7 @@ final class ChatComposer {
     String? text,
     List<SupportChatMessageAttachment>? attachments,
     ChatAttaching? attaching,
-    ExchangeSupportChatFailure? Function()? problem,
+    ExchangeFailure? Function()? problem,
   }) => ChatComposer(
     text: text ?? this.text,
     attachments: attachments ?? this.attachments,
@@ -278,7 +276,7 @@ final class ChatOutgoingSent extends ChatOutgoing {
 @immutable
 final class ChatNotice {
   final int id;
-  final ExchangeSupportChatFailure failure;
+  final ExchangeFailure failure;
 
   const ChatNotice(this.id, this.failure);
 
@@ -355,7 +353,7 @@ sealed class SupportChatEvent {
 /// The answer for the page a fetch with [ticket] asked for.
 final class ChatPageLoaded extends SupportChatEvent {
   final int ticket;
-  final Result<List<SupportChatMessage>, ExchangeSupportChatFailure> result;
+  final Result<List<SupportChatMessage>, ExchangeFailure> result;
 
   const ChatPageLoaded(this.ticket, this.result);
 }
@@ -384,8 +382,7 @@ final class ChatAttachPressed extends SupportChatEvent {
 }
 
 final class ChatAttachmentsPicked extends SupportChatEvent {
-  final Result<List<SupportChatMessageAttachment>, ExchangeSupportChatFailure>
-  result;
+  final Result<List<SupportChatMessageAttachment>, ExchangeFailure> result;
 
   const ChatAttachmentsPicked(this.result);
 }
@@ -398,7 +395,7 @@ final class ChatLogsPressed extends SupportChatEvent {
 }
 
 final class ChatLogsBuilt extends SupportChatEvent {
-  final Result<SupportChatMessageAttachment, ExchangeSupportChatFailure> result;
+  final Result<SupportChatMessageAttachment, ExchangeFailure> result;
 
   const ChatLogsBuilt(this.result);
 }
@@ -415,7 +412,7 @@ final class ChatSendPressed extends SupportChatEvent {
 
 final class ChatSendAnswered extends SupportChatEvent {
   final String localId;
-  final Result<void, ExchangeSupportChatFailure> result;
+  final Result<void, ExchangeFailure> result;
 
   const ChatSendAnswered(this.localId, this.result);
 }
@@ -428,7 +425,7 @@ final class ChatOpenPressed extends SupportChatEvent {
 
 final class ChatOpenFinished extends SupportChatEvent {
   final String attachmentId;
-  final Result<void, ExchangeSupportChatFailure> result;
+  final Result<void, ExchangeFailure> result;
 
   const ChatOpenFinished(this.attachmentId, this.result);
 }
@@ -691,13 +688,13 @@ SupportChatNext _composerEvent(SupportChatState state, SupportChatEvent event) {
       final text = composer.text.trim();
       if (text.isEmpty) {
         if (state.outgoing.any((o) => o is ChatOutgoingSending) ||
-            composer.problem is MessageEmptyFailure) {
+            composer.problem is ExchangeChatMessageEmptyFailure) {
           return StepNext.stay(state);
         }
         return StepNext(
           state.copyWith(
             composer: composer.copyWith(
-              problem: () => const MessageEmptyFailure(),
+              problem: () => const ExchangeChatMessageEmptyFailure(),
             ),
           ),
         );
@@ -880,10 +877,8 @@ SupportChatState _withThread(
   );
 }
 
-SupportChatState _notify(
-  SupportChatState state,
-  ExchangeSupportChatFailure failure,
-) => state.copyWith(notice: ChatNotice((state.notice?.id ?? 0) + 1, failure));
+SupportChatState _notify(SupportChatState state, ExchangeFailure failure) =>
+    state.copyWith(notice: ChatNotice((state.notice?.id ?? 0) + 1, failure));
 
 String _withLine(String text, String line) {
   if (text.contains(line)) return text;

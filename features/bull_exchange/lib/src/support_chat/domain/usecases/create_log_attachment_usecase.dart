@@ -4,8 +4,6 @@ import 'dart:typed_data';
 
 import 'package:exchange/exchange.dart';
 
-import '../exchange_support_chat_failure.dart';
-
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +11,7 @@ import 'package:meta/meta.dart';
 
 class CreateLogAttachmentUsecase {
   @useResult
-  Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
+  Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
   execute() async {
     try {
       List<String> logs;
@@ -61,7 +59,7 @@ class CreateLogAttachmentUsecase {
       );
     } catch (e, st) {
       log.warning('Failed to build log attachment', error: e, trace: st);
-      return Err(AttachLogsFailure('$e'));
+      return Err(ExchangeChatAttachLogsFailure('$e'));
     }
   }
 }

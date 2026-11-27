@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/domain/support_chat_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -29,7 +28,7 @@ const _logAtt = SupportChatMessageAttachment(
   fileName: 'x.BullLog.y.txt',
 );
 const _line = 'Here are my logs';
-const _loadFailure = LoadMessagesFailure();
+const _loadFailure = ExchangeChatLoadMessagesFailure();
 
 SupportChatState _l({
   List<SupportChatMessage>? messages,
@@ -210,8 +209,8 @@ final _table = <String, (SupportChatEvent, Map<int, SupportChatState>)>{
     },
   ),
   'picking failed': (
-    const ChatAttachmentsPicked(Err(PickFilesFailure())),
-    {8: _l(notice: const ChatNotice(1, PickFilesFailure()))},
+    const ChatAttachmentsPicked(Err(ExchangeChatPickImagesFailure())),
+    {8: _l(notice: const ChatNotice(1, ExchangeChatPickImagesFailure()))},
   ),
   'logs pressed': (
     const ChatLogsPressed(_line),
@@ -237,11 +236,11 @@ final _table = <String, (SupportChatEvent, Map<int, SupportChatState>)>{
     },
   ),
   'logs failed': (
-    const ChatLogsBuilt(Err(AttachLogsFailure())),
+    const ChatLogsBuilt(Err(ExchangeChatAttachLogsFailure())),
     {
       9: _l(
         composer: const ChatComposer(text: 'help'),
-        notice: const ChatNotice(1, AttachLogsFailure()),
+        notice: const ChatNotice(1, ExchangeChatAttachLogsFailure()),
       ),
     },
   ),
@@ -256,7 +255,7 @@ final _table = <String, (SupportChatEvent, Map<int, SupportChatState>)>{
         i: _composer(
           _states[i],
           _states[i].composer.copyWith(
-            problem: () => const MessageEmptyFailure(),
+            problem: () => const ExchangeChatMessageEmptyFailure(),
           ),
         ),
       7: _l(
@@ -287,10 +286,13 @@ final _table = <String, (SupportChatEvent, Map<int, SupportChatState>)>{
     },
   ),
   'send failed': (
-    const ChatSendAnswered('local-3', Err(SendMessageFailure())),
+    const ChatSendAnswered('local-3', Err(ExchangeChatSendMessageFailure())),
     {
       10: _l(
-        composer: const ChatComposer(text: 'hi', problem: SendMessageFailure()),
+        composer: const ChatComposer(
+          text: 'hi',
+          problem: ExchangeChatSendMessageFailure(),
+        ),
       ),
     },
   ),
@@ -310,8 +312,8 @@ final _table = <String, (SupportChatEvent, Map<int, SupportChatState>)>{
   ),
   'opened': (const ChatOpenFinished('a1', Ok(null)), {12: _l()}),
   'open failed': (
-    const ChatOpenFinished('a1', Err(LoadAttachmentFailure())),
-    {12: _l(notice: const ChatNotice(1, LoadAttachmentFailure()))},
+    const ChatOpenFinished('a1', Err(ExchangeChatLoadAttachmentFailure())),
+    {12: _l(notice: const ChatNotice(1, ExchangeChatLoadAttachmentFailure()))},
   ),
 };
 
@@ -564,6 +566,9 @@ List<SupportChatEvent> _answers(SupportChatEffect effect) => switch (effect) {
   ChatBuildLogs() => [const ChatLogsBuilt(Ok(_logAtt))],
   ChatSend(:final localId) => [ChatSendAnswered(localId, const Ok(null))],
   ChatOpenAttachment(:final attachmentId) => [
-    ChatOpenFinished(attachmentId, const Err(LoadAttachmentFailure())),
+    ChatOpenFinished(
+      attachmentId,
+      const Err(ExchangeChatLoadAttachmentFailure()),
+    ),
   ],
 };

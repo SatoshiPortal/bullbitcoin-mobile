@@ -8,7 +8,6 @@ import 'package:primitives/primitives.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../attachment_filename_sanitizer.dart';
-import '../exchange_support_chat_failure.dart';
 import 'get_support_chat_message_attachment_usecase.dart';
 
 /// Downloads one attachment into the temp directory and opens the share
@@ -32,7 +31,7 @@ class OpenSupportChatAttachmentUsecase {
   }
 
   @useResult
-  Future<Result<void, ExchangeSupportChatFailure>> execute(
+  Future<Result<void, ExchangeFailure>> execute(
     ExchangeSession? session,
     String attachmentId,
   ) async {
@@ -43,7 +42,7 @@ class OpenSupportChatAttachmentUsecase {
         final bytes = value.fileData;
         final fileName = value.fileName;
         if (bytes == null || fileName == null) {
-          return const Err(FetchFileDataFailure());
+          return const Err(ExchangeChatAttachmentEmptyFailure());
         }
         // Writing the temp file and opening the share sheet is foreign IO
         // (share_plus throws on some devices/iPad popover cases).
@@ -65,7 +64,7 @@ class OpenSupportChatAttachmentUsecase {
             error: e.runtimeType,
             trace: st,
           );
-          return Err(LoadAttachmentFailure('${e.runtimeType}'));
+          return Err(ExchangeChatLoadAttachmentFailure('${e.runtimeType}'));
         }
     }
   }

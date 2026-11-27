@@ -1,5 +1,3 @@
-import '../exchange_support_chat_failure.dart';
-
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
@@ -12,7 +10,7 @@ class SendSupportChatMessageUsecase {
   /// Sends [text] with [attachments]; a message without attachments is sent
   /// without the attachments field.
   @useResult
-  Future<Result<void, ExchangeSupportChatFailure>> execute(
+  Future<Result<void, ExchangeFailure>> execute(
     ExchangeSession? session, {
     required String text,
     List<SupportChatMessageAttachment> attachments = const [],
@@ -28,11 +26,10 @@ class SendSupportChatMessageUsecase {
         ),
       }).mapErr(
         (failure) => switch (failure) {
-          ExchangeNotAuthenticatedFailure() => const NotAuthenticatedFailure(),
-          ExchangeChatSendMessageFailure() => SendMessageFailure(
-            failure.logMessage,
-          ),
-          _ => const ExchangeSupportChatUnexpectedFailure(),
+          ExchangeNotAuthenticatedFailure() =>
+            const ExchangeChatNotAuthenticatedFailure(),
+          ExchangeChatSendMessageFailure() => failure,
+          _ => const ExchangeUnexpectedFailure(),
         },
       );
 }
