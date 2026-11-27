@@ -5,7 +5,7 @@ resolution: workspace
 
 environment:
   sdk: "3.14.0"
-  flutter: "3.50.0"
+  flutter: "3.50.1"
 
 dependencies:
   background_tasks:
