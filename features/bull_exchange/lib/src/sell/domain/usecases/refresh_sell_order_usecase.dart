@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 /// Asks the exchange for a fresh quote on the sell's order: a pay order
 /// (sell to a recipient) and a sell order (sell to the balance) each have
@@ -9,7 +10,7 @@ class RefreshSellOrderUsecase {
 
   const RefreshSellOrderUsecase(this._exchange);
 
-  Future<ExchangeRead<Order>> execute(
+  Future<Result<Order, ExchangeReadFailure>> execute(
     ExchangeSession session,
     Order order,
   ) async {

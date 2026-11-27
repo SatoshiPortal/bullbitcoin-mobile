@@ -8,15 +8,17 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../recipients/recipient_fixture.dart';
 import '../../withdraw_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final class _Orders extends Fake implements OrdersRepository {
-  final ExchangeWrite<WithdrawOrder> answer;
+  final Result<WithdrawOrder, ExchangeWriteFailure> answer;
   final placed = <Map<String, Object?>>[];
   final confirmed = <(String, Object?)>[];
 
   _Orders(this.answer);
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
@@ -33,7 +35,7 @@ final class _Orders extends Fake implements OrdersRepository {
   }
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -75,7 +77,7 @@ ConfirmSend<WithdrawConfirmTarget> _confirmFor(
       ),
     ],
     WithdrawOrderChanged(
-      OrderCreateAnswered(1, GateAdmitted(WriteDone(withdrawOrder()))),
+      OrderCreateAnswered(1, GateAdmitted(Ok(withdrawOrder()))),
     ),
   ];
   final review = applyWithdraw(withdrawRecipientState, events);
@@ -85,12 +87,15 @@ ConfirmSend<WithdrawConfirmTarget> _confirmFor(
 }
 
 Future<_Orders> _confirm(ConfirmSend<WithdrawConfirmTarget> send) async {
-  final orders = _Orders(WriteDone(withdrawOrder()));
+  final orders = _Orders(Ok(withdrawOrder()));
   final answer = await ConfirmWithdrawOrderUsecase(
     exchangeForTesting(orders: (_) => orders),
   ).execute(withdrawSession, send);
   expect(answer.attempt, send.attempt);
-  expect(answer.answer, isA<GateAdmitted<ExchangeWrite<WithdrawOrder>>>());
+  expect(
+    answer.answer,
+    isA<GateAdmitted<Result<WithdrawOrder, ExchangeWriteFailure>>>(),
+  );
   return orders;
 }
 

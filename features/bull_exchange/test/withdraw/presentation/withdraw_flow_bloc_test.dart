@@ -11,13 +11,15 @@ import '../../payout/payout_requirements_fakes.dart';
 import '../withdraw_fixtures.dart';
 import '../withdraw_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// Fake use cases that log each call with the session it got.
 final class _Usecases {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<ExchangeWrite<WithdrawOrder>>> confirmAnswer =
-      Completer();
-  ExchangeRead<Order> reread = ReadGot(withdrawOrder());
+  Completer<GatedWrite<Result<WithdrawOrder, ExchangeWriteFailure>>>
+  confirmAnswer = Completer();
+  Result<Order, ExchangeReadFailure> reread = Ok(withdrawOrder());
 
   void _called(ExchangeSession session, String call) {
     sessions.add(session);
@@ -32,17 +34,17 @@ final class _Usecases {
     accessChanges: accessChanges,
     loadContext: FakeLoadWithdrawContextUsecase((session) async {
       _called(session, 'load');
-      return ReadGot(withdrawContext);
+      return Ok(withdrawContext);
     }),
     getMarketRate: FakeGetMarketRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
-      return const ReadGot(50000.0);
+      return const Ok(50000.0);
     }),
     createOrder: FakeCreateWithdrawOrderUsecase((session, effect) async {
       _called(session, 'create ${effect.attempt}');
       return OrderCreateAnswered(
         effect.attempt,
-        GateAdmitted(WriteDone(withdrawOrder())),
+        GateAdmitted(Ok(withdrawOrder())),
       );
     }),
     findCreatedOrder: FakeFindCreatedOrderUsecase((
@@ -51,7 +53,7 @@ final class _Usecases {
       sentAt,
     ) async {
       _called(session, 'find');
-      return const ReadMissing();
+      return const Err(ExchangeMissingFailure());
     }),
     confirmOrder: FakeConfirmWithdrawOrderUsecase((session, effect) async {
       _called(session, 'confirm ${effect.attempt}');
@@ -119,9 +121,9 @@ void main() {
     ]);
     expect(usecases.log.where((l) => l.startsWith('confirm')), ['confirm 1']);
     expect(bloc.state, isA<WithdrawConfirming>());
-    usecases.reread = ReadGot(withdrawOrder(status: OrderStatus.inProgress));
+    usecases.reread = Ok(withdrawOrder(status: OrderStatus.inProgress));
     usecases.confirmAnswer.complete(
-      const GateAdmitted(WriteOutcomeUnknown('lost')),
+      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
     );
     await _settle();
     await _settle();

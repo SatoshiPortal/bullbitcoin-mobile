@@ -33,7 +33,7 @@ void main() {
         },
       ),
     ).execute(paySession, 'p-1');
-    expect(read, isA<ReadGot<Order>>());
+    expect(read, isA<Ok<Order, ExchangeReadFailure>>());
     expect(orders.asked, ['p-1']);
     expect(environments, [ExchangeEnvironment.mainnet]);
   });
@@ -44,6 +44,13 @@ void main() {
         orders: (_) => _Orders(const Err(ExchangeNetworkFailure())),
       ),
     ).execute(paySession, 'p-1');
-    expect(read, isA<ReadUnreachable<Order>>());
+    expect(
+      read,
+      isA<Err<Order, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

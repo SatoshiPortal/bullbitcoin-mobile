@@ -47,7 +47,7 @@ void main() {
         },
       ),
     ).execute(sellSession, sellOrder());
-    expect(read, isA<ReadGot<Order>>());
+    expect(read, isA<Ok<Order, ExchangeReadFailure>>());
     expect(orders.asked, ['refresh sell s-1']);
     expect(environments, [ExchangeEnvironment.mainnet]);
   });
@@ -58,7 +58,14 @@ void main() {
     final read = await RefreshSellOrderUsecase(
       exchangeForTesting(orders: (_) => orders),
     ).execute(sellSession, payOrder());
-    expect(read, isA<ReadUnreachable<Order>>());
+    expect(
+      read,
+      isA<Err<Order, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
     expect(orders.asked, ['refresh pay ${payOrder().orderId}']);
   });
 

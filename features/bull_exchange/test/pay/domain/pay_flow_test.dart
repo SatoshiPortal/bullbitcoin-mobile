@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../pay_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _states = <String, PayFlowState>{
   'loading': payLoadingState,
   'recipient': payRecipientState,
@@ -24,7 +26,7 @@ final _states = <String, PayFlowState>{
 };
 
 final _events = <String, PayFlowEvent>{
-  'contextLoaded': PayContextLoaded(1, ReadGot(payContext)),
+  'contextLoaded': PayContextLoaded(1, Ok(payContext)),
   'retry': const PayRetryPressed(),
   'picked': PayRecipientPicked(payBankRecipient),
   'requirements': const PayRequirementsChanged(
@@ -32,10 +34,13 @@ final _events = <String, PayFlowEvent>{
   ),
   'amount': const PayAmountChanged(AmountTyped('5')),
   'kycReturned': const PayKycReturned(),
-  'detourLoaded': PayDetourLoaded(ReadGot(payContext)),
+  'detourLoaded': PayDetourLoaded(Ok(payContext)),
   'source': const PaySourcePicked(payAppWallet),
   'order': PayOrderChanged(
-    OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(payOrder()))),
+    OrderCreateAnswered(
+      1,
+      GateAdmitted(Ok<Order, ExchangeWriteFailure>(payOrder())),
+    ),
   ),
   'confirm': PayConfirmPressed(payNow),
   'spendFees': const PaySpendChanged(SpendFeesLoaded(1, payFees)),
@@ -51,7 +56,7 @@ final _events = <String, PayFlowEvent>{
     WatchPolled(
       'p-1',
       1,
-      ReadGot<Order>(
+      Ok<Order, ExchangeReadFailure>(
         payOrder(
           payinStatus: OrderPayinStatus.inProgress,
           payoutStatus: OrderPayoutStatus.completed,
@@ -192,7 +197,10 @@ void main() {
     final next = transitionPayFlow(
       payOrderingState,
       const PayOrderChanged(
-        OrderCreateAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        OrderCreateAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
     );
     expect(
@@ -225,7 +233,7 @@ void main() {
           WatchPolled(
             'p-1',
             1,
-            ReadGot<Order>(
+            Ok<Order, ExchangeReadFailure>(
               payOrder(
                 payinStatus: OrderPayinStatus.underReview,
                 payoutMethod: OrderPaymentMethod.sinpe,
@@ -291,12 +299,14 @@ void main() {
         OrderCreateAnswered(
           1,
           GateAdmitted(
-            WriteRefused(
-              ExchangeRefusal(
-                orderLimit: const ExchangeOrderLimit(
-                  ExchangeOrderAmountBound.minimum,
-                  20,
-                  'CAD',
+            Err(
+              ExchangeWriteRefusedFailure(
+                ExchangeRefusal(
+                  orderLimit: const ExchangeOrderLimit(
+                    ExchangeOrderAmountBound.minimum,
+                    20,
+                    'CAD',
+                  ),
                 ),
               ),
             ),
@@ -321,7 +331,7 @@ void main() {
       const PayBackPressed(),
       PayRecipientPicked(payBankRecipient),
       const PayAmountChanged(
-        AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+        AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
       ),
       const PayAmountChanged(AmountTyped('10')),
       const PayAmountChanged(AmountContinuePressed()),

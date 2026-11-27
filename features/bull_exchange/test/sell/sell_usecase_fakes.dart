@@ -4,16 +4,20 @@ import 'package:bull_exchange/src/sell/domain/usecases/load_sell_context_usecase
 import 'package:bull_exchange/src/sell/domain/usecases/refresh_sell_order_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 final class FakeLoadSellContextUsecase implements LoadSellContextUsecase {
-  final Future<ExchangeRead<SellContext>> Function(ExchangeSession session)
+  final Future<Result<SellContext, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeLoadSellContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<SellContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<SellContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeCreateSellOrderUsecase implements CreateSellOrderUsecase {
@@ -33,7 +37,7 @@ final class FakeCreateSellOrderUsecase implements CreateSellOrderUsecase {
 }
 
 final class FakeRefreshSellOrderUsecase implements RefreshSellOrderUsecase {
-  final Future<ExchangeRead<Order>> Function(
+  final Future<Result<Order, ExchangeReadFailure>> Function(
     ExchangeSession session,
     Order order,
   )
@@ -42,6 +46,8 @@ final class FakeRefreshSellOrderUsecase implements RefreshSellOrderUsecase {
   FakeRefreshSellOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<Order>> execute(ExchangeSession session, Order order) =>
-      answer(session, order);
+  Future<Result<Order, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+    Order order,
+  ) => answer(session, order);
 }

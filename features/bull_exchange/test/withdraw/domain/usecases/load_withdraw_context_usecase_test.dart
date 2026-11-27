@@ -30,7 +30,7 @@ void main() {
         unknownWrites: journal,
       ),
     ).execute(withdrawSession);
-    final context = (read as ReadGot<WithdrawContext>).value;
+    final context = (read as Ok<WithdrawContext, ExchangeReadFailure>).value;
     expect(context.summary, withdrawSummary);
     expect(context.openEntries.map((e) => e.orderId), ['w-1']);
     expect(asked, [ExchangeEnvironment.mainnet]);
@@ -43,7 +43,10 @@ void main() {
         unknownWrites: InMemoryUnknownWriteJournal(),
       ),
     ).execute(withdrawSession);
-    expect((read as ReadGot<WithdrawContext>).value.openEntries, isEmpty);
+    expect(
+      (read as Ok<WithdrawContext, ExchangeReadFailure>).value.openEntries,
+      isEmpty,
+    );
   });
 
   test('a failed summary read is the answer', () async {
@@ -54,6 +57,13 @@ void main() {
         ),
       ),
     ).execute(withdrawSession);
-    expect(read, isA<ReadSessionRejected<WithdrawContext>>());
+    expect(
+      read,
+      isA<Err<WithdrawContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 }

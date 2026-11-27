@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../recipients/recipient_fixture.dart';
 import '../withdraw_fixtures.dart' as fx;
 
+import 'package:primitives/primitives.dart';
+
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,
@@ -84,14 +86,14 @@ WithdrawFlowNext _apply(
   return next;
 }
 
-GateAdmitted<ExchangeWrite<T>> _done<T>(T value) =>
-    GateAdmitted(WriteDone(value));
+GateAdmitted<Result<T, ExchangeWriteFailure>> _done<T>(T value) =>
+    GateAdmitted(Ok(value));
 
 final _loading = withdrawFlowStart(_session).state;
 final _amount = _apply(_loading, [
-  WithdrawContextLoaded(1, ReadGot(_ctx)),
+  WithdrawContextLoaded(1, Ok(_ctx)),
   const WithdrawAmountChanged(
-    AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+    AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
   ),
 ]).state;
 final _recipient = _apply(_amount, const [
@@ -128,7 +130,7 @@ final _states = <String, WithdrawFlowState>{
 };
 
 final _events = <String, WithdrawFlowEvent>{
-  'contextLoaded': WithdrawContextLoaded(1, ReadGot(_ctx)),
+  'contextLoaded': WithdrawContextLoaded(1, Ok(_ctx)),
   'retry': const WithdrawRetryPressed(),
   'amount': const WithdrawAmountChanged(AmountTyped('5')),
   'picked': WithdrawRecipientPicked(_bank),
@@ -245,7 +247,7 @@ void main() {
         _loading,
         const WithdrawContextLoaded(
           1,
-          ReadUnreachable('down', isNetwork: true),
+          Err(ExchangeUnreachableFailure('down', isNetwork: true)),
         ),
       );
       expect(
@@ -262,7 +264,7 @@ void main() {
     test('the amount step fetches the rate of the preferred market', () {
       final next = transitionWithdrawFlow(
         _loading,
-        WithdrawContextLoaded(1, ReadGot(_ctx)),
+        WithdrawContextLoaded(1, Ok(_ctx)),
       );
       expect(next.effects, [const WithdrawFetchRate(ExchangeCatalog.cad)]);
     });
@@ -273,7 +275,9 @@ void main() {
           _loading,
           const WithdrawContextLoaded(
             1,
-            ReadSessionRejected(ExchangeSessionRejection.server),
+            Err(
+              ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+            ),
           ),
         ).state,
         isA<WithdrawSessionEnded>(),
@@ -329,9 +333,9 @@ void main() {
         const [],
       );
       final recipient = _apply(withdrawFlowStart(_session).state, [
-        WithdrawContextLoaded(1, ReadGot(eur)),
+        WithdrawContextLoaded(1, Ok(eur)),
         const WithdrawAmountChanged(
-          AmountRateArrived(ExchangeCatalog.eur, ReadGot(50000.0)),
+          AmountRateArrived(ExchangeCatalog.eur, Ok(50000.0)),
         ),
         const WithdrawAmountChanged(AmountTyped('10')),
         const WithdrawAmountChanged(AmountContinuePressed()),
@@ -371,7 +375,10 @@ void main() {
       final unknown = transitionWithdrawFlow(
         _ordering,
         const WithdrawOrderChanged(
-          OrderCreateAnswered(1, GateAdmitted(WriteOutcomeUnknown('timeout'))),
+          OrderCreateAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('timeout'))),
+          ),
         ),
       );
       expect(
@@ -387,7 +394,9 @@ void main() {
       // again.
       final missing = transitionWithdrawFlow(
         unknown.state,
-        const WithdrawOrderChanged(OrderFindAnswered(1, ReadMissing())),
+        const WithdrawOrderChanged(
+          OrderFindAnswered(1, Err(ExchangeMissingFailure())),
+        ),
       );
       expect(
         (missing.state as WithdrawOrdering).order,
@@ -422,7 +431,11 @@ void main() {
         const WithdrawOrderChanged(
           OrderCreateAnswered(
             1,
-            GateAdmitted(WriteRefused(ExchangeRefusal(rpcCode: -32000))),
+            GateAdmitted(
+              Err(
+                ExchangeWriteRefusedFailure(ExchangeRefusal(rpcCode: -32000)),
+              ),
+            ),
           ),
         ),
       );
@@ -482,7 +495,10 @@ void main() {
       final unknown = transitionWithdrawFlow(
         _confirming,
         const WithdrawConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+          ConfirmAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+          ),
         ),
       );
       expect(
@@ -499,7 +515,7 @@ void main() {
       final notApplied = transitionWithdrawFlow(
         unknown.state,
         WithdrawConfirmChanged(
-          ConfirmVerified(1, withdrawConfirmCheck(ReadGot(_order()))),
+          ConfirmVerified(1, withdrawConfirmCheck(Ok(_order()))),
         ),
       );
       expect(
@@ -519,7 +535,10 @@ void main() {
       final verifying = transitionWithdrawFlow(
         _confirming,
         const WithdrawConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+          ConfirmAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+          ),
         ),
       ).state;
       expect(
@@ -528,9 +547,7 @@ void main() {
           WithdrawConfirmChanged(
             ConfirmVerified(
               1,
-              withdrawConfirmCheck(
-                ReadGot(_order(status: OrderStatus.completed)),
-              ),
+              withdrawConfirmCheck(Ok(_order(status: OrderStatus.completed))),
             ),
           ),
         ).state,
@@ -571,7 +588,7 @@ void main() {
 
   test('withdrawConfirmCheck names every order status', () {
     for (final status in OrderStatus.values) {
-      final check = withdrawConfirmCheck(ReadGot(_order(status: status)));
+      final check = withdrawConfirmCheck(Ok(_order(status: status)));
       switch (status) {
         case OrderStatus.inProgress || OrderStatus.completed:
           expect(check, isA<ConfirmSeenApplied<WithdrawOrder>>());
@@ -588,12 +605,16 @@ void main() {
     }
     expect(
       withdrawConfirmCheck(
-        const ReadSessionRejected(ExchangeSessionRejection.server),
+        const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
       ),
       isA<ConfirmCheckSessionRejected<WithdrawOrder>>(),
     );
     expect(
-      withdrawConfirmCheck(const ReadUnreachable('x', isNetwork: true)),
+      withdrawConfirmCheck(
+        const Err(ExchangeUnreachableFailure('x', isNetwork: true)),
+      ),
       isA<ConfirmCheckFailed<WithdrawOrder>>(),
     );
   });
@@ -608,12 +629,14 @@ void main() {
         OrderCreateAnswered(
           1,
           GateAdmitted(
-            WriteRefused(
-              ExchangeRefusal(
-                orderLimit: const ExchangeOrderLimit(
-                  ExchangeOrderAmountBound.minimum,
-                  20,
-                  'CAD',
+            Err(
+              ExchangeWriteRefusedFailure(
+                ExchangeRefusal(
+                  orderLimit: const ExchangeOrderLimit(
+                    ExchangeOrderAmountBound.minimum,
+                    20,
+                    'CAD',
+                  ),
                 ),
               ),
             ),

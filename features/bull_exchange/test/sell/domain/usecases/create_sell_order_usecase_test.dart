@@ -10,13 +10,13 @@ import 'package:primitives/primitives.dart';
 import '../../sell_fixtures.dart';
 
 final class _Orders extends Fake implements OrdersRepository {
-  final ExchangeWrite<Order> answer;
+  final Result<Order, ExchangeWriteFailure> answer;
   final placed = <String>[];
 
   _Orders(this.answer);
 
   @override
-  Future<ExchangeWrite<SellOrder>> placeSellOrder({
+  Future<Result<SellOrder, ExchangeWriteFailure>> placeSellOrder({
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required BtcNetwork network,
@@ -24,14 +24,16 @@ final class _Orders extends Fake implements OrdersRepository {
   }) async {
     placed.add('sell ${currency.code} ${network.name} payjoin=$usePayjoin');
     return switch (answer) {
-      WriteDone(value: final SellOrder order) => WriteDone(order),
-      WriteOutcomeUnknown(:final reason) => WriteOutcomeUnknown(reason),
+      Ok(value: final SellOrder order) => Ok(order),
+      Err(failure: ExchangeWriteOutcomeUnknownFailure(:final reason)) => Err(
+        ExchangeWriteOutcomeUnknownFailure(reason),
+      ),
       _ => throw StateError('no such sell answer in this test'),
     };
   }
 
   @override
-  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
+  Future<Result<FiatPaymentOrder, ExchangeWriteFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -43,7 +45,9 @@ final class _Orders extends Fake implements OrdersRepository {
   }) async {
     placed.add('pay $recipientId ${network.name} payjoin=$usePayjoin');
     return switch (answer) {
-      WriteOutcomeUnknown(:final reason) => WriteOutcomeUnknown(reason),
+      Err(failure: ExchangeWriteOutcomeUnknownFailure(:final reason)) => Err(
+        ExchangeWriteOutcomeUnknownFailure(reason),
+      ),
       _ => throw StateError('no such pay answer in this test'),
     };
   }
@@ -98,7 +102,7 @@ OrderSendCreate<SellRequest> _toRecipient() =>
 void main() {
   test('a sell to the balance asks for payjoin when the wallet allows '
       'it', () async {
-    final orders = _Orders(WriteDone<Order>(sellOrder()));
+    final orders = _Orders(Ok<Order, ExchangeWriteFailure>(sellOrder()));
     final environments = <ExchangeEnvironment>[];
     final answer = await CreateSellOrderUsecase(
       exchangeForTesting(
@@ -112,10 +116,10 @@ void main() {
     expect(answer.attempt, 1);
     expect(
       answer.answer,
-      isA<GateAdmitted<ExchangeWrite<Order>>>().having(
+      isA<GateAdmitted<Result<Order, ExchangeWriteFailure>>>().having(
         (a) => a.result,
         'result',
-        isA<WriteDone<Order>>(),
+        isA<Ok<Order, ExchangeWriteFailure>>(),
       ),
     );
     expect(orders.placed, ['sell CAD bitcoin payjoin=true']);
@@ -127,7 +131,7 @@ void main() {
       _policy(sellEnabled: false),
       _Policy(const Err(PayjoinUnavailableFailure())),
     ]) {
-      final orders = _Orders(WriteDone<Order>(sellOrder()));
+      final orders = _Orders(Ok<Order, ExchangeWriteFailure>(sellOrder()));
       await CreateSellOrderUsecase(
         exchangeForTesting(orders: (_) => orders),
         policy,
@@ -139,7 +143,9 @@ void main() {
   test('a sell to a recipient is a pay order; an unknown outcome is '
       'journaled as an order create of the session', () async {
     final journal = InMemoryUnknownWriteJournal();
-    final orders = _Orders(const WriteOutcomeUnknown('lost'));
+    final orders = _Orders(
+      const Err(ExchangeWriteOutcomeUnknownFailure('lost')),
+    );
     await CreateSellOrderUsecase(
       exchangeForTesting(
         orders: (_) => orders,

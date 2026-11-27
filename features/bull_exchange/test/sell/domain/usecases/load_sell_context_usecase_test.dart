@@ -30,7 +30,7 @@ void main() {
         unknownWrites: journal,
       ),
     ).execute(sellSession);
-    final context = (read as ReadGot<SellContext>).value;
+    final context = (read as Ok<SellContext, ExchangeReadFailure>).value;
     expect(context.summary, sellSummary);
     expect(context.openEntries.map((e) => e.orderId), ['s-1']);
     expect(asked, [ExchangeEnvironment.mainnet]);
@@ -43,7 +43,10 @@ void main() {
         unknownWrites: InMemoryUnknownWriteJournal(),
       ),
     ).execute(sellSession);
-    expect((read as ReadGot<SellContext>).value.openEntries, isEmpty);
+    expect(
+      (read as Ok<SellContext, ExchangeReadFailure>).value.openEntries,
+      isEmpty,
+    );
   });
 
   test('a failed summary read is the answer', () async {
@@ -54,6 +57,13 @@ void main() {
         ),
       ),
     ).execute(sellSession);
-    expect(read, isA<ReadSessionRejected<SellContext>>());
+    expect(
+      read,
+      isA<Err<SellContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 }

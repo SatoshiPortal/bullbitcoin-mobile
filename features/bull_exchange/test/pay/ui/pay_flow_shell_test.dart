@@ -21,6 +21,8 @@ import 'package:mocktail/mocktail.dart';
 
 import '../pay_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
 
@@ -177,12 +179,14 @@ void main() {
         OrderCreateAnswered(
           1,
           GateAdmitted(
-            WriteRefused(
-              ExchangeRefusal(
-                orderLimit: const ExchangeOrderLimit(
-                  ExchangeOrderAmountBound.minimum,
-                  20,
-                  'CAD',
+            Err(
+              ExchangeWriteRefusedFailure(
+                ExchangeRefusal(
+                  orderLimit: const ExchangeOrderLimit(
+                    ExchangeOrderAmountBound.minimum,
+                    20,
+                    'CAD',
+                  ),
                 ),
               ),
             ),

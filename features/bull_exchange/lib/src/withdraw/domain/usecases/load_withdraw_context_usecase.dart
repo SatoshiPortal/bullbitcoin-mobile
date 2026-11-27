@@ -10,7 +10,9 @@ class LoadWithdrawContextUsecase {
 
   const LoadWithdrawContextUsecase(this._exchange);
 
-  Future<ExchangeRead<WithdrawContext>> execute(ExchangeSession session) async {
+  Future<Result<WithdrawContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) async {
     final summary = readOfResult(
       await _exchange.getUserSummary(session.environment),
     );
@@ -21,14 +23,20 @@ class LoadWithdrawContextUsecase {
       Err() => const <UnknownWrite>[],
     };
     return switch (summary) {
-      ReadGot(:final value) => ReadGot(WithdrawContext(value, entries)),
-      ReadMissing() => const ReadMissing(),
-      ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable(
-        reason,
-        isNetwork: isNetwork,
+      Ok(:final value) => Ok(WithdrawContext(value, entries)),
+      Err(failure: ExchangeMissingFailure()) => const Err(
+        ExchangeMissingFailure(),
       ),
-      ReadSessionRejected(:final why) => ReadSessionRejected(why),
-      ReadMalformed(:final reason) => ReadMalformed(reason),
+      Err(
+        failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+      ) =>
+        Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork)),
+      Err(failure: ExchangeSessionRejectedFailure(:final why)) => Err(
+        ExchangeSessionRejectedFailure(why),
+      ),
+      Err(failure: ExchangeMalformedFailure(:final reason)) => Err(
+        ExchangeMalformedFailure(reason),
+      ),
     };
   }
 }

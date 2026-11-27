@@ -3,6 +3,7 @@ import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The pay flow (composition §5, Pay column): session → account load →
 /// recipient (any rail, anyone's) → its payout requirements → amount in the
@@ -321,7 +322,7 @@ sealed class PayFlowEvent {
 
 final class PayContextLoaded extends PayFlowEvent {
   final int attempt;
-  final ExchangeRead<PayContext> read;
+  final Result<PayContext, ExchangeReadFailure> read;
 
   const PayContextLoaded(this.attempt, this.read);
 }
@@ -353,7 +354,7 @@ final class PayKycReturned extends PayFlowEvent {
 }
 
 final class PayDetourLoaded extends PayFlowEvent {
-  final ExchangeRead<PayContext> read;
+  final Result<PayContext, ExchangeReadFailure> read;
 
   const PayDetourLoaded(this.read);
 }
@@ -760,7 +761,7 @@ PayFlowNext _amount(PayAmount state, PayFlowEvent event) => switch (event) {
   },
   PayDetourLoaded(:final read) => switch (state.amount) {
     AmountKycDetour() => switch (read) {
-      ReadGot(value: final context) => _amountNext(
+      Ok(value: final context) => _amountNext(
         PayOpen(state.open.session, state.open.context.withAccount(context)),
         state.recipient,
         transitionAmountEntry(
@@ -769,10 +770,10 @@ PayFlowNext _amount(PayAmount state, PayFlowEvent event) => switch (event) {
           AmountDetourReturned(context.amountContext),
         ),
       ),
-      ReadSessionRejected() => _ended,
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => PayFlowNext.stay(state),
+      Err(failure: ExchangeSessionRejectedFailure()) => _ended,
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(failure: ExchangeMalformedFailure()) => PayFlowNext.stay(state),
     },
     AmountNoMarket() ||
     AmountEditing() ||

@@ -30,7 +30,7 @@ void main() {
         unknownWrites: journal,
       ),
     ).execute(paySession);
-    final context = (read as ReadGot<PayContext>).value;
+    final context = (read as Ok<PayContext, ExchangeReadFailure>).value;
     expect(context.summary, paySummary);
     expect(context.openEntries.map((e) => e.orderId), ['p-1']);
     expect(asked, [ExchangeEnvironment.mainnet]);
@@ -43,7 +43,10 @@ void main() {
         unknownWrites: InMemoryUnknownWriteJournal(),
       ),
     ).execute(paySession);
-    expect((read as ReadGot<PayContext>).value.openEntries, isEmpty);
+    expect(
+      (read as Ok<PayContext, ExchangeReadFailure>).value.openEntries,
+      isEmpty,
+    );
   });
 
   test('a failed summary read is the answer', () async {
@@ -54,6 +57,13 @@ void main() {
         ),
       ),
     ).execute(paySession);
-    expect(read, isA<ReadSessionRejected<PayContext>>());
+    expect(
+      read,
+      isA<Err<PayContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 }

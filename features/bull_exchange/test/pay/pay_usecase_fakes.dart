@@ -4,16 +4,20 @@ import 'package:bull_exchange/src/pay/domain/usecases/load_pay_context_usecase.d
 import 'package:bull_exchange/src/pay/domain/usecases/refresh_pay_order_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 final class FakeLoadPayContextUsecase implements LoadPayContextUsecase {
-  final Future<ExchangeRead<PayContext>> Function(ExchangeSession session)
+  final Future<Result<PayContext, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeLoadPayContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<PayContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<PayContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeCreatePayOrderUsecase implements CreatePayOrderUsecase {
@@ -33,7 +37,7 @@ final class FakeCreatePayOrderUsecase implements CreatePayOrderUsecase {
 }
 
 final class FakeRefreshPayOrderUsecase implements RefreshPayOrderUsecase {
-  final Future<ExchangeRead<Order>> Function(
+  final Future<Result<Order, ExchangeReadFailure>> Function(
     ExchangeSession session,
     String orderId,
   )
@@ -42,7 +46,7 @@ final class FakeRefreshPayOrderUsecase implements RefreshPayOrderUsecase {
   FakeRefreshPayOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<Order>> execute(
+  Future<Result<Order, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) => answer(session, orderId);

@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The withdraw flow (composition §5, Withdraw column): session → account
 /// load → amount from a funded balance → own recipient on the market's rails
@@ -339,7 +340,7 @@ sealed class WithdrawFlowEvent {
 
 final class WithdrawContextLoaded extends WithdrawFlowEvent {
   final int attempt;
-  final ExchangeRead<WithdrawContext> read;
+  final Result<WithdrawContext, ExchangeReadFailure> read;
 
   const WithdrawContextLoaded(this.attempt, this.read);
 }
@@ -494,25 +495,29 @@ WithdrawFlowNext withdrawFlowStart(ExchangeSession? session) =>
 /// The re-read of a withdrawal whose confirm outcome is unknown: in progress
 /// or completed means it was confirmed; awaiting confirmation or ended means
 /// not; an unknown status can't tell.
-ConfirmCheck<WithdrawOrder> withdrawConfirmCheck(ExchangeRead<Order> read) =>
-    switch (read) {
-      ReadGot(value: final WithdrawOrder order) => switch (order.orderStatus) {
-        OrderStatus.inProgress ||
-        OrderStatus.completed => ConfirmSeenApplied(order),
-        OrderStatus.awaitingConfirmation ||
-        OrderStatus.canceled ||
-        OrderStatus.expired ||
-        OrderStatus.orderExpired ||
-        OrderStatus.rejected ||
-        OrderStatus.failed => const ConfirmSeenNotApplied(),
-        OrderStatus.unknown => const ConfirmCheckFailed(ReadProblemMalformed()),
-      },
-      ReadGot() => const ConfirmCheckFailed(ReadProblemMalformed()),
-      ReadSessionRejected() => const ConfirmCheckSessionRejected(),
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => ConfirmCheckFailed(ReadProblem.of(read)!),
-    };
+ConfirmCheck<WithdrawOrder> withdrawConfirmCheck(
+  Result<Order, ExchangeReadFailure> read,
+) => switch (read) {
+  Ok(value: final WithdrawOrder order) => switch (order.orderStatus) {
+    OrderStatus.inProgress ||
+    OrderStatus.completed => ConfirmSeenApplied(order),
+    OrderStatus.awaitingConfirmation ||
+    OrderStatus.canceled ||
+    OrderStatus.expired ||
+    OrderStatus.orderExpired ||
+    OrderStatus.rejected ||
+    OrderStatus.failed => const ConfirmSeenNotApplied(),
+    OrderStatus.unknown => const ConfirmCheckFailed(ReadProblemMalformed()),
+  },
+  Ok() => const ConfirmCheckFailed(ReadProblemMalformed()),
+  Err(failure: ExchangeSessionRejectedFailure()) =>
+    const ConfirmCheckSessionRejected(),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => ConfirmCheckFailed(ReadProblem.of(read)!),
+};
 
 WithdrawFlowNext transitionWithdrawFlow(
   WithdrawFlowState state,

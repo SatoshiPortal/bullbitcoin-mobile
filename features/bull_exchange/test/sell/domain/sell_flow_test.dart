@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../sell_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _states = <String, SellFlowState>{
   'loading': sellLoadingState,
   'amount': sellAmountState,
@@ -24,11 +26,11 @@ final _states = <String, SellFlowState>{
 };
 
 final _events = <String, SellFlowEvent>{
-  'contextLoaded': SellContextLoaded(1, ReadGot(sellContext)),
+  'contextLoaded': SellContextLoaded(1, Ok(sellContext)),
   'retry': const SellRetryPressed(),
   'amount': const SellAmountChanged(AmountTyped('5')),
   'kycReturned': const SellKycReturned(),
-  'detourLoaded': SellDetourLoaded(ReadGot(sellContext)),
+  'detourLoaded': SellDetourLoaded(Ok(sellContext)),
   'source': const SellSourcePicked(sellAppWallet),
   'payout': const SellPayoutPicked(SellPayoutChoice.balance),
   'picked': SellRecipientPicked(sellBankRecipient),
@@ -36,7 +38,10 @@ final _events = <String, SellFlowEvent>{
     RequirementInteracEvent(InteracQuestionTyped('Colour?')),
   ),
   'order': SellOrderChanged(
-    OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(sellOrder()))),
+    OrderCreateAnswered(
+      1,
+      GateAdmitted(Ok<Order, ExchangeWriteFailure>(sellOrder())),
+    ),
   ),
   'confirm': SellConfirmPressed(sellNow),
   'spendFees': const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
@@ -181,7 +186,10 @@ void main() {
       final next = transitionSellFlow(
         sellOrderingState,
         const SellOrderChanged(
-          OrderCreateAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+          OrderCreateAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+          ),
         ),
       );
       expect(
@@ -384,7 +392,7 @@ void main() {
             WatchPolled(
               's-1',
               1,
-              ReadGot<Order>(
+              Ok<Order, ExchangeReadFailure>(
                 sellOrder(payinStatus: OrderPayinStatus.underReview),
               ),
             ),
@@ -426,12 +434,14 @@ void main() {
         OrderCreateAnswered(
           1,
           GateAdmitted(
-            WriteRefused(
-              ExchangeRefusal(
-                orderLimit: const ExchangeOrderLimit(
-                  ExchangeOrderAmountBound.minimum,
-                  20,
-                  'CAD',
+            Err(
+              ExchangeWriteRefusedFailure(
+                ExchangeRefusal(
+                  orderLimit: const ExchangeOrderLimit(
+                    ExchangeOrderAmountBound.minimum,
+                    20,
+                    'CAD',
+                  ),
                 ),
               ),
             ),

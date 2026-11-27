@@ -10,13 +10,13 @@ import 'package:primitives/primitives.dart';
 import '../../pay_fixtures.dart';
 
 final class _Orders extends Fake implements OrdersRepository {
-  final ExchangeWrite<FiatPaymentOrder> answer;
+  final Result<FiatPaymentOrder, ExchangeWriteFailure> answer;
   final placed = <Map<String, Object?>>[];
 
   _Orders(this.answer);
 
   @override
-  Future<ExchangeWrite<FiatPaymentOrder>> placePayOrder({
+  Future<Result<FiatPaymentOrder, ExchangeWriteFailure>> placePayOrder({
     required OrderAmount orderAmount,
     required String recipientId,
     required BtcNetwork network,
@@ -76,7 +76,7 @@ OrderSendCreate<PayRequest> _send({String description = ''}) {
 void main() {
   test('places a pay order to the recipient in the session environment, '
       'asking for payjoin when the wallet allows it', () async {
-    final orders = _Orders(WriteDone(payOrder()));
+    final orders = _Orders(Ok(payOrder()));
     final environments = <ExchangeEnvironment>[];
     final answer = await CreatePayOrderUsecase(
       exchangeForTesting(
@@ -89,10 +89,10 @@ void main() {
     ).execute(paySession, _send());
     expect(
       answer.answer,
-      isA<GateAdmitted<ExchangeWrite<Order>>>().having(
+      isA<GateAdmitted<Result<Order, ExchangeWriteFailure>>>().having(
         (a) => a.result,
         'result',
-        isA<WriteDone<Order>>(),
+        isA<Ok<Order, ExchangeWriteFailure>>(),
       ),
     );
     expect(orders.placed, [
@@ -109,7 +109,7 @@ void main() {
 
   test('the description typed on the amount page goes with the '
       'order', () async {
-    final orders = _Orders(WriteDone(payOrder()));
+    final orders = _Orders(Ok(payOrder()));
     await CreatePayOrderUsecase(
       exchangeForTesting(orders: (_) => orders),
       _policy(sellEnabled: false),
@@ -122,7 +122,7 @@ void main() {
       _policy(sellEnabled: false),
       _Policy(const Err(PayjoinUnavailableFailure())),
     ]) {
-      final orders = _Orders(WriteDone(payOrder()));
+      final orders = _Orders(Ok(payOrder()));
       await CreatePayOrderUsecase(
         exchangeForTesting(orders: (_) => orders),
         policy,
@@ -136,7 +136,8 @@ void main() {
     final journal = InMemoryUnknownWriteJournal();
     await CreatePayOrderUsecase(
       exchangeForTesting(
-        orders: (_) => _Orders(const WriteOutcomeUnknown('lost')),
+        orders: (_) =>
+            _Orders(const Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
         unknownWrites: journal,
         readSessionPoint: () async =>
             const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),

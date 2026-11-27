@@ -11,14 +11,14 @@ import 'package:primitives/primitives.dart';
 import '../../withdraw_fixtures.dart';
 
 final class _Orders extends Fake implements OrdersRepository {
-  final ExchangeWrite<WithdrawOrder> answer;
+  final Result<WithdrawOrder, ExchangeWriteFailure> answer;
   final placed = <Map<String, Object?>>[];
   final confirmed = <(String, Object?)>[];
 
   _Orders(this.answer);
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> placeWithdrawalOrder({
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> placeWithdrawalOrder({
     required double fiatAmount,
     required String recipientId,
     SepaPaymentProcessor? paymentProcessor,
@@ -35,7 +35,7 @@ final class _Orders extends Fake implements OrdersRepository {
   }
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -62,7 +62,7 @@ OrderSendCreate<WithdrawRequest> _send() {
 
 void main() {
   test('places the withdrawal for the amount and recipient', () async {
-    final orders = _Orders(WriteDone(withdrawOrder()));
+    final orders = _Orders(Ok(withdrawOrder()));
     final send = _send();
     final answer = await CreateWithdrawOrderUsecase(
       exchangeForTesting(orders: (_) => orders),
@@ -70,10 +70,10 @@ void main() {
     expect(answer.attempt, send.attempt);
     expect(
       answer.answer,
-      isA<GateAdmitted<ExchangeWrite<WithdrawOrder>>>().having(
+      isA<GateAdmitted<Result<WithdrawOrder, ExchangeWriteFailure>>>().having(
         (a) => a.result,
         'result',
-        isA<WriteDone<WithdrawOrder>>(),
+        isA<Ok<WithdrawOrder, ExchangeWriteFailure>>(),
       ),
     );
     expect(orders.placed, [
@@ -91,7 +91,8 @@ void main() {
     final journal = InMemoryUnknownWriteJournal();
     await CreateWithdrawOrderUsecase(
       exchangeForTesting(
-        orders: (_) => _Orders(const WriteOutcomeUnknown('lost')),
+        orders: (_) =>
+            _Orders(const Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
         unknownWrites: journal,
         readSessionPoint: () async =>
             const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
@@ -106,7 +107,7 @@ void main() {
   });
 
   test('a held write gate refuses without placing', () async {
-    final orders = _Orders(WriteDone(withdrawOrder()));
+    final orders = _Orders(Ok(withdrawOrder()));
     final gate = ExchangeWriteGate();
     final held = Completer<void>();
     final holding = gate.run(
@@ -117,7 +118,10 @@ void main() {
     final answer = await CreateWithdrawOrderUsecase(
       exchangeForTesting(orders: (_) => orders, writeGate: gate),
     ).execute(withdrawSession, _send());
-    expect(answer.answer, isA<GateRefused<ExchangeWrite<WithdrawOrder>>>());
+    expect(
+      answer.answer,
+      isA<GateRefused<Result<WithdrawOrder, ExchangeWriteFailure>>>(),
+    );
     expect(orders.placed, isEmpty);
     held.complete();
     await holding;

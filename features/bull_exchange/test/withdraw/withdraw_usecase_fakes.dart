@@ -4,17 +4,21 @@ import 'package:bull_exchange/src/withdraw/domain/usecases/load_withdraw_context
 import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 final class FakeLoadWithdrawContextUsecase
     implements LoadWithdrawContextUsecase {
-  final Future<ExchangeRead<WithdrawContext>> Function(ExchangeSession session)
+  final Future<Result<WithdrawContext, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeLoadWithdrawContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<WithdrawContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<WithdrawContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeCreateWithdrawOrderUsecase

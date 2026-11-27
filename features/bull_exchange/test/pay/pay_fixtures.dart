@@ -6,6 +6,8 @@ import 'package:exchange/steps.dart';
 
 import '../recipients/recipient_fixture.dart';
 
+import 'package:primitives/primitives.dart';
+
 const paySession = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,
@@ -85,16 +87,14 @@ PayFlowState applyPay(PayFlowState state, List<PayFlowEvent> events) {
 
 final payLoadingState = payFlowStart(paySession).state;
 final payRecipientState = applyPay(payLoadingState, [
-  PayContextLoaded(1, ReadGot(payContext)),
+  PayContextLoaded(1, Ok(payContext)),
 ]);
 final payRequirementsState = applyPay(payRecipientState, [
   PayRecipientPicked(payInteracRecipient),
 ]);
 final payAmountState = applyPay(payRecipientState, [
   PayRecipientPicked(payBankRecipient),
-  const PayAmountChanged(
-    AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
-  ),
+  const PayAmountChanged(AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0))),
 ]);
 final paySourceState = applyPay(payAmountState, const [
   PayAmountChanged(AmountTyped('10')),
@@ -112,7 +112,10 @@ const payFees = FeeOptions(
 
 final payReviewState = applyPay(payOrderingState, [
   PayOrderChanged(
-    OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(payOrder()))),
+    OrderCreateAnswered(
+      1,
+      GateAdmitted(Ok<Order, ExchangeWriteFailure>(payOrder())),
+    ),
   ),
   const PaySpendChanged(SpendFeesLoaded(1, payFees)),
 ]);

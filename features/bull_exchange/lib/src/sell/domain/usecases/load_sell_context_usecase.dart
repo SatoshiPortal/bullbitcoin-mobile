@@ -10,7 +10,9 @@ class LoadSellContextUsecase {
 
   const LoadSellContextUsecase(this._exchange);
 
-  Future<ExchangeRead<SellContext>> execute(ExchangeSession session) async {
+  Future<Result<SellContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) async {
     final summary = readOfResult(
       await _exchange.getUserSummary(session.environment),
     );
@@ -19,14 +21,20 @@ class LoadSellContextUsecase {
       Err() => const <UnknownWrite>[],
     };
     return switch (summary) {
-      ReadGot(:final value) => ReadGot(SellContext(value, entries)),
-      ReadMissing() => const ReadMissing(),
-      ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable(
-        reason,
-        isNetwork: isNetwork,
+      Ok(:final value) => Ok(SellContext(value, entries)),
+      Err(failure: ExchangeMissingFailure()) => const Err(
+        ExchangeMissingFailure(),
       ),
-      ReadSessionRejected(:final why) => ReadSessionRejected(why),
-      ReadMalformed(:final reason) => ReadMalformed(reason),
+      Err(
+        failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+      ) =>
+        Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork)),
+      Err(failure: ExchangeSessionRejectedFailure(:final why)) => Err(
+        ExchangeSessionRejectedFailure(why),
+      ),
+      Err(failure: ExchangeMalformedFailure(:final reason)) => Err(
+        ExchangeMalformedFailure(reason),
+      ),
     };
   }
 }

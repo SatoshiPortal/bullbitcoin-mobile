@@ -15,6 +15,8 @@ import '../../payout/payout_requirements_fakes.dart';
 import '../sell_fixtures.dart';
 import '../sell_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// The sell use cases as fakes; every call is logged with the session it
 /// got.
 final class _Usecases {
@@ -34,17 +36,17 @@ final class _Usecases {
     accessChanges: accessChanges,
     loadContext: FakeLoadSellContextUsecase((session) async {
       _called(session, 'load');
-      return ReadGot(sellContext);
+      return Ok(sellContext);
     }),
     getMarketRate: FakeGetMarketRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
-      return const ReadGot(50000.0);
+      return const Ok(50000.0);
     }),
     createOrder: FakeCreateSellOrderUsecase((session, effect) async {
       _called(session, 'create ${effect.attempt}');
       return OrderCreateAnswered(
         effect.attempt,
-        GateAdmitted(WriteDone<Order>(sellOrder())),
+        GateAdmitted(Ok<Order, ExchangeWriteFailure>(sellOrder())),
       );
     }),
     findCreatedOrder: FakeFindCreatedOrderUsecase((
@@ -53,11 +55,11 @@ final class _Usecases {
       sentAt,
     ) async {
       _called(session, 'find');
-      return const ReadMissing();
+      return const Err(ExchangeMissingFailure());
     }),
     refreshOrder: FakeRefreshSellOrderUsecase((session, order) async {
       _called(session, 'refresh ${order.orderId}');
-      return ReadGot<Order>(sellOrder());
+      return Ok<Order, ExchangeReadFailure>(sellOrder());
     }),
     requirements: unusedPayoutRequirements(),
     payin: fakePayin(
@@ -66,7 +68,7 @@ final class _Usecases {
         return const PayinBuildFailed(PayinBuildProblem.insufficientFunds);
       }),
       getOrder: FakeGetOrderUsecase(
-        (session, orderId) async => ReadGot<Order>(sellOrder()),
+        (session, orderId) async => Ok<Order, ExchangeReadFailure>(sellOrder()),
       ),
     ),
     spendOptions: fakeSpendOptions(

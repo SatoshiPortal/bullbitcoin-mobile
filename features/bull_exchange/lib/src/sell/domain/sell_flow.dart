@@ -3,6 +3,7 @@ import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The sell flow (composition §5, Sell column): session → account load →
 /// amount (any market, fiat or BTC) → payin source → payout (the fiat
@@ -375,7 +376,7 @@ sealed class SellFlowEvent {
 
 final class SellContextLoaded extends SellFlowEvent {
   final int attempt;
-  final ExchangeRead<SellContext> read;
+  final Result<SellContext, ExchangeReadFailure> read;
 
   const SellContextLoaded(this.attempt, this.read);
 }
@@ -396,7 +397,7 @@ final class SellKycReturned extends SellFlowEvent {
 }
 
 final class SellDetourLoaded extends SellFlowEvent {
-  final ExchangeRead<SellContext> read;
+  final Result<SellContext, ExchangeReadFailure> read;
 
   const SellDetourLoaded(this.read);
 }
@@ -721,7 +722,7 @@ SellFlowNext _amount(SellAmount state, SellFlowEvent event) => switch (event) {
   },
   SellDetourLoaded(:final read) => switch (state.amount) {
     AmountKycDetour() => switch (read) {
-      ReadGot(value: final context) => _amountNext(
+      Ok(value: final context) => _amountNext(
         SellOpen(state.open.session, state.open.context.withAccount(context)),
         transitionAmountEntry(
           sellAmountPolicy,
@@ -729,11 +730,11 @@ SellFlowNext _amount(SellAmount state, SellFlowEvent event) => switch (event) {
           AmountDetourReturned(context.amountContext),
         ),
       ),
-      ReadSessionRejected() => _ended,
+      Err(failure: ExchangeSessionRejectedFailure()) => _ended,
       // The detour page stays; returning again reads again.
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => SellFlowNext.stay(state),
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(failure: ExchangeMalformedFailure()) => SellFlowNext.stay(state),
     },
     AmountNoMarket() ||
     AmountEditing() ||

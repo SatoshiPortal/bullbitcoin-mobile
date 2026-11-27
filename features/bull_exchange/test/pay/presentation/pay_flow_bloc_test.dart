@@ -16,6 +16,8 @@ import '../../payout/payout_requirements_fakes.dart';
 import '../pay_fixtures.dart';
 import '../pay_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// The pay use cases as fakes; every call is logged with the session it
 /// got.
 final class _Usecases {
@@ -43,17 +45,17 @@ final class _Usecases {
     accessChanges: accessChanges,
     loadContext: FakeLoadPayContextUsecase((session) async {
       _called(session, 'load');
-      return ReadGot(payContext);
+      return Ok(payContext);
     }),
     getMarketRate: FakeGetMarketRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
-      return const ReadGot(50000.0);
+      return const Ok(50000.0);
     }),
     createOrder: FakeCreatePayOrderUsecase((session, effect) async {
       _called(session, 'create ${effect.attempt}');
       return OrderCreateAnswered(
         effect.attempt,
-        GateAdmitted(WriteDone<Order>(created ?? payOrder())),
+        GateAdmitted(Ok<Order, ExchangeWriteFailure>(created ?? payOrder())),
       );
     }),
     findCreatedOrder: FakeFindCreatedOrderUsecase((
@@ -62,15 +64,15 @@ final class _Usecases {
       sentAt,
     ) async {
       _called(session, 'find');
-      return const ReadMissing();
+      return const Err(ExchangeMissingFailure());
     }),
     refreshOrder: FakeRefreshPayOrderUsecase((session, orderId) async {
       _called(session, 'refresh $orderId');
-      return ReadGot<Order>(payOrder());
+      return Ok<Order, ExchangeReadFailure>(payOrder());
     }),
     getOrder: FakeGetOrderUsecase((session, orderId) async {
       _called(session, 'read $orderId');
-      return ReadGot<Order>(payOrder());
+      return Ok<Order, ExchangeReadFailure>(payOrder());
     }),
     requirements: unusedPayoutRequirements(),
     payin:
@@ -81,7 +83,8 @@ final class _Usecases {
             return const PayinBuildFailed(PayinBuildProblem.insufficientFunds);
           }),
           getOrder: FakeGetOrderUsecase(
-            (session, orderId) async => ReadGot<Order>(payOrder()),
+            (session, orderId) async =>
+                Ok<Order, ExchangeReadFailure>(payOrder()),
           ),
         ),
     spendOptions: fakeSpendOptions(
@@ -173,7 +176,7 @@ void main() {
             ),
             getOrder: FakeGetOrderUsecase((session, orderId) async {
               log.add('payin read $orderId');
-              return ReadGot<Order>(seen);
+              return Ok<Order, ExchangeReadFailure>(seen);
             }),
           ),
         );
