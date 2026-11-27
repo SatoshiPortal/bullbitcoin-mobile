@@ -33,6 +33,10 @@ void main() {
   late WalletKey liquid;
   late Map<String, dynamic> liquidFixture;
   late Future<void> Function()? beforeOpening;
+  late Future<void> Function()? beforeHydration;
+  late Future<void> Function()? beforePublication;
+  late BalanceEnvironment? environment;
+  late ForegroundStores stores;
 
   setUp(() async {
     temp = await Directory.systemTemp.createTemp('retained-balance-');
@@ -43,6 +47,9 @@ void main() {
     opens = 0;
     directoryRequests = 0;
     beforeOpening = null;
+    beforeHydration = null;
+    beforePublication = null;
+    environment = (environment: NetworkEnv.regtest, epoch: 0);
     runtime = WalletNativeRuntime.open(
       catalog: SecretsWalletCatalog.foreground(inventory),
       reserved: const NoReservedAddresses(),
@@ -60,7 +67,12 @@ void main() {
       },
       freezes: MemoryFreezeStore(),
       connections: connections,
-      onStoresOpened: (_) => opens++,
+      onStoresOpened: (opened) {
+        opens++;
+        stores = opened;
+      },
+      beforeBalanceHydration: () async => beforeHydration?.call(),
+      beforeBalancePublication: () async => beforePublication?.call(),
     );
     addTearDown(() async {
       valueOf(await runtime.close());
@@ -117,6 +129,15 @@ void main() {
   Future<WalletRevision> publish(WalletKey key) async =>
       valueOf(await valueOf(await runtime.wallet(key)).load());
 
+  RetainedBalanceDemand demand(WalletKey key) {
+    final origin = runtime.captureBalanceDemand(key, () => environment);
+    if (origin == null) throw StateError('Expected a current admission');
+    return origin;
+  }
+
+  Future<WalletRevision> retain(WalletKey key) async =>
+      valueOf(await runtime.demandRetainedBalance(demand(key)));
+
   test(
     'a request before the first await cannot publish under a replacement grant',
     () async {
@@ -147,7 +168,7 @@ void main() {
   );
 
   test(
-    'cold read creates nothing; first publication needs a load, not a refresh',
+    'cold read creates nothing; first publication needs explicit demand',
     () async {
       final catalogue = capture();
       final guessed = WalletRevision(
@@ -156,6 +177,10 @@ void main() {
         revision: 1,
       );
       expect(runtime.readRetainedBalance(catalogue, guessed), isA<Err>());
+      expect(
+        await runtime.demandRetainedBalance(demand(bitcoin.key)),
+        isA<Err>(),
+      );
       expect(directoryRequests, 0);
       expect(opens, 0);
       expect(Directory(directory).existsSync(), isFalse);
@@ -163,27 +188,32 @@ void main() {
       valueOf(await runtime.refreshAll());
       final revision = valueOf(await runtime.readRevision(bitcoin.key)).stamp;
       expect(runtime.readRetainedBalance(catalogue, revision), isA<Err>());
-      expect(await publish(bitcoin.key), revision);
+      expect(await retain(bitcoin.key), revision);
       expect(
-        valueOf(runtime.readRetainedBalance(catalogue, revision)),
+        runtime.readRetainedBalance(catalogue, revision),
+        isA<Ok<BigInt, SyncFailure>>().having(
+          (result) => result.value,
+          'total',
+          BigInt.zero,
+        ),
+      );
+      final liquidRevision = valueOf(await runtime.readRevision(liquid)).stamp;
+      expect(
+        runtime.readRetainedBalance(catalogue, liquidRevision),
+        isA<Err>(),
+      );
+      expect(await retain(liquid), liquidRevision);
+      expect(
+        valueOf(runtime.readRetainedBalance(catalogue, liquidRevision)),
         BigInt.zero,
       );
       expect(opens, 1);
     },
   );
 
-  test('native zero and nonzero balances on both chains; warm refresh without legacy reader', () async {
+  test('first explicit demand reads nonzero on both chains', () async {
     final catalogue = capture();
-    final btcZero = await publish(bitcoin.key);
-    final liquidZero = await publish(liquid);
-    expect(
-      valueOf(runtime.readRetainedBalance(catalogue, btcZero)),
-      BigInt.zero,
-    );
-    expect(
-      valueOf(runtime.readRetainedBalance(catalogue, liquidZero)),
-      BigInt.zero,
-    );
+    valueOf(await runtime.initialize());
 
     final store = RevisionStoreDatasource.openExisting(
       revisionStorePath(directory),
@@ -229,17 +259,11 @@ void main() {
     await update.parent.create(recursive: true);
     await update.writeAsBytes(base64Decode(liquidFixture['update'] as String));
     final liquidFunded = store.finish(liquid).stamp;
-    expect(runtime.readRetainedBalance(catalogue, btcZero), isA<Err>());
-    expect(runtime.readRetainedBalance(catalogue, liquidZero), isA<Err>());
+    expect(runtime.readRetainedBalance(catalogue, btcFunded), isA<Err>());
+    expect(runtime.readRetainedBalance(catalogue, liquidFunded), isA<Err>());
     valueOf(await runtime.refreshAll());
-    for (var i = 0; i < 100; i++) {
-      final btc = runtime.readRetainedBalance(catalogue, btcFunded);
-      final lbtc = runtime.readRetainedBalance(catalogue, liquidFunded);
-      if (btc is Ok && lbtc is Ok) {
-        break;
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 5));
-    }
+    expect(await retain(bitcoin.key), btcFunded);
+    expect(await retain(liquid), liquidFunded);
     expect(
       valueOf(runtime.readRetainedBalance(catalogue, btcFunded)),
       BigInt.from(54321),
@@ -254,6 +278,10 @@ void main() {
       revision: btcFunded.revision,
     );
     expect(runtime.readRetainedBalance(catalogue, otherNetwork), isA<Err>());
+    expect(
+      await runtime.demandRetainedBalance(demand(otherNetwork.key)),
+      isA<Err>(),
+    );
     expect(opens, 1);
   });
 
@@ -261,7 +289,8 @@ void main() {
     'pending at the same stamp, tombstone and recreation are refused silently',
     () async {
       final catalogue = capture();
-      final stamp = await publish(bitcoin.key);
+      valueOf(await runtime.initialize());
+      final stamp = await retain(bitcoin.key);
       final store = RevisionStoreDatasource.openExisting(
         revisionStorePath(directory),
       );
@@ -272,6 +301,14 @@ void main() {
       addTearDown(subscription.cancel);
       store.begin(bitcoin.key, WriteIntent.sync);
       expect(store.record(bitcoin.key)?.state.stamp, stamp);
+      expect(
+        await runtime.demandRetainedBalance(demand(bitcoin.key)),
+        isA<Err<WalletRevision, SyncFailure>>().having(
+          (error) => error.failure,
+          'failure',
+          isA<SyncBusyFailure>(),
+        ),
+      );
       expect(
         runtime.readRetainedBalance(catalogue, stamp),
         isA<Err<BigInt, SyncFailure>>().having(
@@ -284,6 +321,14 @@ void main() {
       store.begin(bitcoin.key, WriteIntent.delete);
       expect(runtime.readRetainedBalance(catalogue, stamp), isA<Err>());
       store.finish(bitcoin.key);
+      expect(
+        await runtime.demandRetainedBalance(demand(bitcoin.key)),
+        isA<Err<WalletRevision, SyncFailure>>().having(
+          (error) => error.failure,
+          'failure',
+          isA<SyncNotFoundFailure>(),
+        ),
+      );
       store.begin(bitcoin.key, WriteIntent.create);
       final recreated = store.finish(bitcoin.key).stamp;
       expect(recreated.generation, isNot(stamp.generation));
@@ -297,7 +342,8 @@ void main() {
     'A1, replacement, A2 and a label commit never relabel a cached frame',
     () async {
       final a1 = capture();
-      final stamp = await publish(bitcoin.key);
+      valueOf(await runtime.initialize());
+      final stamp = await retain(bitcoin.key);
       final views = inventory.openedViews;
       if (views == null) throw StateError('Expected an opened view');
       final view = views.views.single.id;
@@ -309,7 +355,7 @@ void main() {
       for (final owner in [a1, b, a2]) {
         expect(runtime.readRetainedBalance(owner, stamp), isA<Err>());
       }
-      await publish(bitcoin.key);
+      expect(await retain(bitcoin.key), stamp);
       expect(valueOf(runtime.readRetainedBalance(a2, stamp)), BigInt.zero);
       valueOf(
         await inventory.setWalletProperties(
@@ -326,11 +372,242 @@ void main() {
       valueOf(await runtime.refreshAll());
       await pumpEventQueue();
       expect(runtime.readRetainedBalance(renamed, stamp), isA<Err>());
-      await publish(bitcoin.key);
+      expect(await retain(bitcoin.key), stamp);
       expect(valueOf(runtime.readRetainedBalance(renamed, stamp)), BigInt.zero);
       final closing = runtime.close();
       expect(runtime.readRetainedBalance(renamed, stamp), isA<Err>());
       valueOf(await closing);
+    },
+  );
+
+  test(
+    'demand refuses an initialization in progress without waiting',
+    () async {
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      beforeOpening = () async {
+        entered.complete();
+        await release.future;
+      };
+      final candidate = demand(bitcoin.key);
+      final initializing = runtime.initialize();
+      try {
+        await entered.future;
+        expect(await runtime.demandRetainedBalance(candidate), isA<Err>());
+        expect(directoryRequests, 1);
+      } finally {
+        release.complete();
+      }
+      valueOf(await initializing);
+      expect(await retain(bitcoin.key), isA<WalletRevision>());
+      expect(opens, 1);
+    },
+  );
+
+  test(
+    'environment A-B-A abandons queued demand and maps on the new epoch',
+    () async {
+      valueOf(await runtime.initialize());
+      var notifications = 0;
+      final subscription = runtime.retainedBalanceChanges.listen(
+        (_) => notifications++,
+      );
+      addTearDown(subscription.cancel);
+      final original = demand(bitcoin.key);
+      final stamp = await retain(bitcoin.key);
+      await pumpEventQueue();
+      expect(notifications, 1);
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      var mappings = 0;
+      beforeHydration = () async {
+        if (++mappings == 1) {
+          entered.complete();
+          await release.future;
+        }
+      };
+      final underway = runtime.demandRetainedBalance(original);
+      await entered.future;
+      final queued = runtime.demandRetainedBalance(original);
+      environment = null;
+      expect(
+        runtime.captureBalanceDemand(bitcoin.key, () => environment),
+        isNull,
+      );
+      environment = (environment: NetworkEnv.testnet, epoch: 1);
+      expect(
+        runtime.captureBalanceDemand(bitcoin.key, () => environment),
+        isNull,
+      );
+      environment = (environment: NetworkEnv.regtest, epoch: 2);
+      expect(original.isCurrent, isFalse);
+      final replacement = runtime.demandRetainedBalance(demand(bitcoin.key));
+      release.complete();
+      expect(await underway, isA<Err>());
+      expect(await queued, isA<Err>());
+      expect(valueOf(await replacement), stamp);
+      await pumpEventQueue();
+      expect(mappings, 2);
+      expect(notifications, 2);
+      expect(opens, 1);
+    },
+  );
+
+  test(
+    'catalogue mutation in the reader queue never reaches hydration',
+    () async {
+      valueOf(await runtime.initialize());
+      final old = demand(bitcoin.key);
+      final stamp = valueOf(stores.retainedRevision(bitcoin.key)).stamp;
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      final blocker = stores.reader.readBalance(
+        stamp,
+        SecretsWalletCatalog.foreground(inventory),
+        isCurrent: () => true,
+        acquireExisting: stores.acquireExistingRead,
+        beforeHydration: () async {
+          entered.complete();
+          await release.future;
+        },
+        map: (_) async => BigInt.zero,
+      );
+      await entered.future;
+      var demandHydrations = 0;
+      beforeHydration = () async => demandHydrations++;
+      final waiting = runtime.demandRetainedBalance(old);
+      await pumpEventQueue();
+      expect(demandHydrations, 0);
+      try {
+        valueOf(
+          await inventory.setWalletProperties(
+            id: bitcoin.key.id,
+            label: 'reader queue rename',
+            birthday: null,
+            isDefault: false,
+          ),
+        );
+      } finally {
+        release.complete();
+      }
+      expect(await blocker, isA<Ok>());
+      expect(await waiting, isA<Err>());
+      expect(demandHydrations, 0);
+      expect(runtime.readRetainedBalance(capture(), stamp), isA<Err>());
+      expect(await retain(bitcoin.key), stamp);
+      expect(demandHydrations, 1);
+    },
+  );
+
+  test(
+    'pending before publication and close during demand deliver nothing',
+    () async {
+      valueOf(await runtime.initialize());
+      final key = bitcoin.key;
+      final stamp = valueOf(stores.retainedRevision(key)).stamp;
+      final store = RevisionStoreDatasource.openExisting(
+        revisionStorePath(directory),
+      );
+      addTearDown(store.close);
+      var notifications = 0;
+      final subscription = runtime.retainedBalanceChanges.listen(
+        (_) => notifications++,
+      );
+      addTearDown(subscription.cancel);
+      var entered = Completer<void>();
+      var release = Completer<void>();
+      beforePublication = () async {
+        entered.complete();
+        await release.future;
+      };
+      final candidate = demand(key);
+      final pending = runtime.demandRetainedBalance(candidate);
+      await entered.future;
+      store.begin(key, WriteIntent.sync);
+      expect(store.record(key)?.state.stamp, stamp);
+      release.complete();
+      expect(await pending, isA<Err>());
+      store.finish(key);
+      expect(
+        runtime.readRetainedBalance(candidate.catalogue, stamp),
+        isA<Err>(),
+      );
+
+      entered = Completer<void>();
+      release = Completer<void>();
+      final unfinished = runtime.demandRetainedBalance(candidate);
+      await entered.future;
+      final closing = runtime.close();
+      var closed = false;
+      final observedClose = closing.then((result) {
+        closed = true;
+        return result;
+      });
+      await pumpEventQueue();
+      expect(closed, isFalse);
+      expect(
+        runtime.readRetainedBalance(candidate.catalogue, stamp),
+        isA<Err>(),
+      );
+      expect(await runtime.demandRetainedBalance(candidate), isA<Err>());
+      release.complete();
+      expect(await unfinished, isA<Err>());
+      valueOf(await observedClose);
+      expect(notifications, 0);
+    },
+  );
+
+  test('missing lease and native store are not created by demand', () async {
+    valueOf(await runtime.initialize());
+    final key = bitcoin.key;
+    final lease = File(valueOf(writerLockPath(directory, key)));
+    final movedLease = await lease.rename('${lease.path}.fixture');
+    expect(await runtime.demandRetainedBalance(demand(key)), isA<Err>());
+    expect(await lease.exists(), isFalse);
+    await movedLease.rename(lease.path);
+    final wallet = File(nativeWalletStoragePath(directory, key));
+    await wallet.rename('${wallet.path}.fixture');
+    expect(await runtime.demandRetainedBalance(demand(key)), isA<Err>());
+    expect(await wallet.exists(), isFalse);
+    expect(opens, 1);
+  });
+
+  test(
+    'locking during hydration rejects work and emits no notification',
+    () async {
+      valueOf(await runtime.initialize());
+      final candidate = demand(liquid);
+      final stamp = valueOf(stores.retainedRevision(liquid)).stamp;
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      var published = false;
+      var signalled = false;
+      beforeHydration = () async {
+        entered.complete();
+        await release.future;
+      };
+      beforePublication = () async => published = true;
+      final subscription = runtime.retainedBalanceChanges.listen(
+        (_) => signalled = true,
+      );
+      addTearDown(subscription.cancel);
+      final request = runtime.demandRetainedBalance(candidate);
+      await entered.future;
+      try {
+        expect(await inventory.lock(), isTrue);
+        expect(candidate.isCurrent, isFalse);
+      } finally {
+        release.complete();
+      }
+      expect(await request, isA<Err>());
+      expect(runtime.captureBalanceDemand(liquid, () => environment), isNull);
+      expect(
+        runtime.readRetainedBalance(candidate.catalogue, stamp),
+        isA<Err>(),
+      );
+      await pumpEventQueue();
+      expect(published, isFalse);
+      expect(signalled, isFalse);
     },
   );
 }
