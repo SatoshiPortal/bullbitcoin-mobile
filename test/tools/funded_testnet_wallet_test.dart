@@ -23,7 +23,10 @@ void main() {
       addTearDown(() => directory.delete(recursive: true));
       final fixture = await InventoryFixture.open(directory);
       addTearDown(fixture.close);
-      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
       final mnemonic = Mnemonic(List<int>.filled(16, 0), Language.english);
       final native = _MockWalletNative();
       registerFallbackValue(

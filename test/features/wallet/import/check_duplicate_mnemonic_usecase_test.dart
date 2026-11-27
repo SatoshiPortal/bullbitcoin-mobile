@@ -48,7 +48,10 @@ void main() {
     addTearDown(() => directory.delete(recursive: true));
     fixture = await InventoryFixture.open(directory);
     addTearDown(fixture.close);
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     settings = _Settings();
     when(() => settings.fetch()).thenAnswer(
       (_) async => Ok(

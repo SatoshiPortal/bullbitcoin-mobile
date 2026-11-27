@@ -15,6 +15,20 @@ final class AccessInventory {
         (_) => const AccessPinCheckFailure(),
       );
 
+  /// Revokes immediately, irrespective of whether the view has a PIN.
+  Future<bool> lock() => _inventory.lock();
+
+  bool get isLocked => _inventory.isLocked;
+
+  Future<void> waitForDrain() => _inventory.waitForDrain();
+
+  Future<void> resumeUnprotected() async {
+    final result = await _inventory.resumeUnprotected();
+    if (result case Err()) return;
+  }
+
+  Stream<bool> get locked => _inventory.lockedChanges;
+
   Future<Result<void, AccessFailure>> setCredential(String pin) async =>
       (await _inventory.setCredential(pin)).mapErr(_saveFailure);
 

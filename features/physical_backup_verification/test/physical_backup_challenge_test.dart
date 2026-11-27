@@ -55,7 +55,10 @@ void main() {
 
   setUp(() async {
     store = _Storage()..install();
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     // The published zero-entropy BIP39 fixture, never production material.
     final words = [...List.filled(11, 'abandon'), 'about'];
     Future<Secret> import(String passphrase) async => (await secrets.import(

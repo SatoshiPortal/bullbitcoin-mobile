@@ -21,6 +21,7 @@ class PinCodeSettingBloc
     required this._deletePinCodeUsecase,
     required this._isPinCodeSetUsecase,
     required this._checkBackupUsecase,
+    required Stream<bool> lockChanges,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
   }) : super(
@@ -31,6 +32,9 @@ class PinCodeSettingBloc
            maxPinCodeLength: maxPinCodeLength,
          ),
        ) {
+    _lockSubscription = lockChanges.listen((locked) {
+      if (locked) _revocations++;
+    });
     on<PinCodeSettingInitialized>(_onInitialized);
     on<PinCodeSettingStarted>(_onStarted);
     on<PinCodeSettingPinCodeNumberAdded>(_onPinCodeNumberAdded);
@@ -89,6 +93,14 @@ class PinCodeSettingBloc
   final DeletePinCodeUsecase _deletePinCodeUsecase;
   final IsPinCodeSetUsecase _isPinCodeSetUsecase;
   final CheckPinBackupUsecase _checkBackupUsecase;
+  late final StreamSubscription<bool> _lockSubscription;
+  var _revocations = 0;
+
+  @override
+  Future<void> close() async {
+    await _lockSubscription.cancel();
+    await super.close();
+  }
 
   Future<void> _onStarted(
     PinCodeSettingStarted event,
@@ -142,7 +154,9 @@ class PinCodeSettingBloc
     PinCodeDelete event,
     Emitter<PinCodeSettingState> emit,
   ) async {
+    final revocations = _revocations;
     final result = await _deletePinCodeUsecase.execute();
+    if (revocations != _revocations) return;
     switch (result) {
       case Ok():
         emit(
@@ -245,7 +259,9 @@ class PinCodeSettingBloc
     }
 
     emit(state.copyWith(isConfirming: true));
+    final revocations = _revocations;
     final result = await _setPinCodeUsecase.execute(state.pinCode);
+    if (revocations != _revocations) return;
     switch (result) {
       case Ok():
         emit(state.copyWith(status: PinCodeSettingStatus.success));

@@ -37,7 +37,10 @@ void main() {
 
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     secret = (await secrets.import(
       words: words,
       language: bip39.Language.english,

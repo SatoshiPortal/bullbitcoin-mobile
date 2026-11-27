@@ -22,6 +22,8 @@ import 'package:signers/storage.dart';
 
 import 'wallet_registrations.dart';
 
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
+
 final class InventoryFixture {
   final RuntimeAdmission admission;
   final SecretsInventory inventory;
@@ -73,8 +75,10 @@ final class InventoryFixture {
     final gate = NativeFileGate(File('${directory.path}/test-secrets.gate'));
     final signerFile = File('${directory.path}/test-signers.sqlite');
     final signerKeys = withSignerDevices
-        ? Secrets(scratchDirectory: () async => directory.path)
-              .databaseKeys(module: 'signers')
+        ? Secrets(
+            authority: unlockedSessionAuthority(),
+            scratchDirectory: () async => directory.path,
+          ).databaseKeys(module: 'signers')
         : null;
     final exclusive = await gate.acquire(
       exclusive: true,
@@ -112,6 +116,7 @@ final class InventoryFixture {
     SecretsInventory? inventory;
     try {
       final opened = await SecretsInventory.open(
+        authority: SessionAuthority(),
         file: file,
         admission: admission,
         backupVerification: const VerifiedBackups(),
@@ -151,7 +156,10 @@ final class InventoryFixture {
     GetIt services,
   ) async {
     File owner(String name) => File('${directory.path}/test-$name.sqlite');
-    final secrets = Secrets(scratchDirectory: () async => directory.path);
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     final signerKeys = secrets.databaseKeys(module: 'signers');
     final syncKeys = secrets.databaseKeys(module: 'sync');
     final legacyFile = owner('legacy');
@@ -198,10 +206,15 @@ final class InventoryFixture {
       Ok(:final value) => value,
       Err(:final failure) => fail('Cutover failed: ${failure.runtimeType}'),
     };
+    // The composition's one authority, as production registers it: the
+    // locator's `Secrets` follows the inventory's session.
+    final authority = SessionAuthority();
+    services.registerSingleton<SessionAuthority>(authority);
     final opened = await openWalletInventory(
       services,
       admission: admission,
       legacy: legacy.source,
+      authority: authority,
       inventoryFile: owner('secrets'),
       signersFile: owner('signers'),
       syncFile: owner('sync'),

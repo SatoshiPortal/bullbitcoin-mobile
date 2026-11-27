@@ -58,8 +58,10 @@ void main() {
 
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
-    final fallback = await Secrets(scratchDirectory: () async => '/tmp')
-        .import(words: words, language: bip39.Language.english);
+    final fallback = await Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    ).import(words: words, language: bip39.Language.english);
     registerFallbackValue((fallback as Ok<Secret, SecretFailure>).value);
     registerFallbackValue(Fingerprint('73c5da0a'));
     registerFallbackValue(_Admission());
@@ -69,7 +71,10 @@ void main() {
 
   setUp(() {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     checkDuplicate = _MockCheckDuplicateMnemonicUsecase();
     settingsRepository = _MockSettingsRepository();
     provisioning = _MockProvisioning();

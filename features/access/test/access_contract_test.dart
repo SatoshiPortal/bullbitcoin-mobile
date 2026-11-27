@@ -16,6 +16,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:primitives/primitives.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:access/src/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:access/src/domain/usecases/delete_pin_code_usecase.dart';
+import 'package:access/src/presentation/bloc/pin_code_setting_bloc.dart';
 
 import 'support/inventory_fixture.dart';
 
@@ -33,6 +35,8 @@ Widget app(Widget child) => MaterialApp(
 );
 
 class _DelayedPinCheck extends Mock implements CheckPinCodeExistsUsecase {}
+
+class _DelayedPinDelete extends Mock implements DeletePinCodeUsecase {}
 
 Future<void> waitFor(WidgetTester tester, bool Function() ready) async {
   final clock = Stopwatch()..start();
@@ -89,6 +93,93 @@ void main() {
     expect((await access.checkPinCodeExists() as Ok).value, isTrue);
   });
 
+  test('lock revokes admission before returning its future', () async {
+    expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
+
+    final locking = const Access().lock();
+
+    expect(fixture.inventory.isLocked, isTrue);
+    await locking;
+  });
+
+  test(
+    'a committed PIN deletion does not emit after the session locks',
+    () async {
+      expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
+      final committed = Completer<void>();
+      final release = Completer<void>();
+      final delete = _DelayedPinDelete();
+      when(() => delete.execute()).thenAnswer((_) async {
+        final result = await fixture.inventory.removeCredential();
+        expect(result, isA<Ok>());
+        committed.complete();
+        await release.future;
+        return const Ok(null);
+      });
+      await services.unregister<DeletePinCodeUsecase>();
+      services.registerFactory<DeletePinCodeUsecase>(() => delete);
+      final bloc = services<PinCodeSettingBloc>();
+      addTearDown(bloc.close);
+      await bloc.stream.firstWhere(
+        (state) => state.status == PinCodeSettingStatus.unlock,
+      );
+      final emitted = <PinCodeSettingStatus>[];
+      final subscription = bloc.stream.listen(
+        (state) => emitted.add(state.status),
+      );
+      bloc.add(const PinCodeDelete());
+      await committed.future.timeout(const Duration(seconds: 5));
+      expect((await fixture.inventory.isProtected() as Ok).value, isFalse);
+      await const Access().lock();
+      release.complete();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(emitted, isNot(contains(PinCodeSettingStatus.deleted)));
+      await subscription.cancel();
+    },
+  );
+
+  test('an unprotected session stays locked until foreground resume', () async {
+    const access = Access();
+    access.onLifecycle(AppLifecycleState.paused);
+    await access.lock();
+    expect(fixture.inventory.isLocked, isTrue);
+
+    final resumed = access.locked.firstWhere((locked) => !locked);
+    access.onLifecycle(AppLifecycleState.resumed);
+    await resumed.timeout(const Duration(seconds: 5));
+    expect(fixture.inventory.isLocked, isFalse);
+  });
+
+  test(
+    'a later foreground request survives a paused in-flight resume',
+    () async {
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      final write = fixture.inventory.registerWallet(
+        localWallet(),
+        prepareProperties: (_) async {
+          entered.complete();
+          await release.future;
+          return const Ok(null);
+        },
+      );
+      await entered.future.timeout(const Duration(seconds: 5));
+      const access = Access();
+      access.onLifecycle(AppLifecycleState.paused);
+      final locking = access.lock();
+      final reopened = access.locked.firstWhere((locked) => !locked);
+      access.onLifecycle(AppLifecycleState.resumed);
+      access.onLifecycle(AppLifecycleState.paused);
+      expect(fixture.inventory.isLocked, isTrue);
+      access.onLifecycle(AppLifecycleState.resumed);
+      release.complete();
+      await locking;
+      expect(await write, isA<Err>());
+      await reopened.timeout(const Duration(seconds: 5));
+      expect(fixture.inventory.isLocked, isFalse);
+    },
+  );
+
   testWidgets('every failure keeps its operation-specific localized message', (
     tester,
   ) async {
@@ -136,8 +227,8 @@ void main() {
     const pin = '1234';
     await tester.runAsync(() async {
       expect(await fixture.inventory.setCredential(pin), isA<Ok>());
+      await fixture.inventory.lock();
     });
-    fixture.inventory.lock();
     final grants = <AppUnlockGrant>[];
     final gate = const Access().buildReauthenticationGate(
       onSuccess: grants.add,
@@ -195,7 +286,7 @@ void main() {
     testWidgets('gate preserves $scenario authorization', (tester) async {
       await tester.runAsync(() async {
         expect(await fixture.inventory.setCredential('1234'), isA<Ok>());
-        fixture.inventory.lock();
+        await fixture.inventory.lock();
         if (scenario == 'cooldown') {
           for (var index = 0; index < 4; index++) {
             expect(await fixture.inventory.unlock('0000'), isA<Ok>());

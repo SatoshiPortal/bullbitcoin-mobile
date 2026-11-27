@@ -15,6 +15,11 @@ abstract interface class WalletInventory {
   @useResult
   Future<Result<WalletRegistration, SecretFailure>> readWallet(String id);
 
+  /// Whether Ark may notify for the wallet seed [parent] while the app is
+  /// locked. A bool about the policy; it reads no seed and no session.
+  @useResult
+  Future<bool> mayNotifyArk(Fingerprint parent);
+
   /// Read choices for exactly [network], with no fallback to another network.
   /// Skips unreadable rows and marks the selection incomplete. If all rows
   /// are unreadable, returns an [UnreadableWalletFailure].

@@ -93,7 +93,7 @@ final class AccessRepository {
 
   Future<Result<void, SecretFailure>> setBackgroundEnabled(bool enabled) =>
       boundary(
-        () => _database.transaction(() async {
+        () => guardedTransaction(_database, () async {
           final view = await _defaultView();
           await (_database.update(_database.views)
                 ..where((v) => v.id.equals(view.id)))

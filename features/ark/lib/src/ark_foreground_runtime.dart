@@ -367,6 +367,7 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         client: client,
         accounts: registry,
         initializeNew: initializeNew,
+        permitsParent: inventory.mayNotifyArk,
         // An exit's fees come from Secure Bitcoin when it needs them. Built
         // on first use: opening Ark never needs the send stack.
         exitTopUp: exitTopUp,
@@ -465,8 +466,8 @@ Future<Result<ArkForegroundRuntime, ArkFailure>> openArkForeground(
         board,
         exitNotifier,
       );
-      final inventory = await registry.list();
-      if (inventory case Ok(:final value)
+      final registered = await registry.list();
+      if (registered case Ok(:final value)
           when value.any((item) => item.id == config.id)) {
         unawaited(runtime.maintain());
         runtime._pollExits();

@@ -27,7 +27,10 @@ void main() {
         final selected = <NetworkEnv>[];
         FakeSecureStoragePlatform().install();
         final source = SwapKeySource(
-          Secrets(scratchDirectory: () async => '/unused'),
+          Secrets(
+            authority: unlockedSessionAuthority(),
+            scratchDirectory: () async => '/unused',
+          ),
           (environment) async {
             selected.add(environment);
             return null;
@@ -40,7 +43,10 @@ void main() {
   }
   test('does not substitute a stored seed for a watch-only default', () async {
     FakeSecureStoragePlatform().install();
-    final secrets = Secrets(scratchDirectory: () async => '/unused');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/unused',
+    );
     final created = await secrets.generate();
     final secret = switch (created) {
       Ok(:final value) => value,
@@ -56,7 +62,10 @@ void main() {
     'key source derives and persists the captured concrete key network',
     () async {
       FakeSecureStoragePlatform().install();
-      final secrets = Secrets(scratchDirectory: () async => '/unused');
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/unused',
+      );
       final created = await secrets.generate();
       final secret = switch (created) {
         Ok(:final value) => value,

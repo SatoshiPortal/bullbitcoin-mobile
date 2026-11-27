@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:primitives/primitives.dart';
 import 'package:access/src/domain/access_failure.dart';
 import 'package:access/src/domain/usecases/delete_pin_code_usecase.dart';
@@ -17,6 +19,38 @@ class MockIsPinCodeSetUsecase extends Mock implements IsPinCodeSetUsecase {}
 class MockCheckPinBackupUsecase extends Mock implements CheckPinBackupUsecase {}
 
 void main() {
+  test(
+    'a grant without revocation does not suppress a committed result',
+    () async {
+      final lockChanges = StreamController<bool>.broadcast(sync: true);
+      final deleting = Completer<Result<void, AccessFailure>>();
+      final delete = MockDeletePinCodeUsecase();
+      final isSet = MockIsPinCodeSetUsecase();
+      when(() => delete.execute()).thenAnswer((_) => deleting.future);
+      when(() => isSet.execute()).thenAnswer((_) async => const Ok(true));
+      final bloc = PinCodeSettingBloc(
+        setPinCodeUsecase: MockSetPinCodeUsecase(),
+        deletePinCodeUsecase: delete,
+        isPinCodeSetUsecase: isSet,
+        checkBackupUsecase: MockCheckPinBackupUsecase(),
+        lockChanges: lockChanges.stream,
+      );
+      await bloc.stream.firstWhere(
+        (s) => s.status == PinCodeSettingStatus.unlock,
+      );
+      bloc.add(const PinCodeDelete());
+      await untilCalled(() => delete.execute());
+      lockChanges.add(false);
+      final completed = bloc.stream.firstWhere(
+        (s) => s.status == PinCodeSettingStatus.deleted,
+      );
+      deleting.complete(const Ok(null));
+      await completed.timeout(const Duration(seconds: 5));
+      await bloc.close();
+      await lockChanges.close();
+    },
+  );
+
   // The backup check gates whether the user is allowed to set a PIN at all.
   // If it cannot be answered, the safe answer is "not backed up": telling
   // someone their funds are backed up when we do not know is the one outcome
@@ -31,6 +65,7 @@ void main() {
         deletePinCodeUsecase: MockDeletePinCodeUsecase(),
         isPinCodeSetUsecase: isPinCodeSet,
         checkBackupUsecase: checkBackup,
+        lockChanges: const Stream.empty(),
       );
     }
 
@@ -78,6 +113,7 @@ void main() {
       deletePinCodeUsecase: MockDeletePinCodeUsecase(),
       isPinCodeSetUsecase: isPinCodeSet,
       checkBackupUsecase: MockCheckPinBackupUsecase(),
+      lockChanges: const Stream.empty(),
     );
     addTearDown(bloc.close);
 
@@ -96,6 +132,7 @@ void main() {
       deletePinCodeUsecase: MockDeletePinCodeUsecase(),
       isPinCodeSetUsecase: isPinCodeSet,
       checkBackupUsecase: MockCheckPinBackupUsecase(),
+      lockChanges: const Stream.empty(),
     );
     addTearDown(bloc.close);
     await bloc.stream.firstWhere(

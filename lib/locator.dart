@@ -254,6 +254,10 @@ class AppLocator {
           secrets ??
           Secrets(
             scratchDirectory: () async => (await getTemporaryDirectory()).path,
+            // Without a composed authority nothing has authenticated: locked.
+            authority: locator.isRegistered<SessionAuthority>()
+                ? locator<SessionAuthority>()
+                : SessionAuthority(),
           ),
     );
 
@@ -449,6 +453,7 @@ class AppLocator {
         derivations: bip85,
         inventory: inventory,
         preferences: locator<ActiveEnvironmentReader>(),
+        lockChanges: inventory.lockedChanges,
       ),
     );
     registerNativeRuntime(
@@ -705,6 +710,43 @@ class AppLocator {
         payjoin: startPayjoinRecovery
             ? () => locator<PayjoinLifecycle>()
             : null,
+        engines: SessionEngines([
+          if (startPayjoinRecovery)
+            SessionEngine(
+              name: 'payjoin',
+              suspend: () => locator<PayjoinLifecycle>().suspend(),
+              resume: () {
+                locator<PayjoinLifecycle>().reopen();
+                unawaited(locator<PayjoinLifecycle>().resume());
+              },
+            ),
+          SessionEngine(
+            name: 'swaps',
+            suspend: () => locator<Swaps>().suspend(),
+            resume: () => locator<Swaps>().resume(),
+          ),
+          SessionEngine(
+            name: 'swap-watchers',
+            suspend: () => locator<SwapFeature>().suspend(),
+            resume: () => locator<SwapFeature>().resume(),
+          ),
+          SessionEngine(
+            name: 'silent',
+            suspend: () => locator<SilentFeature>().suspend(),
+            resume: () => locator<SilentFeature>().resume(),
+          ),
+          SessionEngine(
+            name: 'ark',
+            suspend: () => locator.isRegistered<ArkForegroundHost>()
+                ? locator<ArkForegroundHost>().suspend()
+                : Future<void>.value(),
+            resume: () {
+              if (!locator.isRegistered<ArkForegroundHost>()) return;
+              final host = locator<ArkForegroundHost>()..reopen();
+              unawaited(host.resume());
+            },
+          ),
+        ]),
       ),
     );
     return const Ok(null);

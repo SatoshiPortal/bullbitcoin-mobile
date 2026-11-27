@@ -76,7 +76,10 @@ void main() {
     logDirectory = await Directory.systemTemp.createTemp("seed-log-");
     log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     final stored = (await secrets.import(
       words: words,
       language: Language.english,

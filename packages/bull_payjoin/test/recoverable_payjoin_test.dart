@@ -191,4 +191,210 @@ void main() {
     expect(attempts, 1);
     verify(() => lifecycle.resume()).called(1);
   });
+
+  test(
+    'suspend closes the open storage, refuses roles and resume until reopened',
+    () async {
+      var opens = 0;
+      final runtime = RecoverablePayjoin(() async {
+        opens++;
+        return Ok(lifecycle);
+      });
+      addTearDown(runtime.dispose);
+      expect(await runtime.payjoin.sessions.reservedOutpoints(), isA<Ok>());
+
+      final stopGate = Completer<void>();
+      when(() => lifecycle.dispose()).thenAnswer((_) => stopGate.future);
+      var confirmed = false;
+      final suspending = runtime.suspend().whenComplete(() => confirmed = true);
+
+      expect(
+        await runtime.payjoin.sessions.reservedOutpoints(),
+        isA<Err>(),
+        reason: 'revoked before the stop is confirmed',
+      );
+      expect(await runtime.resume(), isA<Err>());
+      runtime.reopen();
+      expect(
+        await runtime.resume(),
+        isA<Err>(),
+        reason: 'stop not confirmed yet',
+      );
+      await Future<void>.delayed(Duration.zero);
+      expect(confirmed, isFalse);
+      expect(opens, 1, reason: 'no second instance beside the closing one');
+
+      stopGate.complete();
+      await suspending;
+      verify(() => lifecycle.dispose()).called(1);
+
+      runtime.reopen();
+      resumed.complete();
+      expect(await runtime.resume(), isA<Ok>());
+      expect(opens, 2);
+      expect(await runtime.payjoin.sessions.reservedOutpoints(), isA<Ok>());
+    },
+  );
+
+  test(
+    'suspending while the storage opens disposes what it produced',
+    () async {
+      final opening = Completer<Result<PayjoinLifecycle, PayjoinFailure>>();
+      final runtime = RecoverablePayjoin(() => opening.future);
+      addTearDown(runtime.dispose);
+      final call = runtime.payjoin.sessions.reservedOutpoints();
+      final suspending = runtime.suspend();
+      opening.complete(Ok(lifecycle));
+      await suspending;
+      expect(await call, isA<Err>());
+      verify(() => lifecycle.dispose()).called(1);
+    },
+  );
+
+  group('suspension generations', () {
+    late _MockPayjoinSender sender;
+    late _MockPayjoinLifecycle engine;
+    const engineResult = PayjoinUnexpectedFailure('the engine answered');
+
+    setUp(() {
+      sender = _MockPayjoinSender();
+      engine = _MockPayjoinLifecycle();
+      when(() => engine.payjoin).thenReturn(
+        Payjoin(
+          sender: sender,
+          receiver: _MockPayjoinReceiver(),
+          sessions: sessions,
+          policy: _MockPayjoinPolicy(),
+          diagnostics: _MockPayjoinDiagnostics(),
+        ),
+      );
+      when(() => engine.resume())
+          .thenAnswer((_) async => const Ok<void, PayjoinFailure>(null));
+      when(() => engine.dispose()).thenAnswer((_) async {});
+    });
+
+    test(
+      'a resume held on the family check does not resume after a lock',
+      () async {
+        final family = Completer<bool>();
+        var opens = 0;
+        final runtime = RecoverablePayjoin(() async {
+          opens++;
+          return Ok(engine);
+        }, isCurrent: () => family.future);
+        addTearDown(runtime.dispose);
+
+        final resuming = runtime.resume();
+        await Future<void>.delayed(Duration.zero);
+        final suspending = runtime.suspend();
+        family.complete(true);
+
+        expect(await resuming, isA<Err>());
+        await suspending;
+        verifyNever(() => engine.resume());
+        expect(opens, 1);
+      },
+    );
+
+    test('a role call held on the family check never reaches the engine after a lock', () async {
+      final family = Completer<bool>();
+      final runtime = RecoverablePayjoin(
+        () async => Ok(engine),
+        isCurrent: () => family.future,
+      );
+      addTearDown(runtime.dispose);
+
+      final call = runtime.payjoin.sessions.reservedOutpoints();
+      await Future<void>.delayed(Duration.zero);
+      final suspending = runtime.suspend();
+      family.complete(true);
+
+      expect(await call, isA<Err>());
+      await suspending;
+      verifyNever(() => sessions.reservedOutpoints());
+      expect(
+        await runtime.payjoin.sessions.reservedOutpoints(),
+        isA<Err>(),
+        reason: 'no delegate of the revoked generation is reinstalled',
+      );
+    });
+
+    test(
+      'a broadcast already admitted returns its real result and holds the stop',
+      () async {
+        var opens = 0;
+        final runtime = RecoverablePayjoin(() async {
+          opens++;
+          return Ok(engine);
+        });
+        addTearDown(runtime.dispose);
+        expect(await runtime.payjoin.sessions.reservedOutpoints(), isA<Ok>());
+        final inEngine = Completer<Result<PayjoinSession, PayjoinFailure>>();
+        when(() => sender.broadcastOriginal('s'))
+            .thenAnswer((_) => inEngine.future);
+
+        final broadcast = runtime.payjoin.sender.broadcastOriginal('s');
+        await Future<void>.delayed(Duration.zero);
+        verify(() => sender.broadcastOriginal('s')).called(1);
+
+        var confirmed = false;
+        final suspending = runtime.suspend().whenComplete(
+          () => confirmed = true,
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(confirmed, isFalse, reason: 'the effect is still running');
+        verifyNever(() => engine.dispose());
+        runtime.reopen();
+        expect(
+          await runtime.resume(),
+          isA<Err>(),
+          reason: 'no second instance yet',
+        );
+        expect(opens, 1);
+
+        inEngine.complete(const Err(engineResult));
+        final result = await broadcast;
+        expect((result as Err).failure, same(engineResult));
+        await suspending;
+        verify(() => engine.dispose()).called(1);
+
+        runtime.reopen();
+        resumed.complete();
+        expect(await runtime.resume(), isA<Ok>());
+        expect(opens, 2);
+      },
+    );
+
+    test('a broadcast not yet admitted is blocked by the lock', () async {
+      final family = Completer<bool>();
+      final runtime = RecoverablePayjoin(
+        () async => Ok(engine),
+        isCurrent: () => family.future,
+      );
+      addTearDown(runtime.dispose);
+
+      final broadcast = runtime.payjoin.sender.broadcastOriginal('s');
+      await Future<void>.delayed(Duration.zero);
+      final suspending = runtime.suspend();
+      family.complete(true);
+
+      expect(await broadcast, isA<Err>());
+      await suspending;
+      verifyNever(() => sender.broadcastOriginal(any()));
+    });
+
+    test(
+      'a new sensitive call after the lock is refused before any await',
+      () async {
+        final runtime = RecoverablePayjoin(() async => Ok(engine));
+        addTearDown(runtime.dispose);
+        expect(await runtime.payjoin.sessions.reservedOutpoints(), isA<Ok>());
+        final suspending = runtime.suspend();
+        final late = runtime.payjoin.sender.broadcastOriginal('s');
+        expect(await late, isA<Err>());
+        await suspending;
+        verifyNever(() => sender.broadcastOriginal(any()));
+      },
+    );
+  });
 }

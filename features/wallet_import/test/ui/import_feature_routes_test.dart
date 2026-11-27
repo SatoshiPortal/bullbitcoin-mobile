@@ -8,6 +8,7 @@ import 'package:provisioning/provisioning.dart';
 import 'package:secrets/secrets.dart';
 import 'package:wallet_import/setup.dart';
 import 'package:wallet_import/wallet_import.dart' show QrImportDevice;
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 class _Preferences extends Fake implements Preferences {}
 
@@ -67,7 +68,10 @@ void main() {
     final feature = ImportFeature.mount(
       preferences: _Preferences(),
       servers: _Servers(),
-      secrets: Secrets(scratchDirectory: () async => fail('unused')),
+      secrets: Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => fail('unused'),
+      ),
       inventory: _Inventory(),
       admission: _Admission(),
       accounts: _Accounts(),

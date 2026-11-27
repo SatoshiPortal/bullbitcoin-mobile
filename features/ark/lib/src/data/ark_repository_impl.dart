@@ -102,6 +102,7 @@ final class ArkRepositoryImpl implements ArkRepository {
 
   static ArkFailure _map(ArkWalletFailure failure) => switch (failure) {
     ArkUnavailableFailure() => const ArkServiceUnavailableFailure(),
+    ArkRenewalNotPermittedFailure() => const ArkServiceUnavailableFailure(),
     ArkWriterBusyFailure() => const ArkOperationBusyFailure(),
     ArkStorageFailure() => const ArkFeatureStorageFailure(),
     ArkValidationFailure() => const ArkInvalidRequestFailure(),

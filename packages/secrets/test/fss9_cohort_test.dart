@@ -38,7 +38,10 @@ void main() {
 
   Secrets secretsWith(FakeSecureStoragePlatform storage) {
     storage.install();
-    return Secrets(scratchDirectory: () async => '/tmp');
+    return Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
   }
 
   group('the entries are invisible — the common case', () {

@@ -11,7 +11,10 @@ import 'result_helpers.dart';
 void main() {
   Secrets secretsWith(FakeSecureStoragePlatform storage) {
     storage.install();
-    return Secrets(scratchDirectory: () async => '/tmp');
+    return Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
   }
 
   test(

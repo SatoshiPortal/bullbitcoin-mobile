@@ -91,7 +91,10 @@ void main() {
     fees = _Fees();
     custody = _Custody();
     keystore = FakeSecureStoragePlatform().install();
-    secrets = Secrets(scratchDirectory: () async => fixture.directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => fixture.directory.path,
+    );
     final connections = _Connections();
     final engine = ElectrumSync(
       connections: connections,

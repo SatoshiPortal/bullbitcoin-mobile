@@ -147,7 +147,10 @@ void main() {
     directory = Directory.systemTemp.createTempSync('import-custody-');
     log = Logger.replace(directory: directory);
     FakeSecureStoragePlatform().install();
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     fixture = await InventoryFixture.open(directory);
     admission = SqliteParentCustodyAdmission(
       directory: () async => directory.path,

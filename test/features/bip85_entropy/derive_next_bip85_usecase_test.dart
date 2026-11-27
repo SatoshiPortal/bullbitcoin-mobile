@@ -36,7 +36,10 @@ void main() {
     addTearDown(() => directory.delete(recursive: true));
     fixture = await InventoryFixture.open(directory);
     addTearDown(fixture.close);
-    secrets = Secrets(scratchDirectory: () async => directory.path);
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     derivations = fixture.inventory.bip85(secrets);
     preferences = _Environment();
     usecase = ManageBip85Usecase(derivations, fixture.inventory, preferences);

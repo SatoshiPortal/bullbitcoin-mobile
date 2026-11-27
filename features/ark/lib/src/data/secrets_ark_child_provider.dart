@@ -2,6 +2,7 @@ import 'package:ark/ark.dart';
 import 'package:ark/ark_setup.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show arkChildBip85Index;
 
 import '../domain/repositories/ark_account_registry_repository.dart';
 
@@ -11,6 +12,14 @@ final class SecretsArkChildProvider implements ArkChildProviderPort {
   final Secrets _secrets;
   final ArkAccountRegistryRepository _registry;
   const SecretsArkChildProvider(this._secrets, this._registry);
+
+  /// The foreground session is the authority here: the seed read in
+  /// [withChild] already needs it, and a lock ends the runtime.
+  @override
+  Future<Result<void, ArkWalletFailure>> admitBatch(
+    ArkAccountId account,
+  ) async => const Ok(null);
+
   @override
   Future<Result<T, ArkWalletFailure>> withChild<T>(
     ArkAccountId account,
@@ -34,7 +43,7 @@ final class SecretsArkChildProvider implements ArkChildProviderPort {
       case Ok(:final value):
         switch (await value.derive.bip85.mnemonic(
           wordCount: MnemonicLength.words12,
-          index: 11811,
+          index: arkChildBip85Index,
           language: Language.english,
         )) {
           case Err():

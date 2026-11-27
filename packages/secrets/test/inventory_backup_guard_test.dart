@@ -68,6 +68,7 @@ void main() {
     InventoryBackupVerification? verifier,
   }) async => _value(
     await SecretsInventory.open(
+      authority: SessionAuthority(),
       file: file,
       admission: admission,
       backupVerification: verifier,
@@ -205,7 +206,10 @@ void main() {
         final unbound = await open();
         await add(unbound, 'wallet-a', _a);
         _value(await unbound.removeWallet('wallet-a'));
-        final secrets = Secrets(scratchDirectory: () async => directory.path);
+        final secrets = Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => directory.path,
+        );
         _value(await secrets.trash(Fingerprint(_a)));
         storage.locked = true;
 
@@ -237,7 +241,10 @@ void main() {
     late Secrets secrets;
 
     setUp(() {
-      secrets = Secrets(scratchDirectory: () async => directory.path);
+      secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
     });
 
     /// Stores a real secret and registers a wallet for it, the way import
@@ -419,14 +426,14 @@ void main() {
     test('without a new secret needs no proof', () async {
       await protectThenLoseProof();
       _value(await inventory.setCredential('5678'));
-      inventory.lock();
+      await inventory.lock();
       expect(_value(await inventory.unlock('1234')).accepted, isFalse);
       expect(_value(await inventory.unlock('5678')).accepted, isTrue);
     });
 
     test('that fails keeps the old verifier, counter and protection', () async {
       await protectThenLoseProof();
-      inventory.lock();
+      await inventory.lock();
       expect(_value(await inventory.unlock('0000')).accepted, isFalse);
       expect(_value(await inventory.unlock('0001')).accepted, isFalse);
       expect(_value(await inventory.unlock('1234')).accepted, isTrue);
@@ -446,7 +453,7 @@ void main() {
       expect(await inventory.setCredential('5678'), isA<Err>());
       expect(_value(await inventory.isProtected()), isTrue);
       expect(_value(await inventory.accessStatus()).failedAttempts, 1);
-      inventory.lock();
+      await inventory.lock();
       expect(_value(await inventory.unlock('5678')).accepted, isFalse);
       expect(_value(await inventory.unlock('1234')).accepted, isTrue);
     });

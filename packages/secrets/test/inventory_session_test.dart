@@ -44,7 +44,11 @@ void main() {
       timeout: Duration.zero,
     ) as RuntimeAdmission;
     inventory = _value(
-      await SecretsInventory.open(file: file, admission: admission),
+      await SecretsInventory.open(
+        authority: SessionAuthority(),
+        file: file,
+        admission: admission,
+      ),
     );
     background = _value(
       await BackgroundWalletDescriptors.open(file: file, admission: admission),
@@ -59,7 +63,10 @@ void main() {
   test(
     'metadata backup excludes confidential descriptors and missing seeds',
     () async {
-      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
       final reference = _value(await secrets.generate()).id.hex;
       final bitcoin = 'wpkh([$reference/84h/0h/0h])';
       final liquid = 'elwpkh([$reference/84h/1776h/0h])';
@@ -549,7 +556,11 @@ void main() {
       await store.close();
 
       final reopened = _value(
-        await SecretsInventory.open(file: file, admission: admission),
+        await SecretsInventory.open(
+          authority: SessionAuthority(),
+          file: file,
+          admission: admission,
+        ),
       );
       final status = _value(await reopened.accessStatus());
       expect(status.remaining.inSeconds, inInclusiveRange(59, 60));
@@ -588,7 +599,10 @@ void main() {
   );
 
   test('ordinary module key handles cannot open the inventory', () {
-    final keys = Secrets(scratchDirectory: () async => directory.path);
+    final keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    );
     expect(() => keys.databaseKeys(module: 'secrets'), throwsArgumentError);
   });
 }

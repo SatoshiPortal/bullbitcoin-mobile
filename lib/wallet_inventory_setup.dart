@@ -20,6 +20,7 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
   GetIt services, {
   required RuntimeAdmission admission,
   required LegacySource legacy,
+  required SessionAuthority authority,
   required File inventoryFile,
   required File signersFile,
   required File syncFile,
@@ -66,6 +67,7 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
   final openedInventory = await SecretsInventory.open(
     file: inventoryFile,
     admission: admission,
+    authority: authority,
     backupVerification: backupVerification,
   );
   if (openedInventory case Err(:final failure)) return Err(failure);

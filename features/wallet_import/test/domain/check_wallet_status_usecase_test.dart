@@ -114,7 +114,10 @@ void main() {
     logDirectory = await Directory.systemTemp.createTemp('scan-log-');
     log = Logger.replace(directory: logDirectory);
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     settings = _MockSettingsRepository();
     servers = _FakeServersPort();
     wallets = _MockPrescan();

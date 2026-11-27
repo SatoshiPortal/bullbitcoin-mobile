@@ -80,7 +80,10 @@ void main() {
     FakeSecureStoragePlatform().install();
     inventoryDirectory = await Directory.systemTemp.createTemp('seed-access-');
     inventoryFixture = await InventoryFixture.open(inventoryDirectory);
-    final secrets = Secrets(scratchDirectory: () async => '/tmp');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     accessServices = GetIt.asNewInstance()..registerSingleton(secrets);
     AccessFeature.mount(
       services: accessServices,

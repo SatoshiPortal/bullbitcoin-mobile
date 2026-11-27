@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bull_payjoin/src/domain/payjoin_regtest_profile.dart';
+import 'package:bull_payjoin/src/engine/payjoin_admission.dart';
 import 'package:bull_payjoin/src/engine/payjoin_regtest_transport.dart';
 
 import 'package:bull_payjoin/src/data/local_payjoin_datasource.dart';
@@ -277,6 +278,14 @@ final class _PayjoinLifecycle implements PayjoinLifecycle {
     await _transport?.close();
     await _closeDatabase();
   }
+
+  // The wrapper that reopens storage owns suspension; this lifecycle only
+  // closes for good.
+  @override
+  Future<void> suspend() => dispose();
+
+  @override
+  void reopen() {}
 }
 
 abstract interface class _PayjoinRuntimeContract {
@@ -317,6 +326,9 @@ abstract interface class _PayjoinRuntimeContract {
   );
   Future<Result<PayjoinRelayHealth, PayjoinFailure>> relayHealth();
 }
+
+/// What a call revoked before its first signature or publication reports.
+const _suspendedMessage = 'Payjoin is suspended';
 
 final class _PayjoinRoles implements _PayjoinRuntimeContract {
   final PayjoinRepositoryImpl _engine;
@@ -387,11 +399,16 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     } on ArgumentError {
       return const Err(PayjoinInvalidInputFailure('Invalid sender expiry'));
     }
+    // The first effect is the signature, or the publication when the original
+    // is already signed. Revoked before it, nothing happens; past it, the
+    // caller gets the engine's real result.
+    final prepared = request.preparedOriginal;
+    if (prepared == null && !payjoinAdmitted()) {
+      return const Err(PayjoinUnavailableFailure(_suspendedMessage));
+    }
     late final String signed;
     try {
-      signed =
-          request.preparedOriginal?.signedPsbt ??
-          await _engineWalletSign(request);
+      signed = prepared?.signedPsbt ?? await _engineWalletSign(request);
     } on PayjoinSpendBlockedException catch (blocked) {
       return Err(PayjoinSpendBlockedFailure(busy: blocked.busy));
     } catch (error, trace) {
@@ -402,6 +419,9 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
         trace: trace,
       );
       return const Err(PayjoinSigningFailure('Sender signing failed'));
+    }
+    if (prepared != null && !payjoinAdmitted()) {
+      return const Err(PayjoinUnavailableFailure(_suspendedMessage));
     }
     try {
       final session = await _engine.createPayjoinSender(
@@ -484,14 +504,20 @@ final class _PayjoinRoles implements _PayjoinRuntimeContract {
     } on ArgumentError {
       return const Err(PayjoinInvalidInputFailure('Invalid receiver expiry'));
     }
+    final maxFeeRate = BigInt.from(
+      await receiverMaxFeeRateSatPerVb(_fees, request.network),
+    );
+    // Publishing the receiver session is the first effect: revoked before it,
+    // nothing is created.
+    if (!payjoinAdmitted()) {
+      return const Err(PayjoinUnavailableFailure(_suspendedMessage));
+    }
     try {
       final session = await _engine.createPayjoinReceiver(
         walletId: request.walletId,
         address: request.address,
         isTestnet: !request.network.isMainnet,
-        maxFeeRateSatPerVb: BigInt.from(
-          await receiverMaxFeeRateSatPerVb(_fees, request.network),
-        ),
+        maxFeeRateSatPerVb: maxFeeRate,
         expireAfterSec: lifetime.inSeconds,
         amountSat: request.amount?.value.toInt(),
         isTrade: request.isTrade,

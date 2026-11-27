@@ -22,20 +22,6 @@ Each asynchronous `Future<Result<T, SecretFailure>>` is shown as `T`. Other retu
 
 ```text
 Secrets
-|-- accessKeychain
-|   |-- isPinSet() -> bool
-|   |-- verifyPin(candidate) -> bool?
-|   |-- setPin(pin) -> void
-|   |-- deletePin() -> void
-|   |-- readAttempts() -> String?
-|   |-- writeAttempts(value) -> void
-|   |-- readLockedUntil() -> String?
-|   |-- writeLockedUntil(value) -> void
-|   `-- deleteLockedUntil() -> void
-|-- exchangeKeychain
-|   |-- read(isTestnet:) -> String?
-|   |-- write(value, isTestnet:) -> void
-|   `-- delete(isTestnet:) -> void
 |-- silentPaymentKeychain
 |   |-- readBackend() -> String?
 |   |-- writeBackend(value) -> void
@@ -112,6 +98,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
+import 'package:secrets/storage.dart' show SessionAuthority;
 
 Future<Result<String, SecretFailure>> createAccount(Secrets secrets) async {
   switch (await secrets.generate(wordCount: MnemonicLength.words12)) {
@@ -127,7 +114,13 @@ Future<Result<String, SecretFailure>> createAccount(Secrets secrets) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final secrets = Secrets(scratchDirectory: () async => Directory.systemTemp.path);
+  // The composition shares one authority with the inventory, which grants it
+  // after authentication; while it is locked every operation is refused.
+  final authority = SessionAuthority();
+  final secrets = Secrets(
+    scratchDirectory: () async => Directory.systemTemp.path,
+    authority: authority,
+  );
   final result = await createAccount(secrets);
   runApp(Directionality(
     textDirection: TextDirection.ltr,
@@ -223,9 +216,9 @@ RecoverBull creation, restoration and backup inspection use the package. Decrypt
 
 ## Legacy owner keychains
 
-`Secrets.accessKeychain`, `exchangeKeychain`, `silentPaymentKeychain` and `swapKeychain` expose closed handles. Access compares the PIN without returning it; a missing PIN is distinct from a mismatch and a failed read. All operations return `Result<…, SecretFailure>`. Exchange selects only mainnet or testnet; Silent Payments owns only its backend and auto-scan settings. Swaps accepts only full legacy `swap_` keys, including `swap_regtest_`, and rejects other namespaces before storage access. No capability lists the keychain or accepts a caller-selected prefix.
+`Secrets.silentPaymentKeychain` and `swapKeychain` expose closed handles. The legacy Exchange records are read only during migration under an exclusive admission. The PIN entries have no runtime capability: the access verifier lives in the inventory, and the legacy entries are read only by the import and the retirement. All operations return `Result<…, SecretFailure>`. Silent Payments owns only its backend and auto-scan settings. Swaps accepts only full legacy `swap_` keys, including `swap_regtest_`, and rejects other namespaces before storage access. No capability lists the keychain or accepts a caller-selected prefix.
 
-The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys are `failedUnlockAttemptsKey`, `unlockLockedUntilKey`, `exchange_api_key`, `exchange_api_key_testnet`, `sp_backend_config` and `sp_auto_scan_enabled`. The handles access these entries in place with Android `resetOnError: false` and `migrateOnAlgorithmChange: false`, and iOS `first_unlock_this_device`. Moving SP configuration to another store would require a separate migration. Exchange owns its diagnostics without duplicate keychain reporting. Access operations retain sanitized boundary diagnostics.
+The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys are `failedUnlockAttemptsKey`, `unlockLockedUntilKey`, `exchange_api_key`, `exchange_api_key_testnet`, `sp_backend_config` and `sp_auto_scan_enabled`. The handles access these entries in place with Android `resetOnError: false` and `migrateOnAlgorithmChange: false`, and iOS `first_unlock_this_device`. Moving SP configuration to another store would require a separate migration. Exchange owns its diagnostics without duplicate keychain reporting.
 
 ## Encrypted wallet inventory
 

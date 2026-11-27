@@ -26,6 +26,7 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   bool _creationSuspended = false;
   bool _effectsSuspended = false;
   final Set<Future<void>> _creations = {};
+  final Set<Future<void>> _effects = {};
 
   SwitchableSwapEngine(this._parts) {
     _forward();
@@ -37,6 +38,40 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   void suspendCreation() => _creationSuspended = true;
 
   void resumeCreation() => _creationSuspended = false;
+
+  /// Completes when every claim, refund or other effect admitted so far has
+  /// finished and handed its real result to its caller.
+  Future<void> get effectsSettled async {
+    while (_effects.isNotEmpty) {
+      await Future.wait(_effects.toList());
+    }
+  }
+
+  /// Runs a signing or publishing call. It is registered before its first
+  /// await, and refused at once once effects are suspended, so a revocation can
+  /// neither be overtaken nor confirmed while the call is running.
+  Future<Result<T, SwapsFailure>> _effect<T>(
+    Future<Result<T, SwapsFailure>> Function() run,
+  ) {
+    if (_effectsSuspended) {
+      return Future.value(const Err(SwapsBusyFailure()));
+    }
+    final Future<Result<T, SwapsFailure>> running;
+    try {
+      running = run();
+    } catch (error) {
+      return Future.error(error);
+    }
+    late final Future<void> tracked;
+    tracked = running
+        .then<void>((_) {}, onError: (Object _) {})
+        .whenComplete(() => _effects.remove(tracked));
+    _effects.add(tracked);
+    return running;
+  }
+
+  /// Completes when every creation admitted so far has finished.
+  Future<void> get creationsSettled => Future.wait(_creations.toList());
 
   Future<Result<T, SwapsFailure>> _create<T>(
     Future<Result<T, SwapsFailure>> Function(BoltzSwapRepository) action,
@@ -131,11 +166,12 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   Stream<Swap> get updates => _updates.stream;
 
   @override
-  Future<Result<Swap, SwapsFailure>> resolve(Swap swap) => _boltz.resolve(swap);
+  Future<Result<Swap, SwapsFailure>> resolve(Swap swap) =>
+      _effect(() => _boltz.resolve(swap));
 
   @override
   Future<Result<Swap, SwapsFailure>> resolveScriptPath(Swap swap) =>
-      _boltz.resolveScriptPath(swap);
+      _effect(() => _boltz.resolveScriptPath(swap));
 
   @override
   void listen(List<String> swapIds) => _boltz.listen(swapIds);
@@ -177,7 +213,7 @@ class SwitchableSwapEngine implements SwapStore, SwapResolver, BoltzSwaps {
   Future<Result<Swap, SwapsFailure>> rescue(
     RestoredSwap restored, {
     required String walletId,
-  }) => _boltz.rescue(restored, walletId: walletId);
+  }) => _effect(() => _boltz.rescue(restored, walletId: walletId));
 
   // BoltzSwaps
 

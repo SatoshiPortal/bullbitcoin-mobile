@@ -44,8 +44,10 @@ void main() {
         await File('${directory.path}/fixture-keystore.json').readAsString(),
       ) as Map<String, dynamic>).cast<String, String>();
       FakeSecureStoragePlatform(entries: entries).install();
-      final keys = Secrets(scratchDirectory: () async => directory.path)
-          .databaseKeys(module: 'preferences');
+      final keys = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      ).databaseKeys(module: 'preferences');
       final lease = await NativeFileGate(
         File('${directory.path}/gate'),
       ).acquire(exclusive: true, timeout: Duration.zero) as ExclusiveAdmission;
@@ -87,8 +89,10 @@ void main() {
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('preferences-import-');
     keystore = FakeSecureStoragePlatform()..install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'preferences');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'preferences');
     gate = NativeFileGate(File('${directory.path}/gate'));
     destination = File('${directory.path}/preferences.sqlite');
     source = LegacySource(File('${directory.path}/legacy.sqlite'), 16);

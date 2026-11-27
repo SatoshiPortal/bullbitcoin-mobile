@@ -84,7 +84,8 @@ void main() {
           },
         ),
       );
-      expect(await client.synchronize(account, renew: false), isA<Ok>());
+      // A background pass is a renewal pass: without one it is refused.
+      expect(await client.synchronize(account, renew: true), isA<Ok>());
       expect(observed, 1);
     },
   );

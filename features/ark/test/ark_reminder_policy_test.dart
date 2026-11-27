@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ark/ark.dart';
+import 'package:ark/ark_setup.dart' show ArkChildProviderPort;
 import 'package:bull_ark/src/data/sqlite_ark_reminder_repository.dart';
 import 'package:bull_ark/src/domain/ark_expiry_warning.dart';
 import 'package:bull_ark/src/domain/ark_failure.dart';
@@ -294,6 +295,131 @@ void main() {
     expect(payload(rows().last)['original'], original);
   });
   test(
+    'reapply skips the accounts whose view no longer permits them',
+    () async {
+      final other = ArkAccountId(
+        parent: Fingerprint('44556677'),
+        network: BitcoinNetwork.regtest,
+        serverIdentity: account().serverIdentity,
+      );
+      expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+      expect(
+        await apply(observed(owner: other, vtxos: [vtxo('w', 800)])),
+        isA<Ok>(),
+      );
+      int platformOf(ArkAccountId owner) =>
+          rows().singleWhere(
+                (row) => (row['account'] as String).contains(owner.canonical),
+              )['platform_id']
+              as int;
+      final permitted = platformOf(account());
+      final refused = platformOf(other);
+      expect(permitted, isNot(refused));
+      await store.close();
+      gateway.actions.clear();
+      reopen();
+
+      final asked = <String>[];
+      final result = await store.reapplyStored(
+        permitsParent: (parent) async {
+          asked.add(parent.hex);
+          return parent == account().parent;
+        },
+      );
+
+      expect(result, isA<Ok>());
+      expect(asked.toSet(), {account().parent.hex, other.parent.hex});
+      expect(gateway.actions, ['schedule:$permitted', 'cancel:$refused']);
+      expect(gateway.actions, isNot(contains('schedule:$refused')));
+      expect(
+        rows().map((row) => row['platform_id']),
+        contains(refused),
+        reason: 'the ledger keeps the row for when the view permits it again',
+      );
+    },
+  );
+
+  SqliteArkReminderRepository openForeground({
+    required Future<bool> Function(Fingerprint parent) permitsParent,
+  }) => value(
+    SqliteArkReminderRepository.open(
+      path: path,
+      notifications: gateway,
+      title: 'Urgent',
+      body: 'Open Ark',
+      foreground: true,
+      permitsParent: permitsParent,
+    ),
+  );
+
+  test('a withdrawn permission keeps a cancelled alarm cancelled in the foreground', () async {
+    expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+    final id = rows().single['platform_id'] as int;
+
+    // The permission is withdrawn: the headless pass cancels the OS alarm.
+    await store.close();
+    gateway.actions.clear();
+    reopen();
+    expect(
+      await store.reapplyStored(permitsParent: (_) async => false),
+      isA<Ok>(),
+    );
+    expect(gateway.actions, ['cancel:$id']);
+
+    // The foreground reopens: the owner's permission still decides.
+    await store.close();
+    gateway.actions.clear();
+    store = openForeground(permitsParent: (_) async => false);
+    expect(await store.reapplyStored(), isA<Ok>());
+    expect(gateway.actions, isNot(contains('schedule:$id')));
+    expect(gateway.actions.where((a) => a.startsWith('schedule:')), isEmpty);
+    expect(rows().map((row) => row['platform_id']), contains(id));
+  });
+
+  test('a refused owner gets no alarm from a new observation either', () async {
+    await store.close();
+    gateway.actions.clear();
+    store = openForeground(permitsParent: (_) async => false);
+
+    expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+
+    expect(gateway.actions.where((a) => a.startsWith('schedule:')), isEmpty);
+  });
+
+  test(
+    'a permitted owner is rescheduled by the foreground as before',
+    () async {
+      expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+      final id = rows().single['platform_id'] as int;
+      await store.close();
+      gateway.actions.clear();
+      store = openForeground(permitsParent: (_) async => true);
+
+      expect(await store.reapplyStored(), isA<Ok>());
+
+      expect(gateway.actions, ['schedule:$id']);
+    },
+  );
+
+  test('a refused renewal does not stop a permitted reminder', () async {
+    expect(await apply(observed(vtxos: [vtxo('v', 800)])), isA<Ok>());
+    final platformId = rows().single['platform_id'] as int;
+    await store.close();
+    gateway.actions.clear();
+    reopen();
+
+    // Renewal and notifying are separate permissions: a refused renewal does
+    // not decide the reminder.
+    expect(await _RefusedRenewal().admitBatch(account()), isA<Err>());
+
+    expect(
+      await store.reapplyStored(permitsParent: (_) async => true),
+      isA<Ok>(),
+    );
+    expect(gateway.actions, ['schedule:$platformId']);
+  });
+
+  test(
     'transferred VTXO is not recopied after positive linked retirement',
     () async {
       seed({hash('vtxo:old'): oldAt});
@@ -558,4 +684,18 @@ void main() {
       );
     });
   }
+}
+
+/// A renewal policy that refuses every lot.
+final class _RefusedRenewal implements ArkChildProviderPort {
+  @override
+  Future<Result<void, ArkWalletFailure>> admitBatch(
+    ArkAccountId account,
+  ) async => const Err(ArkRenewalNotPermittedFailure());
+
+  @override
+  Future<Result<T, ArkWalletFailure>> withChild<T>(
+    ArkAccountId account,
+    Future<Result<T, ArkWalletFailure>> Function(String, Fingerprint) action,
+  ) async => const Err(ArkRenewalNotPermittedFailure());
 }

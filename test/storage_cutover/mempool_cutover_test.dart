@@ -32,8 +32,10 @@ void main() {
       );
       await old.close();
       FakeSecureStoragePlatform().install();
-      final keys = Secrets(scratchDirectory: () async => directory.path)
-          .databaseKeys(module: 'mempool');
+      final keys = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      ).databaseKeys(module: 'mempool');
       final file = File('${directory.path}/mempool.sqlite');
       final participant = MempoolImport(
         file: file,

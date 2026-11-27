@@ -29,6 +29,7 @@ class PinCodeLocator {
         checkBackupUsecase: CheckPinBackupUsecase(
           inventory: locator<AccessInventory>(),
         ),
+        lockChanges: locator<AccessInventory>().locked,
       ),
     );
   }

@@ -14,7 +14,10 @@ void main() {
           '${language.name} with passphrase ${passphrase.isNotEmpty} uses the $network default',
           () async {
             FakeSecureStoragePlatform().install();
-            final secrets = Secrets(scratchDirectory: () async => '/tmp');
+            final secrets = Secrets(
+              authority: unlockedSessionAuthority(),
+              scratchDirectory: () async => '/tmp',
+            );
             final words = bip39.Mnemonic(List.filled(16, 0), language).words;
             final imported = await secrets.import(
               words: words,
@@ -44,7 +47,10 @@ void main() {
   for (final network in [BitcoinNetwork.signet, BitcoinNetwork.regtest]) {
     test('$network is rejected before looking up wallets', () async {
       FakeSecureStoragePlatform().install();
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      );
 
       final result = await GetSpSecretUsecase(
         readDefaultFingerprint: (_) => throw StateError('inventory called'),

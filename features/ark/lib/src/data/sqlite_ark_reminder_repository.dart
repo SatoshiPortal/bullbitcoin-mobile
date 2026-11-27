@@ -32,6 +32,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
   final ScheduledNotificationPort _notifications;
   final String title;
   final String body;
+  final Future<bool> Function(Fingerprint parent)? _permitsParent;
   bool _closed = false;
   Completer<void>? _active;
   SqliteArkReminderRepository._(
@@ -40,6 +41,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     this._notifications, {
     required this.title,
     required this.body,
+    this._permitsParent,
   });
 
   /// Ordinary startup, including foreground, is existing-only. Set
@@ -55,6 +57,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     required bool foreground,
     bool initializeNew = false,
     bool migrateLegacy = false,
+    Future<bool> Function(Fingerprint parent)? permitsParent,
   }) {
     Database? opened;
     ArkReminderGuard? guard;
@@ -137,6 +140,7 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
           notifications,
           title: title,
           body: body,
+          permitsParent: permitsParent,
         ),
       );
     } on Exception catch (_) {
@@ -172,6 +176,12 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
     var admitted = false;
     var guarded = false;
     try {
+      // The owner's permission decides every alarm, new ones included: a
+      // refused owner gets none, and the alarm it already has is cancelled.
+      final permit = _permitsParent;
+      if (permit != null && !await permit(account.parent)) {
+        return await _cancelAccountAlarms(account);
+      }
       _guard.acquire();
       guarded = true;
       _db.execute('BEGIN IMMEDIATE');
@@ -561,7 +571,10 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
   /// Startup must restore previously admitted alarms even while offline or
   /// before a fresh native pass. Reapply uses persisted deadlines/IDs only and
   /// cannot clear a warning or postpone an expiry from a cached observation.
-  Future<Result<void, ArkFailure>> reapplyStored() async {
+  Future<Result<void, ArkFailure>> reapplyStored({
+    Future<bool> Function(Fingerprint parent)? permitsParent,
+  }) async {
+    permitsParent ??= _permitsParent;
     if (_closed) return const Err(ArkFeatureStorageFailure());
     if (_active != null) return const Err(ArkOperationBusyFailure());
     final settled = Completer<void>();
@@ -577,7 +590,20 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
       _validateRows(desired);
       _db.execute('COMMIT');
       admitted = false;
-      return await _replay(desired);
+      final filter = permitsParent;
+      if (filter == null) return await _replay(desired);
+      final split = await _splitByPermission(desired, filter);
+      final replayed = await _replay(split.permitted);
+      // An alarm already programmed for a view that no longer permits it must
+      // not fire: cancel it. The ledger row stays, so the foreground can
+      // schedule it again once the view permits it.
+      ArkFailure? cancelFailed;
+      for (final row in split.refused) {
+        final cancelled = await _apply(row['platform_id'] as int, null);
+        if (cancelled case Err(:final failure)) cancelFailed ??= failure;
+      }
+      if (replayed case Err()) return replayed;
+      return cancelFailed != null ? Err(cancelFailed) : replayed;
     } on Exception catch (_) {
       return const Err(ArkFeatureStorageFailure());
     } finally {
@@ -592,6 +618,55 @@ final class SqliteArkReminderRepository implements ArkReminderRepository {
         }
       }
     }
+  }
+
+  /// Cancels the OS alarms of [account] and keeps its ledger rows, so the
+  /// foreground can schedule them again once its owner permits it.
+  Future<Result<void, ArkFailure>> _cancelAccountAlarms(
+    ArkAccountId account,
+  ) async {
+    try {
+      ArkFailure? failed;
+      for (final row in _db.select('SELECT * FROM ark_reminders')) {
+        final String owner;
+        try {
+          owner = _owner(row);
+        } on Object {
+          continue;
+        }
+        if (owner != account.canonical) continue;
+        final cancelled = await _apply(row['platform_id'] as int, null);
+        if (cancelled case Err(:final failure)) failed ??= failure;
+      }
+      return failed == null ? const Ok(null) : Err(failed);
+    } on Exception {
+      return const Err(ArkFeatureStorageFailure());
+    }
+  }
+
+  /// Splits the rows by whether the caller still permits their exact owner,
+  /// asking once per parent. A row whose owner cannot be read is refused:
+  /// reapplying an alarm is never what proves the view may still see it.
+  Future<({List<Row> permitted, List<Row> refused})> _splitByPermission(
+    List<Row> rows,
+    Future<bool> Function(Fingerprint parent) permitsParent,
+  ) async {
+    final decisions = <String, bool>{};
+    final permitted = <Row>[];
+    final refused = <Row>[];
+    for (final row in rows) {
+      Fingerprint? parent;
+      try {
+        parent = Fingerprint(_owner(row).split('|').first);
+      } on Object {
+        parent = null;
+      }
+      final allowed =
+          parent != null &&
+          (decisions[parent.hex] ??= await permitsParent(parent));
+      (allowed ? permitted : refused).add(row);
+    }
+    return (permitted: permitted, refused: refused);
   }
 
   Future<void> close() async {

@@ -110,7 +110,10 @@ void main() {
 
   setUp(() async {
     storage = FakeSecureStoragePlatform()..install();
-    secrets = Secrets(scratchDirectory: () async => '/tmp');
+    secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp',
+    );
     wallets = _MockWalletRepository();
     final wallet = await realWallet(_missingFingerprint, _missing);
     when(() => wallets.getWallets())

@@ -34,8 +34,10 @@ void main() {
       }
 
       final file = File('${dir.path}/sync.sqlite');
-      final keys = Secrets(scratchDirectory: () async => dir.path)
-          .databaseKeys(module: 'sync');
+      final keys = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => dir.path,
+      ).databaseKeys(module: 'sync');
       final participant = syncWalletMetadataImport(file: file, keys: keys);
       final gate = NativeFileGate(File('${dir.path}/gate'));
       final exclusive = await gate.acquire(

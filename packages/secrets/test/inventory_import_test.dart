@@ -268,6 +268,7 @@ void main() {
     final resumed = await runtime();
     try {
       final opened = await SecretsInventory.open(
+        authority: SessionAuthority(),
         file: destination,
         admission: resumed,
       );
@@ -299,6 +300,7 @@ void main() {
       final admission = await runtime();
       try {
         Future<SecretsInventory> open() async => (await SecretsInventory.open(
+          authority: SessionAuthority(),
           file: destination,
           admission: admission,
         ) as Ok<SecretsInventory, DatabaseOpenFailure>).value;
@@ -362,6 +364,7 @@ void main() {
     final admission = await runtime();
     try {
       final opened = await SecretsInventory.open(
+        authority: SessionAuthority(),
         file: destination,
         admission: admission,
       );
@@ -389,6 +392,7 @@ void main() {
     final admission = await runtime();
     try {
       Future<SecretsInventory> open() async => (await SecretsInventory.open(
+        authority: SessionAuthority(),
         file: destination,
         admission: admission,
       ) as Ok<SecretsInventory, DatabaseOpenFailure>).value;
@@ -595,6 +599,7 @@ void main() {
     final admission = await runtime();
     try {
       final opened = await SecretsInventory.open(
+        authority: SessionAuthority(),
         file: destination,
         admission: admission,
       );

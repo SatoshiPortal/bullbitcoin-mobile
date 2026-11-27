@@ -20,6 +20,9 @@ class _Inventory implements WalletInventory {
   final List<WalletRegistration> wallets = [];
 
   @override
+  Future<bool> mayNotifyArk(Fingerprint parent) async => false;
+
+  @override
   Future<Result<List<Fingerprint>, SecretFailure>>
   referencedFingerprints() async => const Ok([]);
 
@@ -96,7 +99,10 @@ class _Accounts implements WalletProvisioning {
 void main() {
   test('an existing seed refuses the first-install choice', () async {
     FakeSecureStoragePlatform().install();
-    final secrets = Secrets(scratchDirectory: () async => '/tmp/opencode');
+    final secrets = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => '/tmp/opencode',
+    );
     expect(
       await secrets.import(
         words: [...List.filled(11, 'abandon'), 'about'],
@@ -136,6 +142,7 @@ void main() {
           });
           final wizard = WizardFeature.mount();
           final secrets = Secrets(
+            authority: unlockedSessionAuthority(),
             scratchDirectory: () async => '/tmp/opencode',
           );
           final inventory = _Inventory();

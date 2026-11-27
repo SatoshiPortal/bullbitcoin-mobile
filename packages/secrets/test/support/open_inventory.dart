@@ -9,7 +9,13 @@ import 'package:secrets/storage.dart';
 import 'package:secrets/testing.dart';
 
 /// A fresh unprotected inventory in [directory], for one test.
-Future<({SecretsInventory inventory, RuntimeAdmission admission})>
+Future<
+  ({
+    SecretsInventory inventory,
+    RuntimeAdmission admission,
+    SessionAuthority authority,
+  })
+>
 openFreshInventory(Directory directory) async {
   FakeSecureStoragePlatform().install();
   final file = File('${directory.path}/secrets.sqlite');
@@ -31,8 +37,17 @@ openFreshInventory(Directory directory) async {
     exclusive: false,
     timeout: Duration.zero,
   ) as RuntimeAdmission;
-  final opened = await SecretsInventory.open(file: file, admission: admission);
-  return (inventory: valueOf(opened), admission: admission);
+  final authority = SessionAuthority();
+  final opened = await SecretsInventory.open(
+    file: file,
+    admission: admission,
+    authority: authority,
+  );
+  return (
+    inventory: valueOf(opened),
+    admission: admission,
+    authority: authority,
+  );
 }
 
 T valueOf<T, F extends Failure>(Result<T, F> result) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/bip85.dart';
@@ -8,10 +10,30 @@ import 'bip85_state.dart';
 
 final class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   final ManageBip85Usecase _usecase;
+  late final StreamSubscription<bool> _lockSubscription;
+  var _revocations = 0;
+  var _started = false;
 
-  Bip85EntropyCubit(this._usecase) : super(const Bip85EntropyState());
+  /// [lockChanges] is true on every lock and false on every unlock. A lock
+  /// clears what the old session revealed and drops every result still in
+  /// flight, reload included; the next unlock reads again.
+  Bip85EntropyCubit(this._usecase, Stream<bool> lockChanges)
+    : super(const Bip85EntropyState()) {
+    _lockSubscription = lockChanges.listen((locked) {
+      if (isClosed) return;
+      if (locked) {
+        _revocations++;
+        emit(const Bip85EntropyState());
+      } else if (_started) {
+        unawaited(_reload());
+      }
+    });
+  }
 
-  Future<void> init() => _reload();
+  Future<void> init() {
+    _started = true;
+    return _reload();
+  }
 
   Future<void> deriveNextMnemonic() => _update(_usecase.nextMnemonic);
 
@@ -31,23 +53,33 @@ final class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   ) async {
     if (state.isLoading) return;
     emit(state.copyWith(isLoading: true, failure: null));
-    switch (await command()) {
+    final revocations = _revocations;
+    final result = await command();
+    if (isClosed || revocations != _revocations) return;
+    switch (result) {
       case Err(:final failure):
-        if (!isClosed) emit(state.copyWith(failure: failure, isLoading: false));
+        emit(state.copyWith(failure: failure, isLoading: false));
       case Ok():
-        if (!isClosed) await _reload();
+        await _reload();
     }
   }
 
   Future<void> _reload() async {
     emit(state.copyWith(isLoading: true));
+    final revocations = _revocations;
     final result = await _usecase.list();
-    if (isClosed) return;
+    if (isClosed || revocations != _revocations) return;
     switch (result) {
       case Err(:final failure):
         emit(Bip85EntropyState(failure: failure));
       case Ok(:final value):
         emit(Bip85EntropyState(derivations: value));
     }
+  }
+
+  @override
+  Future<void> close() async {
+    await _lockSubscription.cancel();
+    await super.close();
   }
 }

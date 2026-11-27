@@ -34,8 +34,10 @@ void main() {
     checkpoint = null;
     directory = await Directory.systemTemp.createTemp('electrum-import-');
     keystore = FakeSecureStoragePlatform()..install();
-    keys = Secrets(scratchDirectory: () async => directory.path)
-        .databaseKeys(module: 'electrum');
+    keys = Secrets(
+      authority: unlockedSessionAuthority(),
+      scratchDirectory: () async => directory.path,
+    ).databaseKeys(module: 'electrum');
     gate = NativeFileGate(File('${directory.path}/gate'));
     admission = await gate.acquire(
       exclusive: true,

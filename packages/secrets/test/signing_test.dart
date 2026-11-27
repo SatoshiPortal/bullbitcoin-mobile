@@ -35,14 +35,19 @@ void main() {
   setUpAll(() async {
     FakeSecureStoragePlatform().install();
     secret = ok(
-      await Secrets(scratchDirectory: () async => '/tmp')
-          .import(words: words, language: Language.english),
+      await Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      ).import(words: words, language: Language.english),
     );
   });
 
   test('signs the published Japanese seed with its passphrase', () async {
     final japanese = ok(
-      await Secrets(scratchDirectory: () async => '/tmp').import(
+      await Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      ).import(
         words: [...List.filled(11, 'あいこくしん'), 'あおぞら'],
         language: bip39.Language.japanese,
         passphrase: 'メートルガバヴァぱばぐゞちぢ十人十色',

@@ -29,7 +29,10 @@ void main() {
       'the ${challenge ? 'challenge' : 'view'} publishes no future of the words',
       (tester) async {
         FakeSecureStoragePlatform().install();
-        final secrets = Secrets(scratchDirectory: () async => '/tmp');
+        final secrets = Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => '/tmp',
+        );
         late Secret secret;
         await tester.runAsync(() async {
           final result = await secrets.import(

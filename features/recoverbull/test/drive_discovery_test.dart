@@ -13,6 +13,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart' show Secrets;
+import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
 void main() {
   late RecoverBullDatabase database;
@@ -27,7 +28,10 @@ void main() {
     metadata = BackupMetadataRepositoryImpl(database);
     monitoring = AttemptMonitoringRepositoryImpl(database, durable: true);
     final vaults = SecretsVaultRepository(
-      Secrets(scratchDirectory: () async => '/unused'),
+      Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/unused',
+      ),
     );
     final vault = EncryptedVault(
       id: '11' * 32,

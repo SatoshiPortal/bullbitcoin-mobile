@@ -36,7 +36,7 @@ import 'package:fees/fees.dart';
 import 'package:sync/sync.dart' show WalletCatalogPort, SyncReason;
 import 'package:sync/write.dart'
     show ForegroundWalletSynchronization, WalletNativeRuntime;
-import 'package:secrets/storage.dart' show SecretsInventory;
+import 'package:secrets/storage.dart' show SecretsInventory, SessionAuthority;
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:bull_recoverbull/migration.dart';
@@ -219,7 +219,10 @@ void main() {
       final inventoryFile = ownerFile('secrets');
       final signersFile = ownerFile('signers');
       final syncFile = ownerFile('sync');
-      final secrets = Secrets(scratchDirectory: () async => appDirectory.path);
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => appDirectory.path,
+      );
       final signerKeys = secrets.databaseKeys(module: 'signers');
       final syncKeys = secrets.databaseKeys(module: 'sync');
       final recoverBull = RecoverBullCutover(
@@ -262,6 +265,7 @@ void main() {
           locator,
           admission: admission,
           legacy: legacy.source,
+          authority: SessionAuthority(),
           inventoryFile: inventoryFile,
           signersFile: signersFile,
           syncFile: syncFile,

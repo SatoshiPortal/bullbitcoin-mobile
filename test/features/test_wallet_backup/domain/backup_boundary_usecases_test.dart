@@ -81,7 +81,10 @@ void main() {
 
     test('returns the handle on success, never the words', () async {
       FakeSecureStoragePlatform().install();
-      final secrets = Secrets(scratchDirectory: () async => '/tmp');
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => '/tmp',
+      );
       final stored = (await secrets.import(
         words: words,
         language: bip39.Language.english,
@@ -104,7 +107,10 @@ void main() {
       ).install();
 
       final result = await GetSecretFromFingerprintUsecase(
-        secrets: Secrets(scratchDirectory: () async => '/tmp'),
+        secrets: Secrets(
+          authority: unlockedSessionAuthority(),
+          scratchDirectory: () async => '/tmp',
+        ),
       ).execute(fingerprint);
 
       switch (result) {

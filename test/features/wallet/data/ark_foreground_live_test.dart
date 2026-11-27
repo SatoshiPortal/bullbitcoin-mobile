@@ -78,7 +78,10 @@ void main() {
       final previousPaths = PathProviderPlatform.instance;
       PathProviderPlatform.instance = _Paths(directory.path);
       FakeSecureStoragePlatform().install();
-      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final secrets = Secrets(
+        authority: unlockedSessionAuthority(),
+        scratchDirectory: () async => directory.path,
+      );
       final parent = switch (await secrets.generate()) {
         Ok(:final value) => value.id,
         Err(:final failure) => throw StateError('$failure'),

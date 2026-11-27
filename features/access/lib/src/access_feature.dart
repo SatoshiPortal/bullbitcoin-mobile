@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'routes.dart';
 
 import 'package:access/src/locator.dart';
+import 'package:access/src/public/access.dart';
 import 'package:access/src/pin_code_locator.dart';
 import 'package:secrets/storage.dart';
 import 'package:access/src/domain/access_inventory.dart';
+import 'package:access/src/domain/access_lock_controller.dart';
 import 'package:access/src/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
 import 'package:access/src/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:access/src/domain/usecases/get_latest_unlock_attempt_usecase.dart';
@@ -15,7 +17,12 @@ import 'package:get_it/get_it.dart';
 
 void _setupAccess(GetIt locator, {required SecretsInventory inventory}) {
   accessLocator = locator;
+  locator.registerSingleton<Access>(const Access());
   locator.registerSingleton(AccessInventory(inventory));
+  locator.registerSingleton(
+    AccessLockController(locator<AccessInventory>()),
+    dispose: (controller) => controller.policy.dispose(),
+  );
   PinCodeLocator.setup(locator);
 
   // Use cases

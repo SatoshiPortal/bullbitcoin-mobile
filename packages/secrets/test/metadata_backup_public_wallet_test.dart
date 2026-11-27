@@ -18,6 +18,7 @@ void main() {
   late Directory directory;
   late RuntimeAdmission admission;
   late SecretsInventory inventory;
+  late SessionAuthority authority;
   late BackupSession session;
 
   setUp(() async {
@@ -25,6 +26,7 @@ void main() {
     final opened = await openFreshInventory(directory);
     inventory = opened.inventory;
     admission = opened.admission;
+    authority = opened.authority;
     session = valueOf(await inventory.backupSession());
   });
 
@@ -44,7 +46,10 @@ void main() {
           watchOnlyWallet(id, label: 'Cold', birthday: '2026-11-21T00:00:00Z'),
         ),
       );
-      final secrets = Secrets(scratchDirectory: () async => directory.path);
+      final secrets = Secrets(
+        authority: authority,
+        scratchDirectory: () async => directory.path,
+      );
       final wallet = valueOf(await inventory.metadataBackupWallets(secrets))
           .single;
       expect(wallet.isWatchOnly, isTrue);

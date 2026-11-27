@@ -41,14 +41,22 @@ final class Phone {
       exclusive: false,
       timeout: Duration.zero,
     ) as RuntimeAdmission;
+    final authority = SessionAuthority();
     final inventory = valueOf(
-      await SecretsInventory.open(file: file, admission: admission),
+      await SecretsInventory.open(
+        file: file,
+        admission: admission,
+        authority: authority,
+      ),
     );
     return Phone._(
       directory,
       inventory,
       admission,
-      Secrets(scratchDirectory: () async => directory.path),
+      Secrets(
+        authority: authority,
+        scratchDirectory: () async => directory.path,
+      ),
     );
   }
 

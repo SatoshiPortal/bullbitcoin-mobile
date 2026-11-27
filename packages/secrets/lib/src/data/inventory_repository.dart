@@ -109,7 +109,7 @@ final class InventoryRepository {
     required DateTime? birthday,
   }) async {
     final applied = await boundary<({bool label, bool birthday})?>(
-      () => _database.transaction(() async {
+      () => guardedTransaction(_database, () async {
         final matches = _matches(
           await _listRows(view, networkCode: storedWalletNetwork(network)),
           external,
@@ -597,7 +597,7 @@ final class InventoryRepository {
     required DateTime? birthday,
     required bool isDefault,
   }) => boundary(
-    () => _database.transaction(() async {
+    () => guardedTransaction(_database, () async {
       await _requireWallet(view, id);
       final update = _database.update(_database.wallets)
         ..where((wallet) => wallet.id.equals(id));
@@ -616,7 +616,7 @@ final class InventoryRepository {
     required String view,
     required String id,
   }) => boundary(
-    () => _database.transaction(() async {
+    () => guardedTransaction(_database, () async {
       final wallet = await _requireWallet(view, id);
       final removeWallet = _database.delete(_database.wallets)
         ..where((wallet) => wallet.id.equals(id));

@@ -56,6 +56,7 @@ final class InventoryFixture {
     ) as RuntimeAdmission;
     final backup = TestBackups();
     final opened = await SecretsInventory.open(
+      authority: SessionAuthority(),
       file: file,
       admission: admission,
       backupVerification: backup,
@@ -75,7 +76,7 @@ final class InventoryFixture {
         await fixture.close();
         throw StateError('inventory credential setup failed');
       }
-      inventory.lock();
+      await inventory.lock();
     }
     return fixture;
   }
