@@ -76,6 +76,10 @@ const inventoryCredentialRequiredFailure = UseSecretFailure(
 const inventoryLockedFailure = UseSecretFailure('inventory locked');
 const viewNotOpenFailure = ViewNotOpenFailure();
 
+/// A seed outside the view in use is reported as absent: nothing tells it
+/// from a seed that does not exist.
+const secretNotInViewFailure = SecretNotFoundFailure('not in this view');
+
 const unreadableBip85RecordFailure = FetchSecretFailure(
   'Unreadable BIP85 record',
 );

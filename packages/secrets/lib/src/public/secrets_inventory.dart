@@ -63,7 +63,30 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
 
   SecretsInventory._(this._store, this._access, this._guard, this._authority)
     : _wallets = InventoryRepository(_store.database),
-      _derivations = DerivationRepository(_store.database);
+      _derivations = DerivationRepository(_store.database) {
+    _authority.bindMemberships(_seedsOf);
+  }
+
+  /// The seeds the token's view holds, or null while the file holds one view:
+  /// an installation that shows a single view hides nothing from itself.
+  Future<Set<String>?> _seedsOf(SessionToken token) async {
+    try {
+      final views = await _store.database
+          .customSelect('SELECT COUNT(*) AS n FROM views')
+          .getSingle();
+      if (views.read<int>('n') <= 1) return null;
+      return {
+        for (final fingerprint in await viewSecrets(
+          _store.database,
+          token.activeView,
+        ))
+          fingerprint.hex,
+      };
+    } on Exception {
+      // An unreadable membership hides every seed rather than showing all.
+      return <String>{};
+    }
+  }
 
   bool get _unlocked => _authority.current != null;
 

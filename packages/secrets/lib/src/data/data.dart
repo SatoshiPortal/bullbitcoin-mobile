@@ -13,6 +13,7 @@ export 'boundary.dart'
         inventoryCredentialRequiredFailure,
         inventoryLockedFailure,
         viewNotOpenFailure,
+        secretNotInViewFailure,
         invalidBip85HexLengthFailure,
         unreadableBip85RecordFailure;
 export 'database_key_repository.dart' show DatabaseKeyRepository;
