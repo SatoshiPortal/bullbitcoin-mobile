@@ -80,7 +80,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Когда эта функция включена, мы автоматически отправляем отчеты об ошибках при возникновении проблем в приложении.",
+  "errorReportingProgramDescriptionP2": "Когда эта функция включена, мы автоматически отправляем отчеты об ошибках при возникновении проблем в приложении. Также могут отправляться диагностические журналы.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

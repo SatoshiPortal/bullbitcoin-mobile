@@ -84,7 +84,7 @@
   "@errorReportingProgramDescriptionP1": {
     "description": "Intro paragraph of error reporting program description"
   },
-  "errorReportingProgramDescriptionP2": "Cuando algo falla, Bull Bitcoin envía informes de errores minimizados que contienen la versión de la app, metadatos del dispositivo y del sistema operativo, y un identificador de instalación aleatorio. Se eliminan los datos de la billetera y de las transacciones.",
+  "errorReportingProgramDescriptionP2": "Cuando algo falla, Bull Bitcoin envía informes de errores minimizados que contienen la versión de la app, metadatos del dispositivo y del sistema operativo, y un identificador de instalación aleatorio. Se eliminan los datos de la billetera y de las transacciones. También se pueden enviar registros de diagnóstico.",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

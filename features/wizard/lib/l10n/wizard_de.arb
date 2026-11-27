@@ -14,7 +14,7 @@
   "wizardCustomizeBody": "Nutzen Sie BULL mit diesen Einstellungen nach Ihren Vorstellungen.",
   "wizardCustomizeDefaultCurrency": "Standardwährung",
   "wizardMissionTitle": "Unterstütze die Bull-Mission",
-  "wizardMissionBody1": "Um uns zu helfen, unsere Software zu verbessern und das höchste Maß an Sicherheit, Datenschutz und Benutzerfreundlichkeit zu gewährleisten, kann Ihre App uns Fehlerprotokolle senden, mit denen wir Probleme erkennen und in unseren nächsten Updates schnell beheben können.",
+  "wizardMissionBody1": "Um uns zu helfen, unsere Software zu verbessern und das höchste Maß an Sicherheit, Datenschutz und Benutzerfreundlichkeit zu gewährleisten, kann Ihre App uns Fehlerberichte senden, mit denen wir Probleme erkennen und in unseren nächsten Updates schnell beheben können. Auch Diagnoseprotokolle können gesendet werden.",
   "wizardMissionBody2": "Diese Protokolle sind anonymisiert, nicht mit Ihrer IP-Adresse verknüpft und enthalten niemals Informationen über Ihre Transaktionen oder Ihre Identität. Sie sind rein technischer Natur und stellen kein Risiko für Sie dar. Es hilft uns sehr und kostet Sie nichts.",
   "wizardMissionQuestion": "Sind Sie damit einverstanden, an unserem automatischen Fehlermeldeprogramm teilzunehmen?",
   "wizardMissionYes": "Ja",

@@ -14,7 +14,7 @@
   "wizardCustomizeBody": "Usa BULL secondo le tue preferenze con queste impostazioni.",
   "wizardCustomizeDefaultCurrency": "Valuta predefinita",
   "wizardMissionTitle": "Sostieni la missione di Bull",
-  "wizardMissionBody1": "Per aiutarci a migliorare il nostro software e garantire il massimo livello di sicurezza, privacy e usabilità, la tua app può inviarci registri degli errori che ci permettono di rilevare e risolvere rapidamente i problemi nei nostri prossimi aggiornamenti.",
+  "wizardMissionBody1": "Per aiutarci a migliorare il nostro software e garantire il massimo livello di sicurezza, privacy e usabilità, la tua app può inviarci segnalazioni di errore che ci permettono di rilevare e risolvere rapidamente i problemi nei nostri prossimi aggiornamenti. Potrebbero essere inviati anche log di diagnostica.",
   "wizardMissionBody2": "Questi registri sono anonimizzati, non sono collegati al tuo indirizzo IP e non condividono mai informazioni sulle tue transazioni o sulla tua identità. Sono puramente tecnici e non ti espongono ad alcun rischio. È molto utile per noi e non ti costa nulla.",
   "wizardMissionQuestion": "Accetti di partecipare al nostro programma automatizzato di segnalazione dei problemi?",
   "wizardMissionYes": "Sì",

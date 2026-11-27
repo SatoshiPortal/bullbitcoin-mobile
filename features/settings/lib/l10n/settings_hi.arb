@@ -276,7 +276,7 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
-  "errorReportingProgramDescriptionP2": "कुछ समस्या होने पर Bull Bitcoin बेनामी त्रुटि रिपोर्ट भेजता है।",
+  "errorReportingProgramDescriptionP2": "कुछ समस्या होने पर Bull Bitcoin बेनामी त्रुटि रिपोर्ट भेजता है। निदान से जुड़े लॉग भी भेजे जा सकते हैं।",
   "@errorReportingProgramDescriptionP2": {
     "description": "Bold paragraph: anonymized error reports fact"
   },

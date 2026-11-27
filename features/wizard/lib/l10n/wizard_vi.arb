@@ -10,7 +10,7 @@
   "wizardCustomizeBody": "Sử dụng BULL theo cách của bạn với các cài đặt này.",
   "wizardCustomizeDefaultCurrency": "Tiền tệ mặc định",
   "wizardMissionTitle": "Hỗ trợ sứ mệnh Bull",
-  "wizardMissionBody1": "Để giúp chúng tôi cải thiện phần mềm và đảm bảo mức độ bảo mật, quyền riêng tư và khả năng sử dụng cao nhất, ứng dụng của bạn có thể gửi cho chúng tôi nhật ký lỗi, cho phép chúng tôi phát hiện và khắc phục sự cố nhanh chóng trong các bản cập nhật tiếp theo.",
+  "wizardMissionBody1": "Để giúp chúng tôi cải thiện phần mềm và đảm bảo mức độ bảo mật, quyền riêng tư và khả năng sử dụng cao nhất, ứng dụng của bạn có thể gửi cho chúng tôi báo cáo lỗi, cho phép chúng tôi phát hiện và khắc phục sự cố nhanh chóng trong các bản cập nhật tiếp theo. Nhật ký chẩn đoán cũng có thể được gửi.",
   "wizardMissionBody2": "Các nhật ký này được ẩn danh, không được liên kết với địa chỉ IP của bạn và không bao giờ chia sẻ bất kỳ thông tin nào về giao dịch hoặc danh tính của bạn. Chúng hoàn toàn mang tính kỹ thuật và không khiến bạn gặp rủi ro nào. Điều này rất hữu ích cho chúng tôi và không tốn kém gì cho bạn.",
   "wizardMissionQuestion": "Bạn có chấp nhận tham gia chương trình báo cáo sự cố tự động của chúng tôi không?",
   "wizardMissionYes": "Có",
