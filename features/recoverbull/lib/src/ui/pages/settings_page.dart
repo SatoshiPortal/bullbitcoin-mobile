@@ -10,6 +10,7 @@ import '../../presentation/vault_flow_cubit.dart';
 import '../recoverbull_flow_navigator.dart';
 import '../widgets/backup_monitoring_panel.dart';
 import '../widgets/recoverbull_widgets.dart';
+import 'passkey_demo_page.dart';
 import 'server_confirmation_page.dart';
 
 /// Key-server URL and attempt monitoring.
@@ -92,6 +93,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     const Gap(24),
                   ],
+                  if (scope.presentation.passkeyDemo case final demo?)
+                    PasskeyDemoEntry(demo: demo),
                   Row(
                     mainAxisAlignment: .spaceBetween,
                     children: [

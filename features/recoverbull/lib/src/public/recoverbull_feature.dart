@@ -52,6 +52,7 @@ final class RecoverBullFeature {
     required RuntimeAdmission admission,
     required WalletInventory inventory,
     required ActiveEnvironmentReader activeEnvironment,
+    DeveloperEnvironmentReader? developerEnvironment,
     required RecoverBullWalletBackups normalBackups,
     required RecoverBullWalletBackups regtestBackups,
   }) async {
@@ -65,6 +66,7 @@ final class RecoverBullFeature {
       clients: clients,
       cutover: cutover,
       admission: admission,
+      developerEnvironment: developerEnvironment,
     );
     final vaults = SecretsVaultRepository(secrets);
     return RecoverBullFeature._(

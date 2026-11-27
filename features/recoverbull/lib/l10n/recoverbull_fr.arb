@@ -357,5 +357,15 @@
   "recoverbullRecoveryIncompleteTitle": "Portefeuilles pas encore créés",
   "recoverbullRecoveryIncompleteDescription": "Votre sauvegarde a été importée, mais ses portefeuilles n’ont pas pu être créés. Réessayez pour terminer la récupération.",
   "recoverbullScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
-  "torTitle": "Tor"
+  "torTitle": "Tor",
+  "recoverbullPasskeyDemoTitle": "Essai de passkey",
+  "recoverbullPasskeyDemoDescription": "Créez une passkey avec votre fournisseur Android, puis utilisez-la pour ouvrir un coffre de démonstration contenant des données fictives.",
+  "recoverbullPasskeyDemoRegister": "Créer une passkey de test",
+  "recoverbullPasskeyDemoOpen": "Ouvrir le coffre de démonstration",
+  "recoverbullPasskeyDemoDisabled": "Activez Superuser et le mode développeur pour utiliser cet essai.",
+  "recoverbullPasskeyDemoCancelled": "Demande de passkey annulée.",
+  "recoverbullPasskeyDemoUnavailable": "La demande de passkey a échoué.",
+  "recoverbullUsePasskeyInstead": "Utiliser une passkey à la place",
+  "recoverbullUsePasswordInstead": "Utiliser un mot de passe à la place",
+  "recoverbullOrEnterVaultKey": "Ou saisir la clé du coffre"
 }

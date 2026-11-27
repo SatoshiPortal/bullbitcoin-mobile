@@ -12,6 +12,7 @@ import '../../presentation/vault_flow_cubit.dart';
 import '../recoverbull_flow_navigator.dart';
 import '../widgets/recoverbull_widgets.dart';
 import 'fetch_vault_key_page.dart';
+import 'passkey_demo_page.dart';
 import 'vault_provider_selection_page.dart';
 
 enum InputType { pin, password, vaultKey }
@@ -54,6 +55,9 @@ class _PasswordInputPageState extends State<PasswordInputPage>
   final _formKey = GlobalKey<FormState>();
   Future<bool> _protection = Completer<bool>().future;
   bool _visible = false;
+  bool _demoAvailable = false;
+  bool _checkingDemo = false;
+  Timer? _demoTimer;
   late final AppLifecycleListener _lifecycle;
 
   @override
@@ -78,6 +82,14 @@ class _PasswordInputPageState extends State<PasswordInputPage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (RecoverBullFlowScope.of(context).presentation.passkeyDemo != null &&
+        _demoTimer == null) {
+      unawaited(_refreshDemoAvailability());
+      _demoTimer = Timer.periodic(
+        const Duration(seconds: 1),
+        (_) => unawaited(_refreshDemoAvailability()),
+      );
+    }
     final visible = ModalRoute.of(context)?.isCurrent ?? true;
     if (visible == _visible) return;
     _visible = visible;
@@ -86,6 +98,20 @@ class _PasswordInputPageState extends State<PasswordInputPage>
     } else {
       _protection = Completer<bool>().future;
       unawaited(disableScreenPrivacy());
+    }
+  }
+
+  Future<void> _refreshDemoAvailability() async {
+    if (_checkingDemo) return;
+    _checkingDemo = true;
+    try {
+      final demo = RecoverBullFlowScope.of(context).presentation.passkeyDemo;
+      final available = demo != null && await demo.isEnabled();
+      if (mounted && available != _demoAvailable) {
+        setState(() => _demoAvailable = available);
+      }
+    } finally {
+      _checkingDemo = false;
     }
   }
 
@@ -98,6 +124,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
 
   @override
   void dispose() {
+    _demoTimer?.cancel();
     _lifecycle.dispose();
     _inputController.clear();
     _validatedPassword = '';
@@ -339,9 +366,13 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                   children: [
                                     BullButton.secondary(
                                       label: _inputType == InputType.pin
-                                          ? context
-                                                .loc
-                                                .recoverbullSwitchToPassword
+                                          ? _demoAvailable
+                                                ? context
+                                                      .loc
+                                                      .recoverbullUsePasswordInstead
+                                                : context
+                                                      .loc
+                                                      .recoverbullSwitchToPassword
                                           : context.loc.recoverbullSwitchToPIN,
                                       onPressed: () => _switchTo(
                                         _inputType == InputType.pin
@@ -349,13 +380,24 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                             : InputType.pin,
                                       ),
                                     ),
+                                    if (scope.presentation.passkeyDemo
+                                        case final demo?) ...[
+                                      PasskeyDemoEntry(
+                                        demo: demo,
+                                        alternative: true,
+                                      ),
+                                    ],
                                     if (_inputType != InputType.vaultKey &&
                                         hasVaultKeyInput) ...[
                                       const Gap(8),
                                       BullButton.secondary(
-                                        label: context
-                                            .loc
-                                            .recoverbullEnterVaultKeyInstead,
+                                        label: _demoAvailable
+                                            ? context
+                                                  .loc
+                                                  .recoverbullOrEnterVaultKey
+                                            : context
+                                                  .loc
+                                                  .recoverbullEnterVaultKeyInstead,
                                         onPressed: () =>
                                             _switchTo(InputType.vaultKey),
                                       ),

@@ -1,5 +1,7 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:flutter/foundation.dart';
+import 'package:preferences/preferences.dart';
 
 import '../data/datasources/google_drive_datasource.dart';
 
@@ -15,6 +17,7 @@ import '../data/database/recoverbull_cutover.dart';
 import '../data/database/wallet_backup_import.dart';
 import '../data/google_drive_repository.dart';
 import '../data/key_server_session_repository_impl.dart';
+import '../data/passkey_demo_repository_impl.dart';
 import '../data/secrets_vault_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/recoverbull_flow.dart';
@@ -44,6 +47,7 @@ import '../domain/usecases/read_backup_status_usecase.dart';
 import '../domain/usecases/recover_server_vault_usecase.dart';
 import '../domain/usecases/parse_vault_usecase.dart';
 import '../domain/usecases/restore_vault_usecase.dart';
+import '../domain/usecases/run_passkey_demo_usecase.dart';
 import '../domain/usecases/save_vault_usecase.dart';
 import '../domain/usecases/start_backup_monitoring_usecase.dart';
 import '../domain/usecases/start_vault_flow_usecase.dart';
@@ -67,6 +71,7 @@ final class RecoverBullRuntime {
   final AttemptMonitoringRepositoryImpl? _monitoring;
   final RecoverBullFailure unavailable;
   final StartBackupMonitoringUsecase? coldStart;
+  final RunPasskeyDemoUsecase? _passkeyDemo;
 
   RecoverBullRuntime._(
     this._storage,
@@ -81,6 +86,7 @@ final class RecoverBullRuntime {
     this._monitoring,
     this.unavailable,
     this.coldStart,
+    this._passkeyDemo,
   );
 
   Future<Result<SecretBackupProjection, RecoverBullFailure>> backupProjection(
@@ -100,6 +106,7 @@ final class RecoverBullRuntime {
     required RecoverBullEnvironmentPort environment,
     required Uri server,
     required RecoverBullPermissionPort permission,
+    DeveloperEnvironmentReader? developerEnvironment,
     required RecoverBullRoutePort routes,
     required TorHttpClientFactory clients,
     required RecoverBullCutover cutover,
@@ -113,6 +120,7 @@ final class RecoverBullRuntime {
     clients: clients,
     server: server,
     permission: permission,
+    developerEnvironment: developerEnvironment,
   );
 
   static Future<RecoverBullRuntime> openWithStorage({
@@ -124,6 +132,7 @@ final class RecoverBullRuntime {
     required TorHttpClientFactory clients,
     required Uri server,
     required RecoverBullPermissionPort permission,
+    DeveloperEnvironmentReader? developerEnvironment,
   }) async {
     final vaults = SecretsVaultRepository(secrets);
     final drive = GoogleDriveRepositoryImpl(
@@ -173,6 +182,29 @@ final class RecoverBullRuntime {
       monitoring,
       unavailable,
       coldStart,
+      _configurePasskeyDemo(developerEnvironment),
+    );
+  }
+
+  static RunPasskeyDemoUsecase? _configurePasskeyDemo(
+    DeveloperEnvironmentReader? preferences,
+  ) {
+    if (!kDebugMode ||
+        kIsWeb ||
+        defaultTargetPlatform != TargetPlatform.android ||
+        preferences == null) {
+      return null;
+    }
+    if (!const bool.fromEnvironment('RECOVERBULL_PASSKEY_DEMO_ENABLED')) {
+      return null;
+    }
+    return RunPasskeyDemoUsecase(
+      () async => switch (await preferences.readDeveloperEnvironment()) {
+        Ok(value: final settings) =>
+          settings.isSuperuser == true && settings.isDevModeEnabled == true,
+        Err() => false,
+      },
+      PasskeyDemoRepositoryImpl(),
     );
   }
 
@@ -271,6 +303,7 @@ final class RecoverBullRuntime {
               WatchBackupMonitoringUsecase(monitoring),
               AcknowledgeBackupAlertsUsecase(monitoring),
             ),
+      passkeyDemo: _passkeyDemo,
       defaultHasPassphrase: switch (captured.wallet) {
         Ok(value: final context?) => context.hasPassphrase,
         _ => false,

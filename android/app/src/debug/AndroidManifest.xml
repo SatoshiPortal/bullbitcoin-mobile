@@ -4,4 +4,9 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <application android:networkSecurityConfig="@xml/recoverbull_demo_network_security">
+        <meta-data
+            android:name="asset_statements"
+            android:resource="@string/recoverbull_passkey_demo_asset_statements" />
+    </application>
 </manifest>

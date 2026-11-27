@@ -32,8 +32,21 @@ if (betaKeystorePropertiesFile.exists()) {
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
 def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
+// Flutter passes dart-defines as comma-separated base64-encoded KEY=VALUE pairs.
+def demoEnabled = false
+if (project.hasProperty('dart-defines')) {
+    project.property('dart-defines').toString().split(',').each { encoded ->
+        def value = new String(encoded.decodeBase64(), 'UTF-8')
+        if (value == 'RECOVERBULL_PASSKEY_DEMO_ENABLED=true') demoEnabled = true
+    }
+}
+def demoOrigin = demoEnabled ? 'https://passkey-demo.ethicnology.com' : ''
 
 android {
+    buildFeatures {
+        resValues = true
+    }
+
     compileOptions {
         coreLibraryDesugaringEnabled true
     }
@@ -57,6 +70,7 @@ android {
 
     defaultConfig {
         applicationId = 'com.bullbitcoin.mobile'
+        manifestPlaceholders['mainActivity'] = 'com.bullbitcoin.mobile.MainActivity'
         minSdkVersion project.properties['android.minSdk'].toInteger()
         targetSdkVersion project.properties['android.targetSdk'].toInteger()
         versionCode flutterVersionCode.toInteger()
@@ -114,6 +128,11 @@ android {
             shrinkResources false
             signingConfig signingConfigs.debug
             applicationIdSuffix ".debug"
+            manifestPlaceholders['mainActivity'] = 'com.bullbitcoin.mobile.RecoverBullPasskeyDemoActivity'
+            resValue 'string', 'recoverbull_passkey_demo_origin', demoOrigin
+            def statements = demoOrigin ?
+                "[{\\\"include\\\":\\\"${demoOrigin}/.well-known/assetlinks.json\\\"}]" : '[]'
+            resValue 'string', 'recoverbull_passkey_demo_asset_statements', statements
         }
         release {
             minifyEnabled false
@@ -178,4 +197,6 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+    debugImplementation 'androidx.credentials:credentials:1.6.0'
+    debugImplementation 'androidx.credentials:credentials-play-services-auth:1.6.0'
 }

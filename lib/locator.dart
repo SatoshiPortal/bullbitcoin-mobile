@@ -186,6 +186,7 @@ class AppLocator {
       admission: locator<RuntimeAdmission>(),
       inventory: locator<SecretsInventory>(),
       activeEnvironment: locator<ActiveEnvironmentReader>(),
+      developerEnvironment: locator<DeveloperEnvironmentReader>(),
       normalBackups: locator<RecoverBullWalletBackups>(),
       regtestBackups: locator<RecoverBullWalletBackups>(
         instanceName: 'regtest',

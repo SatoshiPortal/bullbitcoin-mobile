@@ -68,7 +68,7 @@
         android:memtagMode="async"
     >
         <activity
-            android:name="com.bullbitcoin.mobile.MainActivity"
+            android:name="${mainActivity}"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
