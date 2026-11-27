@@ -11,7 +11,6 @@ import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:overview/overview.dart';
@@ -95,7 +94,18 @@ class WalletDetailScreen extends StatelessWidget {
                         balanceText: WalletDetailBalanceAmount(
                           balanceSat: balanceSat.toInt(),
                         ),
-                        eyeToggle: const EyeToggle(),
+                        eyeToggle: Builder(
+                          builder: (context) => EyeToggle(
+                            hideAmounts: context.select(
+                              (WalletBloc bloc) =>
+                                  bloc.state.amountDisplay?.hideAmounts,
+                            ),
+                            showLabel: context.loc.walletShowAmountsTooltip,
+                            hideLabel: context.loc.walletHideAmountsTooltip,
+                            onChanged: (hide) =>
+                                Settings.setAmountsHidden(context, hide),
+                          ),
+                        ),
                         fiatBalance: HomeFiatBalance(
                           onCurrencyChanged: Settings.changeDisplayCurrency,
                           balanceSat: balanceSat.toInt(),

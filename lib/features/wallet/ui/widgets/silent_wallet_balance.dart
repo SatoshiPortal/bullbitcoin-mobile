@@ -1,6 +1,8 @@
 import 'package:settings/settings.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
-import 'package:overview/overview.dart' show WalletDetailBalanceCard;
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overview/overview.dart' show EyeToggle, WalletDetailBalanceCard;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -18,7 +20,16 @@ abstract final class SilentWalletPresentation {
           ),
           interactive: false,
         ),
-        eyeToggle: const EyeToggle(),
+        eyeToggle: Builder(
+          builder: (context) => EyeToggle(
+            hideAmounts: context.select(
+              (WalletBloc bloc) => bloc.state.amountDisplay?.hideAmounts,
+            ),
+            showLabel: context.loc.walletShowAmountsTooltip,
+            hideLabel: context.loc.walletHideAmountsTooltip,
+            onChanged: (hide) => Settings.setAmountsHidden(context, hide),
+          ),
+        ),
         fiatBalance: HomeFiatBalance(
           balanceSat: balanceSat,
           onCurrencyChanged: Settings.changeDisplayCurrency,
