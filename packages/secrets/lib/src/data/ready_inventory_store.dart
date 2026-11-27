@@ -32,7 +32,11 @@ Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
     case Err():
       return result;
     case Ok(:final value):
-      switch (await readInventoryReadiness(value.database, admitted: true)) {
+      switch (await readInventoryReadiness(
+        value.database,
+        admitted: true,
+        checkLayout: false,
+      )) {
         case Ok(value: OwnerReadiness.imported || OwnerReadiness.initialized):
           try {
             switch (await checkSupportedViewFormat(value.database)) {
