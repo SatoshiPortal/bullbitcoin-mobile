@@ -1,7 +1,5 @@
 // Security audit reproducer for https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2611
-// Finding: Sentry's native SDK is initialized in release mode before user consent
-// is known, allowing native crash handling to bypass the Dart consent gate.
-// Regression test for the fix.
+// The native SDK must only start after startup consent is known and enabled.
 
 import 'dart:io';
 
@@ -9,19 +7,36 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Security audit #2611 native Sentry consent', () {
-    test('native integrations are consent-gated', () {
+    test('startup checks consent before initializing either SDK', () {
+      final source = File('packages/bull_reporting/lib/src/report.dart')
+          .readAsStringSync();
+      final start = source.indexOf('static Future<void> init(');
+      final end = source.indexOf('static String _generateInstallUuid()');
+      final startup = source.substring(start, end);
+
+      expect(
+        startup,
+        contains('wizardConsent ?? prefs.getBool(_consentKey) ?? false'),
+      );
+      final apply = startup.indexOf('await _applyConsent(bootConsent);');
+      final guard = startup.indexOf(
+        'if (!kReleaseMode || dsn.isEmpty || !consent || _started) return;',
+      );
+      final initialize = startup.indexOf('await _initSentry(dsn);');
+      expect(apply, greaterThanOrEqualTo(0));
+      expect(guard, greaterThan(apply));
+      expect(initialize, greaterThan(guard));
+      expect("await _initSentry(dsn);".allMatches(source), hasLength(1));
+    });
+
+    test('the Flutter SDK owns native initialization and shutdown', () {
       final source = File('packages/bull_reporting/lib/src/report.dart')
           .readAsStringSync();
 
-      expect(source, contains('await SentryFlutter.init((options)'));
-      expect(source, contains('options.dsn = kReleaseMode ?'));
-      expect(source, contains('final consent = Report.consent'));
-      expect(source, contains('options.anrEnabled = consent'));
-      expect(
-        source,
-        contains('options.enableWatchdogTerminationTracking = consent'),
-      );
-      expect(source, contains('options.enableAppHangTracking = consent'));
+      expect(source, contains('await SentryFlutter.init('));
+      expect(source, contains('options.autoInitializeNativeSdk = true;'));
+      expect(source, contains('if (!enabled) await _stopReporting();'));
+      expect(source, contains('await Sentry.close();'));
     });
   });
 }

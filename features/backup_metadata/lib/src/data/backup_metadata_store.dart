@@ -32,6 +32,17 @@ typedef BackupSelection = ({
   int generation,
   String lineage,
   Set<String> groups,
+
+  /// A destination and account granted but not yet confirmed. It sends
+  /// nothing and is not shown as on; only a confirmation turns it into the
+  /// selection.
+  BackupDestination? pendingDestination,
+  String? pendingAccount,
+
+  /// The single-use identifier of the staged intent and the exact groups it
+  /// was shown with.
+  String? pendingToken,
+  Set<String> pendingGroups,
 });
 
 String randomHex(int bytes) {
@@ -42,53 +53,52 @@ String randomHex(int bytes) {
   ).join();
 }
 
+/// The key of the encrypted journal, spelled as the SQLCipher raw-key literal
+/// (`x'<hex>'`). Null when the keystore cannot supply it: the store then
+/// refuses to open and never falls back to an unencrypted file.
+typedef BackupMetadataKey = Future<String?> Function();
+
 /// Both isolates must use the same app-private path. The guard's write
 /// transaction is independent of the state database's durable commits.
 ///
-/// One database owns the journal, the configured destination and the group
-/// identity mapping together. It has never shipped, so there is no earlier
-/// on-disk layout to migrate from.
+/// One encrypted database owns the journal, the configured destination and
+/// the group identity mapping together, partitioned by view: each view has
+/// its own selection, lineage and group ids, so nothing a view records is
+/// visible from, or deletable by, another. It has never shipped, so there is
+/// no earlier on-disk layout to migrate from.
+///
+/// Remote deletion only ever follows a journaled object id of the view's own
+/// lineage. A missing, unreadable or inconsistent journal therefore deletes
+/// nothing: it never trusts a file name found at the destination.
 final class BackupMetadataStore {
-  /// The only supported layout. A headless open requires exactly this version.
+  /// The only supported layout.
   static const schemaVersion = 1;
 
   final String path;
+  final BackupMetadataKey key;
   final Duration lockTimeout;
-
-  /// A background open never creates, initializes or migrates the owner
-  /// database: it proceeds only on a database the foreground already prepared
-  /// at [schemaVersion].
-  final bool background;
 
   const BackupMetadataStore({
     required this.path,
+    required this.key,
     this.lockTimeout = const Duration(seconds: 30),
-    this.background = false,
   });
 
-  Future<T> locked<T>(Future<T> Function(BackupMetadataState) action) async {
-    if (background) {
-      _requireOwned();
-    } else {
-      await File(path).parent.create(recursive: true);
-    }
+  /// Runs [action] on [view]'s state under the cross-isolate guard.
+  Future<T> locked<T>(
+    Future<T> Function(BackupMetadataState) action, {
+    required String view,
+  }) async {
+    await File(path).parent.create(recursive: true);
     final guard = sqlite3.open('$path.guard');
     try {
       await _acquire(guard);
-      final state = sqlite3.open(
-        path,
-        mode: background ? OpenMode.readWrite : OpenMode.readWriteCreate,
-      );
+      final state = await _open(OpenMode.readWriteCreate);
       try {
         state.execute('PRAGMA synchronous = FULL');
-        if (background) {
-          if (state.userVersion != schemaVersion) {
-            throw const BackupMetadataStoreNotReady();
-          }
-        } else {
-          _initialize(state);
-        }
-        return await action(BackupMetadataState._(state));
+        _initialize(state);
+        _ensureView(state, view);
+        return await action(BackupMetadataState._(state, view));
       } finally {
         state.close();
       }
@@ -98,27 +108,30 @@ final class BackupMetadataStore {
     }
   }
 
-  /// The installation-stable id of one seed reference and environment.
+  /// The installation-stable id of one reference and environment in [view].
   ///
   /// It uses its own short-lived connection so callers outside [locked] can
-  /// resolve ids without contending with the guard. It never creates,
-  /// initializes or migrates the owner database: null means the foreground has
-  /// not prepared it yet.
-  Future<String?> groupId(String reference, String environment) async {
+  /// resolve ids without contending with the guard. It never creates the
+  /// journal: null means it has not been prepared yet.
+  Future<String?> groupId(
+    String view,
+    String reference,
+    String environment,
+  ) async {
     if (!File(path).existsSync()) return null;
-    final state = sqlite3.open(path, mode: OpenMode.readWrite);
+    final state = await _open(OpenMode.readWrite);
     try {
       state.execute('PRAGMA busy_timeout = 3000');
       if (state.userVersion != schemaVersion) return null;
-      final key = [reference, environment];
+      final key = [view, reference, environment];
       state.execute('''
-        INSERT INTO group_ids (secret_ref, environment, group_id)
-        VALUES (?, ?, lower(hex(randomblob(16))))
-        ON CONFLICT (secret_ref, environment) DO NOTHING
+        INSERT INTO group_ids (view, secret_ref, environment, group_id)
+        VALUES (?, ?, ?, lower(hex(randomblob(16))))
+        ON CONFLICT (view, secret_ref, environment) DO NOTHING
       ''', key);
       return state.select('''
         SELECT group_id FROM group_ids
-        WHERE secret_ref = ? AND environment = ?
+        WHERE view = ? AND secret_ref = ? AND environment = ?
       ''', key).single['group_id']
           as String;
     } finally {
@@ -126,8 +139,32 @@ final class BackupMetadataStore {
     }
   }
 
-  void _requireOwned() {
-    if (!File(path).existsSync()) throw const BackupMetadataStoreNotReady();
+  Future<Database> _open(OpenMode mode) async {
+    final literal = await key();
+    if (literal == null) throw const BackupMetadataStoreNotReady();
+    final database = sqlite3.open(path, mode: mode);
+    try {
+      database.execute('PRAGMA busy_timeout = 2000');
+      if (database.select('PRAGMA cipher').isEmpty) {
+        throw const BackupMetadataStoreNotReady();
+      }
+      database.execute("PRAGMA cipher = 'chacha20'");
+      database.execute('PRAGMA key = "$literal"');
+      // PRAGMA key succeeds for a wrong key: only a read proves it.
+      database.select('SELECT count(*) FROM sqlite_master');
+      return database;
+    } catch (_) {
+      database.close();
+      rethrow;
+    }
+  }
+
+  void _ensureView(Database state, String view) {
+    state.execute(
+      '''INSERT INTO selection (view, generation, lineage) VALUES (?, 0, ?)
+         ON CONFLICT (view) DO NOTHING''',
+      [view, randomHex(16)],
+    );
   }
 
   Future<void> _acquire(Database guard) async {
@@ -166,10 +203,14 @@ final class BackupMetadataStore {
   void _createSchema(Database state) {
     state.execute('''
       CREATE TABLE selection (
-        id INTEGER PRIMARY KEY CHECK (id = 1), destination TEXT, account TEXT,
-        generation INTEGER NOT NULL, lineage TEXT NOT NULL
+        view TEXT PRIMARY KEY, destination TEXT, account TEXT,
+        generation INTEGER NOT NULL, lineage TEXT NOT NULL,
+        pending_destination TEXT, pending_account TEXT,
+        pending_token TEXT, pending_groups TEXT
       );
-      CREATE TABLE included_groups (id TEXT PRIMARY KEY);
+      CREATE TABLE included_groups (
+        view TEXT NOT NULL, id TEXT NOT NULL, PRIMARY KEY (view, id)
+      );
       CREATE TABLE intents (
         destination TEXT NOT NULL, account TEXT NOT NULL, group_id TEXT NOT NULL,
         lineage TEXT NOT NULL, generation INTEGER NOT NULL, name TEXT NOT NULL,
@@ -184,18 +225,16 @@ final class BackupMetadataStore {
         UNIQUE (destination, account, lineage, object_id)
       );
       CREATE TABLE group_ids (
-        secret_ref TEXT NOT NULL, environment TEXT NOT NULL,
-        group_id TEXT NOT NULL UNIQUE, PRIMARY KEY (secret_ref, environment)
+        view TEXT NOT NULL, secret_ref TEXT NOT NULL, environment TEXT NOT NULL,
+        group_id TEXT NOT NULL UNIQUE,
+        PRIMARY KEY (view, secret_ref, environment)
       );
     ''');
-    state.execute('INSERT INTO selection VALUES (1, NULL, NULL, 0, ?)', [
-      randomHex(16),
-    ]);
   }
 }
 
-/// The owner database is absent or not at the foreground's current schema.
-/// Headless callers translate it into a deferred run.
+/// The journal key is unavailable or the journal cannot be opened: no
+/// operation proceeds, and none ever falls back to an unencrypted file.
 final class BackupMetadataStoreNotReady implements Exception {
   const BackupMetadataStoreNotReady();
 }
@@ -207,12 +246,16 @@ final class BackupMetadataState {
       'destination = ? AND account = ? AND group_id = ? AND lineage = ? AND generation = ?';
 
   final Database _db;
+  final String _view;
 
-  BackupMetadataState._(this._db);
+  BackupMetadataState._(this._db, this._view);
 
   BackupSelection get selection {
-    final row = _db.select('SELECT * FROM selection').single;
+    final row = _db.select('SELECT * FROM selection WHERE view = ?', [
+      _view,
+    ]).single;
     final destination = row['destination'] as String?;
+    final pending = row['pending_destination'] as String?;
     return (
       destination: destination == null
           ? null
@@ -220,12 +263,52 @@ final class BackupMetadataState {
       account: row['account'] as String?,
       generation: row['generation'] as int,
       lineage: row['lineage'] as String,
+      pendingDestination: pending == null
+          ? null
+          : BackupDestination.values.byName(pending),
+      pendingAccount: row['pending_account'] as String?,
+      pendingToken: row['pending_token'] as String?,
+      pendingGroups: {
+        for (final id in ((row['pending_groups'] as String?) ?? '').split(','))
+          if (id.isNotEmpty) id,
+      },
       groups: {
-        for (final group in _db.select('SELECT id FROM included_groups'))
+        for (final group in _db.select(
+          'SELECT id FROM included_groups WHERE view = ?',
+          [_view],
+        ))
           group['id'] as String,
       },
     );
   }
+
+  /// Records a granted destination and account, with the groups they were
+  /// shown with, without turning anything on. Staging again replaces the
+  /// intent and its identifier, so an earlier confirmation can never be used.
+  /// Returns the new single-use identifier.
+  String stage(
+    BackupDestination destination,
+    String account,
+    Set<String> groups,
+  ) {
+    final token = randomHex(16);
+    _db.execute(
+      'UPDATE selection SET pending_destination = ?, pending_account = ?, pending_token = ?, pending_groups = ? WHERE view = ?',
+      [
+        destination.name,
+        account,
+        token,
+        (groups.toList()..sort()).join(','),
+        _view,
+      ],
+    );
+    return token;
+  }
+
+  void clearStaged() => _db.execute(
+    'UPDATE selection SET pending_destination = NULL, pending_account = NULL, pending_token = NULL, pending_groups = NULL WHERE view = ?',
+    [_view],
+  );
 
   void configure({
     required BackupDestination? destination,
@@ -237,12 +320,20 @@ final class BackupMetadataState {
         previous.destination != destination || previous.account != account;
     _atomic(() {
       _db.execute(
-        'UPDATE selection SET destination = ?, account = ?, generation = ?',
-        [destination?.name, account, previous.generation + (changed ? 1 : 0)],
+        'UPDATE selection SET destination = ?, account = ?, generation = ?, pending_destination = NULL, pending_account = NULL, pending_token = NULL, pending_groups = NULL WHERE view = ?',
+        [
+          destination?.name,
+          account,
+          previous.generation + (changed ? 1 : 0),
+          _view,
+        ],
       );
-      _db.execute('DELETE FROM included_groups');
+      _db.execute('DELETE FROM included_groups WHERE view = ?', [_view]);
       for (final group in groups) {
-        _db.execute('INSERT INTO included_groups VALUES (?)', [group]);
+        _db.execute('INSERT INTO included_groups VALUES (?, ?)', [
+          _view,
+          group,
+        ]);
       }
     });
   }
@@ -315,6 +406,18 @@ final class BackupMetadataState {
         ),
       ),
   ];
+
+  /// The latest time a generation of this lineage became durable.
+  DateTime? lastVerified(String lineage) {
+    final rows = _db.select(
+      'SELECT max(verified_at) AS at FROM verified WHERE lineage = ?',
+      [lineage],
+    );
+    final at = rows.single['at'] as int?;
+    return at == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(at, isUtc: true);
+  }
 
   Set<String> owned(
     BackupDestination destination,

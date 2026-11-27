@@ -205,6 +205,100 @@ void main() {
     expect((await db.select(db.frozenUtxos).getSingle()).txId, _otherTx);
   });
 
+  // A withdrawn authorization:
+  {
+    LabelBackupScope scopeWith(bool Function() authority) => LabelBackupScope(
+      groupId: 'group',
+      bitcoinWalletIds: [_bitcoin],
+      liquidWalletIds: [_liquid],
+      allWalletIds: [_bitcoin, _liquid, _other],
+      authority: authority,
+    );
+
+    /// Answers from [answers] in order, then keeps the last one.
+    bool Function() sequence(List<bool> answers) {
+      var next = 0;
+      return () => answers[next < answers.length ? next++ : answers.length - 1];
+    }
+
+    test(
+      'authorization withdrawn before the transaction writes nothing',
+      () async {
+        final preview = await plan([_label('memo', _tx)]);
+        final result = await adapter.apply(
+          scopeWith(() => false),
+          preview,
+          choices,
+        );
+        expect(
+          result,
+          isA<Err<ApplyReport, LabelFailure>>().having(
+            (error) => error.failure,
+            'failure',
+            isA<LabelBackupRevokedFailure>(),
+          ),
+        );
+        expect(await db.select(db.labelsTable).get(), isEmpty);
+      },
+    );
+
+    test(
+      'authorization withdrawn inside the transaction rolls every label back',
+      () async {
+        final preview = await plan([_label('memo', _tx)]);
+        // Allowed at the start, withdrawn just before the commit.
+        final result = await adapter.apply(
+          scopeWith(sequence([true, false])),
+          preview,
+          choices,
+        );
+        expect(result, isA<Err<ApplyReport, LabelFailure>>());
+        expect(await db.select(db.labelsTable).get(), isEmpty);
+      },
+    );
+
+    test(
+      'authorization withdrawn during the ownership check freezes nothing',
+      () async {
+        final preview = await plan([_freeze(_bitcoin, _tx)]);
+        freezes.owned[_bitcoin] = {(txId: _tx, vout: 0)};
+        var allowed = true;
+        // The withdrawal lands while the wallet verifies the coin it holds.
+        freezes.onOwnedCheck = () => allowed = false;
+        final report = _ok(
+          await adapter.apply(scopeWith(() => allowed), preview, choices),
+        );
+        expect(report.freezes.values, [FreezeOutcome.failed]);
+        expect(await db.select(db.frozenUtxos).get(), isEmpty);
+      },
+    );
+
+    test('authorization withdrawn between two freezes stops the next one and reports it', () async {
+      final preview = await plan([
+        _freeze(_bitcoin, _tx),
+        _freeze(_bitcoin, _otherTx),
+      ]);
+      freezes.owned[_bitcoin] = {
+        (txId: _tx, vout: 0),
+        (txId: _otherTx, vout: 0),
+      };
+      // Start, commit and the whole first freeze (asked before it and again
+      // just before the write) are allowed; the second is not.
+      final report = _ok(
+        await adapter.apply(
+          scopeWith(sequence([true, true, true, true, false])),
+          preview,
+          choices,
+        ),
+      );
+      expect(report.freezes.values, [
+        FreezeOutcome.applied,
+        FreezeOutcome.failed,
+      ]);
+      expect((await db.select(db.frozenUtxos).get()).map((r) => r.txId), [_tx]);
+    });
+  }
+
   test('keeps local conflicts by default and adds selected backups without deletion', () async {
     await addLabel('local', _tx, wallet: _bitcoin);
     final preview = await plan([
@@ -297,6 +391,9 @@ final class _FreezeStore implements WalletFreezePort {
   final checked = <String>[];
   String? failTx;
 
+  /// Runs while ownership is being verified, just before the freeze.
+  void Function()? onOwnedCheck;
+
   _FreezeStore(this._db);
 
   @override
@@ -330,6 +427,7 @@ final class _FreezeStore implements WalletFreezePort {
     required String walletId,
   }) async {
     checked.add(walletId);
+    onOwnedCheck?.call();
     return owned[walletId]?.toList() ?? [];
   }
 }

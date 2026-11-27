@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "گزارش خطا",
   "errorReportingProgramTitle": "برنامه‌ی گزارش خطا",
   "errorReportingProgramDescriptionP1": "با مشارکت در برنامه‌ی گزارش خطای ما، به بهبود Bull کمک کنید.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin هنگام بروز مشکل، گزارش‌های خطای ناشناس ارسال می‌کند.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin هنگام بروز مشکل، گزارش‌های خطای ناشناس ارسال می‌کند. ممکن است لاگ‌های تشخیصی نیز ارسال شوند.",
   "errorReportingProgramDescriptionP3": "این کار به ما اجازه می‌دهد ببینیم هر باگ چند کاربر را تحت تأثیر قرار می‌دهد و بر اساس آن اولویت‌بندی رفع مشکل را انجام دهیم؛ بدون آن، هیچ راهی برای سنجش میزان تأثیر نداریم.",
   "errorReportingProgramDescriptionP4": "گزارش‌ها فقط به سرور Bull ارسال می‌شوند و هرگز به اشخاص ثالث نمی‌رسند.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin متن‌باز است، بنابراین می‌توانید بررسی کنید چه چیزی ارسال می‌شود.",

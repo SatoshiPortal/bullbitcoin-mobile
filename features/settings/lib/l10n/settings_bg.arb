@@ -244,7 +244,7 @@
   "settingsErrorReportingTitle": "Отчитане на грешки",
   "errorReportingProgramTitle": "Програма за отчитане на грешки",
   "errorReportingProgramDescriptionP1": "Помогнете ни да подобрим Bull, като се включите в нашата програма за отчитане на грешки.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin изпраща анонимизирани доклади за грешки, когато нещо се повреди.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin изпраща анонимизирани доклади за грешки, когато нещо се повреди. Може да се изпращат и диагностични журнали.",
   "errorReportingProgramDescriptionP3": "Това ни позволява да виждаме колко потребители засяга всеки бъг и да приоритизираме поправките съответно — без него нямаме начин да измерим въздействието.",
   "errorReportingProgramDescriptionP4": "Докладите отиват само на сървъра на Bull, никога до трети страни.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin е с отворен код, така че можете да проверите какво се изпраща.",

@@ -87,6 +87,9 @@ const unreadableBip85RecordFailure = FetchSecretFailure(
 const invalidBip85HexLengthFailure = UseSecretFailure(
   'Invalid BIP85 HEX length',
 );
+const incompatibleBip85ArchiveFailure = UseSecretFailure(
+  'Incompatible BIP85 archive',
+);
 
 /// Thrown inside a transaction whose session ended before its commit. Drift
 /// rolls the transaction back, so an operation either committed while its

@@ -1,3 +1,5 @@
+import 'dart:io' show File;
+
 import 'package:background_tasks/background_tasks.dart';
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
@@ -48,7 +50,8 @@ import 'package:exchange/exchange.dart' show Exchange;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bull_ark/ark_foreground_setup.dart';
-import 'package:primitives/primitives.dart' show Err, Failure, NetworkEnv, Ok;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Failure, NetworkEnv, Ok;
 import 'package:electrum/setup.dart'
     show
         ElectrumDefaultsProvisioner,
@@ -97,6 +100,7 @@ import 'package:bull_logs/bull_logs.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:backup_metadata/setup.dart' show BackupMetadataFeature;
 import 'package:secrets/secrets.dart' hide Language;
 import 'package:spend/setup.dart' show SpendCatalog;
 import 'package:spend/spend.dart' show Spend;
@@ -116,6 +120,42 @@ class AppLocator {
   static Future<void> startWalletsAfterUnlock(GetIt locator) async {
     await locator<ForegroundWalletStartup>().start();
     unawaited(locator<RecoverBullFacade>().checkAtColdStart());
+  }
+
+  /// Data backup: always composed, inert until the user turns it on and
+  /// confirms a destination, an account and wallets. The setting is the
+  /// selection kept in its encrypted journal: off by default, persistent.
+  static void setupDataBackup(GetIt locator, {required String journalPath}) {
+    final secrets = locator<Secrets>();
+    final keys = secrets.databaseKeys(module: 'backup_metadata');
+    final feature = BackupMetadataFeature.open(
+      locator: locator,
+      inventory: locator<SecretsInventory>(),
+      secrets: secrets,
+      labels: locator<Labels>(),
+      journal: File(journalPath),
+      journalKey: () async => switch (await keys.getOrCreate(name: 'journal')) {
+        Ok(:final value) => value.pragma,
+        Err() => null,
+      },
+      hasSilentPaymentsWallet: () async =>
+          (await readSilentDefaultFromInventory(locator<SecretsInventory>())(
+            BitcoinNetwork.mainnet,
+          )).fold((value) => value != null, (_) => false),
+      backupVerified: (fingerprint, network) async =>
+          switch (await locator<RecoverBullWalletBackups>(
+            instanceName: network.env == NetworkEnv.regtest ? 'regtest' : null,
+          ).projection(fingerprint)) {
+            Ok(:final value) =>
+              value.physicalBackupTested || value.encryptedVaultTested,
+            Err() => false,
+          },
+    );
+    feature.trigger.start();
+    locator.registerSingleton<BackupMetadataFeature>(
+      feature,
+      dispose: (value) => value.trigger.dispose(),
+    );
   }
 
   /// Foreground-only composition. Headless setup never opens this database.

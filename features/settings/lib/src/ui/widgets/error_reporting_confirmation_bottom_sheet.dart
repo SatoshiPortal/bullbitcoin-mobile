@@ -2,17 +2,25 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:settings/src/l10n.dart';
 import 'package:settings/src/presentation/bloc/settings_cubit.dart';
+import 'package:settings/src/ui/widgets/settings_restart_dialog.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
   const ErrorReportingConfirmationBottomSheet({super.key});
 
-  static Future<void> show(BuildContext context) {
-    return BullBottomSheet.show<void>(
+  static Future<void> show(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    final settings = context.read<SettingsCubit>();
+    final message = context.loc.errorReportingRestartSnackbar;
+    final accepted = await BullBottomSheet.show<bool>(
       context: context,
       child: const ErrorReportingConfirmationBottomSheet(),
     );
+    if (accepted != true) return;
+    final saved = await settings.toggleErrorReporting(true);
+    if (!saved || !navigator.mounted) return;
+    await showSettingsRestartDialog(navigator.context, message: message);
   }
 
   @override
@@ -106,19 +114,7 @@ class ErrorReportingConfirmationBottomSheet extends StatelessWidget {
                   Expanded(
                     child: BullButton.primary(
                       label: context.loc.errorReportingAcceptButton,
-                      onPressed: () async {
-                        final saved = await context
-                            .read<SettingsCubit>()
-                            .toggleErrorReporting(true);
-                        if (!context.mounted) return;
-                        final overlay = Overlay.of(context, rootOverlay: true);
-                        final message =
-                            context.loc.errorReportingRestartSnackbar;
-                        Navigator.of(context).pop();
-                        if (saved) {
-                          BullSnackBar.showOnOverlay(overlay, message: message);
-                        }
-                      },
+                      onPressed: () => Navigator.of(context).pop(true),
                     ),
                   ),
                 ],

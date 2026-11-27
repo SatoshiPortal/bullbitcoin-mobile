@@ -419,6 +419,14 @@ class Bull {
         locator,
         databasePath: recoverBull.standalone.path,
       );
+      AppLocator.setupDataBackup(
+        locator,
+        journalPath: p.join(
+          support.path,
+          'databases',
+          'backup_metadata.sqlite',
+        ),
+      );
       if (!pinProtected) {
         unawaited(locator<RecoverBullFacade>().checkAtColdStart());
       }

@@ -82,6 +82,30 @@ void main() {
     expect(cancelled, isTrue);
   });
 
+  test('closing is synchronous but waits for observation cleanup', () async {
+    final cancellation = Completer<void>();
+    final changes = StreamController<Result<ArkSnapshot, ArkWalletFailure>>(
+      onCancel: () => cancellation.future,
+    );
+    addTearDown(changes.close);
+    addTearDown(() {
+      if (!cancellation.isCompleted) cancellation.complete();
+    });
+    final client = FakeArkClient()
+      ..snapshot = Ok(projection(1))
+      ..changes = changes.stream;
+    final cubit = controller(client);
+    await cubit.load();
+    var completed = false;
+    final closing = cubit.close().then((_) => completed = true);
+    expect(cubit.isClosed, isTrue);
+    await Future<void>.delayed(Duration.zero);
+    expect(completed, isFalse);
+    cancellation.complete();
+    await closing;
+    expect(completed, isTrue);
+  });
+
   test('a late refresh cannot replace a newer watched revision', () async {
     final changes =
         StreamController<Result<ArkSnapshot, ArkWalletFailure>>.broadcast();

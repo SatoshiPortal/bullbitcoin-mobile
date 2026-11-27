@@ -259,7 +259,7 @@
   "settingsErrorReportingTitle": "오류 보고",
   "errorReportingProgramTitle": "오류 보고 프로그램",
   "errorReportingProgramDescriptionP1": "오류 보고 프로그램에 참여하여 Bull을 개선하는 데 도움을 주세요.",
-  "errorReportingProgramDescriptionP2": "Bull Bitcoin은 문제가 발생하면 익명화된 오류 보고서를 전송합니다.",
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin은 문제가 발생하면 익명화된 오류 보고서를 전송합니다. 진단 로그도 전송될 수 있습니다.",
   "errorReportingProgramDescriptionP3": "이를 통해 각 버그가 얼마나 많은 사용자에게 영향을 미치는지 파악하고 그에 따라 수정 우선순위를 정할 수 있습니다. 이 정보가 없으면 영향 범위를 측정할 방법이 없습니다.",
   "errorReportingProgramDescriptionP4": "보고서는 오직 Bull 서버로만 전송되며, 제3자에게 전달되지 않습니다.",
   "errorReportingProgramDescriptionP5": "Bull Bitcoin은 오픈소스이므로 전송되는 내용을 직접 확인할 수 있습니다.",

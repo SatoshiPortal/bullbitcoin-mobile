@@ -9,6 +9,7 @@ import '../../presentation/recoverbull_failure_l10n.dart';
 import '../../presentation/vault_flow_cubit.dart';
 import '../recoverbull_flow_navigator.dart';
 import '../widgets/backup_monitoring_panel.dart';
+import '../widgets/recoverbull_widgets.dart';
 import 'server_confirmation_page.dart';
 
 /// Key-server URL and attempt monitoring.
@@ -60,10 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final onOpenTorSettings = scope.onOpenTorSettings;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => recoverBullBack(context),
-          icon: const Icon(Icons.arrow_back),
-        ),
+        leading: const RecoverBullBackButton(),
         title: BullText(
           context.loc.recoverbullSettingsTitle,
           style: context.bullType.subtitle.copyWith(

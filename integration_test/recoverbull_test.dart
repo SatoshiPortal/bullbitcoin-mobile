@@ -1,6 +1,7 @@
 import 'initialization_result.dart';
 
 import 'package:bull_recoverbull/bull_recoverbull.dart';
+import 'package:bull_recoverbull/testing.dart';
 
 import 'dart:io';
 
@@ -10,13 +11,13 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/init.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'recoverbull_fixture.dart';
+
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) {
     requireSuccessfulBullInitialization(await Bull.init());
   }
-
-  final recoverbull = locator<RecoverBullFacade>();
 
   final secrets = locator<custody.Secrets>();
 
@@ -43,36 +44,63 @@ Future<void> main({bool isInitialized = false}) async {
     'zoo',
     'wrong',
   ];
-  // The restore test calls the production key server over Tor, so an outage
-  // there would fail every PR. In CI it runs only on PRs to main and manual
-  // runs; local runs always exercise it.
-  final runLiveKeyServerTest =
-      Platform.environment['CI'] != 'true' ||
-      Platform.environment['RUN_LIVE_KEYSERVER_TEST'] == 'true';
-
   group('Recoverbull', () {
-    // Fetches the vault key over Tor from the RecoverBull key server. Tor can
-    // take ~20s to bootstrap before the first request even goes out, so the
-    // default 30s test timeout is too tight — give it a full minute.
     test(
       'Restore encrypted vault',
       timeout: const Timeout(Duration(minutes: 2)),
-      skip: runLiveKeyServerTest ? false : 'calls the production key server: runs on PRs to main or a manually dispatched CI run',
       () async {
-        final settings = await recoverbull.settings();
-        expect(settings, isA<Ok<BackupSettings, RecoverBullFailure>>());
-        final server =
-            (settings as Ok<BackupSettings, RecoverBullFailure>).value.server;
-        expect(await recoverbull.acceptServer(server), isA<Ok>());
-        final parsed = recoverbull.parseVault(
+        final directory = await Directory.systemTemp.createTemp('recoverbull-');
+        addTearDown(() => directory.delete(recursive: true));
+        final fixture = await RecoverBullFixture.start();
+        addTearDown(fixture.close);
+        final permission = RecoverBullTestPermission();
+        final runtime = await openRecoverBullRuntimeForTesting(
+          databasePath: '${directory.path}/recoverbull.sqlite',
+          secrets: secrets,
+          wallets: locator<RecoverBullWalletPort>(),
+          environment: locator<RecoverBullEnvironmentPort>(),
+          permission: permission,
+          routes: fixture,
+        );
+        addTearDown(runtime.dispose);
+        final parsed = runtime.parseVault.execute(
           oldPathZooMnemonicWithSevenZerosPassword,
         );
         expect(parsed, isA<Ok<EncryptedVault, RecoverBullFailure>>());
-        final restored = await recoverbull.recoverFromServer(
-          vault: (parsed as Ok<EncryptedVault, RecoverBullFailure>).value,
+        final vault = (parsed as Ok<EncryptedVault, RecoverBullFailure>).value;
+        expect(
+          await seedRecoverBullServerForTesting(
+            port: fixture.port,
+            vault: vault,
+            password: password,
+            key: custody.VaultKey(oldPathVaultKey),
+          ),
+          isA<Ok>(),
+        );
+        expect(await acceptRecoverBullServerForTesting(runtime), isA<Ok>());
+        final rejected = await runtime.recoverServerVault.execute(
+          vault: vault,
+          password: 'incorrect synthetic password',
+        );
+        expect(
+          rejected,
+          isA<Err<VaultCompletion, RecoverBullFailure>>().having(
+            (result) => result.failure,
+            'failure',
+            isA<KeyServerFailure>().having(
+              (failure) => failure.kind,
+              'kind',
+              KeyServerFailureKind.credentials,
+            ),
+          ),
+        );
+        final restored = await runtime.recoverServerVault.execute(
+          vault: vault,
           password: password,
         );
         expect(restored, isA<Ok<VaultCompletion, RecoverBullFailure>>());
+        expect(fixture.routes, 2);
+        expect(fixture.fetches, 2);
         final completion =
             (restored as Ok<VaultCompletion, RecoverBullFailure>).value;
         expect(completion.recovery, isA<VaultRecovered>());

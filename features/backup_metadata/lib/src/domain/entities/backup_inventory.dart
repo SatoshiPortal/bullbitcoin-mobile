@@ -1,5 +1,7 @@
 import 'package:primitives/primitives.dart';
 
+import 'backup_content.dart';
+
 /// Wallets sharing one recovery secret, backed up in one encrypted file.
 final class BackupGroup {
   /// Opaque and stable across launches; never derived from key material.
@@ -16,6 +18,20 @@ final class BackupGroup {
   final List<String> bitcoinPublicDescriptors;
   final bool seedBackupVerified;
 
+  /// The public Bitcoin accounts of the group, with their metadata.
+  final List<BackupWallet> wallets;
+
+  /// The seed whose BIP85 registry the group carries; null for a watch-only
+  /// group, which has no seed and no registry. Never logged or written in
+  /// the clear.
+  final String? secretReference;
+
+  bool get isWatchOnly => secretReference == null;
+
+  /// A public descriptor of this group also belongs to another wallet of the
+  /// view. The group is backed up; a restore is neither offered nor applied.
+  final bool ambiguous;
+
   BackupGroup({
     required this.id,
     required this.displayName,
@@ -24,7 +40,11 @@ final class BackupGroup {
     required List<String> liquidWalletIds,
     required List<String> bitcoinPublicDescriptors,
     required this.seedBackupVerified,
-  }) : bitcoinWalletIds = List.unmodifiable(bitcoinWalletIds),
+    List<BackupWallet> wallets = const [],
+    this.secretReference,
+    this.ambiguous = false,
+  }) : wallets = List.unmodifiable(wallets),
+       bitcoinWalletIds = List.unmodifiable(bitcoinWalletIds),
        liquidWalletIds = List.unmodifiable(liquidWalletIds),
        bitcoinPublicDescriptors = List.unmodifiable(bitcoinPublicDescriptors) {
     if (id.isEmpty) throw ArgumentError('Backup group id must not be empty');

@@ -158,12 +158,14 @@ class SwapPageState extends State<SwapPage> {
             BlocSelector<TransferBloc, TransferState, bool>(
               selector: (state) => state.sendToExternal,
               builder: (context, sendToExternal) {
-                return Text(
-                  sendToExternal
-                      ? context.swapCopyForLocale.swapExternalTransferLabel
-                      : context.swapCopyForLocale.swapInternalTransferTitle,
-                  style: context.bullType.body.copyWith(
-                    fontWeight: FontWeight.w500,
+                return ExcludeSemantics(
+                  child: Text(
+                    sendToExternal
+                        ? context.swapCopyForLocale.swapExternalTransferLabel
+                        : context.swapCopyForLocale.swapInternalTransferTitle,
+                    style: context.bullType.body.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 );
               },
@@ -173,6 +175,9 @@ class SwapPageState extends State<SwapPage> {
               builder: (context, sendToExternal) {
                 return BullSwitch(
                   value: sendToExternal,
+                  semanticLabel: sendToExternal
+                      ? context.swapCopyForLocale.swapExternalTransferLabel
+                      : context.swapCopyForLocale.swapInternalTransferTitle,
                   onChanged: (value) {
                     context.read<TransferBloc>().add(
                       TransferEvent.sendToExternalToggled(value),
@@ -327,14 +332,18 @@ class SwapPageState extends State<SwapPage> {
                     BlocSelector<TransferBloc, TransferState, bool>(
                       selector: (state) => state.receiveExactAmount,
                       builder: (context, receiveExactAmount) {
-                        return Text(
-                          receiveExactAmount
-                              ? context
-                                    .swapCopyForLocale
-                                    .swapReceiveExactAmountLabel
-                              : context.swapCopyForLocale.swapSubtractFeesLabel,
-                          style: context.bullType.body.copyWith(
-                            fontWeight: FontWeight.w500,
+                        return ExcludeSemantics(
+                          child: Text(
+                            receiveExactAmount
+                                ? context
+                                      .swapCopyForLocale
+                                      .swapReceiveExactAmountLabel
+                                : context
+                                      .swapCopyForLocale
+                                      .swapSubtractFeesLabel,
+                            style: context.bullType.body.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         );
                       },
@@ -346,6 +355,11 @@ class SwapPageState extends State<SwapPage> {
                         final (receiveExactAmount, isMaxSelected) = selected;
                         return BullSwitch(
                           value: receiveExactAmount,
+                          semanticLabel: receiveExactAmount
+                              ? context
+                                    .swapCopyForLocale
+                                    .swapReceiveExactAmountLabel
+                              : context.swapCopyForLocale.swapSubtractFeesLabel,
                           // Max drains the wallet; an exact
                           // receivable amount can't be honored.
                           onChanged: isMaxSelected
