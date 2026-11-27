@@ -10,7 +10,7 @@ export 'src/steps/interac_security_step.dart';
 export 'src/steps/kyc_gate.dart';
 export 'src/steps/order_quote.dart';
 export 'src/steps/outcome_watch.dart';
-export 'src/steps/payin.dart';
+export 'src/steps/payin.dart' hide PayinValue;
 export 'src/steps/pick.dart';
 export 'src/steps/recipient_pick.dart';
 export 'src/steps/requirements_step.dart';

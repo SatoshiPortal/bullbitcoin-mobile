@@ -22,16 +22,18 @@ bool _sameProps(List<Object?> a, List<Object?> b) {
   return true;
 }
 
-/// Value equality over [props] and the exact runtime type.
+/// Value equality over [props] and the exact runtime type. Shared by the
+/// payin's states, values and effects; not part of the steps API.
+@internal
 @immutable
-abstract base class _PayinValue {
-  const _PayinValue();
+abstract base class PayinValue {
+  const PayinValue();
 
   List<Object?> get props;
 
   @override
   bool operator ==(Object other) =>
-      other is _PayinValue &&
+      other is PayinValue &&
       other.runtimeType == runtimeType &&
       _sameProps(other.props, props);
 
@@ -133,7 +135,7 @@ UnknownWrite? openPayinEntryFor(String orderId, List<UnknownWrite> entries) {
 
 /// The fee a payin is built at, chosen on the review before Building.
 @immutable
-sealed class PayinFee extends _PayinValue {
+sealed class PayinFee extends PayinValue {
   const PayinFee();
 }
 
@@ -170,7 +172,7 @@ final class PayinFeeNetworkMinimum extends PayinFee {
 /// offers is used. Chosen before Building and carried with it, so a rebuild
 /// after a refused broadcast uses the same choice; a resend of the same
 /// signed transaction never reads it.
-final class PayinSpendOptions extends _PayinValue {
+final class PayinSpendOptions extends PayinValue {
   final PayinFee fee;
   final bool replaceByFee;
   final Set<Outpoint> coins;
@@ -206,7 +208,7 @@ int _byOutpoint(Outpoint a, Outpoint b) {
 }
 
 /// The app wallet a payin is built from and how.
-final class PayinWalletSpend extends _PayinValue {
+final class PayinWalletSpend extends PayinValue {
   final String walletId;
   final PayinSpendOptions options;
 
@@ -218,7 +220,7 @@ final class PayinWalletSpend extends _PayinValue {
 
 /// A signed payin ready to send: [payload] is the wallet's own signed spend
 /// (opaque here), [txid] read from the signed transaction (SELL-12).
-final class PayinBuilt<P> extends _PayinValue {
+final class PayinBuilt<P> extends PayinValue {
   final PayinWalletSpend spend;
   final String txid;
   final P payload;
@@ -233,7 +235,7 @@ final class PayinBuilt<P> extends _PayinValue {
 
 /// Why nothing went out.
 @immutable
-sealed class PayinProblem extends _PayinValue {
+sealed class PayinProblem extends PayinValue {
   const PayinProblem();
 }
 
@@ -268,7 +270,7 @@ final class PayinSendNotSent extends PayinProblem {
 /// payin: build a new one (nothing of the last one can be on the network) or
 /// send the same signed transaction again (the same txid can't pay twice).
 @immutable
-sealed class PayinResume<P> extends _PayinValue {
+sealed class PayinResume<P> extends PayinValue {
   const PayinResume();
 }
 
@@ -388,7 +390,7 @@ PayinCheck payinCheckFrom({
 /// and at most the same signed transaction is sent again. Every retry
 /// re-reads the order first ([PayinRechecking]).
 @immutable
-sealed class PayinState<P> extends _PayinValue {
+sealed class PayinState<P> extends PayinValue {
   const PayinState();
 
   PayinNext<P> next(PayinPolicy policy, PayinEvent<P> event) {
@@ -1259,7 +1261,7 @@ final class PayinLeaveCancelled<P> extends PayinEvent<P> {
 }
 
 @immutable
-sealed class PayinEffect<P> extends _PayinValue {
+sealed class PayinEffect<P> extends PayinValue {
   const PayinEffect();
 }
 
