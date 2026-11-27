@@ -288,7 +288,7 @@ void main() {
         BuyDestinationChanged(
           PickResolved(
             buyBitcoinWallet.option,
-            const Err(BuyReceiveAddressUnavailable()),
+            const Err(ExchangeDestinationUnavailableFailure()),
           ),
         ),
       ]).state;

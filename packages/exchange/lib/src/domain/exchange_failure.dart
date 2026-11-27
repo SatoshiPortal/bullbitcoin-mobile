@@ -339,3 +339,19 @@ final class ExchangeVirtualIbanNotAvailableFailure extends ExchangeFailure {
 final class ExchangeEuResidencyRequiredFailure extends ExchangeFailure {
   const ExchangeEuResidencyRequiredFailure();
 }
+
+/// The unknown-write journal could not be read or written.
+final class ExchangeJournalFailure extends ExchangeFailure {
+  const ExchangeJournalFailure([super.logMessage]);
+}
+
+/// The picked destination gave no usable address: the app wallet is no
+/// longer listed or gave no receive address.
+final class ExchangeDestinationUnavailableFailure extends ExchangeFailure {
+  const ExchangeDestinationUnavailableFailure([super.logMessage]);
+}
+
+/// The typed text is not an address the flow can pay out to.
+final class ExchangeDestinationInvalidFailure extends ExchangeFailure {
+  const ExchangeDestinationInvalidFailure([super.logMessage]);
+}

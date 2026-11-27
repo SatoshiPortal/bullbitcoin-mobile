@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
 import 'package:bull_exchange/src/buy/domain/buy_listed_wallets.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/get_buy_receive_address_usecase.dart';
 import 'package:bull_exchange/src/exchange_payout_wallets.dart';
@@ -23,7 +22,7 @@ void main() {
       isA<Err<Destination, Failure>>().having(
         (e) => e.failure,
         'failure',
-        isA<BuyReceiveAddressUnavailable>(),
+        isA<ExchangeDestinationUnavailableFailure>(),
       ),
     );
     expect(inventory.reads, isEmpty);

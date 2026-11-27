@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/limit_orders/domain/limit_destination_failure.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/validate_lightning_address_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -6,10 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:satoshifier/payment_request.dart';
 
-Matcher _refused() => isA<Err<Destination, Failure>>().having(
+Matcher _refused() => isA<Err<Destination, ExchangeFailure>>().having(
   (e) => e.failure,
   'failure',
-  isA<LimitDestinationFailure>(),
+  isA<ExchangeDestinationInvalidFailure>(),
 );
 
 void main() {
@@ -56,7 +55,7 @@ void main() {
     );
     expect(
       await usecase.execute('  satoshi@getalby.com '),
-      isA<Ok<Destination, Failure>>().having(
+      isA<Ok<Destination, ExchangeFailure>>().having(
         (o) => o.value,
         'value',
         isA<DestinationAddress>()

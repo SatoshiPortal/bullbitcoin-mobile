@@ -1,5 +1,5 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/exchange_payout_wallets.dart';
-import 'package:bull_exchange/src/limit_orders/domain/limit_destination_failure.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_listed_wallets.dart';
 import 'package:exchange/steps.dart';
 import 'package:primitives/primitives.dart';
@@ -12,18 +12,22 @@ class GetLimitReceiveAddressUsecase {
 
   const GetLimitReceiveAddressUsecase(this._payouts, this._listed);
 
-  Future<Result<Destination, Failure>> execute(
+  Future<Result<Destination, ExchangeFailure>> execute(
     DestinationOptionAppWallet option,
   ) async {
     final wallet = _listed[option.walletId];
     if (wallet == null) {
-      return const Err(LimitDestinationFailure('wallet no longer listed'));
+      return const Err(
+        ExchangeDestinationUnavailableFailure('wallet no longer listed'),
+      );
     }
     return switch (await _payouts.receive(wallet, advance: false)) {
       final address? => Ok(
         DestinationAppWallet(option.walletId, option.rail, address),
       ),
-      null => const Err(LimitDestinationFailure('receive address unavailable')),
+      null => const Err(
+        ExchangeDestinationUnavailableFailure('receive address unavailable'),
+      ),
     };
   }
 }

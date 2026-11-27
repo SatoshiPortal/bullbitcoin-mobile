@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
 import 'package:bull_exchange/src/buy/domain/usecases/validate_buy_address_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
@@ -28,7 +27,7 @@ void main() {
       isA<Err<Destination, Failure>>().having(
         (e) => e.failure,
         'failure',
-        isA<BuyAddressInvalid>(),
+        isA<ExchangeDestinationInvalidFailure>(),
       ),
     );
   });

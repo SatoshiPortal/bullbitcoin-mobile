@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/buy/domain/buy_listed_wallets.dart';
 import 'package:bull_exchange/src/exchange_payout_wallets.dart';
 import 'package:exchange/steps.dart';
@@ -12,7 +12,7 @@ class GetBuyReceiveAddressUsecase {
 
   const GetBuyReceiveAddressUsecase(this._payouts, this._listed);
 
-  Future<Result<Destination, Failure>> execute(
+  Future<Result<Destination, ExchangeFailure>> execute(
     DestinationOptionAppWallet option,
   ) async {
     final wallet = _listed[option.walletId];
@@ -20,7 +20,7 @@ class GetBuyReceiveAddressUsecase {
         ? null
         : await _payouts.receive(wallet, advance: false);
     return address == null
-        ? const Err(BuyReceiveAddressUnavailable())
+        ? const Err(ExchangeDestinationUnavailableFailure())
         : Ok(DestinationAppWallet(option.walletId, option.rail, address));
   }
 }

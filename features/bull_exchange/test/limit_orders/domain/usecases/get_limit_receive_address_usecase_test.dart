@@ -1,5 +1,4 @@
 import 'package:bull_exchange/src/exchange_payout_wallets.dart';
-import 'package:bull_exchange/src/limit_orders/domain/limit_destination_failure.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_listed_wallets.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/get_limit_receive_address_usecase.dart';
 import 'package:exchange/exchange.dart';
@@ -13,7 +12,11 @@ import '../../../buy/buy_test_ports.dart';
 Matcher _refused(String why) => isA<Err<Destination, Failure>>().having(
   (e) => e.failure,
   'failure',
-  isA<LimitDestinationFailure>().having((f) => f.logMessage, 'why', why),
+  isA<ExchangeDestinationUnavailableFailure>().having(
+    (f) => f.logMessage,
+    'why',
+    why,
+  ),
 );
 
 void main() {

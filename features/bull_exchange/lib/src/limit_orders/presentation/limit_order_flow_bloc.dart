@@ -111,14 +111,14 @@ class LimitFlowBloc extends Bloc<LimitFlowEvent, LimitFlowState> {
   void _destination(PickEffect<DestinationOption> effect) {
     switch (effect) {
       case PickResolve(:final option):
-        final Future<Result<Destination, Failure>> resolved = switch (option) {
-          final DestinationOptionAppWallet wallet => _getReceiveAddress.execute(
-            wallet,
-          ),
-          // A default wallet is a value at once (destinationResolution).
-          DestinationOptionDefaultWallet(:final rail, :final address) =>
-            Future.value(Ok(DestinationDefaultWallet(rail, address))),
-        };
+        final Future<Result<Destination, ExchangeFailure>> resolved =
+            switch (option) {
+              final DestinationOptionAppWallet wallet =>
+                _getReceiveAddress.execute(wallet),
+              // A default wallet is a value at once (destinationResolution).
+              DestinationOptionDefaultWallet(:final rail, :final address) =>
+                Future.value(Ok(DestinationDefaultWallet(rail, address))),
+            };
         _answer(
           resolved.then(
             (r) => LimitDestinationChanged(PickResolved(option, r)),

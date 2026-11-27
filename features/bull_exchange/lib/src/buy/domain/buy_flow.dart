@@ -1,7 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Err, Failure, Ok, Result;
+import 'package:primitives/primitives.dart' show Err, Ok, Result;
 
 /// The buy flow (composition §5, Buy column): session → account and wallets
 /// → amount from a funded balance (KYC and funding detours come back to the
@@ -73,16 +73,6 @@ final class BuyPayoutWallet {
 
   @override
   int get hashCode => Object.hash(walletId, rail, label, isDefault, canPayjoin);
-}
-
-/// The picked app wallet gave no receive address.
-final class BuyReceiveAddressUnavailable extends Failure {
-  const BuyReceiveAddressUnavailable();
-}
-
-/// The typed text is not a bitcoin address a buy can pay out to.
-final class BuyAddressInvalid extends Failure {
-  const BuyAddressInvalid();
 }
 
 /// What the flow loads before the amount: the account, the wallets it can

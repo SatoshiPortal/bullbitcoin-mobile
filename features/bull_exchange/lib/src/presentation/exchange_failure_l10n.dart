@@ -130,6 +130,9 @@ extension ExchangeFailureL10n on ExchangeFailure {
     RecipientsInvalidSecurityDetailsFailure() ||
     RecipientsUnexpectedFailure() ||
     ExchangeUnexpectedFailure() ||
+    ExchangeJournalFailure() ||
+    ExchangeDestinationUnavailableFailure() ||
+    ExchangeDestinationInvalidFailure() ||
     ExchangeApiKeyInvalidFailure() ||
     ExchangeCredentialsUnavailableFailure() ||
     ExchangeBasicAuthSaveFailure() ||

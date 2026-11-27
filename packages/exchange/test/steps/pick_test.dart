@@ -3,10 +3,6 @@ import 'package:exchange/steps.dart';
 import 'package:primitives/primitives.dart';
 import 'package:test/test.dart';
 
-final class _Invalid extends Failure {
-  const _Invalid();
-}
-
 typedef _S = PickState<DestinationOption, Destination>;
 typedef _E = PickEvent<DestinationOption, Destination>;
 typedef _Next = StepNext<_S, PickEffect<DestinationOption>>;
@@ -20,7 +16,7 @@ const _opts = <DestinationOption>[_appW, _defW];
 const _appDest = DestinationAppWallet('w1', BtcNetwork.bitcoin, 'bc1qrecv');
 const _defDest = DestinationDefaultWallet(BtcNetwork.bitcoin, 'bc1qdef');
 const _typedDest = DestinationAddress(BtcNetwork.bitcoin, 'bc1q');
-const _f = _Invalid();
+const _f = ExchangeDestinationInvalidFailure();
 
 final _policy = destinationPolicy(acceptsTyped: true);
 

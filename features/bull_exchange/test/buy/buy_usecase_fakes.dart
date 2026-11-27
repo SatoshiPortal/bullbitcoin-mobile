@@ -32,7 +32,7 @@ final class FakeLoadBuyContextUsecase implements LoadBuyContextUsecase {
 
 final class FakeGetBuyReceiveAddressUsecase
     implements GetBuyReceiveAddressUsecase {
-  final Future<Result<Destination, Failure>> Function(
+  final Future<Result<Destination, ExchangeFailure>> Function(
     DestinationOptionAppWallet option,
   )
   answer;
@@ -40,18 +40,20 @@ final class FakeGetBuyReceiveAddressUsecase
   FakeGetBuyReceiveAddressUsecase(this.answer);
 
   @override
-  Future<Result<Destination, Failure>> execute(
+  Future<Result<Destination, ExchangeFailure>> execute(
     DestinationOptionAppWallet option,
   ) => answer(option);
 }
 
 final class FakeValidateBuyAddressUsecase implements ValidateBuyAddressUsecase {
-  final Future<Result<Destination, Failure>> Function(String text) answer;
+  final Future<Result<Destination, ExchangeFailure>> Function(String text)
+  answer;
 
   FakeValidateBuyAddressUsecase(this.answer);
 
   @override
-  Future<Result<Destination, Failure>> execute(String text) => answer(text);
+  Future<Result<Destination, ExchangeFailure>> execute(String text) =>
+      answer(text);
 }
 
 final class FakeCreateBuyOrderUsecase implements CreateBuyOrderUsecase {

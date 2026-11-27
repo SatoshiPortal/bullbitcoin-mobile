@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/limit_orders/domain/limit_destination_failure.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:primitives/primitives.dart';
@@ -14,10 +13,12 @@ class ValidateLightningAddressUsecase {
 
   const ValidateLightningAddressUsecase({this._parse = PaymentRequest.parse});
 
-  Future<Result<Destination, Failure>> execute(String text) async =>
+  Future<Result<Destination, ExchangeFailure>> execute(String text) async =>
       switch (await _lightningAddressOf(text)) {
         final address? => Ok(DestinationAddress(BtcNetwork.lightning, address)),
-        null => const Err(LimitDestinationFailure('not a lightning address')),
+        null => const Err(
+          ExchangeDestinationInvalidFailure('not a lightning address'),
+        ),
       };
 
   Future<String?> _lightningAddressOf(String text) async {

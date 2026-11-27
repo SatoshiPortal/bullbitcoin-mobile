@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/entities/btc_network.dart';
+import '../domain/exchange_failure.dart';
 import 'step_next.dart';
 
 /// Picking where bitcoin comes from or goes to (composition §4.6):
@@ -120,7 +121,7 @@ sealed class PickProblem<O> {
 
 final class PickResolveFailed<O> extends PickProblem<O> {
   final O option;
-  final Failure failure;
+  final ExchangeFailure failure;
 
   const PickResolveFailed(this.option, this.failure);
 
@@ -136,7 +137,7 @@ final class PickResolveFailed<O> extends PickProblem<O> {
 
 final class PickTextInvalid<O> extends PickProblem<O> {
   final String text;
-  final Failure failure;
+  final ExchangeFailure failure;
 
   const PickTextInvalid(this.text, this.failure);
 
@@ -170,7 +171,7 @@ final class PickTyped<O, V> extends PickEvent<O, V> {
 /// The validation of [text] answered [result].
 final class PickValidated<O, V> extends PickEvent<O, V> {
   final String text;
-  final Result<V, Failure> result;
+  final Result<V, ExchangeFailure> result;
 
   const PickValidated(this.text, this.result);
 }
@@ -178,7 +179,7 @@ final class PickValidated<O, V> extends PickEvent<O, V> {
 /// The lookup of [option] answered [result].
 final class PickResolved<O, V> extends PickEvent<O, V> {
   final O option;
-  final Result<V, Failure> result;
+  final Result<V, ExchangeFailure> result;
 
   const PickResolved(this.option, this.result);
 }

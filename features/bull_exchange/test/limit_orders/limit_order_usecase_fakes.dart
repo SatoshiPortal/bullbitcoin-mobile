@@ -48,7 +48,7 @@ final class FakeGetLimitOrderRateUsecase implements GetLimitOrderRateUsecase {
 
 final class FakeGetLimitReceiveAddressUsecase
     implements GetLimitReceiveAddressUsecase {
-  final Future<Result<Destination, Failure>> Function(
+  final Future<Result<Destination, ExchangeFailure>> Function(
     DestinationOptionAppWallet option,
   )
   answer;
@@ -56,19 +56,21 @@ final class FakeGetLimitReceiveAddressUsecase
   FakeGetLimitReceiveAddressUsecase(this.answer);
 
   @override
-  Future<Result<Destination, Failure>> execute(
+  Future<Result<Destination, ExchangeFailure>> execute(
     DestinationOptionAppWallet option,
   ) => answer(option);
 }
 
 final class FakeValidateLightningAddressUsecase
     implements ValidateLightningAddressUsecase {
-  final Future<Result<Destination, Failure>> Function(String text) answer;
+  final Future<Result<Destination, ExchangeFailure>> Function(String text)
+  answer;
 
   FakeValidateLightningAddressUsecase(this.answer);
 
   @override
-  Future<Result<Destination, Failure>> execute(String text) => answer(text);
+  Future<Result<Destination, ExchangeFailure>> execute(String text) =>
+      answer(text);
 }
 
 final class FakeCreateLimitOrderUsecase implements CreateLimitOrderUsecase {
