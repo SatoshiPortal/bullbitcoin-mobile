@@ -25,6 +25,12 @@ class _Throwing implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 0,
+  sessionId: 's',
+);
+
 Exchange _exchange(HttpClientAdapter http, {String? key = 'synthetic-key'}) =>
     exchangeWithTransportForTesting(
       readSession: () async =>
@@ -34,6 +40,7 @@ Exchange _exchange(HttpClientAdapter http, {String? key = 'synthetic-key'}) =>
         adapter: http,
         readActiveApiKey: readKey,
       ),
+      access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
     );
 
 void main() {
@@ -43,7 +50,7 @@ void main() {
       final result = await _exchange(
         FakeBbxHttp(),
         key: null,
-      ).getSupportMessages();
+      ).getSupportMessages(_session);
       expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
     },
   );
@@ -51,7 +58,7 @@ void main() {
   test('a transport throw is a sanitized attachment load failure', () async {
     final result = await _exchange(
       _Throwing(Exception('network down at host=secret.internal')),
-    ).getSupportAttachment('a1');
+    ).getSupportAttachment(_session, 'a1');
 
     final failure = (result as Err).failure;
     expect(failure, isA<ExchangeChatLoadAttachmentFailure>());
@@ -62,13 +69,13 @@ void main() {
     final result = await _exchange(
       FakeBbxHttp(),
       key: null,
-    ).sendSupportMessage(text: 'hi');
+    ).sendSupportMessage(_session, text: 'hi');
     expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
   });
 
   test('without a usable identity, the thread is never requested', () async {
     final http = FakeBbxHttp(body: {'result': null});
-    final result = await _exchange(http).getSupportMessages();
+    final result = await _exchange(http).getSupportMessages(_session);
 
     expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
     expect(http.requests.map((r) => r.path), ['/ak/api-users']);

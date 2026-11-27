@@ -102,17 +102,22 @@ typedef ExchangeSessionReader =
     Function();
 
 typedef ExchangeChatOperations = ({
-  Future<Result<List<SupportChatMessage>, ExchangeFailure>> Function({
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> Function(
+    ExchangeSession, {
     int? page,
     int? pageSize,
   })
   getMessages,
-  Future<Result<void, ExchangeFailure>> Function({
+  Future<Result<void, ExchangeFailure>> Function(
+    ExchangeSession, {
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   })
   sendMessage,
-  Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(String)
+  Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(
+    ExchangeSession,
+    String,
+  )
   getAttachment,
   Future<ExchangeRead<int>> Function(ExchangeSession) getUnreadCount,
   Future<ExchangeWrite<void>> Function(ExchangeSession) markAllRead,
@@ -497,26 +502,31 @@ final class Exchange {
         ),
       ),
       (
-        getMessages: ({page, pageSize}) => withClient(
+        getMessages: (session, {page, pageSize}) => withClient(
           (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).getMessages(page: page, pageSize: pageSize),
+          environment: session.environment,
           credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
+          completionCheck: _CompletionCheck.read,
         ),
-        sendMessage: ({required text, attachments}) => withClient(
+        sendMessage: (session, {required text, attachments}) => withClient(
           (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).sendMessage(text: text, attachments: attachments),
+          environment: session.environment,
           credentialReadFailure: ExchangeChatSendMessageFailure.new,
         ),
-        getAttachment: (attachmentId) => withClient(
+        getAttachment: (session, attachmentId) => withClient(
           (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).getMessageAttachment(attachmentId),
+          environment: session.environment,
           credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
+          completionCheck: _CompletionCheck.read,
         ),
         getUnreadCount: (session) async =>
             switch (await withClient<ExchangeRead<int>>(
@@ -834,20 +844,26 @@ final class Exchange {
   Future<Result<void, ExchangeFailure>> signOut() async =>
       await _access?.signOut() ?? const Err(ExchangeSessionClearFailure());
 
-  /// Sends the account deletion request to support, then signs out only if
-  /// the account still belongs to the session that sent it.
+  /// Sends [session]'s account deletion request to support, then signs out
+  /// only if the account still belongs to that session. For a session that
+  /// is no longer the current one nothing is sent
+  /// ([ExchangeAccountDeletionOutcome.stale]).
   @useResult
-  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>>
-  deleteAccount() async {
+  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>> deleteAccount(
+    ExchangeSession session,
+  ) async {
     final access = _access;
     if (access == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
-    final session = access.session;
-    if (session == null) {
+    if (access.session == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
+    if (access.session != session) {
+      return const Ok(ExchangeAccountDeletionOutcome.stale);
+    }
     final result = await sendSupportMessage(
+      session,
       text: 'I want to delete my account',
     );
     if (access.session != session) {
@@ -1173,22 +1189,36 @@ final class Exchange {
           ),
   );
 
+  /// The support messages of [session]'s user; never read for a session
+  /// that is no longer the current one ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages(
+    ExchangeSession session, {
     int? page,
     int? pageSize,
-  }) => _chat.getMessages(page: page, pageSize: pageSize);
+  }) async => _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _chat.getMessages(session, page: page, pageSize: pageSize);
 
+  /// Sends a support message as [session]'s user; never sent for a session
+  /// that is no longer the current one ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<void, ExchangeFailure>> sendSupportMessage({
+  Future<Result<void, ExchangeFailure>> sendSupportMessage(
+    ExchangeSession session, {
     required String text,
     List<SupportChatMessageAttachment>? attachments,
-  }) => _chat.sendMessage(text: text, attachments: attachments);
+  }) async => _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _chat.sendMessage(session, text: text, attachments: attachments);
 
+  /// One attachment of [session]'s chat; never read for a session that is
+  /// no longer the current one ([ExchangeOperationStaleFailure]).
   @useResult
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
-  getSupportAttachment(String attachmentId) =>
-      _chat.getAttachment(attachmentId);
+  getSupportAttachment(ExchangeSession session, String attachmentId) async =>
+      _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _chat.getAttachment(session, attachmentId);
 
   /// How many support messages [session]'s user has not read. A read for a
   /// session that is no longer the current one is never sent.
@@ -1340,11 +1370,11 @@ Exchange exchangeForTesting({
   orders ?? (_) => throw StateError('Unexpected order request'),
   chat ??
       (
-        getMessages: ({page, pageSize}) =>
+        getMessages: (_, {page, pageSize}) =>
             throw StateError('Unexpected chat history request'),
-        sendMessage: ({required text, attachments}) =>
+        sendMessage: (_, {required text, attachments}) =>
             throw StateError('Unexpected chat send'),
-        getAttachment: (_) =>
+        getAttachment: (_, _) =>
             throw StateError('Unexpected chat attachment request'),
         getUnreadCount: (_) =>
             throw StateError('Unexpected chat unread count request'),

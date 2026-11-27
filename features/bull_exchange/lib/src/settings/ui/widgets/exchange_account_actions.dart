@@ -17,6 +17,9 @@ import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, BullSnackBar;
 
 class ExchangeAccountActions extends StatefulWidget {
   final bool showDeleteAccount;
+
+  /// The session the deletion is asked for; null when signed out.
+  final ExchangeSession? session;
   final DeleteExchangeAccountUsecase deleteAccount;
   final SignOutOfExchangeUsecase signOut;
   final String Function(BuildContext, ExchangeFailure) failureMessage;
@@ -24,6 +27,7 @@ class ExchangeAccountActions extends StatefulWidget {
 
   const ExchangeAccountActions({
     required this.showDeleteAccount,
+    required this.session,
     required this.deleteAccount,
     required this.signOut,
     required this.failureMessage,
@@ -66,7 +70,7 @@ class _ExchangeAccountActionsState extends State<ExchangeAccountActions> {
   }
 
   Future<void> _requestDeletion() async {
-    final result = await widget.deleteAccount.execute();
+    final result = await widget.deleteAccount.execute(widget.session);
     _addDeletion(switch (result) {
       Ok(value: ExchangeAccountDeletionOutcome.completed) =>
         const AccountDeletionSent(),

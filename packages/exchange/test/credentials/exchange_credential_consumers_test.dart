@@ -125,7 +125,7 @@ void main() {
           isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
-      final messages = await user.getSupportMessages();
+      final messages = await user.getSupportMessages(_session);
       expect(
         messages,
         isA<Err>().having(
@@ -168,7 +168,7 @@ void main() {
         ),
       );
       expect(
-        await user.getSupportMessages(),
+        await user.getSupportMessages(_session),
         isA<Err>().having(
           (r) => r.failure,
           'chat',

@@ -22,10 +22,10 @@ Exchange _exchange(
 }) => exchangeForTesting(
   access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
   chat: (
-    getMessages: ({page, pageSize}) async => fail('unexpected read'),
-    sendMessage: ({required text, attachments}) async =>
+    getMessages: (_, {page, pageSize}) async => fail('unexpected read'),
+    sendMessage: (_, {required text, attachments}) async =>
         fail('unexpected send'),
-    getAttachment: (_) async => fail('unexpected download'),
+    getAttachment: (_, _) async => fail('unexpected download'),
     getUnreadCount: (session) async {
       asked.add('count ${session.sessionId}');
       return count;

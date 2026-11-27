@@ -18,20 +18,26 @@ SupportChatBloc _bloc({
   Stream<NotificationMessage>? pushes,
   String? draft,
 }) => SupportChatBloc(
-  getMessages: FakeGetSupportChatMessagesUsecase(({page, pageSize}) {
+  session: _chatSession,
+  getMessages: FakeGetSupportChatMessagesUsecase((session, {page, pageSize}) {
+    expect(session, _chatSession);
     calls.add('page $page size $pageSize');
     return readPage == null ? _unused('page') : readPage();
   }),
-  sendMessage: FakeSendSupportChatMessageUsecase(({
+  sendMessage: FakeSendSupportChatMessageUsecase((
+    session, {
     required text,
     attachments = const [],
   }) {
+    expect(session, _chatSession);
     calls.add('send $text ${attachments.length}');
     return send == null ? _unused('send') : send();
   }),
   pickImages: FakePickImageAttachmentsUsecase(() => _unused('pick')),
   createLogAttachment: FakeCreateLogAttachmentUsecase(() => _unused('logs')),
-  openAttachment: FakeOpenSupportChatAttachmentUsecase((_) => _unused('open')),
+  openAttachment: FakeOpenSupportChatAttachmentUsecase(
+    (_, _) => _unused('open'),
+  ),
   watchPushes: FakeWatchSupportChatPushesUsecase(
     () => pushes ?? const Stream.empty(),
   ),
@@ -46,6 +52,12 @@ Future<void> _settle() async {
 }
 
 const _message = SupportChatMessage(messageId: 'm1', text: 'hello');
+
+const _chatSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'chat',
+);
 
 void main() {
   test(

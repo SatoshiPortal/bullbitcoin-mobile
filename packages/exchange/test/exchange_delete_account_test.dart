@@ -48,9 +48,11 @@ void main() {
     exchange = exchangeForTesting(
       access: access,
       chat: (
-        getMessages: ({page, pageSize}) => fail('unexpected support history'),
-        getAttachment: (_) => fail('unexpected attachment'),
-        sendMessage: request.send,
+        getMessages: (_, {page, pageSize}) =>
+            fail('unexpected support history'),
+        getAttachment: (_, _) => fail('unexpected attachment'),
+        sendMessage: (_, {required text, attachments}) =>
+            request.send(text: text, attachments: attachments),
         getUnreadCount: (_) => fail('unexpected unread count'),
         markAllRead: (_) => fail('unexpected mark read'),
       ),
@@ -61,7 +63,7 @@ void main() {
     when(() => request.send(text: 'I want to delete my account'))
         .thenAnswer((_) async => const Err(ExchangeChatSendMessageFailure()));
     expect(
-      (await exchange.deleteAccount() as Err).failure,
+      (await exchange.deleteAccount(_testSession) as Err).failure,
       isA<ExchangeAccountDeletionRequestFailure>(),
     );
     verifyNever(access.signOut);
@@ -71,7 +73,7 @@ void main() {
     when(() => access.current)
         .thenReturn(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     expect(
-      (await exchange.deleteAccount() as Err).failure,
+      (await exchange.deleteAccount(_testSession) as Err).failure,
       isA<ExchangeNotAuthenticatedFailure>(),
     );
     verifyZeroInteractions(request);
@@ -83,7 +85,7 @@ void main() {
       () => request.send(text: 'I want to delete my account'),
     ).thenAnswer((_) async => const Err(ExchangeUnsupportedNetworkFailure()));
     expect(
-      (await exchange.deleteAccount() as Err).failure,
+      (await exchange.deleteAccount(_testSession) as Err).failure,
       isA<ExchangeUnsupportedNetworkFailure>(),
     );
     verifyNever(access.signOut);
@@ -95,7 +97,7 @@ void main() {
     when(access.signOut)
         .thenAnswer((_) async => const Err(ExchangeSessionClearFailure()));
     expect(
-      (await exchange.deleteAccount() as Err).failure,
+      (await exchange.deleteAccount(_testSession) as Err).failure,
       isA<ExchangeSessionClearFailure>(),
     );
   });
@@ -105,7 +107,7 @@ void main() {
         .thenAnswer((_) async => const Ok(null));
     when(access.signOut).thenAnswer((_) async => const Ok(null));
     expect(
-      (await exchange.deleteAccount() as Ok).value,
+      (await exchange.deleteAccount(_testSession) as Ok).value,
       ExchangeAccountDeletionOutcome.completed,
     );
   });
@@ -114,10 +116,20 @@ void main() {
     final pending = Completer<Result<void, ExchangeFailure>>();
     when(() => request.send(text: 'I want to delete my account'))
         .thenAnswer((_) => pending.future);
-    final result = exchange.deleteAccount();
+    final result = exchange.deleteAccount(_testSession);
     epoch++;
     pending.complete(const Ok(null));
     expect((await result as Ok).value, ExchangeAccountDeletionOutcome.stale);
+    verifyNever(access.signOut);
+  });
+
+  test('a session that is no longer current requests nothing', () async {
+    epoch = 2;
+    expect(
+      (await exchange.deleteAccount(_testSession) as Ok).value,
+      ExchangeAccountDeletionOutcome.stale,
+    );
+    verifyZeroInteractions(request);
     verifyNever(access.signOut);
   });
 }

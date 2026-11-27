@@ -96,6 +96,7 @@ class ExchangeSettingsRouter {
         signedOutMessage: config.signedOutMessage,
         buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
           showDeleteAccount: showDeleteAccount,
+          session: config.exchange().currentSession,
           deleteAccount: DeleteExchangeAccountUsecase(config.exchange()),
           signOut: SignOutOfExchangeUsecase.of(config.exchange()),
           failureMessage: config.accountFailureMessage,

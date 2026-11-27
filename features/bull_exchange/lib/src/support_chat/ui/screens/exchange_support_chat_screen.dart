@@ -49,6 +49,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => SupportChatBloc(
+        session: exchange.currentSession,
         getMessages: GetSupportChatMessagesUsecase(exchange: exchange),
         sendMessage: SendSupportChatMessageUsecase(exchange: exchange),
         pickImages: pickImages,

@@ -188,4 +188,36 @@ void main() {
       expect(journal.entries, hasLength(1));
     });
   });
+
+  group('support chat', () {
+    Exchange chatExchange() => exchangeForTesting(
+      access: _signedIn(),
+      chat: (
+        getMessages: (_, {page, pageSize}) => fail('read for an old session'),
+        sendMessage: (_, {required text, attachments}) =>
+            fail('sent for an old session'),
+        getAttachment: (_, _) => fail('read for an old session'),
+        getUnreadCount: (_) => fail('unexpected unread count'),
+        markAllRead: (_) => fail('unexpected mark read'),
+      ),
+    );
+
+    test('an old session reads and sends nothing', () async {
+      final exchange = chatExchange();
+      for (final call in <Future<Result<Object?, ExchangeFailure>>>[
+        exchange.getSupportMessages(_old),
+        exchange.sendSupportMessage(_old, text: 'hi'),
+        exchange.getSupportAttachment(_old, 'a1'),
+      ]) {
+        expect(
+          await call,
+          isA<Err<Object?, ExchangeFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeOperationStaleFailure>(),
+          ),
+        );
+      }
+    });
+  });
 }

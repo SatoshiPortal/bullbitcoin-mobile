@@ -19,9 +19,9 @@ Exchange _exchange({
 }) => exchangeForTesting(
   access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
   chat: (
-    getMessages: ({page, pageSize}) => fail('unexpected history'),
-    sendMessage: ({required text, attachments}) => fail('unexpected send'),
-    getAttachment: (_) => fail('unexpected attachment'),
+    getMessages: (_, {page, pageSize}) => fail('unexpected history'),
+    sendMessage: (_, {required text, attachments}) => fail('unexpected send'),
+    getAttachment: (_, _) => fail('unexpected attachment'),
     getUnreadCount: (session) async {
       reads.add(session);
       return const ReadGot(2);

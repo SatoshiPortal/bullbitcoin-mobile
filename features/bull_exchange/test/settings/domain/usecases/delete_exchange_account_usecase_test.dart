@@ -10,13 +10,13 @@ Exchange _signedIn(List<String> sent, Result<void, ExchangeFailure> answer) =>
     exchangeForTesting(
       access: fixedAccessForTesting(const ExchangeAccessSignedIn(buySession)),
       chat: (
-        getMessages: ({page, pageSize}) =>
+        getMessages: (_, {page, pageSize}) =>
             throw StateError('Unexpected chat history request'),
-        sendMessage: ({required text, attachments}) async {
+        sendMessage: (_, {required text, attachments}) async {
           sent.add(text);
           return answer;
         },
-        getAttachment: (_) =>
+        getAttachment: (_, _) =>
             throw StateError('Unexpected chat attachment request'),
         getUnreadCount: (_) =>
             throw StateError('Unexpected chat unread count request'),
@@ -30,7 +30,7 @@ void main() {
       exchangeForTesting(
         access: fixedAccessForTesting(const ExchangeAccessDisabled()),
       ),
-    ).execute();
+    ).execute(null);
     expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
   });
 
@@ -38,11 +38,29 @@ void main() {
     final sent = <String>[];
     final result = await DeleteExchangeAccountUsecase(
       _signedIn(sent, const Err(ExchangeNetworkFailure())),
-    ).execute();
+    ).execute(buySession);
     expect(sent, ['I want to delete my account']);
     expect(
       (result as Err).failure,
       isA<ExchangeAccountDeletionRequestFailure>(),
+    );
+  });
+
+  test('a session that is no longer current sends nothing', () async {
+    final sent = <String>[];
+    final result =
+        await DeleteExchangeAccountUsecase(_signedIn(sent, const Ok(null)))
+            .execute(
+              const ExchangeSession(
+                environment: ExchangeEnvironment.mainnet,
+                epoch: 99,
+                sessionId: 'before',
+              ),
+            );
+    expect(sent, isEmpty);
+    expect(
+      (result as Ok<ExchangeAccountDeletionOutcome, ExchangeFailure>).value,
+      ExchangeAccountDeletionOutcome.stale,
     );
   });
 }

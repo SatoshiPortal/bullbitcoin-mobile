@@ -9,28 +9,35 @@ const _attachment = SupportChatMessageAttachment(
   fileName: 'shot.png',
 );
 
-SendSupportChatMessageUsecase _usecase(List<String> sent) =>
-    SendSupportChatMessageUsecase(
-      exchange: exchangeForTesting(
-        chat: (
-          getMessages: ({page, pageSize}) async => fail('unexpected read'),
-          sendMessage: ({required text, attachments}) async {
-            sent.add(
-              '$text ${attachments?.map((a) => a.attachmentId).toList()}',
-            );
-            return const Ok(null);
-          },
-          getAttachment: (_) async => fail('unexpected download'),
-          getUnreadCount: (_) async => fail('unexpected unread count'),
-          markAllRead: (_) async => fail('unexpected mark read'),
-        ),
-      ),
-    );
+SendSupportChatMessageUsecase _usecase(
+  List<String> sent,
+) => SendSupportChatMessageUsecase(
+  exchange: exchangeForTesting(
+    access: fixedAccessForTesting(const ExchangeAccessSignedIn(_chatSession)),
+    chat: (
+      getMessages: (_, {page, pageSize}) async => fail('unexpected read'),
+      sendMessage: (_, {required text, attachments}) async {
+        sent.add('$text ${attachments?.map((a) => a.attachmentId).toList()}');
+        return const Ok(null);
+      },
+      getAttachment: (_, _) async => fail('unexpected download'),
+      getUnreadCount: (_) async => fail('unexpected unread count'),
+      markAllRead: (_) async => fail('unexpected mark read'),
+    ),
+  ),
+);
+
+const _chatSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'chat',
+);
 
 void main() {
   test('a message without attachments is sent without the field', () async {
     final sent = <String>[];
-    final result = await _usecase(sent).execute(text: 'hi', attachments: []);
+    final result = await _usecase(sent)
+        .execute(_chatSession, text: 'hi', attachments: []);
     expect(result, isA<Ok<void, Failure>>());
     expect(sent, ['hi null']);
   });
@@ -38,7 +45,7 @@ void main() {
   test('attachments are sent with the message', () async {
     final sent = <String>[];
     final result = await _usecase(sent)
-        .execute(text: 'hi', attachments: const [_attachment]);
+        .execute(_chatSession, text: 'hi', attachments: const [_attachment]);
     expect(result, isA<Ok<void, Failure>>());
     expect(sent, ['hi [a1]']);
   });

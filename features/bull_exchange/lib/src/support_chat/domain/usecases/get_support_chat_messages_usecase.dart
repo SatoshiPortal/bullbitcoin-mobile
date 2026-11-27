@@ -10,14 +10,21 @@ class GetSupportChatMessagesUsecase {
   const GetSupportChatMessagesUsecase({required this._exchange});
 
   @useResult
-  Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>> execute({
+  Future<Result<List<SupportChatMessage>, ExchangeSupportChatFailure>> execute(
+    ExchangeSession? session, {
     int? page,
     int? pageSize,
   }) async =>
-      (await _exchange.getSupportMessages(
-        page: page,
-        pageSize: pageSize,
-      )).mapErr(
+      (switch (session) {
+        null => const Err<List<SupportChatMessage>, ExchangeFailure>(
+          ExchangeNotAuthenticatedFailure(),
+        ),
+        final session => await _exchange.getSupportMessages(
+          session,
+          page: page,
+          pageSize: pageSize,
+        ),
+      }).mapErr(
         (failure) => switch (failure) {
           ExchangeNotAuthenticatedFailure() => const NotAuthenticatedFailure(),
           ExchangeChatLoadMessagesFailure() => LoadMessagesFailure(

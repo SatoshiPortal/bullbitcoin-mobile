@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
+import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:primitives/primitives.dart';
@@ -32,9 +33,10 @@ class OpenSupportChatAttachmentUsecase {
 
   @useResult
   Future<Result<void, ExchangeSupportChatFailure>> execute(
+    ExchangeSession? session,
     String attachmentId,
   ) async {
-    switch (await getAttachment.execute(attachmentId)) {
+    switch (await getAttachment.execute(session, attachmentId)) {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):

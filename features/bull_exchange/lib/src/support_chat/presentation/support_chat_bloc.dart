@@ -16,6 +16,7 @@ import '../domain/usecases/watch_support_chat_pushes_usecase.dart';
 /// dropped (CHAT-1).
 class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
   SupportChatBloc({
+    required ExchangeSession? session,
     required GetSupportChatMessagesUsecase getMessages,
     required SendSupportChatMessageUsecase sendMessage,
     required PickImageAttachmentsUsecase pickImages,
@@ -26,6 +27,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     String? draft,
   }) : this._(
          supportChatStart(draft: draft),
+         session,
          getMessages,
          sendMessage,
          pickImages,
@@ -37,6 +39,7 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
 
   SupportChatBloc._(
     SupportChatNext start,
+    this._session,
     this._getMessages,
     this._sendMessage,
     this._pickImages,
@@ -52,6 +55,8 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
     _run(start.effects);
   }
 
+  /// The session the chat opened with; its calls answer for it only.
+  final ExchangeSession? _session;
   final GetSupportChatMessagesUsecase _getMessages;
   final SendSupportChatMessageUsecase _sendMessage;
   final PickImageAttachmentsUsecase _pickImages;
@@ -84,7 +89,11 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
       switch (effect) {
         ChatFetchPage(:final ticket, :final page) => ChatPageLoaded(
           ticket,
-          await _getMessages.execute(page: page, pageSize: supportChatPageSize),
+          await _getMessages.execute(
+            _session,
+            page: page,
+            pageSize: supportChatPageSize,
+          ),
         ),
         ChatNewestShown() => _told(_onNewestShown),
         ChatPickImages() => ChatAttachmentsPicked(await _pickImages.execute()),
@@ -92,11 +101,15 @@ class SupportChatBloc extends Bloc<SupportChatEvent, SupportChatState> {
         ChatSend(:final localId, :final text, :final attachments) =>
           ChatSendAnswered(
             localId,
-            await _sendMessage.execute(text: text, attachments: attachments),
+            await _sendMessage.execute(
+              _session,
+              text: text,
+              attachments: attachments,
+            ),
           ),
         ChatOpenAttachment(:final attachmentId) => ChatOpenFinished(
           attachmentId,
-          await _openAttachment.execute(attachmentId),
+          await _openAttachment.execute(_session, attachmentId),
         ),
       };
 

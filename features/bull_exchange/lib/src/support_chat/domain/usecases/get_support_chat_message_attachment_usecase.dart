@@ -11,8 +11,16 @@ class GetSupportChatMessageAttachmentUsecase {
 
   @useResult
   Future<Result<SupportChatMessageAttachment, ExchangeSupportChatFailure>>
-  execute(String attachmentId) async =>
-      (await _exchange.getSupportAttachment(attachmentId)).mapErr(
+  execute(ExchangeSession? session, String attachmentId) async =>
+      (switch (session) {
+        null => const Err<SupportChatMessageAttachment, ExchangeFailure>(
+          ExchangeNotAuthenticatedFailure(),
+        ),
+        final session => await _exchange.getSupportAttachment(
+          session,
+          attachmentId,
+        ),
+      }).mapErr(
         (failure) => switch (failure) {
           ExchangeNotAuthenticatedFailure() => const NotAuthenticatedFailure(),
           ExchangeChatLoadAttachmentFailure() => LoadAttachmentFailure(

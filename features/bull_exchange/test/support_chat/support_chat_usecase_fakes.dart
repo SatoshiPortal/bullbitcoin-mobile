@@ -14,7 +14,8 @@ typedef ChatResult<T> = Future<Result<T, ExchangeSupportChatFailure>>;
 
 final class FakeGetSupportChatMessagesUsecase
     implements GetSupportChatMessagesUsecase {
-  final ChatResult<List<SupportChatMessage>> Function({
+  final ChatResult<List<SupportChatMessage>> Function(
+    ExchangeSession? session, {
     int? page,
     int? pageSize,
   })
@@ -23,13 +24,17 @@ final class FakeGetSupportChatMessagesUsecase
   FakeGetSupportChatMessagesUsecase(this.answer);
 
   @override
-  ChatResult<List<SupportChatMessage>> execute({int? page, int? pageSize}) =>
-      answer(page: page, pageSize: pageSize);
+  ChatResult<List<SupportChatMessage>> execute(
+    ExchangeSession? session, {
+    int? page,
+    int? pageSize,
+  }) => answer(session, page: page, pageSize: pageSize);
 }
 
 final class FakeSendSupportChatMessageUsecase
     implements SendSupportChatMessageUsecase {
-  final ChatResult<void> Function({
+  final ChatResult<void> Function(
+    ExchangeSession? session, {
     required String text,
     List<SupportChatMessageAttachment> attachments,
   })
@@ -38,10 +43,11 @@ final class FakeSendSupportChatMessageUsecase
   FakeSendSupportChatMessageUsecase(this.answer);
 
   @override
-  ChatResult<void> execute({
+  ChatResult<void> execute(
+    ExchangeSession? session, {
     required String text,
     List<SupportChatMessageAttachment> attachments = const [],
-  }) => answer(text: text, attachments: attachments);
+  }) => answer(session, text: text, attachments: attachments);
 }
 
 final class FakePickImageAttachmentsUsecase
@@ -66,7 +72,8 @@ final class FakeCreateLogAttachmentUsecase
 
 final class FakeOpenSupportChatAttachmentUsecase
     implements OpenSupportChatAttachmentUsecase {
-  final ChatResult<void> Function(String attachmentId) answer;
+  final ChatResult<void> Function(ExchangeSession? session, String attachmentId)
+  answer;
 
   FakeOpenSupportChatAttachmentUsecase(this.answer);
 
@@ -75,7 +82,8 @@ final class FakeOpenSupportChatAttachmentUsecase
       throw StateError('the fake open use case has no attachment read');
 
   @override
-  ChatResult<void> execute(String attachmentId) => answer(attachmentId);
+  ChatResult<void> execute(ExchangeSession? session, String attachmentId) =>
+      answer(session, attachmentId);
 }
 
 final class FakeWatchSupportChatPushesUsecase
