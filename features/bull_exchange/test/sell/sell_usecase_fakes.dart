@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_state.dart';
 import 'package:bull_exchange/src/sell/domain/usecases/create_sell_order_usecase.dart';
 import 'package:bull_exchange/src/sell/domain/usecases/load_sell_context_usecase.dart';
 import 'package:bull_exchange/src/sell/domain/usecases/refresh_sell_order_usecase.dart';

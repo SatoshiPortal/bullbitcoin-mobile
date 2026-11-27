@@ -3,7 +3,8 @@ import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_exchange/src/ui/amount_problem_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/exchange_amount_currency_dropdown.dart';
 import 'package:bull_exchange/src/ui/widgets/exchange_amount_input_field.dart';
-import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_state.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_event.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,

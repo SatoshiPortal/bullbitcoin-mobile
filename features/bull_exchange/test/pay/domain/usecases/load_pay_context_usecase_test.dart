@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/pay/domain/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_state.dart';
 import 'package:bull_exchange/src/pay/domain/usecases/load_pay_context_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';

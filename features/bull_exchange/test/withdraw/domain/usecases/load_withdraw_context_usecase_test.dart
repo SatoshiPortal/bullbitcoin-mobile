@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/withdraw/domain/usecases/load_withdraw_context_usecase.dart';
-import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_state.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';

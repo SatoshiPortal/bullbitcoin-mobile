@@ -1,4 +1,6 @@
-import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_state.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_event.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_effect.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';

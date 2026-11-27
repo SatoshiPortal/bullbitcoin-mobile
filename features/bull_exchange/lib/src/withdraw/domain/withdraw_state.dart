@@ -3,6 +3,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'withdraw_effect.dart';
+import 'withdraw_event.dart';
+
 /// The withdraw flow (composition §5, Withdraw column): session → account
 /// load → amount from a funded balance → own recipient on the market's rails
 /// → payout requirements → order create → review → server confirm → done.
@@ -215,11 +218,9 @@ RecipientFilter withdrawRecipientFilter(Market market) =>
     RecipientFilter(rails: market.payoutRails, owner: RecipientOwnership.own);
 
 typedef WithdrawOrderState = OrderStepState<WithdrawRequest, WithdrawOrder>;
-typedef WithdrawOrderEvent = OrderStepEvent<WithdrawRequest, WithdrawOrder>;
+
 typedef WithdrawConfirmState =
     ServerConfirmState<WithdrawConfirmTarget, WithdrawOrder>;
-typedef WithdrawConfirmEvent =
-    ServerConfirmEvent<WithdrawConfirmTarget, WithdrawOrder>;
 
 /// Reading the account. Its failure has a Retry.
 final class WithdrawLoading extends WithdrawFlowState {
@@ -355,153 +356,10 @@ final class WithdrawClosed extends WithdrawFlowState {
   List<Object?> get _props => const [];
 }
 
-@immutable
-sealed class WithdrawFlowEvent {
-  const WithdrawFlowEvent();
-}
-
-final class WithdrawContextLoaded extends WithdrawFlowEvent {
-  final int attempt;
-  final Result<WithdrawContext, ExchangeReadFailure> read;
-
-  const WithdrawContextLoaded(this.attempt, this.read);
-}
-
-/// Retry of the account load.
-final class WithdrawRetryPressed extends WithdrawFlowEvent {
-  const WithdrawRetryPressed();
-}
-
-final class WithdrawAmountChanged extends WithdrawFlowEvent {
-  final AmountEntryEvent event;
-
-  const WithdrawAmountChanged(this.event);
-}
-
-final class WithdrawRecipientPicked extends WithdrawFlowEvent {
-  final Recipient recipient;
-
-  const WithdrawRecipientPicked(this.recipient);
-}
-
-final class WithdrawRequirementsChanged extends WithdrawFlowEvent {
-  final RequirementsEvent event;
-
-  const WithdrawRequirementsChanged(this.event);
-}
-
-final class WithdrawOrderChanged extends WithdrawFlowEvent {
-  final WithdrawOrderEvent event;
-
-  const WithdrawOrderChanged(this.event);
-}
-
-final class WithdrawConfirmPressed extends WithdrawFlowEvent {
-  const WithdrawConfirmPressed();
-}
-
-final class WithdrawConfirmChanged extends WithdrawFlowEvent {
-  final WithdrawConfirmEvent event;
-
-  const WithdrawConfirmChanged(this.event);
-}
-
-/// App bar, system Back or a page the user removed.
-final class WithdrawBackPressed extends WithdrawFlowEvent {
-  const WithdrawBackPressed();
-}
-
-final class WithdrawDonePressed extends WithdrawFlowEvent {
-  const WithdrawDonePressed();
-}
-
-/// The flow's screen became visible or hidden (route, app lifecycle).
-final class WithdrawVisibilityChanged extends WithdrawFlowEvent {
-  final bool visible;
-
-  const WithdrawVisibilityChanged({required this.visible});
-}
-
-/// The signed-in session changed; null when signed out.
-final class WithdrawSessionChanged extends WithdrawFlowEvent {
-  final ExchangeSession? session;
-
-  const WithdrawSessionChanged(this.session);
-}
-
-@immutable
-sealed class WithdrawFlowEffect {
-  const WithdrawFlowEffect();
-}
-
-final class WithdrawLoadContext extends WithdrawFlowEffect {
-  final int attempt;
-
-  const WithdrawLoadContext(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WithdrawLoadContext && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(WithdrawLoadContext, attempt);
-}
-
-final class WithdrawFetchRate extends WithdrawFlowEffect {
-  final Market market;
-
-  const WithdrawFetchRate(this.market);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WithdrawFetchRate && other.market == market;
-
-  @override
-  int get hashCode => Object.hash(WithdrawFetchRate, market);
-}
-
-final class WithdrawRequirementsEffect extends WithdrawFlowEffect {
-  final RequirementsEffect effect;
-
-  const WithdrawRequirementsEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WithdrawRequirementsEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(WithdrawRequirementsEffect, effect);
-}
-
-final class WithdrawOrderEffect extends WithdrawFlowEffect {
-  final OrderStepEffect<WithdrawRequest> effect;
-
-  const WithdrawOrderEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WithdrawOrderEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(WithdrawOrderEffect, effect);
-}
-
-final class WithdrawConfirmEffect extends WithdrawFlowEffect {
-  final ServerConfirmEffect<WithdrawConfirmTarget> effect;
-
-  const WithdrawConfirmEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is WithdrawConfirmEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(WithdrawConfirmEffect, effect);
-}
-
 typedef WithdrawFlowNext = StepNext<WithdrawFlowState, WithdrawFlowEffect>;
 
 const _ended = WithdrawFlowNext(WithdrawSessionEnded());
+
 const _closed = WithdrawFlowNext(WithdrawClosed());
 
 /// The flow for [session]; without a signed-in session it has ended.

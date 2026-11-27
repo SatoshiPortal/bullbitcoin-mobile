@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/exchange_answers.dart';
-import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_state.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 

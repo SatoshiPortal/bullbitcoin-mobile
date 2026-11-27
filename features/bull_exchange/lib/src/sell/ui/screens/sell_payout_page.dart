@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_state.dart';
+import 'package:bull_exchange/src/sell/domain/sell_event.dart';
 import 'package:bull_ui/bull_ui.dart' show BullScrollableColumn, Gap;
 import 'package:material_ui/material_ui.dart';
 

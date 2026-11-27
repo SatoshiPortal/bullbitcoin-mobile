@@ -50,15 +50,24 @@ String _where(File source, CompilationUnit unit, AstNode node) =>
 // (a) No catch-all arm in the machines.
 
 /// Files whose every switch is over a flow or step state or event: the step
-/// library, and the flow and machine files of the exchange feature.
+/// library, and the machine files of the exchange feature (each machine's
+/// `_state.dart` with its `next`, `_event.dart` and `_effect.dart`; blocs'
+/// own state and event files under `presentation/` are not machines).
 bool _isMachineFile(String path) {
   final normalized = p.normalize(path);
   if (p.isWithin(p.join(_exchangeLib, 'src', 'steps'), normalized)) {
     return true;
   }
   if (!p.isWithin(_exchangeFeatureLib, normalized)) return false;
+  if (p.split(normalized).contains('presentation')) return false;
   final name = p.basename(normalized);
-  return name.endsWith('_flow.dart') || name.endsWith('_machine.dart');
+  return const [
+    '_state.dart',
+    '_event.dart',
+    '_effect.dart',
+    '_flow.dart',
+    '_machine.dart',
+  ].any(name.endsWith);
 }
 
 /// `_`, or a record of nothing but `_`: an arm that answers every value

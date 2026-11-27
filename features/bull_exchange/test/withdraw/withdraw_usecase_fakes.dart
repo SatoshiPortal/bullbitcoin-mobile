@@ -1,7 +1,7 @@
 import 'package:bull_exchange/src/withdraw/domain/usecases/confirm_withdraw_order_usecase.dart';
 import 'package:bull_exchange/src/withdraw/domain/usecases/create_withdraw_order_usecase.dart';
 import 'package:bull_exchange/src/withdraw/domain/usecases/load_withdraw_context_usecase.dart';
-import 'package:bull_exchange/src/withdraw/domain/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_state.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:primitives/primitives.dart';

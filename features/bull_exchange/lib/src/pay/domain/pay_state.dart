@@ -5,6 +5,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'pay_effect.dart';
+import 'pay_event.dart';
+
 /// The pay flow (composition §5, Pay column): session → account load →
 /// recipient (any rail, anyone's) → its payout requirements → amount in the
 /// recipient's currency with a description → payin source → order create
@@ -200,9 +203,8 @@ bool payHasReceipt(Order order) =>
     order.payoutMethod == OrderPaymentMethod.sinpe;
 
 typedef PayOrderState = OrderStepState<PayRequest, Order>;
-typedef PayOrderEvent = OrderStepEvent<PayRequest, Order>;
+
 typedef PayPayinState = PayinState<PayinSpend>;
-typedef PayPayinEvent = PayinEvent<PayinSpend>;
 
 final class PayLoading extends PayFlowState {
   final ExchangeSession session;
@@ -337,200 +339,10 @@ final class PayClosed extends PayFlowState {
   List<Object?> get _props => const [];
 }
 
-@immutable
-sealed class PayFlowEvent {
-  const PayFlowEvent();
-}
-
-final class PayContextLoaded extends PayFlowEvent {
-  final int attempt;
-  final Result<PayContext, ExchangeReadFailure> read;
-
-  const PayContextLoaded(this.attempt, this.read);
-}
-
-final class PayRetryPressed extends PayFlowEvent {
-  const PayRetryPressed();
-}
-
-final class PayRecipientPicked extends PayFlowEvent {
-  final Recipient recipient;
-
-  const PayRecipientPicked(this.recipient);
-}
-
-final class PayRequirementsChanged extends PayFlowEvent {
-  final RequirementsEvent event;
-
-  const PayRequirementsChanged(this.event);
-}
-
-final class PayAmountChanged extends PayFlowEvent {
-  final AmountEntryEvent event;
-
-  const PayAmountChanged(this.event);
-}
-
-final class PayKycReturned extends PayFlowEvent {
-  const PayKycReturned();
-}
-
-final class PayDetourLoaded extends PayFlowEvent {
-  final Result<PayContext, ExchangeReadFailure> read;
-
-  const PayDetourLoaded(this.read);
-}
-
-final class PaySourcePicked extends PayFlowEvent {
-  final PayinSource source;
-
-  const PaySourcePicked(this.source);
-}
-
-final class PayOrderChanged extends PayFlowEvent {
-  final PayOrderEvent event;
-
-  const PayOrderChanged(this.event);
-}
-
-/// Confirm on a live quote, [at] the time pressed.
-final class PayConfirmPressed extends PayFlowEvent {
-  final DateTime at;
-
-  const PayConfirmPressed(this.at);
-}
-
-/// A change of the review's spend options (or one of their answers).
-final class PaySpendChanged extends PayFlowEvent {
-  final SpendOptionsEvent event;
-
-  const PaySpendChanged(this.event);
-}
-
-final class PayPayinChanged extends PayFlowEvent {
-  final PayPayinEvent event;
-
-  const PayPayinChanged(this.event);
-}
-
-final class PayReceiptChanged extends PayFlowEvent {
-  final OutcomeWatchEvent<Order> event;
-
-  const PayReceiptChanged(this.event);
-}
-
-final class PayBackPressed extends PayFlowEvent {
-  const PayBackPressed();
-}
-
-final class PayDonePressed extends PayFlowEvent {
-  const PayDonePressed();
-}
-
-final class PayVisibilityChanged extends PayFlowEvent {
-  final bool visible;
-
-  const PayVisibilityChanged({required this.visible});
-}
-
-final class PaySessionChanged extends PayFlowEvent {
-  final ExchangeSession? session;
-
-  const PaySessionChanged(this.session);
-}
-
-@immutable
-sealed class PayFlowEffect {
-  const PayFlowEffect();
-
-  Object get _value;
-
-  @override
-  bool operator ==(Object other) =>
-      other is PayFlowEffect &&
-      other.runtimeType == runtimeType &&
-      other._value == _value;
-
-  @override
-  int get hashCode => Object.hash(runtimeType, _value);
-
-  @override
-  String toString() => '$runtimeType($_value)';
-}
-
-final class PayLoadContext extends PayFlowEffect {
-  final int attempt;
-
-  const PayLoadContext(this.attempt);
-
-  @override
-  Object get _value => attempt;
-}
-
-final class PayReloadForDetour extends PayFlowEffect {
-  const PayReloadForDetour();
-
-  @override
-  Object get _value => 0;
-}
-
-final class PayFetchRate extends PayFlowEffect {
-  final Market market;
-
-  const PayFetchRate(this.market);
-
-  @override
-  Object get _value => market;
-}
-
-final class PayRequirementsEffect extends PayFlowEffect {
-  final RequirementsEffect effect;
-
-  const PayRequirementsEffect(this.effect);
-
-  @override
-  Object get _value => effect;
-}
-
-final class PayOrderEffect extends PayFlowEffect {
-  final OrderStepEffect<PayRequest> effect;
-
-  const PayOrderEffect(this.effect);
-
-  @override
-  Object get _value => effect;
-}
-
-final class PaySpendEffect extends PayFlowEffect {
-  final SpendOptionsEffect effect;
-
-  const PaySpendEffect(this.effect);
-
-  @override
-  Object get _value => effect;
-}
-
-final class PayPayinEffect extends PayFlowEffect {
-  final PayinEffect<PayinSpend> effect;
-
-  const PayPayinEffect(this.effect);
-
-  @override
-  Object get _value => effect;
-}
-
-final class PayReceiptEffect extends PayFlowEffect {
-  final OutcomeWatchEffect effect;
-
-  const PayReceiptEffect(this.effect);
-
-  @override
-  Object get _value => effect;
-}
-
 typedef PayFlowNext = StepNext<PayFlowState, PayFlowEffect>;
 
 const _ended = PayFlowNext(PaySessionEnded());
+
 const _closed = PayFlowNext(PayClosed());
 
 PayFlowNext payFlowStart(ExchangeSession? session) => switch (session) {

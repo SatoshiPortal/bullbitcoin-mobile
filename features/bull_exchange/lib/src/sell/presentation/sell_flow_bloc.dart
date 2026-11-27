@@ -6,7 +6,9 @@ import 'package:bull_exchange/src/orders/domain/usecases/get_market_rate_usecase
 import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payin/spend_options_runner.dart';
 import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
-import 'package:bull_exchange/src/sell/domain/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_state.dart';
+import 'package:bull_exchange/src/sell/domain/sell_event.dart';
+import 'package:bull_exchange/src/sell/domain/sell_effect.dart';
 import 'package:bull_exchange/src/sell/domain/usecases/create_sell_order_usecase.dart';
 import 'package:bull_exchange/src/sell/domain/usecases/load_sell_context_usecase.dart';
 import 'package:bull_exchange/src/sell/domain/usecases/refresh_sell_order_usecase.dart';
