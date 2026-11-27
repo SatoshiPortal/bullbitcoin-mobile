@@ -64,7 +64,7 @@ final _states = <SupportChatState>[
   ), // 1
   _l(), // 2
   _l(refresh: const ChatRefreshing(3)), // 3
-  _l(refresh: const ChatRefreshing(3, again: true)), // 4
+  _l(refresh: const ChatRefreshQueued(3)), // 4
   _l(older: const ChatOlderLoading(3, 2)), // 5
   _l(nextPage: null), // 6
   _l(composer: const ChatComposer(text: 'hi')), // 7
@@ -167,7 +167,7 @@ final _table = <String, (SupportChatEvent, Map<int, SupportChatState>)>{
           opening: _states[i].opening,
           tickets: 4,
         ),
-      3: _l(refresh: const ChatRefreshing(3, again: true)),
+      3: _l(refresh: const ChatRefreshQueued(3)),
       5: _l(
         older: const ChatOlderLoading(3, 2),
         refresh: const ChatRefreshing(4),
@@ -471,7 +471,7 @@ const _everyKind = {
   'ChatThreadLoaded',
   'ChatRefreshIdle',
   'ChatRefreshing',
-  'ChatRefreshing again',
+  'ChatRefreshQueued',
   'ChatOlderIdle',
   'ChatOlderLoading',
   'ChatAttachIdle',
@@ -487,7 +487,6 @@ Set<String> _kinds(SupportChatState state) => {
   state.thread.runtimeType.toString(),
   if (state.thread case ChatThreadLoaded(:final refresh, :final older)) ...{
     refresh.runtimeType.toString(),
-    if (refresh case ChatRefreshing(again: true)) 'ChatRefreshing again',
     older.runtimeType.toString(),
   },
   state.composer.attaching.runtimeType.toString(),

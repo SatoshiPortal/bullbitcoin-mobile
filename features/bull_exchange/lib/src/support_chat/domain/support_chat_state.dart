@@ -39,17 +39,29 @@ final class ChatRefreshIdle extends ChatRefresh {
 final class ChatRefreshing extends ChatRefresh {
   final int ticket;
 
-  /// A push arrived while this refresh ran: refresh once more after it.
-  final bool again;
-
-  const ChatRefreshing(this.ticket, {this.again = false});
+  const ChatRefreshing(this.ticket);
 
   @override
   bool operator ==(Object other) =>
-      other is ChatRefreshing && other.ticket == ticket && other.again == again;
+      other is ChatRefreshing && other.ticket == ticket;
 
   @override
-  int get hashCode => Object.hash(ChatRefreshing, ticket, again);
+  int get hashCode => Object.hash(ChatRefreshing, ticket);
+}
+
+/// A push arrived while the refresh [ticket] ran: refresh once more after
+/// it.
+final class ChatRefreshQueued extends ChatRefresh {
+  final int ticket;
+
+  const ChatRefreshQueued(this.ticket);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ChatRefreshQueued && other.ticket == ticket;
+
+  @override
+  int get hashCode => Object.hash(ChatRefreshQueued, ticket);
 }
 
 @immutable
@@ -601,8 +613,13 @@ SupportChatNext _pageLoaded(
   ChatPageLoaded loaded,
 ) {
   final refresh = thread.refresh;
-  if (refresh case ChatRefreshing(:final ticket, :final again)
+  if (refresh
+      case ChatRefreshing(:final ticket) || ChatRefreshQueued(:final ticket)
       when ticket == loaded.ticket) {
+    final again = switch (refresh) {
+      ChatRefreshQueued() => true,
+      ChatRefreshing() || ChatRefreshIdle() => false,
+    };
     switch (loaded.result) {
       case Ok(:final value):
         final merged = _withThread(
@@ -653,12 +670,12 @@ SupportChatNext _refresh(SupportChatState state, ChatThreadLoaded thread) =>
         ),
         [ChatFetchPage(state.tickets + 1, 1)],
       ),
-      ChatRefreshing(:final ticket, again: false) => StepNext(
+      ChatRefreshing(:final ticket) => StepNext(
         state.copyWith(
-          thread: thread.copyWith(refresh: ChatRefreshing(ticket, again: true)),
+          thread: thread.copyWith(refresh: ChatRefreshQueued(ticket)),
         ),
       ),
-      ChatRefreshing(again: true) => StepNext.stay(state),
+      ChatRefreshQueued() => StepNext.stay(state),
     };
 
 /// Merges [page] into [thread] by key (CHAT-2, CHAT-3) and drops the sent
