@@ -13,13 +13,19 @@ import 'package:primitives/primitives.dart';
 import '../domain/domain.dart';
 import 'inventory_import.dart';
 import 'inventory_store.dart';
+import 'view_format.dart';
 
 /// Opens an existing inventory and checks its import receipt before any
 /// capability can use the connection. Shared by every reader of the file.
+///
+/// The supported view layout is checked here, so every opener (foreground
+/// inventory, background descriptors and both Ark capabilities) refuses what
+/// this build cannot read before any of them uses the connection.
 Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
   File file,
-  RuntimeAdmission admission,
-) async {
+  RuntimeAdmission admission, {
+  bool multiView = multiViewSupported,
+}) async {
   final result = await InventoryStore.open(file, admission, existing: true);
   switch (result) {
     case Err():
@@ -27,7 +33,23 @@ Future<Result<InventoryStore, DatabaseOpenFailure>> openReadyInventoryStore(
     case Ok(:final value):
       switch (await readInventoryReadiness(value.database, admitted: true)) {
         case Ok(value: OwnerReadiness.imported || OwnerReadiness.initialized):
-          return result;
+          try {
+            switch (await checkSupportedViewFormat(
+              value.database,
+              multiView: multiView,
+            )) {
+              case Err(:final failure):
+                await value.close();
+                return Err(failure);
+              case Ok():
+                return result;
+            }
+          } on Exception {
+            await value.close();
+            return const Err(
+              DatabaseFileUnavailable(DatabaseFileProblem.inaccessible),
+            );
+          }
         case Ok():
           await value.close();
           return const Err(DatabaseNotReady());
