@@ -11,8 +11,10 @@ Future<ExchangeRead<DcaContext>> _load({
   Result<UserSummary, ExchangeFailure>? summary,
   Result<DefaultWallets, ExchangeFailure> wallets = const Ok(dcaWallets),
   List<ExchangeEnvironment?>? asked,
+  ExchangeSession signedIn = buySession,
 }) => LoadDcaContextUsecase(
   exchangeForTesting(
+    access: fixedAccessForTesting(ExchangeAccessSignedIn(signedIn)),
     getUserSummary: (environment) async {
       asked?.add(environment);
       return summary ?? Ok(buySummaryWith());
@@ -49,4 +51,25 @@ void main() {
       isA<ReadUnreachable<DcaContext>>(),
     );
   });
+
+  test(
+    'a session that is no longer current reads no default wallets',
+    () async {
+      expect(
+        await _load(
+          wallets: const Err(ExchangeNetworkFailure()),
+          signedIn: const ExchangeSession(
+            environment: ExchangeEnvironment.mainnet,
+            epoch: 99,
+            sessionId: 'later',
+          ),
+        ),
+        isA<ReadSessionRejected<DcaContext>>().having(
+          (r) => r.why,
+          'why',
+          ExchangeSessionRejection.sessionChanged,
+        ),
+      );
+    },
+  );
 }

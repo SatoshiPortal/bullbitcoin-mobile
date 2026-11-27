@@ -4,23 +4,49 @@ import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
-import '../../../dca/dca_fixtures.dart';
+import 'default_wallets_usecase_test_support.dart';
 
 void main() {
-  test('reads the default wallets', () async {
+  test('reads the default wallets of the current session', () async {
     final read = await GetDefaultWalletsUsecase(
-      exchangeForTesting(getDefaultWallets: () async => const Ok(dcaWallets)),
-    ).execute();
-    expect((read as ReadGot<DefaultWallets>).value, dcaWallets);
+      exchangeForTesting(
+        access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
+        getDefaultWallets: () async => const Ok(dwSaved),
+      ),
+    ).execute(dwSession);
+    expect((read as ReadGot<DefaultWallets>).value, dwSaved);
+  });
+
+  test('a read for another session is never sent', () async {
+    var reads = 0;
+    final read = await GetDefaultWalletsUsecase(
+      exchangeForTesting(
+        access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
+        getDefaultWallets: () async {
+          reads++;
+          return const Ok(dwSaved);
+        },
+      ),
+    ).execute(dwOtherSession);
+    expect(
+      read,
+      isA<ReadSessionRejected<DefaultWallets>>().having(
+        (r) => r.why,
+        'why',
+        ExchangeSessionRejection.sessionChanged,
+      ),
+    );
+    expect(reads, 0);
   });
 
   test('a failed read is never wallets', () async {
     final read = await GetDefaultWalletsUsecase(
       exchangeForTesting(
+        access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
         getDefaultWallets: () async =>
-            const Err(ExchangeSessionRejectedFailure()),
+            const Err(ExchangeNetworkFailure('offline')),
       ),
-    ).execute();
-    expect(read, isA<ReadSessionRejected<DefaultWallets>>());
+    ).execute(dwSession);
+    expect(read, isNot(isA<ReadGot<DefaultWallets>>()));
   });
 }

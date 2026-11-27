@@ -39,8 +39,8 @@ final class _Calls {
       log.add('rate ${market.currency.code}');
       return const ReadGot(50000.0);
     }),
-    getDefaultWallets: FakeGetDefaultWalletsUsecase(() async {
-      log.add('wallets');
+    getDefaultWallets: FakeGetDefaultWalletsUsecase((session) async {
+      _called(session, 'wallets');
       return const ReadGot(DefaultWallets());
     }),
     createDca: FakeCreateDcaUsecase((session, effect) async {

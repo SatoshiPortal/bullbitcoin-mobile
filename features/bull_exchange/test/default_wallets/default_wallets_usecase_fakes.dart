@@ -1,6 +1,5 @@
 import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/get_default_wallets_usecase.dart';
-import 'package:bull_exchange/src/default_wallets/domain/usecases/get_session_default_wallets_usecase.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/unset_default_wallet_usecase.dart';
 import 'package:bull_exchange/src/default_wallets/domain/usecases/validate_default_wallet_destination_usecase.dart';
@@ -8,20 +7,10 @@ import 'package:bull_exchange/src/default_wallets/domain/usecases/verify_default
 import 'package:exchange/exchange.dart';
 
 final class FakeGetDefaultWalletsUsecase implements GetDefaultWalletsUsecase {
-  final Future<ExchangeRead<DefaultWallets>> Function() answer;
-
-  FakeGetDefaultWalletsUsecase(this.answer);
-
-  @override
-  Future<ExchangeRead<DefaultWallets>> execute() => answer();
-}
-
-final class FakeGetSessionDefaultWalletsUsecase
-    implements GetSessionDefaultWalletsUsecase {
   final Future<ExchangeRead<DefaultWallets>> Function(ExchangeSession session)
   answer;
 
-  FakeGetSessionDefaultWalletsUsecase(this.answer);
+  FakeGetDefaultWalletsUsecase(this.answer);
 
   @override
   Future<ExchangeRead<DefaultWallets>> execute(ExchangeSession session) =>

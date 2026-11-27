@@ -95,9 +95,9 @@ class DcaFlowBloc extends Bloc<DcaFlowEvent, DcaFlowState> {
           );
         case DcaLoadDefaultWallets(:final ticket):
           _answer(
-            _getDefaultWallets.execute().then(
-              (r) => DcaDefaultWalletsLoaded(ticket, r),
-            ),
+            _getDefaultWallets
+                .execute(session)
+                .then((r) => DcaDefaultWalletsLoaded(ticket, r)),
           );
         case DcaConfirmEffect(effect: final ConfirmSend<DcaPlan> send):
           _answer(

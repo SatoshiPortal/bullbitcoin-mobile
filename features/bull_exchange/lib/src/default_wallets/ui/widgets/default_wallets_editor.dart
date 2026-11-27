@@ -5,7 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../default_wallets_payout_fields.dart';
-import '../../domain/usecases/get_session_default_wallets_usecase.dart';
+import '../../domain/usecases/get_default_wallets_usecase.dart';
 import '../../domain/usecases/save_default_wallet_usecase.dart';
 import '../../domain/usecases/unset_default_wallet_usecase.dart';
 import '../../domain/usecases/validate_default_wallet_destination_usecase.dart';
@@ -40,7 +40,7 @@ class DefaultWalletsEditor extends StatelessWidget {
   Widget build(BuildContext context) => BlocProvider(
     create: (_) => DefaultWalletsBloc(
       session: exchange.currentSession,
-      getWallets: GetSessionDefaultWalletsUsecase(exchange),
+      getWallets: GetDefaultWalletsUsecase(exchange),
       validateAddress: ValidateDefaultWalletDestinationUsecase(
         payoutFields.validate,
       ),

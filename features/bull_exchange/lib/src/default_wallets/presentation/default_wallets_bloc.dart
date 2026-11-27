@@ -5,7 +5,7 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/default_wallets_machine.dart';
-import '../domain/usecases/get_session_default_wallets_usecase.dart';
+import '../domain/usecases/get_default_wallets_usecase.dart';
 import '../domain/usecases/save_default_wallet_usecase.dart';
 import '../domain/usecases/unset_default_wallet_usecase.dart';
 import '../domain/usecases/validate_default_wallet_destination_usecase.dart';
@@ -16,7 +16,7 @@ import '../domain/usecases/verify_default_wallets_usecase.dart';
 /// started it.
 Future<DefaultWalletsEvent> runDefaultWalletsEffect(
   DefaultWalletsEffect effect, {
-  required GetSessionDefaultWalletsUsecase getWallets,
+  required GetDefaultWalletsUsecase getWallets,
   required ValidateDefaultWalletDestinationUsecase validateAddress,
   required SaveDefaultWalletUsecase saveWallet,
   required UnsetDefaultWalletUsecase unsetWallet,
@@ -72,7 +72,7 @@ class DefaultWalletsBloc
     extends Bloc<DefaultWalletsEvent, DefaultWalletsState> {
   DefaultWalletsBloc({
     required ExchangeSession? session,
-    required GetSessionDefaultWalletsUsecase getWallets,
+    required GetDefaultWalletsUsecase getWallets,
     required ValidateDefaultWalletDestinationUsecase validateAddress,
     required SaveDefaultWalletUsecase saveWallet,
     required UnsetDefaultWalletUsecase unsetWallet,
@@ -98,7 +98,7 @@ class DefaultWalletsBloc
     _run(start.effects);
   }
 
-  final GetSessionDefaultWalletsUsecase _getWallets;
+  final GetDefaultWalletsUsecase _getWallets;
   final ValidateDefaultWalletDestinationUsecase _validateAddress;
   final SaveDefaultWalletUsecase _saveWallet;
   final UnsetDefaultWalletUsecase _unsetWallet;

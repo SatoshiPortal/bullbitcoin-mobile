@@ -1017,10 +1017,6 @@ final class Exchange {
         null => _orders(environment),
       };
 
-  @useResult
-  Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() =>
-      _defaultWallets.get();
-
   /// The open journal entries of [session]'s environment: writes that may
   /// have reached the exchange and are not settled yet. Empty without a
   /// journal. For a session that is no longer the current one the journal

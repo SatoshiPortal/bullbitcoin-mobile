@@ -29,7 +29,7 @@ DefaultWalletsBloc _bloc({
   Future<ExchangeRead<DefaultWallets>> Function()? verify,
 }) => DefaultWalletsBloc(
   session: session,
-  getWallets: FakeGetSessionDefaultWalletsUsecase((session) {
+  getWallets: FakeGetDefaultWalletsUsecase((session) {
     calls.add('read ${session.sessionId}');
     return read == null ? _unused('read') : read();
   }),
