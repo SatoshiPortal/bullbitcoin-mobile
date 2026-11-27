@@ -149,13 +149,20 @@ final class PayinRunner {
     int attempt,
     String? txid,
   ) async {
-    final seen = txid == null
-        ? Future<bool?>.value(null)
-        : _usecases.transactionSeen.execute(txid);
+    final seen = switch (txid) {
+      null => null,
+      final String txid => _usecases.transactionSeen.execute(txid),
+    };
     final order = await _usecases.getOrder.execute(_session, orderId);
     return PayinVerified(
       attempt,
-      payinCheckFrom(txid: txid, txSeen: await seen, order: order),
+      payinCheckFrom(
+        transaction: switch ((txid, seen)) {
+          (final String txid, final seen?) => (txid: txid, seen: await seen),
+          (_, _) => null,
+        },
+        order: order,
+      ),
     );
   }
 

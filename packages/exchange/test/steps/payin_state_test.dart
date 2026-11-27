@@ -582,7 +582,19 @@ void main() {
       Result<Order, ExchangeReadFailure> order,
       bool? txSeen, {
       String? txid = 'tx1',
-    }) => payinCheckFrom(txid: txid, txSeen: txSeen, order: order);
+    }) => payinCheckFrom(
+      transaction: switch (txid) {
+        null => null,
+        final String txid => (
+          txid: txid,
+          seen: switch (txSeen) {
+            null => const Err(ExchangeTransactionLookupFailure('down')),
+            final bool seen => Ok(seen),
+          },
+        ),
+      },
+      order: order,
+    );
 
     const down = Err<Order, ExchangeReadFailure>(
       ExchangeUnreachableFailure('down', isNetwork: true),

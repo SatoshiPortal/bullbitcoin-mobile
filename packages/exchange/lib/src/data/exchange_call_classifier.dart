@@ -200,6 +200,9 @@ Result<T, ExchangeWriteFailure> writeNotRun<T>(ExchangeFailure failure) =>
       ExchangeJournalFailure() ||
       ExchangeDestinationUnavailableFailure() ||
       ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
       ExchangeMissingFailure() ||
       ExchangeUnreachableFailure() ||
       ExchangeMalformedFailure() ||
@@ -300,6 +303,9 @@ Result<T, ExchangeReadFailure> readNotRun<T>(ExchangeFailure failure) =>
       ExchangeJournalFailure() ||
       ExchangeDestinationUnavailableFailure() ||
       ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
       ExchangeMissingFailure() ||
       ExchangeUnreachableFailure() ||
       ExchangeMalformedFailure() ||

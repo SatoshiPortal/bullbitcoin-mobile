@@ -115,6 +115,9 @@ class UpdateExchangePreferencesUsecase {
         ExchangeJournalFailure() ||
         ExchangeDestinationUnavailableFailure() ||
         ExchangeDestinationInvalidFailure() ||
+        ExchangeFeeEstimatesUnavailableFailure() ||
+        ExchangeWalletCoinsUnavailableFailure() ||
+        ExchangeTransactionLookupFailure() ||
         ExchangeMissingFailure() ||
         ExchangeUnreachableFailure() ||
         ExchangeMalformedFailure() ||

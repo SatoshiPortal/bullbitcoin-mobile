@@ -11,7 +11,8 @@ import 'package:exchange/exchange.dart';
 
 /// The use cases of the spend options (sell and pay): the fee estimates,
 /// the coins of a wallet and unsigned previews of the payin (never sent).
-/// Each answers null / an empty slot when the wallet can't tell. Only
+/// The reads answer a failure, the previews an empty slot, when the wallet
+/// can't tell. Only
 /// [SpendOptionsRunner] calls them; a flow's bloc hands them over.
 final class SpendOptionsUsecases {
   final GetFeeOptionsUsecase getFees;
@@ -52,11 +53,7 @@ final class SpendOptionsRunner {
           _answer(
             _usecases.getFees
                 .execute(_session)
-                .then(
-                  (fees) => fees == null
-                      ? SpendFeesFailed(attempt)
-                      : SpendFeesLoaded(attempt, fees),
-                ),
+                .then((fees) => SpendFeesRead(attempt, fees)),
           );
         case SpendLoadCoins(:final walletId):
           _answer(

@@ -43,7 +43,7 @@ final _events = <String, PayFlowEvent>{
     OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(payOrder())),
   ),
   'confirm': PayConfirmPressed(payNow),
-  'spendFees': const PaySpendChanged(SpendFeesLoaded(1, payFees)),
+  'spendFees': const PaySpendChanged(SpendFeesRead(1, Ok(payFees))),
   'spendRbf': const PaySpendChanged(SpendRbfChanged(enabled: false)),
   'payin': PayPayinChanged(
     PayinBuildAnswered<PayinSpend>(

@@ -366,6 +366,23 @@ final class ExchangeDestinationUnavailableFailure extends ExchangeFailure {
   const ExchangeDestinationUnavailableFailure([super.logMessage]);
 }
 
+/// The fee estimates of the payin's bitcoin network could not be read.
+final class ExchangeFeeEstimatesUnavailableFailure extends ExchangeFailure {
+  const ExchangeFeeEstimatesUnavailableFailure([super.logMessage]);
+}
+
+/// The coins of the payin wallet could not be listed: it is not a wallet
+/// this device signs for, or it could not be read.
+final class ExchangeWalletCoinsUnavailableFailure extends ExchangeFailure {
+  const ExchangeWalletCoinsUnavailableFailure([super.logMessage]);
+}
+
+/// Whether the source wallet or its network shows a payin transaction could
+/// not be told: no payjoin session carries it, or the look-up failed.
+final class ExchangeTransactionLookupFailure extends ExchangeFailure {
+  const ExchangeTransactionLookupFailure([super.logMessage]);
+}
+
 /// The typed text is not an address the flow can pay out to.
 final class ExchangeDestinationInvalidFailure extends ExchangeFailure {
   const ExchangeDestinationInvalidFailure([super.logMessage]);

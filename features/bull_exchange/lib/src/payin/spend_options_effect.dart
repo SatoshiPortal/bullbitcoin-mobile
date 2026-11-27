@@ -23,7 +23,7 @@ sealed class SpendOptionsEffect {
   String toString() => '$runtimeType(${_props.join(', ')})';
 }
 
-/// Read the fee estimates; answer [SpendFeesLoaded] / [SpendFeesFailed].
+/// Read the fee estimates; answer [SpendFeesRead].
 final class SpendLoadFees extends SpendOptionsEffect {
   final int attempt;
 

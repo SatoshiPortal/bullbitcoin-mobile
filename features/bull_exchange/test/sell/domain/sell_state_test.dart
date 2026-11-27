@@ -45,7 +45,7 @@ final _events = <String, SellFlowEvent>{
     OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(sellOrder())),
   ),
   'confirm': SellConfirmPressed(sellNow),
-  'spendFees': const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
+  'spendFees': const SellSpendChanged(SpendFeesRead(1, Ok(sellFees))),
   'spendRbf': const SellSpendChanged(SpendRbfChanged(enabled: false)),
   'payin': SellPayinChanged(
     PayinBuildAnswered<PayinSpend>(

@@ -64,6 +64,9 @@ ExchangeFailure accountDetailsFailure(ExchangeFailure failure) =>
       ExchangeJournalFailure() ||
       ExchangeDestinationUnavailableFailure() ||
       ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
       ExchangeMissingFailure() ||
       ExchangeUnreachableFailure() ||
       ExchangeMalformedFailure() ||

@@ -49,12 +49,16 @@ final class FakeSendPayinUsecase implements SendPayinUsecase {
 
 final class FakeCheckTransactionSeenUsecase
     implements CheckTransactionSeenUsecase {
-  final Future<bool?> Function(String txid) answer;
+  final Future<Result<bool, ExchangeTransactionLookupFailure>> Function(
+    String txid,
+  )
+  answer;
 
   FakeCheckTransactionSeenUsecase(this.answer);
 
   @override
-  Future<bool?> execute(String txid) => answer(txid);
+  Future<Result<bool, ExchangeTransactionLookupFailure>> execute(String txid) =>
+      answer(txid);
 }
 
 final class FakeWatchPayjoinUsecase implements WatchPayjoinUsecase {
@@ -108,21 +112,29 @@ PayinUsecases fakePayin({
 );
 
 final class FakeGetFeeOptionsUsecase implements GetFeeOptionsUsecase {
-  final Future<FeeOptions?> Function(ExchangeSession session) answer;
+  final Future<Result<FeeOptions, ExchangeFeeEstimatesUnavailableFailure>>
+  Function(ExchangeSession session)
+  answer;
 
   FakeGetFeeOptionsUsecase(this.answer);
 
   @override
-  Future<FeeOptions?> execute(ExchangeSession session) => answer(session);
+  Future<Result<FeeOptions, ExchangeFeeEstimatesUnavailableFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeGetWalletCoinsUsecase implements GetWalletCoinsUsecase {
-  final Future<List<Coin>?> Function(String walletId) answer;
+  final Future<Result<List<Coin>, ExchangeWalletCoinsUnavailableFailure>>
+  Function(String walletId)
+  answer;
 
   FakeGetWalletCoinsUsecase(this.answer);
 
   @override
-  Future<List<Coin>?> execute(String walletId) => answer(walletId);
+  Future<Result<List<Coin>, ExchangeWalletCoinsUnavailableFailure>> execute(
+    String walletId,
+  ) => answer(walletId);
 }
 
 final class FakePreviewFeePresetsUsecase implements PreviewFeePresetsUsecase {

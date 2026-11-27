@@ -101,6 +101,9 @@ final class BbxApiRecipientsRepository implements RecipientsRepository {
       ExchangeJournalFailure() ||
       ExchangeDestinationUnavailableFailure() ||
       ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
       ExchangeMissingFailure() ||
       ExchangeUnreachableFailure() ||
       ExchangeMalformedFailure() ||

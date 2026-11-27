@@ -3,7 +3,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:fees/fees.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Outpoint;
+import 'package:primitives/primitives.dart' show Err, Ok, Outpoint;
 import 'package:sync/sync.dart' show Coin;
 
 import 'spend_options_effect.dart';
@@ -369,17 +369,17 @@ SpendChoice spendOptionsChosen(SpendOptionsState state) => switch (state) {
 
 SpendOptionsNext _loading(SpendFeesLoading state, SpendOptionsEvent event) {
   switch (event) {
-    case SpendFeesLoaded(:final attempt, :final fees)
+    case SpendFeesRead(:final attempt, fees: Ok(value: final fees))
         when attempt == state.attempt:
       return SpendOptionsNext(
         SpendOptionsReady(walletId: state.walletId, fees: fees),
       );
-    case SpendFeesFailed(:final attempt) when attempt == state.attempt:
+    case SpendFeesRead(:final attempt, fees: Err())
+        when attempt == state.attempt:
       return SpendOptionsNext(
         SpendFeesUnavailable(state.walletId, state.attempt),
       );
-    case SpendFeesLoaded() ||
-        SpendFeesFailed() ||
+    case SpendFeesRead() ||
         SpendRetryPressed() ||
         SpendTargetSet() ||
         SpendPresetPreviewsRequested() ||
@@ -409,8 +409,7 @@ SpendOptionsNext _unavailable(
       return SpendOptionsNext(SpendFeesLoading(state.walletId, attempt), [
         SpendLoadFees(attempt),
       ]);
-    case SpendFeesLoaded() ||
-        SpendFeesFailed() ||
+    case SpendFeesRead() ||
         SpendTargetSet() ||
         SpendPresetPreviewsRequested() ||
         SpendCustomPreviewRequested() ||
@@ -574,12 +573,13 @@ SpendOptionsNext _ready(SpendOptionsReady state, SpendOptionsEvent event) {
       }
       return SpendOptionsNext(
         state.copyWith(
-          coins: coins == null
-              ? const SpendCoinsUnavailable()
-              : SpendCoinsLoaded([
-                  for (final coin in coins)
-                    if (!coin.frozen) coin,
-                ]),
+          coins: switch (coins) {
+            Ok(value: final coins) => SpendCoinsLoaded([
+              for (final coin in coins)
+                if (!coin.frozen) coin,
+            ]),
+            Err() => const SpendCoinsUnavailable(),
+          },
         ),
       );
     case SpendCoinsPicked(:final coins):
@@ -589,8 +589,7 @@ SpendOptionsNext _ready(SpendOptionsReady state, SpendOptionsEvent event) {
       return _reshaped(state.copyWith(selected: [...coins]));
     case SpendPresetsPreviewed() ||
         SpendCustomPreviewed() ||
-        SpendFeesLoaded() ||
-        SpendFeesFailed() ||
+        SpendFeesRead() ||
         SpendRetryPressed():
       return SpendOptionsNext.stay(state);
   }

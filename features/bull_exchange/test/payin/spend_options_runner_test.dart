@@ -5,6 +5,8 @@ import 'package:bull_exchange/src/payin/spend_options_runner.dart';
 import 'package:exchange/exchange.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:fees/fees.dart';
+import 'package:primitives/primitives.dart';
+import 'package:sync/sync.dart' show Coin;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'payin_fixtures.dart';
@@ -34,9 +36,14 @@ void main() {
         fakeSpendOptions(
           getFees: FakeGetFeeOptionsUsecase((session) async {
             sessions.add(session);
-            return feesOk ? _fees : null;
+            return feesOk
+                ? const Ok(_fees)
+                : const Err(ExchangeFeeEstimatesUnavailableFailure());
           }),
-          getCoins: FakeGetWalletCoinsUsecase((walletId) async => null),
+          getCoins: FakeGetWalletCoinsUsecase(
+            (walletId) async =>
+                const Err(ExchangeWalletCoinsUnavailableFailure()),
+          ),
           previewPresets: FakePreviewFeePresetsUsecase(
             (shape, fees) async => {FeeSelection.fastest: _slot},
           ),
@@ -59,11 +66,21 @@ void main() {
       async.flushMicrotasks();
       expect(
         events[0],
-        isA<SpendFeesFailed>().having((e) => e.attempt, 'attempt', 1),
+        isA<SpendFeesRead>()
+            .having((e) => e.attempt, 'attempt', 1)
+            .having(
+              (e) => e.fees,
+              'fees',
+              isA<Err<FeeOptions, ExchangeFeeEstimatesUnavailableFailure>>(),
+            ),
       );
       expect(
         events[1],
-        isA<SpendCoinsRead>().having((e) => e.coins, 'coins', isNull),
+        isA<SpendCoinsRead>().having(
+          (e) => e.coins,
+          'coins',
+          isA<Err<List<Coin>, ExchangeWalletCoinsUnavailableFailure>>(),
+        ),
       );
       expect(
         events[2],
@@ -77,7 +94,13 @@ void main() {
       );
       expect(
         events[4],
-        isA<SpendFeesLoaded>().having((e) => e.attempt, 'attempt', 2),
+        isA<SpendFeesRead>()
+            .having((e) => e.attempt, 'attempt', 2)
+            .having(
+              (e) => e.fees,
+              'fees',
+              isA<Ok<FeeOptions, ExchangeFeeEstimatesUnavailableFailure>>(),
+            ),
       );
       expect(sessions, [payinTestnetSession, payinTestnetSession]);
     });
@@ -88,7 +111,7 @@ void main() {
       final events = <SpendOptionsEvent>[];
       final runner = SpendOptionsRunner(
         fakeSpendOptions(
-          getFees: FakeGetFeeOptionsUsecase((session) async => _fees),
+          getFees: FakeGetFeeOptionsUsecase((session) async => const Ok(_fees)),
         ),
         payinSession,
         events.add,

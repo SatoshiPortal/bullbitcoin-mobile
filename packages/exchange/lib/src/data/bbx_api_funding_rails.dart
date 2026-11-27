@@ -322,6 +322,9 @@ Result<T, ExchangeReadFailure> readOfFailure<T>(ExchangeFailure failure) =>
       ExchangeJournalFailure() ||
       ExchangeDestinationUnavailableFailure() ||
       ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
       ExchangeMissingFailure() ||
       ExchangeUnreachableFailure() ||
       ExchangeMalformedFailure() ||

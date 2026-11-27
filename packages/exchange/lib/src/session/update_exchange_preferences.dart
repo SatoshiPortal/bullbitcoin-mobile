@@ -119,6 +119,9 @@ class UpdateExchangePreferences {
           ExchangeJournalFailure() ||
           ExchangeDestinationUnavailableFailure() ||
           ExchangeDestinationInvalidFailure() ||
+          ExchangeFeeEstimatesUnavailableFailure() ||
+          ExchangeWalletCoinsUnavailableFailure() ||
+          ExchangeTransactionLookupFailure() ||
           ExchangeMissingFailure() ||
           ExchangeUnreachableFailure() ||
           ExchangeMalformedFailure() ||
@@ -214,6 +217,9 @@ class UpdateExchangePreferences {
         ExchangeJournalFailure() ||
         ExchangeDestinationUnavailableFailure() ||
         ExchangeDestinationInvalidFailure() ||
+        ExchangeFeeEstimatesUnavailableFailure() ||
+        ExchangeWalletCoinsUnavailableFailure() ||
+        ExchangeTransactionLookupFailure() ||
         ExchangeMissingFailure() ||
         ExchangeUnreachableFailure() ||
         ExchangeMalformedFailure() ||

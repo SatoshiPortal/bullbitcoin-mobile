@@ -358,14 +358,15 @@ final class PayinCheckSessionRejected extends PayinCheck {
   const PayinCheckSessionRejected();
 }
 
-/// The answer of a [PayinVerify] look-up: [txSeen] is whether the source
-/// wallet or its network shows [txid] (null when that look-up failed), [order]
-/// the re-read of the order. Proof wins over doubt: a seen transaction or a
-/// payin the exchange shows settles it even when the other read failed; a
-/// payin is "not seen" only when both reads worked and show nothing.
+/// The answer of a [PayinVerify] look-up: [transaction] is the payin's txid
+/// with whether the source wallet or its network shows it (null when no txid
+/// is known, so nothing was looked up), [order] the re-read of the order.
+/// Proof wins over doubt: a seen transaction or a payin the exchange shows
+/// settles it even when the other read failed; a payin is "not seen" only
+/// when both reads worked and show nothing.
 PayinCheck payinCheckFrom({
-  required String? txid,
-  required bool? txSeen,
+  required ({String txid, Result<bool, ExchangeTransactionLookupFailure> seen})?
+  transaction,
   required Result<Order, ExchangeReadFailure> order,
 }) {
   if (order case Err(failure: ExchangeSessionRejectedFailure())) {
@@ -374,10 +375,12 @@ PayinCheck payinCheckFrom({
   if (order case Ok(value: final read) when !_awaitsPayin(read)) {
     return PayinCheckSeenByExchange(read);
   }
-  if (txSeen == true && txid != null) return PayinCheckSeenOnNetwork(txid);
+  if (transaction case (:final txid, seen: Ok(value: true))) {
+    return PayinCheckSeenOnNetwork(txid);
+  }
   final problem = ReadProblem.of(order);
   if (problem != null) return PayinCheckFailed(problem);
-  if (txSeen == null && txid != null) {
+  if (transaction case (txid: _, seen: Err())) {
     return const PayinCheckFailed(ReadProblemUnreachable(isNetwork: true));
   }
   return const PayinCheckNotSeen();

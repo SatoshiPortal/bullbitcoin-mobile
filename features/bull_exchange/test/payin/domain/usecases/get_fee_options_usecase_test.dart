@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/payin/domain/usecases/get_fee_options_usecase.dart';
 import 'package:fees/fees.dart';
+import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
@@ -28,23 +29,23 @@ final class _Fees extends Fake implements Fees {
   }
 }
 
+final _ok = isA<Ok<FeeOptions, ExchangeFeeEstimatesUnavailableFailure>>()
+    .having((r) => r.value, 'value', _options);
+
 void main() {
   test('estimates on the bitcoin network of the session', () async {
     final fees = _Fees(const Ok(_options));
-    expect(
-      await GetFeeOptionsUsecase(fees).execute(payinTestnetSession),
-      _options,
-    );
-    expect(await GetFeeOptionsUsecase(fees).execute(payinSession), _options);
+    expect(await GetFeeOptionsUsecase(fees).execute(payinTestnetSession), _ok);
+    expect(await GetFeeOptionsUsecase(fees).execute(payinSession), _ok);
     expect(fees.asked, [BitcoinNetwork.testnet, BitcoinNetwork.mainnet]);
   });
 
-  test('estimates that can not be read are none', () async {
+  test('estimates that can not be read are a failure', () async {
     expect(
       await GetFeeOptionsUsecase(
         _Fees(const Err(FeeEstimateUnavailableFailure())),
       ).execute(payinSession),
-      isNull,
+      isA<Err<FeeOptions, ExchangeFeeEstimatesUnavailableFailure>>(),
     );
   });
 }

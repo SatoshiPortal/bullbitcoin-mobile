@@ -6,6 +6,7 @@ import 'package:bull_exchange/src/payin/spend_options_effect.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:fees/fees.dart';
+import 'package:primitives/primitives.dart' show Err, Ok;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sync/sync.dart' show BitcoinCoin, Keychain;
 
@@ -69,8 +70,11 @@ final _states = <String, SpendOptionsState>{
 };
 
 final _events = <String, SpendOptionsEvent>{
-  'feesLoaded': const SpendFeesLoaded(1, _fees),
-  'feesFailed': const SpendFeesFailed(1),
+  'feesLoaded': const SpendFeesRead(1, Ok(_fees)),
+  'feesFailed': const SpendFeesRead(
+    1,
+    Err(ExchangeFeeEstimatesUnavailableFailure()),
+  ),
   'retry': const SpendRetryPressed(),
   'target': const SpendTargetSet(_target),
   'presets': const SpendPresetPreviewsRequested(),
@@ -86,7 +90,7 @@ final _events = <String, SpendOptionsEvent>{
   'rbf': const SpendRbfChanged(enabled: false),
   'payjoin': const SpendPayjoinChanged(enabled: false),
   'coinsRequested': const SpendCoinsRequested(),
-  'coinsRead': SpendCoinsRead([_coin]),
+  'coinsRead': SpendCoinsRead(Ok([_coin])),
   'coinsPicked': SpendCoinsPicked([_coin]),
 };
 
@@ -211,7 +215,7 @@ void main() {
     test('a failure is its own state, never a default fee', () {
       final failed = _apply(
         const SpendFeesLoading('w1', 1),
-        const SpendFeesFailed(1),
+        const SpendFeesRead(1, Err(ExchangeFeeEstimatesUnavailableFailure())),
       );
       expect(spendOptionsChosen(failed), isA<SpendNotChosen>());
       final retried = failed.next(const SpendRetryPressed());
@@ -221,8 +225,14 @@ void main() {
 
     test('an answer for an older attempt is a stay', () {
       const loading = SpendFeesLoading('w1', 2);
-      expect(_apply(loading, const SpendFeesLoaded(1, _fees)), loading);
-      expect(_apply(loading, const SpendFeesFailed(1)), loading);
+      expect(_apply(loading, const SpendFeesRead(1, Ok(_fees))), loading);
+      expect(
+        _apply(
+          loading,
+          const SpendFeesRead(1, Err(ExchangeFeeEstimatesUnavailableFailure())),
+        ),
+        loading,
+      );
     });
 
     test('while loading, Confirm has nothing to build with', () {
@@ -362,14 +372,17 @@ void main() {
       () {
         final next = _ready.next(const SpendCoinsRequested());
         expect(next.effects, [const SpendLoadCoins('w1')]);
-        final loaded = _apply(next.state, SpendCoinsRead([_coin, _frozen]));
+        final loaded = _apply(next.state, SpendCoinsRead(Ok([_coin, _frozen])));
         expect((loaded as SpendOptionsReady).coins, SpendCoinsLoaded([_coin]));
         expect(_apply(loaded, const SpendCoinsRequested()), loaded);
       },
     );
 
     test('a failed read is its own state and can be asked again', () {
-      final failed = _apply(_coinsLoading, const SpendCoinsRead(null));
+      final failed = _apply(
+        _coinsLoading,
+        const SpendCoinsRead(Err(ExchangeWalletCoinsUnavailableFailure())),
+      );
       expect(
         (failed as SpendOptionsReady).coins,
         const SpendCoinsUnavailable(),

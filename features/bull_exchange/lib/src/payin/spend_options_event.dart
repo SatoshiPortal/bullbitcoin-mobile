@@ -1,5 +1,10 @@
+import 'package:exchange/exchange.dart'
+    show
+        ExchangeFeeEstimatesUnavailableFailure,
+        ExchangeWalletCoinsUnavailableFailure;
 import 'package:fees/fees.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart' show Result;
 import 'package:sync/sync.dart' show Coin;
 
 import 'spend_options_state.dart';
@@ -9,17 +14,12 @@ sealed class SpendOptionsEvent {
   const SpendOptionsEvent();
 }
 
-final class SpendFeesLoaded extends SpendOptionsEvent {
+/// What reading the fee estimates of [attempt] answered.
+final class SpendFeesRead extends SpendOptionsEvent {
   final int attempt;
-  final FeeOptions fees;
+  final Result<FeeOptions, ExchangeFeeEstimatesUnavailableFailure> fees;
 
-  const SpendFeesLoaded(this.attempt, this.fees);
-}
-
-final class SpendFeesFailed extends SpendOptionsEvent {
-  final int attempt;
-
-  const SpendFeesFailed(this.attempt);
+  const SpendFeesRead(this.attempt, this.fees);
 }
 
 final class SpendRetryPressed extends SpendOptionsEvent {
@@ -104,8 +104,7 @@ final class SpendCoinsRequested extends SpendOptionsEvent {
 }
 
 final class SpendCoinsRead extends SpendOptionsEvent {
-  /// Null when the wallet could not list them.
-  final List<Coin>? coins;
+  final Result<List<Coin>, ExchangeWalletCoinsUnavailableFailure> coins;
 
   const SpendCoinsRead(this.coins);
 }

@@ -115,7 +115,7 @@ final payReviewState = applyPay(payOrderingState, [
   PayOrderChanged(
     OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(payOrder())),
   ),
-  const PaySpendChanged(SpendFeesLoaded(1, payFees)),
+  const PaySpendChanged(SpendFeesRead(1, Ok(payFees))),
 ]);
 final payPayingState = applyPay(payReviewState, [PayConfirmPressed(payNow)]);
 final payDoneState = PayDone(

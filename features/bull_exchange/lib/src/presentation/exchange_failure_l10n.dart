@@ -128,6 +128,9 @@ extension ExchangeFailureL10n on ExchangeFailure {
     ExchangeJournalFailure() ||
     ExchangeDestinationUnavailableFailure() ||
     ExchangeDestinationInvalidFailure() ||
+    ExchangeFeeEstimatesUnavailableFailure() ||
+    ExchangeWalletCoinsUnavailableFailure() ||
+    ExchangeTransactionLookupFailure() ||
     ExchangeApiKeyInvalidFailure() ||
     ExchangeCredentialsUnavailableFailure() ||
     ExchangeBasicAuthSaveFailure() ||

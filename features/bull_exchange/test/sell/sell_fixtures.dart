@@ -132,7 +132,7 @@ final sellReviewState = applySell(sellOrderingState, [
   SellOrderChanged(
     OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(sellOrder())),
   ),
-  const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
+  const SellSpendChanged(SpendFeesRead(1, Ok(sellFees))),
 ]);
 final sellPayingState = applySell(sellReviewState, [
   SellConfirmPressed(sellNow),

@@ -43,7 +43,7 @@ void main() {
         }),
         transactionSeen: FakeCheckTransactionSeenUsecase((txid) async {
           calls.add('seen $txid');
-          return null;
+          return const Err(ExchangeTransactionLookupFailure());
         }),
         watchPayjoin: FakeWatchPayjoinUsecase((sessionId) {
           calls.add('payjoin $sessionId');

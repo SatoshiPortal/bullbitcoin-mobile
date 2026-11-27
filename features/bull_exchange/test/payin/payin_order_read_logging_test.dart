@@ -127,7 +127,7 @@ void main() {
       payjoinSender: _PayjoinSender(),
       payjoinSessions: _PayjoinSessions(),
       labels: _Labels(),
-      coins: (_) async => null,
+      coins: (_) async => const Err(ExchangeWalletCoinsUnavailableFailure()),
     );
     final payin = PayinUsecases.of(_exchange(transport), services);
 

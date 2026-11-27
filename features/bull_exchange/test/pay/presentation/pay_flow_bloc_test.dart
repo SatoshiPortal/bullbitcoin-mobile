@@ -93,9 +93,9 @@ final class _Usecases {
     spendOptions: fakeSpendOptions(
       getFees: FakeGetFeeOptionsUsecase((session) async {
         _called(session, 'fees');
-        return payFees;
+        return const Ok(payFees);
       }),
-      getCoins: FakeGetWalletCoinsUsecase((walletId) async => const []),
+      getCoins: FakeGetWalletCoinsUsecase((walletId) async => const Ok([])),
       previewPresets: FakePreviewFeePresetsUsecase(
         (shape, fees) async => const {},
       ),

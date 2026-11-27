@@ -82,6 +82,9 @@ Result<T, ExchangeReadFailure> readOfExchangeFailure<T>(
   ExchangeJournalFailure() ||
   ExchangeDestinationUnavailableFailure() ||
   ExchangeDestinationInvalidFailure() ||
+  ExchangeFeeEstimatesUnavailableFailure() ||
+  ExchangeWalletCoinsUnavailableFailure() ||
+  ExchangeTransactionLookupFailure() ||
   ExchangeWriteRefusedFailure() ||
   ExchangeWriteOutcomeUnknownFailure() ||
   ExchangeWriteNotSentFailure() ||
@@ -187,6 +190,9 @@ Result<T, ExchangeWriteFailure> writeOfResult<T>(
     ExchangeJournalFailure() ||
     ExchangeDestinationUnavailableFailure() ||
     ExchangeDestinationInvalidFailure() ||
+    ExchangeFeeEstimatesUnavailableFailure() ||
+    ExchangeWalletCoinsUnavailableFailure() ||
+    ExchangeTransactionLookupFailure() ||
     ExchangeMissingFailure() ||
     ExchangeUnreachableFailure() ||
     ExchangeMalformedFailure() ||

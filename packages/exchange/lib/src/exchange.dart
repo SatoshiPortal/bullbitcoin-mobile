@@ -925,6 +925,9 @@ final class Exchange {
         ExchangeJournalFailure() ||
         ExchangeDestinationUnavailableFailure() ||
         ExchangeDestinationInvalidFailure() ||
+        ExchangeFeeEstimatesUnavailableFailure() ||
+        ExchangeWalletCoinsUnavailableFailure() ||
+        ExchangeTransactionLookupFailure() ||
         ExchangeMissingFailure() ||
         ExchangeUnreachableFailure() ||
         ExchangeMalformedFailure() ||

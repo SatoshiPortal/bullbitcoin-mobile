@@ -63,6 +63,9 @@ ExchangeFailure mapVirtualIbanFailure(ExchangeFailure failure) =>
       ExchangeJournalFailure() ||
       ExchangeDestinationUnavailableFailure() ||
       ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
       ExchangeMissingFailure() ||
       ExchangeUnreachableFailure() ||
       ExchangeMalformedFailure() ||
