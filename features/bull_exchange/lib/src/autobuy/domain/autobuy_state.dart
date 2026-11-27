@@ -3,6 +3,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'autobuy_effect.dart';
+import 'autobuy_event.dart';
+
 /// The AutoBuy activation flow (composition §5, AutoBuy column): session →
 /// account load → intro (restriction gate) → KYC gate → exchange default
 /// wallets editor → review → activation (server confirm of the preference
@@ -154,7 +157,6 @@ ConfirmCheck<bool> autoBuyCheck(
 };
 
 typedef AutoBuyConfirmState = ServerConfirmState<AutoBuyTarget, bool>;
-typedef AutoBuyConfirmEvent = ServerConfirmEvent<AutoBuyTarget, bool>;
 
 const _activate = AutoBuyTarget(enabled: true);
 
@@ -273,114 +275,10 @@ final class AutoBuyClosed extends AutoBuyFlowState {
   List<Object?> get _props => const [];
 }
 
-@immutable
-sealed class AutoBuyFlowEvent {
-  const AutoBuyFlowEvent();
-}
-
-final class AutoBuyContextLoaded extends AutoBuyFlowEvent {
-  final int attempt;
-  final Result<AutoBuyContext, ExchangeReadFailure> read;
-
-  const AutoBuyContextLoaded(this.attempt, this.read);
-}
-
-final class AutoBuyRetryPressed extends AutoBuyFlowEvent {
-  const AutoBuyRetryPressed();
-}
-
-final class AutoBuyBackPressed extends AutoBuyFlowEvent {
-  const AutoBuyBackPressed();
-}
-
-final class AutoBuyDonePressed extends AutoBuyFlowEvent {
-  const AutoBuyDonePressed();
-}
-
-final class AutoBuyGetStartedPressed extends AutoBuyFlowEvent {
-  const AutoBuyGetStartedPressed();
-}
-
-/// Back from the KYC web view the KYC page opened.
-final class AutoBuyKycReturned extends AutoBuyFlowEvent {
-  const AutoBuyKycReturned();
-}
-
-/// The account read again after the KYC web view.
-final class AutoBuyKycReloaded extends AutoBuyFlowEvent {
-  final Result<AutoBuyContext, ExchangeReadFailure> read;
-
-  const AutoBuyKycReloaded(this.read);
-}
-
-/// Continue under the editor, with the default wallets it shows saved.
-final class AutoBuyWalletsContinued extends AutoBuyFlowEvent {
-  final DefaultWallets wallets;
-
-  const AutoBuyWalletsContinued(this.wallets);
-}
-
-final class AutoBuyActivatePressed extends AutoBuyFlowEvent {
-  const AutoBuyActivatePressed();
-}
-
-final class AutoBuyConfirmChanged extends AutoBuyFlowEvent {
-  final AutoBuyConfirmEvent event;
-
-  const AutoBuyConfirmChanged(this.event);
-}
-
-final class AutoBuySessionChanged extends AutoBuyFlowEvent {
-  final ExchangeSession? session;
-
-  const AutoBuySessionChanged(this.session);
-}
-
-@immutable
-sealed class AutoBuyFlowEffect {
-  const AutoBuyFlowEffect();
-}
-
-final class AutoBuyLoadContext extends AutoBuyFlowEffect {
-  final int attempt;
-
-  const AutoBuyLoadContext(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AutoBuyLoadContext && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(AutoBuyLoadContext, attempt);
-}
-
-/// Read the account again after KYC; answer [AutoBuyKycReloaded].
-final class AutoBuyReloadForKyc extends AutoBuyFlowEffect {
-  const AutoBuyReloadForKyc();
-
-  @override
-  bool operator ==(Object other) => other is AutoBuyReloadForKyc;
-
-  @override
-  int get hashCode => (AutoBuyReloadForKyc).hashCode;
-}
-
-final class AutoBuyConfirmEffect extends AutoBuyFlowEffect {
-  final ServerConfirmEffect<AutoBuyTarget> effect;
-
-  const AutoBuyConfirmEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is AutoBuyConfirmEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(AutoBuyConfirmEffect, effect);
-}
-
 typedef AutoBuyFlowNext = StepNext<AutoBuyFlowState, AutoBuyFlowEffect>;
 
 const _ended = AutoBuyFlowNext(AutoBuySessionEnded());
+
 const _closed = AutoBuyFlowNext(AutoBuyClosed());
 
 AutoBuyFlowNext autoBuyFlowStart(ExchangeSession? session) => switch (session) {

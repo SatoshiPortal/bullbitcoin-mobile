@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel_state.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';
 

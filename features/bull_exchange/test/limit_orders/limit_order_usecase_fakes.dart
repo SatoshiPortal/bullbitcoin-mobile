@@ -1,6 +1,6 @@
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel.dart';
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
-import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list_state.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_all_limit_orders_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/cancel_limit_order_usecase.dart';
 import 'package:bull_exchange/src/limit_orders/domain/usecases/create_limit_order_usecase.dart';

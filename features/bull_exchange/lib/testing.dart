@@ -4,7 +4,7 @@ library;
 import 'package:exchange/exchange.dart';
 
 import 'src/account/domain/usecases/get_user_summary_usecase.dart';
-import 'src/autobuy/domain/autobuy_flow.dart';
+import 'src/autobuy/domain/autobuy_state.dart';
 import 'src/autobuy/domain/usecases/load_autobuy_context_usecase.dart';
 import 'src/default_wallets/domain/usecases/get_default_wallets_usecase.dart';
 import 'src/default_wallets/domain/usecases/save_default_wallet_usecase.dart';

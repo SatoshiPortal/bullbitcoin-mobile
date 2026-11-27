@@ -1,4 +1,6 @@
-import 'package:bull_exchange/src/autobuy/domain/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_state.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_event.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_effect.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';

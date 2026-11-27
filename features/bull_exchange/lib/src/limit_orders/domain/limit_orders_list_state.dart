@@ -3,6 +3,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'limit_orders_list_effect.dart';
+import 'limit_orders_list_event.dart';
+
 /// The exchange keeps at most this many limit orders active per account.
 const maximumActiveLimitOrders = 5;
 
@@ -314,71 +317,6 @@ final class CancelAllUnsure extends LimitCancelAllAnswer {
 
 final class CancelAllSessionRejected extends LimitCancelAllAnswer {
   const CancelAllSessionRejected();
-}
-
-@immutable
-sealed class LimitOrdersListEvent {
-  const LimitOrdersListEvent();
-}
-
-final class ListLoaded extends LimitOrdersListEvent {
-  final int attempt;
-  final Result<List<LimitOrder>, ExchangeReadFailure> read;
-
-  const ListLoaded(this.attempt, this.read);
-}
-
-/// A limit-order notification, the dashboard's refresh, or a return from
-/// a create or details that changed something.
-final class ListRefreshRequested extends LimitOrdersListEvent {
-  const ListRefreshRequested();
-}
-
-final class ListRetryPressed extends LimitOrdersListEvent {
-  const ListRetryPressed();
-}
-
-/// The user confirmed the cancel-all dialog.
-final class ListCancelAllPressed extends LimitOrdersListEvent {
-  const ListCancelAllPressed();
-}
-
-final class ListCancelAllAnswered extends LimitOrdersListEvent {
-  final int attempt;
-  final LimitCancelAllAnswer answer;
-
-  const ListCancelAllAnswered(this.attempt, this.answer);
-}
-
-@immutable
-sealed class LimitOrdersListEffect {
-  const LimitOrdersListEffect();
-}
-
-final class ListFetch extends LimitOrdersListEffect {
-  final int attempt;
-
-  const ListFetch(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is ListFetch && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(ListFetch, attempt);
-}
-
-final class ListCancelAll extends LimitOrdersListEffect {
-  final int attempt;
-
-  const ListCancelAll(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is ListCancelAll && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(ListCancelAll, attempt);
 }
 
 typedef LimitOrdersListNext =

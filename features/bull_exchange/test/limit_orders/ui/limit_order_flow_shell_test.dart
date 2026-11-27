@@ -1,5 +1,6 @@
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_event.dart';
 import 'package:bull_exchange/src/limit_orders/ui/limit_order_flow_shell.dart';
 import 'package:bull_exchange/src/limit_orders/ui/screens/limit_order_pages.dart';
 import 'package:bull_ui/bull_ui.dart' show BullButton;

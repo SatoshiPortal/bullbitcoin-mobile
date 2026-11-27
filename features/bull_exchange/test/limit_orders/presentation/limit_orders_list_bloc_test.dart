@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_orders_list_event.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/limit_orders_list_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';

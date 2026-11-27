@@ -1,10 +1,12 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
-
-import 'limit_order_cancel.dart';
-
 import 'package:primitives/primitives.dart';
+
+import 'limit_order_cancel_event.dart';
+import 'limit_order_cancel_state.dart';
+import 'limit_order_details_effect.dart';
+import 'limit_order_details_event.dart';
 
 /// One limit order's details and its cancel: load → shown (with the cancel
 /// step) → closed. Leaving says whether the order changed, so the list
@@ -186,74 +188,6 @@ final class DetailsClosed extends LimitDetailsState {
 
   @override
   int get hashCode => Object.hash(DetailsClosed, changed);
-}
-
-@immutable
-sealed class LimitDetailsEvent {
-  const LimitDetailsEvent();
-}
-
-final class DetailsLoaded extends LimitDetailsEvent {
-  final int attempt;
-  final Result<LimitOrder, ExchangeReadFailure> read;
-
-  const DetailsLoaded(this.attempt, this.read);
-}
-
-/// Retry of a failed read, or Check again of an unverified cancel.
-final class DetailsRetryPressed extends LimitDetailsEvent {
-  const DetailsRetryPressed();
-}
-
-final class DetailsCancelChanged extends LimitDetailsEvent {
-  final LimitCancelEvent event;
-
-  const DetailsCancelChanged(this.event);
-}
-
-/// App bar, system Back or Done.
-final class DetailsBackPressed extends LimitDetailsEvent {
-  const DetailsBackPressed();
-}
-
-final class DetailsSessionChanged extends LimitDetailsEvent {
-  final ExchangeSession? session;
-
-  const DetailsSessionChanged(this.session);
-}
-
-@immutable
-sealed class LimitDetailsEffect {
-  const LimitDetailsEffect();
-}
-
-final class DetailsRead extends LimitDetailsEffect {
-  final String orderId;
-  final int attempt;
-
-  const DetailsRead(this.orderId, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is DetailsRead &&
-      other.orderId == orderId &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(DetailsRead, orderId, attempt);
-}
-
-final class DetailsCancelEffect extends LimitDetailsEffect {
-  final LimitCancelEffect effect;
-
-  const DetailsCancelEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is DetailsCancelEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(DetailsCancelEffect, effect);
 }
 
 typedef LimitDetailsNext = StepNext<LimitDetailsState, LimitDetailsEffect>;

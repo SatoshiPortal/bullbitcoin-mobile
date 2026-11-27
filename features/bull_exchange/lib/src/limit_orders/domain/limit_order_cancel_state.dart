@@ -3,6 +3,9 @@ import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
+import 'limit_order_cancel_effect.dart';
+import 'limit_order_cancel_event.dart';
+
 /// Cancelling one limit order (LIM-3). Every state holds the order as last
 /// read, so the page never shows a status the exchange did not report. Any
 /// answer but a cancelled order re-reads it: the re-read, not the answer,
@@ -276,73 +279,6 @@ final class CancelAnsweredUnsure extends LimitCancelAnswer {
 
 final class CancelAnsweredSessionRejected extends LimitCancelAnswer {
   const CancelAnsweredSessionRejected();
-}
-
-@immutable
-sealed class LimitCancelEvent {
-  const LimitCancelEvent();
-}
-
-/// The user confirmed the cancel dialog.
-final class CancelPressed extends LimitCancelEvent {
-  const CancelPressed();
-}
-
-final class CancelAnswered extends LimitCancelEvent {
-  final int attempt;
-  final LimitCancelAnswer answer;
-
-  const CancelAnswered(this.attempt, this.answer);
-}
-
-final class CancelChecked extends LimitCancelEvent {
-  final int attempt;
-  final Result<LimitOrder, ExchangeReadFailure> read;
-
-  const CancelChecked(this.attempt, this.read);
-}
-
-final class CancelRetryPressed extends LimitCancelEvent {
-  const CancelRetryPressed();
-}
-
-@immutable
-sealed class LimitCancelEffect {
-  const LimitCancelEffect();
-}
-
-/// Cancel [orderId] through the write gate; answer [CancelAnswered].
-final class CancelSend extends LimitCancelEffect {
-  final String orderId;
-  final int attempt;
-
-  const CancelSend(this.orderId, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is CancelSend &&
-      other.orderId == orderId &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(CancelSend, orderId, attempt);
-}
-
-/// Read [orderId] again; answer [CancelChecked].
-final class CancelRead extends LimitCancelEffect {
-  final String orderId;
-  final int attempt;
-
-  const CancelRead(this.orderId, this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is CancelRead &&
-      other.orderId == orderId &&
-      other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(CancelRead, orderId, attempt);
 }
 
 typedef LimitCancelNext = StepNext<LimitCancelState, LimitCancelEffect>;

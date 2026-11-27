@@ -1,7 +1,7 @@
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:bull_exchange/src/exchange_payout_wallets.dart';
 import 'package:bull_exchange/src/limit_orders/domain/limit_listed_wallets.dart';
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_state.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:exchange/exchange.dart';
 import 'package:primitives/primitives.dart';

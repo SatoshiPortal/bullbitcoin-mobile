@@ -2,7 +2,9 @@ import 'package:exchange/exchange.dart' show WriteGateRefusal;
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
 
-import 'autobuy_flow.dart';
+import 'autobuy_state.dart';
+import 'autobuy_switch_effect.dart';
+import 'autobuy_switch_event.dart';
 
 /// The home card's AutoBuy switch. Turning it on opens the activation flow;
 /// turning it off is a preference write verified by re-reading the account.
@@ -165,63 +167,6 @@ final class SwitchSessionEnded extends AutoBuySwitchState {
 
   @override
   int get hashCode => Object.hash(SwitchSessionEnded, active, restricted);
-}
-
-@immutable
-sealed class AutoBuySwitchEvent {
-  const AutoBuySwitchEvent();
-}
-
-/// The dashboard's summary changed (a refresh, the activation flow).
-final class SwitchSummaryChanged extends AutoBuySwitchEvent {
-  final bool active;
-  final bool restricted;
-
-  const SwitchSummaryChanged({required this.active, required this.restricted});
-}
-
-/// The user confirmed the deactivate dialog.
-final class SwitchDeactivatePressed extends AutoBuySwitchEvent {
-  const SwitchDeactivatePressed();
-}
-
-final class SwitchRetryPressed extends AutoBuySwitchEvent {
-  const SwitchRetryPressed();
-}
-
-final class SwitchConfirmChanged extends AutoBuySwitchEvent {
-  final AutoBuyConfirmEvent event;
-
-  const SwitchConfirmChanged(this.event);
-}
-
-@immutable
-sealed class AutoBuySwitchEffect {
-  const AutoBuySwitchEffect();
-}
-
-final class SwitchConfirmEffect extends AutoBuySwitchEffect {
-  final ServerConfirmEffect<AutoBuyTarget> effect;
-
-  const SwitchConfirmEffect(this.effect);
-
-  @override
-  bool operator ==(Object other) =>
-      other is SwitchConfirmEffect && other.effect == effect;
-
-  @override
-  int get hashCode => Object.hash(SwitchConfirmEffect, effect);
-}
-
-/// Tell the dashboard the account changed, so it reads it again.
-final class SwitchAccountChanged extends AutoBuySwitchEffect {
-  const SwitchAccountChanged();
-
-  @override
-  bool operator ==(Object other) => other is SwitchAccountChanged;
-
-  @override
-  int get hashCode => (SwitchAccountChanged).hashCode;
 }
 
 typedef AutoBuySwitchNext = StepNext<AutoBuySwitchState, AutoBuySwitchEffect>;

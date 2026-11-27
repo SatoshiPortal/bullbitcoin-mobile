@@ -1,7 +1,8 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_payout_field.dart';
 import 'package:bull_exchange/src/limit_orders/domain/entities/limit_order_amount_limits.dart';
-import 'package:bull_exchange/src/limit_orders/domain/limit_order_flow.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_event.dart';
 import 'package:bull_exchange/src/limit_orders/ui/widgets/limit_order_detail_row.dart';
 import 'package:bull_exchange/src/limit_orders/ui/widgets/limit_orders_loading_bar.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';

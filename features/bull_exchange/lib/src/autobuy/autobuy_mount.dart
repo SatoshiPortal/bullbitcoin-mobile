@@ -9,7 +9,7 @@ import '../default_wallets/default_wallets_payout_fields.dart';
 import 'domain/usecases/load_autobuy_context_usecase.dart';
 import 'domain/usecases/save_autobuy_preference_usecase.dart';
 import 'presentation/autobuy_bloc.dart';
-import 'domain/autobuy_switch.dart';
+import 'domain/autobuy_switch_event.dart';
 import 'ui/autobuy_flow_shell.dart';
 import 'ui/widgets/autobuy_home_card.dart';
 

@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/autobuy/domain/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_state.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';

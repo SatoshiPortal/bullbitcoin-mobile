@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:bull_exchange/src/account/domain/usecases/get_user_summary_usecase.dart';
-import 'package:bull_exchange/src/autobuy/domain/autobuy_flow.dart';
-import 'package:bull_exchange/src/autobuy/domain/autobuy_switch.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_state.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_event.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_effect.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch_state.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch_event.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch_effect.dart';
 import 'package:bull_exchange/src/autobuy/domain/usecases/load_autobuy_context_usecase.dart';
 import 'package:bull_exchange/src/autobuy/domain/usecases/save_autobuy_preference_usecase.dart';
 import 'package:exchange/exchange.dart';

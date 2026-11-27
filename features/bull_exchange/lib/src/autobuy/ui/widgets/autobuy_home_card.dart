@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/autobuy/presentation/autobuy_bloc.dart';
-import 'package:bull_exchange/src/autobuy/domain/autobuy_switch.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch_state.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch_event.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
