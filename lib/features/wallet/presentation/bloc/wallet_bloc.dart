@@ -7,12 +7,7 @@ import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh
 
 import 'dart:async';
 
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
-import 'package:silent/silent.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
+import 'package:silent/silent.dart' show SilentHomeObservation;
 import 'package:electrum/electrum.dart';
 import 'package:overview/overview.dart';
 import 'package:primitives/primitives.dart' hide Network;
@@ -49,11 +44,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._ongoingSwaps,
     required this._readBackupWarning,
     required this._getExternalTorProxyStatusUsecase,
-    required this._checkSpWalletSetupForWalletUsecase,
-    required this._checkSpScanningForWalletUsecase,
-    required this._refreshSpWalletForWalletUsecase,
-    required this._watchSpWalletUsecase,
-    required this._checkSpFeatureGateForWalletUsecase,
+    required this._silentHome,
   }) : super(const WalletState()) {
     on<_WalletAmountDisplayChanged>((event, emit) {
       emit(state.copyWith(amountDisplay: event.preferences));
@@ -96,17 +87,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckSwapServerUsecase? _checkSwapServerUsecase;
   final Future<bool?> Function() _readBackupWarning;
   final GetExternalTorProxyStatusUsecase _getExternalTorProxyStatusUsecase;
-  final CheckSpWalletSetupForWalletUsecase _checkSpWalletSetupForWalletUsecase;
-  final CheckSpScanningForWalletUsecase _checkSpScanningForWalletUsecase;
-  final RefreshSpWalletForWalletUsecase _refreshSpWalletForWalletUsecase;
-  final WatchSpWalletUsecase _watchSpWalletUsecase;
-  final CheckSpFeatureGateForWalletUsecase _checkSpFeatureGateForWalletUsecase;
+  final SilentHomeObservation _silentHome;
 
   StreamSubscription? _revisionsSubscription;
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
   StreamSubscription? _electrumSyncResultsSubscription;
-  StreamSubscription? _spUpdatesSubscription;
 
   int _catalogGeneration = 0;
   int _ongoingSwapsReadVersion = 0;
@@ -116,29 +102,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   bool? _lastBitcoinSyncSuccess;
   bool? _lastLiquidSyncSuccess;
   int _electrumWarningGeneration = 0;
-  int _spRefreshGeneration = 0;
-  int? _spPendingCatalogGeneration;
   int _backupStatusGeneration = 0;
-
-  // A different bucket may publish a new catalogue while Started is awaiting
-  // its read. Only its own generation can keep SP admission suspended.
-  bool get _spCatalogPending =>
-      _spPendingCatalogGeneration == _catalogGeneration;
-
-  void _releaseSpCatalog(int generation) {
-    if (_spPendingCatalogGeneration == generation) {
-      _spPendingCatalogGeneration = null;
-    }
-  }
 
   @override
   Future<void> close() async {
+    await _silentHome.close();
     await _amountDisplaySubscription?.cancel();
     _revisionsSubscription?.cancel();
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     _electrumSyncResultsSubscription?.cancel();
-    _spUpdatesSubscription?.cancel();
     return super.close();
   }
 
@@ -201,9 +174,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     add(const SwapServerCheckRequested());
     final catalog = ++_catalogGeneration;
-    _spPendingCatalogGeneration = catalog;
+    _silentHome.catalogReplacing();
     final updates = Map<String, int>.of(_walletUpdateVersions);
-    _spRefreshGeneration++;
     emit(
       state.copyWith(
         isSpFeatureEnabled: false,
@@ -213,21 +185,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         failure: state.noWalletsFound ? null : state.failure,
       ),
     );
-    await _spUpdatesSubscription?.cancel();
-    if (emit.isDone || catalog != _catalogGeneration) return;
-    _spUpdatesSubscription = _watchSpWalletUsecase.execute().listen((result) {
-      switch (result) {
-        case Ok(value: SilentBalanceChanged(:final totalUnified)):
-          add(SetSpWalletBalance(totalUnified.value.toInt()));
-        case Ok(value: SilentSetupChanged()):
-          add(const RefreshSpWallet());
-        case Ok(value: SilentChainTipChanged()):
-          // Only the SP scan policy cares about the tip; the wallet card
-          // shows a balance, which SilentBalanceChanged already covers.
-          break;
-        case Err():
-          log.warning('Silent update unavailable');
-      }
+    _silentHome.observe(() {
+      if (!isClosed) add(const RefreshSpWallet());
     });
 
     final List<Wallet> wallets;
@@ -237,7 +196,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       case Ok(:final value):
         wallets = value;
       case Err(:final failure):
-        _releaseSpCatalog(catalog);
         emit(state.copyWith(status: WalletStatus.failure, failure: failure));
         return;
     }
@@ -250,11 +208,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     };
 
     _catalogGeneration++;
-    _releaseSpCatalog(catalog);
     _walletReadVersions.clear();
     // Invalidate every SP read tied to the previous catalogue before exposing
     // wallets from the new environment.
-    _spRefreshGeneration++;
+    _silentHome.catalogPublished({
+      for (final wallet in wallets) wallet.network.environment,
+    });
     _backupStatusGeneration++;
     emit(
       state.copyWith(
@@ -422,7 +381,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (previousKeys.length != loadedKeys.length ||
         !previousKeys.containsAll(loadedKeys)) {
       _catalogGeneration++;
-      _spRefreshGeneration++;
+      _silentHome.catalogReplacing();
       _walletReadVersions.clear();
       emit(
         state.copyWith(
@@ -433,6 +392,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     }
 
+    _silentHome.catalogPublished({
+      for (final wallet in wallets) wallet.network.environment,
+    });
     add(const RefreshSpWallet());
 
     _backupStatusGeneration++;
@@ -535,92 +497,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
   }
 
-  // Refreshes the SP card only; it never starts a scan. A scan reaches the
-  // Rust side through ScanSpWalletUsecase alone, either from the user tapping
-  // Scan or from a sync tick that SpScanPolicy allowed.
   Future<void> _onRefreshSpWallet(
     RefreshSpWallet event,
     Emitter<WalletState> emit,
-  ) async {
-    if (_spCatalogPending) return;
-    final generation = ++_spRefreshGeneration;
-    final catalog = _catalogGeneration;
-    bool stale() =>
-        emit.isDone ||
-        generation != _spRefreshGeneration ||
-        catalog != _catalogGeneration ||
-        _spCatalogPending;
-    void hide() => emit(
+  ) => _silentHome.refresh((update) {
+    if (emit.isDone) return;
+    emit(
       state.copyWith(
-        isSpFeatureEnabled: false,
-        spBalanceSat: 0,
-        isSpWalletLoading: false,
+        isSpFeatureEnabled: update.visible ?? state.isSpFeatureEnabled,
+        isSpWalletSetup: update.configured ?? state.isSpWalletSetup,
+        spBalanceSat: update.balanceSat ?? state.spBalanceSat,
+        isSpWalletLoading: update.loading,
       ),
     );
-
-    emit(state.copyWith(isSpWalletLoading: true));
-    final gate = await _checkSpFeatureGateForWalletUsecase.execute();
-    if (stale()) return;
-    final bool enabled;
-    switch (gate) {
-      case Ok(:final value):
-        enabled = value;
-      case Err():
-        log.warning('SP feature gate refresh failed category=feature_gate');
-        hide();
-        return;
-    }
-
-    final setup = await _checkSpWalletSetupForWalletUsecase.execute();
-    if (stale()) return;
-    final bool isSetUp;
-    switch (setup) {
-      case Ok(:final value):
-        isSetUp = value;
-      case Err():
-        hide();
-        return;
-    }
-    emit(state.copyWith(isSpWalletSetup: isSetUp));
-    if (!enabled || !isSetUp) {
-      hide();
-      return;
-    }
-    // Only a previously admitted snapshot in this same catalogue may remain
-    // visible while scanning. A catalogue transition already invalidated it.
-    if (_checkSpScanningForWalletUsecase.execute()) {
-      emit(state.copyWith(isSpWalletLoading: false));
-      return;
-    }
-    emit(state.copyWith(isSpWalletLoading: true));
-    final result = await _refreshSpWalletForWalletUsecase.execute();
-    if (stale()) return;
-    switch (result) {
-      case Ok(value: final wallet?):
-        final network = wallet.network;
-        if (network == null ||
-            !NetworkCapabilities.supports(
-              network,
-              NetworkCapability.silentPayments,
-            ) ||
-            state.wallets.any((w) => w.network.environment != network.env)) {
-          hide();
-          return;
-        }
-        emit(
-          state.copyWith(
-            isSpFeatureEnabled: true,
-            isSpWalletSetup: true,
-            spBalanceSat: wallet.balance.totalUnifiedSat.value.toInt(),
-            isSpWalletLoading: false,
-          ),
-        );
-      case Ok():
-        hide();
-      case Err():
-        hide();
-    }
-  }
+  });
 
   void _onSetSpWalletBalance(
     SetSpWalletBalance event,

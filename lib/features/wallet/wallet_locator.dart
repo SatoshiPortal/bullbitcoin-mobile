@@ -15,11 +15,6 @@ import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:sync/write.dart';
 import 'package:bull_tor/tor.dart';
 import 'package:silent/silent.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:swaps/swaps.dart';
 import 'package:overview/setup.dart';
 import 'package:overview/overview.dart' show OngoingSwaps;
@@ -76,21 +71,6 @@ class WalletLocator {
         locator<Tor>(),
       ),
     );
-    locator.registerFactory<CheckSpWalletSetupForWalletUsecase>(
-      () => CheckSpWalletSetupForWalletUsecase(silent: locator<Silent>()),
-    );
-    locator.registerFactory<CheckSpFeatureGateForWalletUsecase>(
-      () => CheckSpFeatureGateForWalletUsecase(silent: locator<Silent>()),
-    );
-    locator.registerFactory<CheckSpScanningForWalletUsecase>(
-      () => CheckSpScanningForWalletUsecase(silent: locator<Silent>()),
-    );
-    locator.registerFactory<RefreshSpWalletForWalletUsecase>(
-      () => RefreshSpWalletForWalletUsecase(silent: locator<Silent>()),
-    );
-    locator.registerFactory<WatchSpWalletUsecase>(
-      () => WatchSpWalletUsecase(silent: locator<Silent>()),
-    );
 
     locator.registerFactory<SyncWalletsUsecase>(
       () => SyncWalletsUsecase(overviewSync().coordinator.sync),
@@ -115,13 +95,7 @@ class WalletLocator {
         retrySwapsOnRefreshUsecase: RetrySwapsOnRefreshUsecase(
           locator<SwapActivity>(),
         ),
-        checkSpWalletSetupForWalletUsecase:
-            locator<CheckSpWalletSetupForWalletUsecase>(),
-        checkSpScanningForWalletUsecase:
-            locator<CheckSpScanningForWalletUsecase>(),
-        refreshSpWalletForWalletUsecase:
-            locator<RefreshSpWalletForWalletUsecase>(),
-        watchSpWalletUsecase: locator<WatchSpWalletUsecase>(),
+        silentHome: SilentHomeObservation(locator<Silent>()),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         readWalletUsecase: ReadWalletUsecase(locator<WalletRepository>()),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
@@ -136,8 +110,6 @@ class WalletLocator {
         ),
         getExternalTorProxyStatusUsecase:
             locator<GetExternalTorProxyStatusUsecase>(),
-        checkSpFeatureGateForWalletUsecase:
-            locator<CheckSpFeatureGateForWalletUsecase>(),
       ),
     );
   }

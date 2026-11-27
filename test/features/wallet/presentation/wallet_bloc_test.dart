@@ -17,6 +17,7 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:overview/overview.dart';
+import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Result, ScriptType;
@@ -32,13 +33,8 @@ import 'package:electrum/electrum.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_swap_server_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/retry_swaps_on_refresh_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,19 +57,16 @@ class _MockOngoingSwaps extends Mock implements OngoingSwaps {}
 class _MockExternalTorStatusUsecase extends Mock
     implements GetExternalTorProxyStatusUsecase {}
 
-class _MockCheckSpWalletSetupForWalletUsecase extends Mock
-    implements CheckSpWalletSetupForWalletUsecase {}
-
-class _MockCheckSpScanningForWalletUsecase extends Mock
-    implements CheckSpScanningForWalletUsecase {}
-
-class _MockRefreshSpWalletForWalletUsecase extends Mock
-    implements RefreshSpWalletForWalletUsecase {}
-
-class _MockWatchSpWalletUsecase extends Mock implements WatchSpWalletUsecase {}
-
-class _MockCheckSpFeatureGateForWalletUsecase extends Mock
-    implements CheckSpFeatureGateForWalletUsecase {}
+class _DisabledSilent extends Fake implements Silent {
+  @override
+  Future<Result<bool, SilentFailure>> isFeatureEnabled() async =>
+      const Ok(false);
+  @override
+  Future<Result<bool, SilentFailure>> isSetUp() async => const Ok(false);
+  @override
+  Stream<Result<SilentUpdate, SilentFailure>> watchUpdates() =>
+      const Stream.empty();
+}
 
 WalletBloc createBloc(
   GetExternalTorProxyStatusUsecase externalStatus, {
@@ -95,11 +88,7 @@ WalletBloc createBloc(
     ongoingSwaps: getUnconfirmed ?? _MockOngoingSwaps(),
     readBackupWarning: () async => null,
     getExternalTorProxyStatusUsecase: externalStatus,
-    checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
-    checkSpScanningForWalletUsecase: _stubbedSpScanning(),
-    refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
-    watchSpWalletUsecase: _stubbedSpWatch(),
-    checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+    silentHome: SilentHomeObservation(_DisabledSilent()),
   );
 }
 
@@ -501,11 +490,7 @@ void main() {
           watchWalletSyncEventsUsecase: _stubbedWatchers(),
           syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
           ongoingSwaps: _MockOngoingSwaps(),
-          checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
-          checkSpScanningForWalletUsecase: _stubbedSpScanning(),
-          refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
-          watchSpWalletUsecase: _stubbedSpWatch(),
-          checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+          silentHome: SilentHomeObservation(_DisabledSilent()),
           readBackupWarning: () async => null,
           getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
         );
@@ -614,11 +599,7 @@ void main() {
         watchWalletSyncEventsUsecase: _stubbedWatchers(),
         syncWalletsUsecase: SyncWalletsUsecase(coordinator.sync),
         ongoingSwaps: _MockOngoingSwaps(),
-        checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
-        checkSpScanningForWalletUsecase: _stubbedSpScanning(),
-        refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
-        watchSpWalletUsecase: _stubbedSpWatch(),
-        checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+        silentHome: SilentHomeObservation(_DisabledSilent()),
         readBackupWarning: () async => null,
         getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
       );
@@ -855,11 +836,7 @@ void main() {
         watchWalletSyncEventsUsecase: _stubbedWatchers(),
         syncWalletsUsecase: _stubbedSync(),
         ongoingSwaps: _MockOngoingSwaps(),
-        checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
-        checkSpScanningForWalletUsecase: _stubbedSpScanning(),
-        refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
-        watchSpWalletUsecase: _stubbedSpWatch(),
-        checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+        silentHome: SilentHomeObservation(_DisabledSilent()),
         readBackupWarning: () async => null,
         getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
       );
@@ -921,11 +898,7 @@ WalletBloc _blocWithFailingLoad(
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: sync ?? _stubbedSync(),
     ongoingSwaps: _MockOngoingSwaps(),
-    checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
-    checkSpScanningForWalletUsecase: _stubbedSpScanning(),
-    refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
-    watchSpWalletUsecase: _stubbedSpWatch(),
-    checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+    silentHome: SilentHomeObservation(_DisabledSilent()),
     readBackupWarning: () async => null,
     getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
   );
@@ -948,38 +921,6 @@ SyncWalletsUsecase _stubbedSync() {
   when(() => sync.execute(trigger: any(named: 'trigger')))
       .thenAnswer((_) async => const Ok<void, WalletFailure>(null));
   return sync;
-}
-
-/// Silent Payments stubbed off: with the feature gate closed, the SP refresh
-/// settles immediately and the watcher stays silent.
-CheckSpFeatureGateForWalletUsecase _stubbedSpGate() {
-  final gate = _MockCheckSpFeatureGateForWalletUsecase();
-  when(gate.execute).thenAnswer((_) async => const Ok(false));
-  return gate;
-}
-
-CheckSpWalletSetupForWalletUsecase _stubbedSpSetup() {
-  final setup = _MockCheckSpWalletSetupForWalletUsecase();
-  when(setup.execute).thenAnswer((_) async => const Ok(false));
-  return setup;
-}
-
-CheckSpScanningForWalletUsecase _stubbedSpScanning() {
-  final scanning = _MockCheckSpScanningForWalletUsecase();
-  when(scanning.execute).thenReturn(false);
-  return scanning;
-}
-
-RefreshSpWalletForWalletUsecase _stubbedSpRefresh() {
-  final refresh = _MockRefreshSpWalletForWalletUsecase();
-  when(refresh.execute).thenAnswer((_) async => const Ok(null));
-  return refresh;
-}
-
-WatchSpWalletUsecase _stubbedSpWatch() {
-  final watch = _MockWatchSpWalletUsecase();
-  when(watch.execute).thenAnswer((_) => const Stream.empty());
-  return watch;
 }
 
 /// A bloc whose wallet reads succeed but whose sync round fails, so the
@@ -1027,11 +968,7 @@ WalletBloc _blocWithFailingSync(WalletFailure failure) {
     watchWalletSyncEventsUsecase: _stubbedWatchers(),
     syncWalletsUsecase: sync,
     ongoingSwaps: _MockOngoingSwaps(),
-    checkSpWalletSetupForWalletUsecase: _stubbedSpSetup(),
-    checkSpScanningForWalletUsecase: _stubbedSpScanning(),
-    refreshSpWalletForWalletUsecase: _stubbedSpRefresh(),
-    watchSpWalletUsecase: _stubbedSpWatch(),
-    checkSpFeatureGateForWalletUsecase: _stubbedSpGate(),
+    silentHome: SilentHomeObservation(_DisabledSilent()),
     readBackupWarning: () async => null,
     getExternalTorProxyStatusUsecase: _MockExternalTorStatusUsecase(),
   );

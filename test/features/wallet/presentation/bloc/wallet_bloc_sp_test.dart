@@ -11,16 +11,11 @@ import 'package:electrum/electrum.dart';
 import 'package:overview/setup.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_external_tor_proxy_status_usecase.dart';
 import 'package:silent/silent.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_feature_gate_for_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_scanning_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/check_sp_wallet_setup_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/refresh_sp_wallet_for_wallet_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_sp_wallet_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
@@ -63,22 +58,52 @@ class _MockSyncCoordinator extends Mock
 
 class _MockGetUnconfirmed extends Mock implements OngoingSwaps {}
 
+abstract interface class _Read<T> {
+  T execute();
+}
+
 class _MockRefreshSpWalletForWallet extends Mock
-    implements RefreshSpWalletForWalletUsecase {}
+    implements _Read<Future<Result<SilentWallet?, WalletFailure>>> {}
 
 class _MockCheckSpWalletSetupForWallet extends Mock
-    implements CheckSpWalletSetupForWalletUsecase {}
+    implements _Read<Future<Result<bool, WalletFailure>>> {}
 
-class _MockCheckSpScanningForWallet extends Mock
-    implements CheckSpScanningForWalletUsecase {}
+class _MockCheckSpScanningForWallet extends Mock implements _Read<bool> {}
 
 class _MockExternalTorStatus extends Mock
     implements GetExternalTorProxyStatusUsecase {}
 
-class _MockCheckSpFeatureGate extends Mock
-    implements CheckSpFeatureGateForWalletUsecase {}
+class _HomeSilent extends Fake implements Silent {
+  final _MockRefreshSpWalletForWallet read;
+  final _MockCheckSpWalletSetupForWallet setup;
+  final _MockCheckSpScanningForWallet scanning;
+  final Stream<SilentUpdate> updates;
+  final bool enabled;
+  final bool unreadable;
+  _HomeSilent(
+    this.read,
+    this.setup,
+    this.scanning,
+    this.updates,
+    this.enabled,
+    this.unreadable,
+  );
 
-class _MockWatchSpWallet extends Mock implements WatchSpWalletUsecase {}
+  @override
+  Future<Result<bool, SilentFailure>> isFeatureEnabled() async =>
+      unreadable ? const Err(SilentUnexpected('unreadable')) : Ok(enabled);
+  @override
+  Future<Result<bool, SilentFailure>> isSetUp() async =>
+      (await setup.execute()).mapErr((_) => const SilentUnexpected('setup'));
+  @override
+  bool get isScanning => scanning.execute();
+  @override
+  Future<Result<SilentWallet?, SilentFailure>> refresh() async =>
+      (await read.execute()).mapErr((_) => const SilentUnexpected('read'));
+  @override
+  Stream<Result<SilentUpdate, SilentFailure>> watchUpdates() =>
+      updates.map(Ok.new);
+}
 
 // Keep the race regression runnable on the pre-provenance constructor too.
 // Both versions receive the same public snapshot data; assertions are identical.
@@ -139,7 +164,6 @@ WalletBloc _makeBloc({
   final watchStarted = _MockWatchStarted();
   final watchFinished = _MockWatchFinished();
   final watchElectrum = _MockWatchElectrumSyncResults();
-  final watchSp = _MockWatchSpWallet();
   final useDefaultGetWallets = getWallets == null;
   getWallets ??= _MockGetWalletsUsecase();
   syncCoordinator ??= _MockSyncCoordinator();
@@ -150,7 +174,6 @@ WalletBloc _makeBloc({
       .thenAnswer((_) => const Stream<Wallet>.empty());
   when(() => watchElectrum.execute())
       .thenAnswer((_) => const Stream<ElectrumSyncResult>.empty());
-  when(() => watchSp.execute()).thenAnswer((_) => spUpdates.map(Ok.new));
   // Default: not scanning. Tests that need the scan-gate override this.
   when(() => checkScanning!.execute()).thenReturn(false);
 
@@ -163,11 +186,6 @@ WalletBloc _makeBloc({
   when(() => checkWalletSyncing.execute(walletId: any(named: 'walletId')))
       .thenReturn(const Ok(false));
   when(() => checkWalletSyncing.execute()).thenReturn(const Ok(false));
-  final checkSpFeatureGate = _MockCheckSpFeatureGate();
-  when(() => checkSpFeatureGate.execute()).thenAnswer((_) async {
-    if (gateFailure case final failure?) return Err(failure);
-    return Ok(gateEnabled);
-  });
 
   return WalletBloc(
     readWalletUsecase: _ReadWallet(),
@@ -184,11 +202,16 @@ WalletBloc _makeBloc({
     syncWalletsUsecase: SyncWalletsUsecase(syncCoordinator.sync),
     ongoingSwaps: _MockGetUnconfirmed(),
     getExternalTorProxyStatusUsecase: _MockExternalTorStatus(),
-    checkSpWalletSetupForWalletUsecase: checkSetup,
-    checkSpScanningForWalletUsecase: checkScanning,
-    refreshSpWalletForWalletUsecase: refreshSp,
-    watchSpWalletUsecase: watchSp,
-    checkSpFeatureGateForWalletUsecase: checkSpFeatureGate,
+    silentHome: SilentHomeObservation(
+      _HomeSilent(
+        refreshSp,
+        checkSetup,
+        checkScanning,
+        spUpdates,
+        gateEnabled,
+        gateFailure != null,
+      ),
+    ),
   );
 }
 
@@ -547,6 +570,33 @@ void main() {
   });
 
   group('WalletBloc SP: observed update stream', () {
+    test('closing retires a pending Home read and cancels updates', () async {
+      final refresh = _MockRefreshSpWalletForWallet();
+      final setup = _MockCheckSpWalletSetupForWallet();
+      final pending = Completer<Result<SilentWallet?, WalletFailure>>();
+      var cancelled = false;
+      final updates = StreamController<SilentUpdate>(
+        onCancel: () => cancelled = true,
+      );
+      addTearDown(updates.close);
+      when(setup.execute).thenAnswer((_) async => const Ok(true));
+      when(refresh.execute).thenAnswer((_) => pending.future);
+      final bloc = _makeBloc(
+        refreshSp: refresh,
+        checkSetup: setup,
+        spUpdates: updates.stream,
+      );
+      await drive(bloc, const WalletStarted());
+      verify(refresh.execute).called(greaterThan(0));
+      final closing = bloc.close();
+      await pumpEventQueue();
+      expect(cancelled, isTrue);
+      pending.complete(Ok(_spWallet(9000)));
+      await closing;
+      expect(bloc.state.showSpWallet, isFalse);
+      expect(bloc.state.totalBalance(), 0);
+    });
+
     test(
       'subscribes to SP updates before startup wallet loading finishes',
       () async {
