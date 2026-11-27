@@ -122,6 +122,158 @@ void main() {
     expect(reads, 2);
   });
 
+  test(
+    'wallet freeze keeps one exact generation across ordered writes',
+    () async {
+      const first = (txId: 'first', vout: 0);
+      const second = (txId: 'second', vout: 0);
+      final committed = <FrozenOutpoint>[];
+      final store = _FreezeReads(
+        () async => Ok(List.of(committed)),
+        write: (rows) async {
+          expect(rows, [FrozenOutpoint(first, origin: descriptor.key.id)]);
+          committed.addAll(rows);
+          final revisions = RevisionStoreDatasource.openForeground(
+            revisionStorePath(directory.path),
+          );
+          try {
+            revisions.begin(descriptor.key, WriteIntent.delete);
+            revisions.finish(descriptor.key);
+            revisions.begin(descriptor.key, WriteIntent.create);
+            revisions.finish(descriptor.key, initializedDescriptor: descriptor);
+          } finally {
+            revisions.close();
+          }
+          return const Ok(null);
+        },
+      );
+      final sync = runtime(freezes: store);
+      final wrongNetwork = WalletKey(
+        id: descriptor.key.id,
+        network: BitcoinNetwork.testnet,
+      );
+      expect(
+        await sync.freezeWalletOutpoints(wrongNetwork, [first]),
+        isA<Err>(),
+      );
+      expect(committed, isEmpty);
+      expect(
+        await sync.freezeWalletOutpoints(descriptor.key, [first, second]),
+        isA<Err>().having(
+          (err) => err.failure,
+          'failure',
+          isA<SyncNotFoundFailure>(),
+        ),
+      );
+      expect(committed, [FrozenOutpoint(first, origin: descriptor.key.id)]);
+    },
+  );
+
+  test(
+    'attributed writes stop on the first refusal and unfreeze every origin',
+    () async {
+      const first = (txId: 'first', vout: 0);
+      const second = (txId: 'second', vout: 0);
+      const third = (txId: 'third', vout: 0);
+      const kept = [
+        FrozenOutpoint(first, origin: ''),
+        FrozenOutpoint(first, origin: 'wallet'),
+      ];
+      final committed = <FrozenOutpoint>[];
+      final attempts = <Outpoint>[];
+      final sync = runtime(
+        freezes: _FreezeReads(
+          () async => Ok(List.of(committed)),
+          write: (rows) async {
+            final row = rows.single;
+            attempts.add(row.outpoint);
+            if (row.outpoint == second) return const Err(SyncStorageFailure());
+            committed.add(row);
+            return const Ok(null);
+          },
+          remove: (outpoints) async {
+            final point = outpoints.single;
+            committed.removeWhere((row) => row.outpoint == point);
+            return const Ok(null);
+          },
+        ),
+      );
+      expect(
+        await sync.freezeAttributedOutpoints([
+          ...kept,
+          const FrozenOutpoint(second, origin: 'wallet'),
+          const FrozenOutpoint(third, origin: 'wallet'),
+        ]),
+        isA<Err>(),
+      );
+      expect(attempts, [first, first, second]);
+      expect(
+        await sync.listAttributedFreezes(),
+        isA<Ok>().having((ok) => ok.value, 'rows', kept),
+      );
+      expect(
+        await sync.readFrozenOutpoints(),
+        isA<Ok>().having((ok) => ok.value, 'outpoints', {first}),
+      );
+      expect(await sync.unfreezeOutpoints([first]), isA<Ok>());
+      expect(committed, isEmpty);
+    },
+  );
+
+  test('close waits for both Ark and committed freeze readback', () async {
+    const row = FrozenOutpoint((txId: 'fixture', vout: 0), origin: '');
+    final arkEntered = Completer<void>();
+    final finishArk = Completer<void>();
+    final reading = Completer<void>();
+    final finishRead = Completer<void>();
+    final journal = <String>[];
+    final sync = runtime(
+      freezes: _FreezeReads(
+        () async {
+          if (!journal.contains('committed')) return const Ok([]);
+          reading.complete();
+          await finishRead.future;
+          journal.add('readback failed');
+          return const Err(SyncStorageFailure());
+        },
+        write: (rows) async {
+          expect(rows, [row]);
+          journal.add('committed');
+          return const Ok(null);
+        },
+      ),
+    );
+    addTearDown(() {
+      if (!finishRead.isCompleted) finishRead.complete();
+      if (!finishArk.isCompleted) finishArk.complete();
+    });
+    final ark = sync.withBitcoinRevisionAdmission(descriptor.key, (_) async {
+      arkEntered.complete();
+      await finishArk.future;
+      journal.add('ark settled');
+    });
+    await arkEntered.future;
+    final freeze = sync.freezeAttributedOutpoints([row]);
+    await reading.future;
+    final closed = sync.close().then((result) {
+      journal.add('closed');
+      return result;
+    });
+    expectClosed(await sync.listAttributedFreezes());
+    expectClosed(
+      await sync.freezeWalletOutpoints(descriptor.key, [row.outpoint]),
+    );
+    expectClosed(await sync.unfreezeOutpoints([row.outpoint]));
+    expectClosed(await sync.freezeAttributedOutpoints([row]));
+    finishArk.complete();
+    expect(await ark, isA<Ok>());
+    expect(journal, ['committed', 'ark settled']);
+    finishRead.complete();
+    expect(await freeze, isA<Ok>(), reason: 'the write already committed');
+    expect(await closed, isA<Ok>());
+    expect(journal, ['committed', 'ark settled', 'readback failed', 'closed']);
+  });
+
   for (final error in <Object?>[
     null,
     Exception('callback'),
@@ -314,17 +466,20 @@ final class _Reservations implements FundingReservationPort {
 
 final class _FreezeReads implements FreezeStorePort {
   final Future<Result<List<FrozenOutpoint>, SyncFailure>> Function() _read;
+  final Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>)?
+  _write;
+  final Future<Result<void, SyncFailure>> Function(List<Outpoint>)? _remove;
 
-  _FreezeReads(this._read);
+  _FreezeReads(this._read, {this._write, this._remove});
 
   @override
   Future<Result<List<FrozenOutpoint>, SyncFailure>> readAll() => _read();
 
   @override
   Future<Result<void, SyncFailure>> freeze(List<FrozenOutpoint> rows) =>
-      throw StateError('Unexpected freeze');
+      _write?.call(rows) ?? (throw StateError('Unexpected freeze'));
 
   @override
   Future<Result<void, SyncFailure>> unfreeze(List<Outpoint> outpoints) =>
-      throw StateError('Unexpected unfreeze');
+      _remove?.call(outpoints) ?? (throw StateError('Unexpected unfreeze'));
 }

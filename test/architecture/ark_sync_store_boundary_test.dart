@@ -16,6 +16,41 @@ void main() {
     ], isEmpty);
   });
 
+  test('Coins and Labels cannot borrow the foreground Sync', () {
+    final runtime = File(
+      'packages/sync/lib/src/data/runtime/wallet_native_runtime.dart',
+    ).readAsStringSync();
+    final declarations = parseString(content: runtime).unit.declarations;
+    final native = declarations.whereType<ClassDeclaration>().singleWhere(
+      (node) => node.namePart.typeName.lexeme == 'WalletNativeRuntime',
+    );
+    expect(
+      native.body.members.whereType<MethodDeclaration>().map(
+        (node) => node.name.lexeme,
+      ),
+      isNot(contains('foreground')),
+    );
+    final sources = [
+      ...Directory('features/coins/lib').listSync(recursive: true),
+      ...Directory('packages/labels/lib').listSync(recursive: true),
+      File('lib/core_locator.dart'),
+      File('lib/features/wallet/wallet_core_locator.dart'),
+      File('lib/locator.dart'),
+      File('lib/init.dart'),
+      File('test/recoverbull_composition_test.dart'),
+    ];
+    // These other owners' foreground factories are not runtime loans.
+    final allowed = {'WalletHistoryEvents'};
+    final access = RegExp(r'(\w+)?\s*\.\s*foreground\b');
+    expect([
+      for (final file in sources.whereType<File>())
+        if (file.path.endsWith('.dart') && !file.path.endsWith('.g.dart'))
+          for (final match in access.allMatches(file.readAsStringSync()))
+            if (!allowed.contains(match.group(1)))
+              '${file.path}: ${match.group(0)}',
+    ], isEmpty);
+  });
+
   test('detects both direct and multiline store loans', () {
     expect(
       _loans('''

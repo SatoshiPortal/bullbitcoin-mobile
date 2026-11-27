@@ -20,7 +20,7 @@ void main() {
     authorities.clear();
   });
 
-  FreezeAuthority open(MemoryFreezeStore store) {
+  FreezeAuthority open(FreezeStorePort store) {
     final authority = FreezeAuthority(store);
     authorities.add(authority);
     return authority;
@@ -228,6 +228,25 @@ void main() {
       await subscription.cancel();
     });
 
+    test('a committed freeze with failed readback invalidates coins', () async {
+      final store = _FailedReadbackStore();
+      final authority = open(store);
+      final wallet = walletOver(projectionsOver(authority), key, 0);
+      ok(await wallet.load());
+      ok(await authority.read());
+      final subscription = wallet.coins.watch().listen((_) {});
+      addTearDown(subscription.cancel);
+      await pumpEventQueue();
+      expect(wallet.coins.now.status, ValueStatus.ready);
+
+      final point = outpoint('b', 1);
+      expect(await wallet.coins.freeze(point), isA<Ok>());
+      expect(store.committed, [FrozenOutpoint(point, origin: key.id)]);
+      await pumpEventQueue();
+      expect(wallet.coins.now.status, ValueStatus.unavailable);
+      expect(wallet.coins.now.failure, isA<SyncStorageFailure>());
+    });
+
     test('freeze and unfreeze republish the coins without a reload', () async {
       final authority = open(MemoryFreezeStore());
       final source = _CoinSource([coin('a', 0), coin('b', 1)]);
@@ -301,6 +320,24 @@ void main() {
       expect(ok(await authority.read()), isEmpty);
     });
   });
+}
+
+final class _FailedReadbackStore implements FreezeStorePort {
+  final committed = <FrozenOutpoint>[];
+
+  @override
+  Future<Result<List<FrozenOutpoint>, SyncFailure>> readAll() async =>
+      committed.isEmpty ? const Ok([]) : const Err(SyncStorageFailure());
+
+  @override
+  Future<Result<void, SyncFailure>> freeze(List<FrozenOutpoint> rows) async {
+    committed.addAll(rows);
+    return const Ok(null);
+  }
+
+  @override
+  Future<Result<void, SyncFailure>> unfreeze(List<Outpoint> outpoints) async =>
+      fail('Unexpected unfreeze');
 }
 
 final class _CoinSource implements FrameSource {
