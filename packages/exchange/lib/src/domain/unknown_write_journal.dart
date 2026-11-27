@@ -2,8 +2,9 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import 'exchange_environment.dart';
+import 'exchange_failure.dart';
 
-/// The exchange writes whose [WriteOutcomeUnknown] is journaled: each can
+/// The exchange writes whose [ExchangeWriteOutcomeUnknownFailure] is journaled: each can
 /// move money or create something on the account if sent twice, or leaves
 /// the account in a state the app can't tell without a re-read.
 enum UnknownWriteKind {
@@ -105,30 +106,25 @@ final class UnknownWrite {
   bool isOverAge(DateTime now) => now.difference(recordedAt) > maxAge;
 }
 
-/// The journal could not be read or written.
-final class UnknownWriteJournalFailure extends Failure {
-  const UnknownWriteJournalFailure([super.logMessage]);
-}
-
 /// Persistent record of exchange writes that ended in an unknown outcome. An
 /// entry is recorded before the caller moves on and leaves the open set only
 /// when a re-read settles it; the write itself is never replayed.
 abstract interface class UnknownWriteJournal {
   @useResult
-  Future<Result<UnknownWrite, UnknownWriteJournalFailure>> record(
+  Future<Result<UnknownWrite, ExchangeJournalFailure>> record(
     UnknownWriteDraft draft,
   );
 
   /// The open entries of [environment], oldest first.
   @useResult
-  Future<Result<List<UnknownWrite>, UnknownWriteJournalFailure>> open(
+  Future<Result<List<UnknownWrite>, ExchangeJournalFailure>> open(
     ExchangeEnvironment environment,
   );
 
   /// Settles the entry [id]. Settling an entry that is already settled or
   /// unknown changes nothing.
   @useResult
-  Future<Result<void, UnknownWriteJournalFailure>> settle(
+  Future<Result<void, ExchangeJournalFailure>> settle(
     String id,
     UnknownWriteSettlement settlement,
   );

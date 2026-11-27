@@ -1,7 +1,5 @@
 import 'package:exchange/exchange.dart';
 
-import '../exchange_support_chat_failure.dart';
-
 import 'package:primitives/primitives.dart';
 
 import '../repositories/attachment_picker_repository.dart';
@@ -14,6 +12,6 @@ class PickImageAttachmentsUsecase {
   PickImageAttachmentsUsecase({required this._repository});
 
   @useResult
-  Future<Result<List<SupportChatMessageAttachment>, ExchangeSupportChatFailure>>
+  Future<Result<List<SupportChatMessageAttachment>, ExchangeFailure>>
   execute() => _repository.pickImages();
 }

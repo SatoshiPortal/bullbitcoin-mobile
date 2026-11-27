@@ -3,7 +3,6 @@ import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../domain/exchange_support_chat_failure.dart';
 import '../domain/repositories/attachment_picker_repository.dart';
 
 class AttachmentPickerRepositoryImpl implements AttachmentPickerRepository {
@@ -20,7 +19,7 @@ class AttachmentPickerRepositoryImpl implements AttachmentPickerRepository {
   /// plugin ever checks is `CAMERA`, and only for capture, which this call never
   /// reaches.
   @override
-  Future<Result<List<SupportChatMessageAttachment>, ExchangeSupportChatFailure>>
+  Future<Result<List<SupportChatMessageAttachment>, ExchangeFailure>>
   pickImages() async {
     try {
       final images = await _picker.pickMultiImage();
@@ -31,7 +30,7 @@ class AttachmentPickerRepositoryImpl implements AttachmentPickerRepository {
         error: e,
         trace: st,
       );
-      return Err(PickFilesFailure('$e'));
+      return Err(ExchangeChatPickImagesFailure('$e'));
     }
   }
 

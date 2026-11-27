@@ -1,7 +1,5 @@
 import 'package:exchange/exchange.dart';
 
-import '../domain/exchange_settings_failure.dart';
-
 import 'package:primitives/primitives.dart' show FormatAmount;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,7 +10,7 @@ abstract class StatisticsState with _$StatisticsState {
   const factory StatisticsState({
     OrderStatistics? stats,
     @Default(false) bool isLoading,
-    ExchangeSettingsFailure? failure,
+    ExchangeFailure? failure,
   }) = _StatisticsState;
 
   const StatisticsState._();

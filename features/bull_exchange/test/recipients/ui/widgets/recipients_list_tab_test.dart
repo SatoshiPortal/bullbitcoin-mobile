@@ -7,6 +7,8 @@ import 'package:bull_exchange/src/recipients/domain/usecases/watch_virtual_iban_
 import 'package:bull_exchange/src/recipients/domain/entities/account_owner_name.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipients_list_tab.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/src/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
@@ -18,6 +20,7 @@ import 'package:bull_ui/bull_ui.dart'
     show BullButton, BullSegmented, BullShimmerBox;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -40,7 +43,7 @@ final _recipient = recipientFixture(
 void main() {
   late _MockRecipientsBloc bloc;
   late RecipientsServices services;
-  late StreamController<Result<VirtualIban?, RecipientsFailure>> events;
+  late StreamController<Result<VirtualIban?, ExchangeFailure>> events;
 
   setUp(() {
     bloc = _MockRecipientsBloc();
@@ -329,8 +332,8 @@ void main() {
       isFalse,
     );
     for (final next in [
-      initial.copyWith(isLoadingRecipients: true),
-      initial.copyWith(recipients: []),
+      initial.copyWith(listLoad: const ListLoadingFirst(1)),
+      initial.copyWith(recipients: <RecipientViewModel>[]),
     ]) {
       updates.add(next);
       await tester.pump();
@@ -361,8 +364,7 @@ void main() {
           isOwner: true,
         ),
         jurisdictionFilter: Jurisdiction.europe,
-        failedToLoadConfidentialSepaAvailability:
-            const RecipientsNetworkFailure(),
+        sepaRead: const SepaReadFailed(ExchangeNetworkFailure()),
         recipients: [_recipient],
       ),
     );
@@ -393,8 +395,7 @@ void main() {
         ),
         jurisdictionFilter: Jurisdiction.europe,
         confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
-        failedToLoadConfidentialSepaAvailability:
-            const RecipientsNetworkFailure(),
+        sepaRead: const SepaReadFailed(ExchangeNetworkFailure()),
         recipients: [confidential],
       ),
     );
@@ -619,7 +620,7 @@ void main() {
         confidentialSepaAvailability: ConfidentialSepaAvailability.ready,
         jurisdictionFilter: Jurisdiction.europe,
         sepaType: RecipientType.confidentialSepaEur,
-        isLoadingRecipients: true,
+        listLoad: const ListLoadingFirst(1),
         recipients: [interac],
         totalRecipients: 1,
         loadedPages: 1,

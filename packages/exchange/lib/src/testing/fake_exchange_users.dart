@@ -20,7 +20,7 @@ abstract interface class ExchangeUserOperations {
 Exchange fakeExchangeUsers(
   ExchangeUserOperations mainnet,
   ExchangeUserOperations testnet, {
-  ExchangeOrders Function(ExchangeEnvironment)? orders,
+  OrdersRepository Function(ExchangeEnvironment)? orders,
   Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
   ExchangeAccessLifecycle? access,
 }) {

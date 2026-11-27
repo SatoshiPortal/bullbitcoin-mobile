@@ -20,7 +20,7 @@ class _MockWatchVirtualIbanUsecase extends Mock
 class _MockGetAccountOwnerNameUsecase extends Mock
     implements GetAccountOwnerNameUsecase {}
 
-typedef _Event = Result<VirtualIban?, RecipientsFailure>;
+typedef _Event = Result<VirtualIban?, ExchangeFailure>;
 
 final _active = VirtualIban.fromBankDetails(
   iban: 'FR7616958000016918327146718',

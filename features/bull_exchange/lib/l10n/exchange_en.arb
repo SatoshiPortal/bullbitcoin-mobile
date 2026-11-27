@@ -86,7 +86,7 @@
   },
   "exchangeErrorNetwork": "Check your internet connection and try again.",
   "@exchangeErrorNetwork": {
-    "description": "Shown when the exchange API could not be reached or timed out. Same wording as recipientsErrorNetwork."
+    "description": "Shown when the exchange API could not be reached or timed out."
   },
   "exchangeErrorSavingPreferences": "Your preferences could not be saved. Please try again.",
   "@exchangeErrorSavingPreferences": {
@@ -1161,7 +1161,7 @@
   },
   "fundExchangeErrorNetwork": "Check your internet connection and try again.",
   "@fundExchangeErrorNetwork": {
-    "description": "Shown when a funding request could not reach the server or timed out. Same wording as recipientsErrorNetwork."
+    "description": "Shown when a funding request could not reach the server or timed out."
   },
   "fundExchangeMethodConfidentialSepa": "Confidential SEPA",
   "@fundExchangeMethodConfidentialSepa": {
@@ -1294,10 +1294,6 @@
   "exchangeSettingsSignedOut": "You are no longer signed in to the exchange. Sign in again to change these settings.",
   "@exchangeSettingsSignedOut": {
     "description": "Exchange settings: the session ended or expired; a retry can't help (SET-3)"
-  },
-  "exchangeBitcoinWalletsBusy": "Another exchange request is still running. Try again in a moment.",
-  "@exchangeBitcoinWalletsBusy": {
-    "description": "Default wallets: a save or delete was refused because another exchange write runs or is unsettled"
   },
   "exchangeBitcoinWalletsUnsetSuccess": "Wallet address removed",
   "@exchangeBitcoinWalletsUnsetSuccess": {
@@ -2033,10 +2029,6 @@
   "recipientsErrorBillerSearchFailed": "Billers could not be searched. Please try again.",
   "@recipientsErrorBillerSearchFailed": {
     "description": "Shown when searching the CAD biller directory fails."
-  },
-  "recipientsErrorNetwork": "Check your internet connection and try again.",
-  "@recipientsErrorNetwork": {
-    "description": "Shown when a recipients request could not reach the server or timed out."
   },
   "recipientsListPullToRetry": "Pull down to retry.",
   "@recipientsListPullToRetry": {

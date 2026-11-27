@@ -7,11 +7,14 @@ import 'package:go_router/go_router.dart';
 import '../../default_wallets/default_wallets_payout_fields.dart';
 import '../../default_wallets/ui/default_wallets_router.dart';
 import '../../session/exchange_access_builder.dart';
+import '../domain/usecases/delete_exchange_account_usecase.dart';
 import '../domain/usecases/get_account_info_usecase.dart';
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/get_exchange_statistics_usecase.dart';
 import '../domain/usecases/get_secure_file_upload_status_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
+import '../domain/usecases/pick_exchange_document_usecase.dart';
+import '../domain/usecases/sign_out_of_exchange_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
 import '../presentation/account_info_cubit.dart';
 import '../presentation/exchange_preferences_bloc.dart';
@@ -93,7 +96,9 @@ class ExchangeSettingsRouter {
         signedOutMessage: config.signedOutMessage,
         buildAccountActions: (showDeleteAccount) => ExchangeAccountActions(
           showDeleteAccount: showDeleteAccount,
-          exchange: config.exchange,
+          session: config.exchange().currentSession,
+          deleteAccount: DeleteExchangeAccountUsecase(config.exchange()),
+          signOut: SignOutOfExchangeUsecase.of(config.exchange()),
           failureMessage: config.accountFailureMessage,
           hasAccount: config.hasAccount,
         ),
@@ -135,14 +140,12 @@ class ExchangeSettingsRouter {
         create: (_) {
           final exchange = config.exchange();
           return ExchangePreferencesBloc(
-            getExchangePreferencesUsecase: GetExchangePreferencesUsecase(
-              exchange: exchange,
-            ),
-            updateExchangePreferencesUsecase: UpdateExchangePreferencesUsecase(
-              save: config.savePreferences,
-            ),
-            writeGate: exchange.writeGate,
             session: exchange.currentSession,
+            getPreferences: GetExchangePreferencesUsecase(exchange: exchange),
+            updatePreferences: UpdateExchangePreferencesUsecase(
+              save: config.savePreferences,
+              writeGate: exchange.writeGate,
+            ),
           );
         },
         child: ExchangePreferencesScreen(refreshSession: config.refreshSession),
@@ -153,11 +156,14 @@ class ExchangeSettingsRouter {
       path: ExchangeSettingsRoute.secureFileUpload.path,
       builder: (context, state) => BlocProvider(
         create: (_) => SecureUploadBloc(
-          getUploadStatusUsecase: GetSecureFileUploadStatusUsecase(
+          session: config.exchange().currentSession,
+          getUploadStatus: GetSecureFileUploadStatusUsecase(
             exchange: config.exchange(),
           ),
-          uploadDocumentUsecase: UploadExchangeDocumentUsecase(
-            fileSystem: const FileSystem.open(),
+          pickDocument: const PickExchangeDocumentUsecase(
+            fileSystem: FileSystem.open(),
+          ),
+          uploadDocument: UploadExchangeDocumentUsecase(
             exchange: config.exchange(),
           ),
         ),

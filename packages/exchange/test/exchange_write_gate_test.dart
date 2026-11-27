@@ -19,17 +19,17 @@ const _test = ExchangeSession(
 
 final class _BrokenJournal implements UnknownWriteJournal {
   @override
-  Future<Result<List<UnknownWrite>, UnknownWriteJournalFailure>> open(
+  Future<Result<List<UnknownWrite>, ExchangeJournalFailure>> open(
     ExchangeEnvironment environment,
-  ) async => const Err(UnknownWriteJournalFailure('read failed'));
+  ) async => const Err(ExchangeJournalFailure('read failed'));
 
   @override
-  Future<Result<UnknownWrite, UnknownWriteJournalFailure>> record(
+  Future<Result<UnknownWrite, ExchangeJournalFailure>> record(
     UnknownWriteDraft draft,
   ) => throw StateError('Unexpected record');
 
   @override
-  Future<Result<void, UnknownWriteJournalFailure>> settle(
+  Future<Result<void, ExchangeJournalFailure>> settle(
     String id,
     UnknownWriteSettlement settlement,
   ) => throw StateError('Unexpected settle');
@@ -48,8 +48,11 @@ Future<UnknownWrite> _record(
       orderId: 'o-1',
     ),
   );
-  return (recorded as Ok<UnknownWrite, UnknownWriteJournalFailure>).value;
+  return (recorded as Ok<UnknownWrite, ExchangeJournalFailure>).value;
 }
+
+/// The gate's answer in these tests: the write's value, or the refusal.
+Object _refused(WriteGateRefusal refusal) => refusal;
 
 void main() {
   test('a write runs when the gate is free and releases it', () async {
@@ -58,8 +61,9 @@ void main() {
       _main,
       FinancialWriteKind.orderConfirm,
       () async => 'done',
+      refused: _refused,
     );
-    expect((answer as GateAdmitted<String>).result, 'done');
+    expect(answer, 'done');
     expect(gate.inFlight(ExchangeEnvironment.mainnet), isNull);
   });
 
@@ -72,31 +76,30 @@ void main() {
         _main,
         FinancialWriteKind.orderCreate,
         () => first.future,
+        refused: _refused,
       );
       var secondSent = false;
       final second = await gate.run(_main, FinancialWriteKind.payin, () async {
         secondSent = true;
         return 'second';
-      });
+      }, refused: _refused);
       expect(secondSent, isFalse);
-      expect(
-        (second as GateRefused<String>).refusal,
-        const WriteGateBusy(FinancialWriteKind.orderCreate),
-      );
+      expect(second, const WriteGateBusy(FinancialWriteKind.orderCreate));
       expect(
         gate.inFlight(ExchangeEnvironment.mainnet),
         FinancialWriteKind.orderCreate,
       );
 
       first.complete('first');
-      expect((await running as GateAdmitted<String>).result, 'first');
+      expect((await running), 'first');
       expect(gate.inFlight(ExchangeEnvironment.mainnet), isNull);
       final third = await gate.run(
         _main,
         FinancialWriteKind.payin,
         () async => 'third',
+        refused: _refused,
       );
-      expect(third, isA<GateAdmitted<String>>());
+      expect(third, isA<String>());
     },
   );
 
@@ -107,13 +110,15 @@ void main() {
       _main,
       FinancialWriteKind.orderCreate,
       () => first.future,
+      refused: _refused,
     );
     final other = await gate.run(
       _test,
       FinancialWriteKind.withdrawal,
       () async => 'other',
+      refused: _refused,
     );
-    expect((other as GateAdmitted<String>).result, 'other');
+    expect(other, 'other');
     first.complete('first');
     await running;
   });
@@ -130,9 +135,10 @@ void main() {
         sent = true;
         return 'dca';
       },
+      refused: _refused,
     );
     expect(sent, isFalse);
-    expect((answer as GateRefused<String>).refusal, WriteGateUnsettled(entry));
+    expect(answer, WriteGateUnsettled(entry));
     expect(gate.inFlight(ExchangeEnvironment.mainnet), isNull);
   });
 
@@ -150,22 +156,24 @@ void main() {
       _main,
       FinancialWriteKind.withdrawal,
       () async => 'sent',
+      refused: _refused,
     );
-    expect((answer as GateAdmitted<String>).result, 'sent');
+    expect(answer, 'sent');
   });
 
   group('entry age', () {
     final recordedAt = DateTime.utc(2026, 11, 24, 8);
 
-    Future<GatedWrite<String>> runAt(
-      InMemoryUnknownWriteJournal journal,
-      Duration after,
-    ) => withClock(
-      Clock.fixed(recordedAt.add(after)),
-      () =>
-          ExchangeWriteGate(journal: journal)
-              .run(_main, FinancialWriteKind.payin, () async => 'paid'),
-    );
+    Future<Object> runAt(InMemoryUnknownWriteJournal journal, Duration after) =>
+        withClock(
+          Clock.fixed(recordedAt.add(after)),
+          () => ExchangeWriteGate(journal: journal).run(
+            _main,
+            FinancialWriteKind.payin,
+            () async => 'paid',
+            refused: _refused,
+          ),
+        );
 
     Future<InMemoryUnknownWriteJournal> journalWithEntry() async {
       final journal = InMemoryUnknownWriteJournal();
@@ -178,7 +186,7 @@ void main() {
 
     test('an open entry up to maxAge holds the gate', () async {
       final answer = await runAt(await journalWithEntry(), UnknownWrite.maxAge);
-      expect(answer, isA<GateRefused<String>>());
+      expect(answer, isA<WriteGateRefusal>());
     });
 
     test('an open entry older than maxAge no longer holds it', () async {
@@ -186,7 +194,7 @@ void main() {
         await journalWithEntry(),
         UnknownWrite.maxAge + const Duration(seconds: 1),
       );
-      expect((answer as GateAdmitted<String>).result, 'paid');
+      expect(answer, 'paid');
     });
 
     test('a settled entry never holds it, whatever its age', () async {
@@ -194,7 +202,7 @@ void main() {
       final entry = journal.entries.single.$1;
       await journal.settle(entry.id, UnknownWriteSettlement.expired);
       final answer = await runAt(journal, Duration.zero);
-      expect((answer as GateAdmitted<String>).result, 'paid');
+      expect(answer, 'paid');
     });
   });
 
@@ -206,8 +214,9 @@ void main() {
       _main,
       FinancialWriteKind.orderCreate,
       () async => 'sent',
+      refused: _refused,
     );
-    expect(answer, isA<GateAdmitted<String>>());
+    expect(answer, isA<String>());
   });
 
   test(
@@ -244,22 +253,21 @@ void main() {
         sent = true;
         return 'sent';
       },
+      refused: _refused,
     );
     expect(sent, isFalse);
-    expect(
-      (answer as GateRefused<String>).refusal,
-      const WriteGateJournalUnreadable(),
-    );
+    expect(answer, const WriteGateJournalUnreadable());
     expect(gate.inFlight(ExchangeEnvironment.mainnet), isNull);
   });
 
   test('a write that throws releases the gate', () async {
     final gate = ExchangeWriteGate();
     await expectLater(
-      gate.run<String>(
+      gate.run<Object>(
         _main,
         FinancialWriteKind.preferenceWrite,
         () async => throw StateError('bug'),
+        refused: _refused,
       ),
       throwsStateError,
     );
@@ -275,7 +283,8 @@ void main() {
       _main,
       FinancialWriteKind.defaultWalletSave,
       () async => 'sent',
+      refused: _refused,
     );
-    expect((answer as GateRefused<String>).refusal, WriteGateUnsettled(entry));
+    expect(answer, WriteGateUnsettled(entry));
   });
 }

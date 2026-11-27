@@ -2,7 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../domain/manage_exchange_access_usecase.dart';
+import '../domain/exchange_access_actions.dart';
+import '../domain/usecases/enable_exchange_access_usecase.dart';
+import '../domain/usecases/get_exchange_access_usecase.dart';
+import '../domain/usecases/resolve_exchange_access_usecase.dart';
+import '../domain/usecases/sign_out_of_exchange_usecase.dart';
+import '../domain/usecases/watch_exchange_access_usecase.dart';
 import '../presentation/exchange_access_settings_bloc.dart';
 import 'screens/exchange_access_settings_screen.dart';
 
@@ -31,8 +36,11 @@ GoRoute exchangeAccessSettingsRoute({
   path: ExchangeAccessSettingsNavigation.path,
   builder: (context, state) => BlocProvider(
     create: (_) => ExchangeAccessSettingsBloc(
-      WatchExchangeAccessUsecase(host.actions),
-      ManageExchangeAccessUsecase(host.actions),
+      getAccess: GetExchangeAccessUsecase(host.actions),
+      watchAccess: WatchExchangeAccessUsecase(host.actions),
+      enableAccess: EnableExchangeAccessUsecase(host.actions),
+      signOut: SignOutOfExchangeUsecase(host.actions),
+      resolveAccess: ResolveExchangeAccessUsecase(host.actions),
     ),
     child: Builder(
       builder: (context) => ExchangeAccessSettingsScreen(

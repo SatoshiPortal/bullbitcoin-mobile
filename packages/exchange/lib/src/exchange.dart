@@ -6,28 +6,32 @@ import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 import 'package:preferences/preferences.dart';
 
-import 'data/bbx_api_account_repository.dart';
-import 'data/bbx_api_exchange_recipient_repository.dart';
-import 'data/bbx_api_funding_rails.dart';
-import 'data/bbx_api_kyc_repository.dart';
-import 'data/bbx_api_limit_order_repository.dart';
+import 'data/bbx_api_account_datasource.dart';
+import 'data/bbx_api_default_wallets_datasource.dart';
+import 'data/bbx_api_funding_repository.dart';
+import 'data/bbx_api_kyc_datasource.dart';
+import 'data/bbx_api_limit_orders_repository.dart';
 import 'data/bbx_api_notification_datasource.dart';
-import 'data/bbx_api_order_stats_repository.dart';
-import 'data/bbx_api_order_repository.dart';
-import 'data/bbx_api_support_chat_repository.dart';
-import 'data/bbx_api_user_repository.dart';
-import 'data/bbx_api_virtual_iban_repository.dart';
+import 'data/bbx_api_order_stats_datasource.dart';
+import 'data/bbx_api_orders_repository.dart';
+import 'data/bbx_api_support_chat_datasource.dart';
+import 'data/bbx_api_user_datasource.dart';
+import 'data/bbx_api_virtual_ibans_repository.dart';
 import 'data/exchange_call_classifier.dart';
 import 'data/exchange_notification_service.dart';
 import 'data/exchange_kyc_configuration_repository.dart';
-import 'data/journaling_exchange_orders.dart';
-import 'data/journaling_exchange_recipients.dart';
+import 'data/journaling_orders_repository.dart';
+import 'data/journaling_recipients_repository.dart';
 import 'data/pending_orders.dart';
+import 'domain/catalog/jurisdiction.dart';
 import 'domain/entities/announcement.dart';
+import 'domain/entities/funding_institution.dart';
 import 'domain/entities/btc_network.dart';
 import 'domain/entities/confidential_sepa_availability.dart';
 import 'domain/entities/default_wallet.dart';
 import 'domain/entities/limit_order.dart';
+import 'domain/entities/limit_order_draft.dart';
+import 'domain/entities/limit_order_rate.dart';
 import 'domain/entities/notification_message.dart';
 import 'domain/entities/order_stats.dart';
 import 'domain/entities/support_chat_message.dart';
@@ -35,22 +39,23 @@ import 'domain/entities/support_chat_message_attachment.dart';
 import 'domain/entities/user_summary.dart';
 import 'domain/entities/virtual_iban.dart';
 import 'domain/exchange_access.dart';
+import 'funding/funding_request.dart';
 import 'domain/exchange_availability.dart';
 import 'domain/exchange_basic_auth.dart';
 import 'domain/exchange_account_deletion_outcome.dart';
-import 'domain/exchange_call_result.dart';
 import 'domain/exchange_environment.dart';
 import 'domain/exchange_failure.dart';
-import 'domain/exchange_funding.dart';
 import 'domain/exchange_kyc_configuration.dart';
-import 'domain/exchange_limit_orders.dart';
-import 'domain/exchange_orders.dart';
-import 'domain/exchange_virtual_ibans.dart';
+import 'domain/repositories/orders_repository.dart';
 import 'domain/exchange_write_gate.dart';
+import 'domain/repositories/funding_repository.dart';
+import 'domain/repositories/limit_orders_repository.dart';
+import 'domain/repositories/virtual_ibans_repository.dart';
 import 'domain/order_create_journal.dart';
 import 'domain/unknown_write_journal.dart';
 import 'setup/exchange_access_lifecycle.dart';
-import 'recipients/exchange_recipients.dart';
+import 'recipients/data/bbx_api_recipients_repository.dart';
+import 'recipients/domain/repositories/recipients_repository.dart';
 import 'session/complete_exchange_authentication_usecase.dart';
 import 'session/exchange_auth_repository_impl.dart';
 import 'session/exchange_web_auth_datasource.dart';
@@ -73,13 +78,13 @@ typedef _SaveUserPreference = Future<Result<void, ExchangeFailure>> Function(
 });
 typedef _DefaultWalletOperations = ({
   Future<Result<DefaultWallets, ExchangeFailure>> Function() get,
-  Future<ExchangeWrite<DefaultWallet>> Function({
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> Function({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   })
   save,
-  Future<ExchangeWrite<void>> Function({
+  Future<Result<void, ExchangeWriteFailure>> Function({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
@@ -96,20 +101,27 @@ typedef ExchangeSessionReader =
     Function();
 
 typedef ExchangeChatOperations = ({
-  Future<Result<List<SupportChatMessage>, ExchangeFailure>> Function({
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> Function(
+    ExchangeSession, {
     int? page,
     int? pageSize,
   })
   getMessages,
-  Future<Result<void, ExchangeFailure>> Function({
+  Future<Result<void, ExchangeFailure>> Function(
+    ExchangeSession, {
     required String text,
     List<SupportChatMessageAttachment>? attachments,
   })
   sendMessage,
-  Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(String)
+  Future<Result<SupportChatMessageAttachment, ExchangeFailure>> Function(
+    ExchangeSession,
+    String,
+  )
   getAttachment,
-  Future<ExchangeRead<int>> Function(ExchangeSession) getUnreadCount,
-  Future<ExchangeWrite<void>> Function(ExchangeSession) markAllRead,
+  Future<Result<int, ExchangeReadFailure>> Function(ExchangeSession)
+  getUnreadCount,
+  Future<Result<void, ExchangeWriteFailure>> Function(ExchangeSession)
+  markAllRead,
 });
 
 typedef ExchangeNotificationBindings = ({
@@ -154,12 +166,12 @@ final class Exchange {
   _listAnnouncements;
   final _SaveUserPreference _saveUserPreference;
   final _DefaultWalletOperations _defaultWallets;
-  final ExchangeOrders Function(ExchangeEnvironment) _orders;
+  final OrdersRepository Function(ExchangeEnvironment) _orders;
   final ExchangeChatOperations _chat;
   final ExchangeNotificationOperations _notifications;
-  final ExchangeLimitOrders limitOrders;
-  final ExchangeFunding funding;
-  final ExchangeVirtualIbans virtualIbans;
+  final LimitOrdersRepository limitOrders;
+  final FundingRepository funding;
+  final VirtualIbansRepository virtualIbans;
   final ExchangeKycConfigurationRepository? _kyc;
   final Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()
   _getConfidentialSepaAvailability;
@@ -167,7 +179,7 @@ final class Exchange {
   final Preferences? _sessionPreferences;
   final ExchangeWebAuthEndpoints? _webAuthEndpoints;
   final ExchangeBasicAuthStore? _basicAuth;
-  final ExchangeRecipients recipients;
+  final RecipientsRepository recipients;
   final UnknownWriteJournal? _unknownWrites;
   final Future<Result<_SessionPoint, ExchangeFailure>> Function()
   _readSessionPoint;
@@ -310,7 +322,7 @@ final class Exchange {
                 (result is Ok<T, ExchangeFailure> ||
                     (result is Err<T, ExchangeFailure> &&
                         result.failure
-                            is RecipientsSaveOutcomeUnknownFailure))) {
+                            is ExchangeRecipientsSaveOutcomeUnknownFailure))) {
               return result;
             }
             if (stale) return const Err(ExchangeOperationStaleFailure());
@@ -318,7 +330,7 @@ final class Exchange {
               switch (await sessionSnapshot()) {
                 case Ok(value: final current) when current == value:
                   break;
-                case _:
+                case Ok() || Err():
                   return const Err(ExchangeOperationStaleFailure());
               }
             }
@@ -344,32 +356,8 @@ final class Exchange {
       readSession: sessionSnapshot,
       openClient: openClient,
     );
-    Future<Result<T, ExchangeFailure>> limitOrder<T>(
-      ExchangeLimitOrderProblem problem,
-      Future<Result<T, ExchangeFailure>> Function(BbxApiLimitOrderRepository)
-      call,
-    ) => withClient(
-      (client) => call(BbxApiLimitOrderRepository(client)),
-      credentialReadFailure: () =>
-          ExchangeLimitOrderFailure(problem, 'Exchange credential unavailable'),
-    );
     final fundingReturnUrl =
         paymentReturnUrl ?? Uri.parse('https://app.bullbitcoin.com');
-    Future<ExchangeRead<T>> fundRead<T>(
-      ExchangeSession session,
-      Future<ExchangeRead<T>> Function(BbxApiFundingRails) call,
-    ) async => switch (await withClient<ExchangeRead<T>>(
-      (client) async => Ok(
-        await call(
-          BbxApiFundingRails(client, paymentReturnUrl: fundingReturnUrl),
-        ),
-      ),
-      environment: session.environment,
-      completionCheck: _CompletionCheck.read,
-    )) {
-      Ok(:final value) => value,
-      Err(:final failure) => readOfFailure<T>(failure),
-    };
     ExchangeNotificationService? notificationService;
     bool closed = false;
     ExchangeNotificationService service() {
@@ -416,10 +404,10 @@ final class Exchange {
     return Exchange._(
       inventory.hasPendingOrders,
       () => withClient(
-        (client) => BbxApiOrderStatsRepository(api: client).getOrderStats(),
+        (client) => BbxApiOrderStatsDatasource(api: client).getOrderStats(),
       ),
       ({required fileBytes, required fileName}) => withClient(
-        (client) => BbxApiKycRepository(api: client).uploadDocument(
+        (client) => BbxApiKycDatasource(api: client).uploadDocument(
           fileBytes: fileBytes,
           fileName: fileName,
           docType: 'ID',
@@ -427,16 +415,16 @@ final class Exchange {
         ),
       ),
       (environment) => withClient(
-        (client) => BbxApiAccountRepository(client).getAccount(),
+        (client) => BbxApiAccountDatasource(client).getAccount(),
         environment: environment,
         credentialReadFailure: ExchangeAccountUnavailableFailure.new,
       ),
       (environment) => withClient(
-        (client) => BbxApiUserRepository(api: client).getUserSummary(),
+        (client) => BbxApiUserDatasource(api: client).getUserSummary(),
         environment: environment,
       ),
       (environment) => withClient(
-        (client) => BbxApiUserRepository(api: client).listAnnouncements(),
+        (client) => BbxApiUserDatasource(api: client).listAnnouncements(),
         environment: environment,
       ),
       (
@@ -447,7 +435,7 @@ final class Exchange {
         autoBuyEnabled,
         emailNotificationsEnabled,
       }) => withClient(
-        (client) => BbxApiUserRepository(api: client).saveUserPreference(
+        (client) => BbxApiUserDatasource(api: client).saveUserPreference(
           language: language,
           currency: currency,
           dcaEnabled: dcaEnabled,
@@ -459,8 +447,7 @@ final class Exchange {
       (
         get: () => withClient(
           (client) =>
-              BbxApiExchangeRecipientRepository(api: client)
-                  .getDefaultWallets(),
+              BbxApiDefaultWalletsDatasource(api: client).getDefaultWallets(),
           completionCheck: _CompletionCheck.read,
         ),
         save:
@@ -468,9 +455,11 @@ final class Exchange {
               required walletType,
               required address,
               existingRecipientId,
-            }) async => switch (await withClient<ExchangeWrite<DefaultWallet>>(
+            }) async => switch (await withClient<
+              Result<DefaultWallet, ExchangeWriteFailure>
+            >(
               (client) async => Ok(
-                await BbxApiExchangeRecipientRepository(api: client)
+                await BbxApiDefaultWalletsDatasource(api: client)
                     .saveDefaultWallet(
                       walletType: walletType,
                       address: address,
@@ -487,22 +476,23 @@ final class Exchange {
               required recipientId,
               required walletType,
               required address,
-            }) async => switch (await withClient<ExchangeWrite<void>>(
-              (client) async => Ok(
-                await BbxApiExchangeRecipientRepository(api: client)
-                    .deleteDefaultWallet(
-                      recipientId: recipientId,
-                      walletType: walletType,
-                      address: address,
-                    ),
-              ),
-              completionCheck: _CompletionCheck.write,
-            )) {
-              Ok(:final value) => value,
-              Err(:final failure) => writeNotRun(failure),
-            },
+            }) async =>
+                switch (await withClient<Result<void, ExchangeWriteFailure>>(
+                  (client) async => Ok(
+                    await BbxApiDefaultWalletsDatasource(api: client)
+                        .deleteDefaultWallet(
+                          recipientId: recipientId,
+                          walletType: walletType,
+                          address: address,
+                        ),
+                  ),
+                  completionCheck: _CompletionCheck.write,
+                )) {
+                  Ok(:final value) => value,
+                  Err(:final failure) => writeNotRun(failure),
+                },
       ),
-      (environment) => BbxApiOrderRepository(
+      (environment) => BbxApiOrdersRepository(
         isTestnet: environment == ExchangeEnvironment.testnet,
         read: <T>(operation) => withClient<T>(
           (client) => operation(client),
@@ -516,31 +506,36 @@ final class Exchange {
         ),
       ),
       (
-        getMessages: ({page, pageSize}) => withClient(
-          (client) => BbxApiSupportChatRepository(
+        getMessages: (session, {page, pageSize}) => withClient(
+          (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).getMessages(page: page, pageSize: pageSize),
+          environment: session.environment,
           credentialReadFailure: ExchangeChatLoadMessagesFailure.new,
+          completionCheck: _CompletionCheck.read,
         ),
-        sendMessage: ({required text, attachments}) => withClient(
-          (client) => BbxApiSupportChatRepository(
+        sendMessage: (session, {required text, attachments}) => withClient(
+          (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).sendMessage(text: text, attachments: attachments),
+          environment: session.environment,
           credentialReadFailure: ExchangeChatSendMessageFailure.new,
         ),
-        getAttachment: (attachmentId) => withClient(
-          (client) => BbxApiSupportChatRepository(
+        getAttachment: (session, attachmentId) => withClient(
+          (client) => BbxApiSupportChatDatasource(
             users: client.users,
             commcenter: client.commcenter,
           ).getMessageAttachment(attachmentId),
+          environment: session.environment,
           credentialReadFailure: ExchangeChatLoadAttachmentFailure.new,
+          completionCheck: _CompletionCheck.read,
         ),
         getUnreadCount: (session) async =>
-            switch (await withClient<ExchangeRead<int>>(
+            switch (await withClient<Result<int, ExchangeReadFailure>>(
               (client) async => Ok(
-                await BbxApiSupportChatRepository(
+                await BbxApiSupportChatDatasource(
                   users: client.users,
                   commcenter: client.commcenter,
                 ).readUnreadMessageCount(),
@@ -552,9 +547,9 @@ final class Exchange {
               Err(:final failure) => readNotRun(failure),
             },
         markAllRead: (session) async =>
-            switch (await withClient<ExchangeWrite<void>>(
+            switch (await withClient<Result<void, ExchangeWriteFailure>>(
               (client) async => Ok(
-                await BbxApiSupportChatRepository(
+                await BbxApiSupportChatDatasource(
                   users: client.users,
                   commcenter: client.commcenter,
                 ).markAllMessagesRead(),
@@ -576,87 +571,55 @@ final class Exchange {
           await notificationService?.dispose();
         },
       ),
-      ExchangeLimitOrdersImpl(
-        list: () => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.listActive(),
-        ),
-        listRecent: () => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.listRecent(),
-        ),
-        get: (id) => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.get(id),
-        ),
-        create: (draft) async {
-          final write = switch (await withClient<ExchangeWrite<LimitOrder>>(
-            (client) async =>
-                Ok(await BbxApiLimitOrderRepository(client).create(draft)),
-            completionCheck: _CompletionCheck.write,
-          )) {
-            Ok(:final value) => value,
-            Err(:final failure) => writeNotRun<LimitOrder>(failure),
-          };
-          if (write is WriteOutcomeUnknown<LimitOrder> && recorder != null) {
-            if (await sessionSnapshot() case Ok(:final value)) {
-              await recorder.record(
-                UnknownWriteDraft(
-                  kind: UnknownWriteKind.limitOrderCreate,
-                  environment: value.environment,
-                  sessionEpoch: value.epoch,
-                  request: draft.journalRequest,
+      BbxApiLimitOrdersRepository(
+        read: <T>(session, problem, operation) async =>
+            access?.session != session
+            ? Err<T, ExchangeFailure>(const ExchangeOperationStaleFailure())
+            : await withClient<T>(
+                operation,
+                environment: session.environment,
+                credentialReadFailure: () => ExchangeLimitOrderFailure(
+                  problem,
+                  'Exchange credential unavailable',
                 ),
-              );
-            }
-          }
-          return write;
-        },
-        cancel: (id) => limitOrder(
-          ExchangeLimitOrderProblem.cancel,
-          (repository) => repository.cancel(id),
-        ),
-        cancelAll: () => limitOrder(
-          ExchangeLimitOrderProblem.cancel,
-          (repository) => repository.cancelAll(),
-        ),
-        rate: (currency) => limitOrder(
-          ExchangeLimitOrderProblem.load,
-          (repository) => repository.getRate(currency),
-        ),
-      ),
-      ExchangeFundingImpl(
-        account: (session) => fundRead(session, (rails) => rails.account()),
-        instructions: (session, request) =>
-            fundRead(session, (rails) => rails.instructions(request)),
-        institutions: (session, jurisdiction) =>
-            fundRead(session, (rails) => rails.institutions(jurisdiction)),
-        consent: (session) async =>
-            switch (await withClient<ExchangeWrite<void>>(
-              (client) async => Ok(
-                await BbxApiFundingRails(
-                  client,
-                  paymentReturnUrl: fundingReturnUrl,
-                ).consent(),
               ),
-              environment: session.environment,
-              completionCheck: _CompletionCheck.write,
-            )) {
-              Ok(:final value) => value,
-              Err(:final failure) => writeNotRun<void>(failure),
-            },
-        consentOnAccount: (session) =>
-            fundRead(session, (rails) => rails.consentOnAccount()),
+        write: <T>(session, operation) async => access?.session != session
+            ? Err<T, ExchangeFailure>(const ExchangeOperationStaleFailure())
+            : await withClient<T>(
+                operation,
+                environment: session.environment,
+                completionCheck: _CompletionCheck.write,
+              ),
+        journalUnknownCreate: (_, draft) async {
+          if (recorder == null) return;
+          if (await sessionSnapshot() case Ok(:final value)) {
+            await recorder.record(
+              UnknownWriteDraft(
+                kind: UnknownWriteKind.limitOrderCreate,
+                environment: value.environment,
+                sessionEpoch: value.epoch,
+                request: draft.journalRequest,
+              ),
+            );
+          }
+        },
       ),
-      ExchangeVirtualIbansImpl(
-        find: (environment) => withClient(
-          (client) => BbxApiVirtualIbanRepository(client).find(),
-          environment: environment,
+      BbxApiFundingRepository(
+        read: <T>(session, operation) => withClient<T>(
+          operation,
+          environment: session.environment,
+          completionCheck: _CompletionCheck.read,
         ),
-        create: (environment) => withClient(
-          (client) => BbxApiVirtualIbanRepository(client).create(),
-          environment: environment,
+        write: <T>(session, operation) => withClient<T>(
+          operation,
+          environment: session.environment,
+          completionCheck: _CompletionCheck.write,
         ),
+        paymentReturnUrl: fundingReturnUrl,
+      ),
+      BbxApiVirtualIbansRepository(
+        run: <T>(environment, operation) =>
+            withClient<T>(operation, environment: environment),
       ),
       kyc == null
           ? null
@@ -665,7 +628,7 @@ final class Exchange {
               () => _loadWebPreferences(sessionPreferences, basicAuth),
             ),
       () => withClient((client) async {
-        switch (await BbxApiUserRepository(api: client).getUserSummary()) {
+        switch (await BbxApiUserDatasource(api: client).getUserSummary()) {
           case Err():
             return const Err(ExchangeAccountUnavailableFailure());
           case Ok(:final value):
@@ -673,7 +636,7 @@ final class Exchange {
               return const Ok(ConfidentialSepaAvailability.unavailable);
             }
         }
-        return (await BbxApiVirtualIbanRepository(client).find()).map(
+        return (await BbxApiVirtualIbansRepository.findOn(client)).map(
           (iban) => iban is ActiveVirtualIban
               ? ConfidentialSepaAvailability.ready
               : ConfidentialSepaAvailability.needsVirtualIban,
@@ -681,7 +644,7 @@ final class Exchange {
       }, completionCheck: _CompletionCheck.read),
       access,
       _journalRecipients(
-        ExchangeRecipientsImpl(
+        BbxApiRecipientsRepository(
           read: <T>(environment, operation) => withClient<T>(
             (client) => operation(client),
             environment: environment,
@@ -760,7 +723,7 @@ final class Exchange {
   Future<bool> networkUnavailable() async =>
       switch (await loadWebPreferences()) {
         Err(failure: ExchangeUnsupportedNetworkFailure()) => true,
-        _ => false,
+        Ok() || Err() => false,
       };
 
   /// Decides whether a trading route may open now.
@@ -821,14 +784,6 @@ final class Exchange {
     ).execute(session);
   }
 
-  /// [loadAccount] for the session signed in now.
-  @useResult
-  Future<Result<UserSummary, ExchangeFailure>> loadCurrentAccount() async =>
-      switch (_access?.session) {
-        null => const Err(ExchangeNotAuthenticatedFailure()),
-        final session => loadAccount(session),
-      };
-
   @useResult
   Future<Result<List<Announcement>, ExchangeFailure>> loadAnnouncements(
     ExchangeSession session,
@@ -859,15 +814,6 @@ final class Exchange {
     currentSession: () => _access?.session,
   ).execute(session, patch);
 
-  /// [updatePreferences] for the session signed in now.
-  @useResult
-  Future<Result<void, ExchangeFailure>> updateCurrentPreferences(
-    ExchangePreferencesPatch patch,
-  ) async => switch (_access?.session) {
-    null => const Err(ExchangeNotAuthenticatedFailure()),
-    final session => updatePreferences(session, patch),
-  };
-
   WatchExchangeNotificationsUsecase? get _currentNotifications {
     final access = _access;
     final preferences = _sessionPreferences;
@@ -894,20 +840,26 @@ final class Exchange {
   Future<Result<void, ExchangeFailure>> signOut() async =>
       await _access?.signOut() ?? const Err(ExchangeSessionClearFailure());
 
-  /// Sends the account deletion request to support, then signs out only if
-  /// the account still belongs to the session that sent it.
+  /// Sends [session]'s account deletion request to support, then signs out
+  /// only if the account still belongs to that session. For a session that
+  /// is no longer the current one nothing is sent
+  /// ([ExchangeAccountDeletionOutcome.stale]).
   @useResult
-  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>>
-  deleteAccount() async {
+  Future<Result<ExchangeAccountDeletionOutcome, ExchangeFailure>> deleteAccount(
+    ExchangeSession session,
+  ) async {
     final access = _access;
     if (access == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
-    final session = access.session;
-    if (session == null) {
+    if (access.session == null) {
       return const Err(ExchangeNotAuthenticatedFailure());
     }
+    if (access.session != session) {
+      return const Ok(ExchangeAccountDeletionOutcome.stale);
+    }
     final result = await sendSupportMessage(
+      session,
       text: 'I want to delete my account',
     );
     if (access.session != session) {
@@ -916,9 +868,86 @@ final class Exchange {
     if (result case Err(:final failure)) {
       return Err(switch (failure) {
         ExchangeUnsupportedNetworkFailure() => failure,
-        _ => ExchangeAccountDeletionRequestFailure(
-          'sendSupportChatMessage failed: ${failure.runtimeType}',
-        ),
+        ExchangeNotAuthenticatedFailure() ||
+        ExchangeAccountUnavailableFailure() ||
+        ExchangeAuthenticationDeferredFailure() ||
+        ExchangeAuthenticationFailure() ||
+        ExchangeApiKeyStorageFailure() ||
+        ExchangeSessionClearFailure() ||
+        ExchangePlatformNotAllowedFailure() ||
+        ExchangePreferencesSaveFailure() ||
+        ExchangePreferencesSaveOutcomeUnknownFailure() ||
+        ExchangeNotificationsUnavailableFailure() ||
+        ExchangeAnnouncementsUnavailableFailure() ||
+        ExchangeAccountDeletionRequestFailure() ||
+        ExchangeNetworkFailure() ||
+        ExchangeUnexpectedFailure() ||
+        ExchangeOperationStaleFailure() ||
+        ExchangeOrderInventoryUnavailableFailure() ||
+        ExchangeCredentialReadFailure() ||
+        ExchangeCredentialsUnavailableFailure() ||
+        ExchangeBasicAuthSaveFailure() ||
+        ExchangeApiKeyInvalidFailure() ||
+        ExchangeApiKeySaveFailure() ||
+        ExchangeApiKeyDeleteFailure() ||
+        ExchangeOrderLimitFailure() ||
+        ExchangeConfidentialSepaInactiveFailure() ||
+        ExchangeOrderLoadFailure() ||
+        ExchangeOrderRejectedFailure() ||
+        ExchangeStatisticsUnavailableFailure() ||
+        ExchangeDocumentUploadFailure() ||
+        ExchangeAccountDetailsUnavailableFailure() ||
+        ExchangeUploadStatusUnavailableFailure() ||
+        ExchangeDocumentAlreadySubmittedFailure() ||
+        ExchangeDocumentEmptyFailure() ||
+        ExchangeDocumentTooLargeFailure() ||
+        ExchangeDocumentTypeNotAllowedFailure() ||
+        ExchangeDocumentUnreadableFailure() ||
+        ExchangeWriteBusyFailure() ||
+        ExchangePaymentLinkUnavailableFailure() ||
+        ExchangeDefaultWalletAddressEmptyFailure() ||
+        ExchangeDefaultWalletAddressInvalidFailure() ||
+        ExchangeDefaultWalletSaveFailure() ||
+        ExchangeDefaultWalletDeleteFailure() ||
+        ExchangeConsentRegistrationFailure() ||
+        ExchangeChatLoadMessagesFailure() ||
+        ExchangeChatSendMessageFailure() ||
+        ExchangeChatLoadAttachmentFailure() ||
+        ExchangeChatNotAuthenticatedFailure() ||
+        ExchangeChatMessageEmptyFailure() ||
+        ExchangeChatAttachmentEmptyFailure() ||
+        ExchangeChatPickImagesFailure() ||
+        ExchangeChatAttachLogsFailure() ||
+        ExchangeLimitOrderFailure() ||
+        ExchangeFundingFailure() ||
+        ExchangeVirtualIbanNotAvailableFailure() ||
+        ExchangeEuResidencyRequiredFailure() ||
+        ExchangeJournalFailure() ||
+        ExchangeDestinationUnavailableFailure() ||
+        ExchangeDestinationInvalidFailure() ||
+        ExchangeFeeEstimatesUnavailableFailure() ||
+        ExchangeWalletCoinsUnavailableFailure() ||
+        ExchangeTransactionLookupFailure() ||
+        ExchangeMissingFailure() ||
+        ExchangeUnreachableFailure() ||
+        ExchangeMalformedFailure() ||
+        ExchangeSessionRejectedFailure() ||
+        ExchangeWriteRefusedFailure() ||
+        ExchangeWriteOutcomeUnknownFailure() ||
+        ExchangeWriteNotSentFailure() ||
+        ExchangePayinBuildFailure() ||
+        ExchangeRecipientsLoadFailure() ||
+        ExchangeRecipientsSaveFailure() ||
+        ExchangeRecipientsInvalidFieldsFailure() ||
+        ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+        ExchangeRecipientsSinpeLookupFailure() ||
+        ExchangeRecipientsCadBillerSearchFailure() ||
+        ExchangeRecipientsSelectionFailure() ||
+        ExchangeRecipientsSavedButNotSelectedFailure() ||
+        ExchangeRecipientsInvalidSecurityDetailsFailure() =>
+          ExchangeAccountDeletionRequestFailure(
+            'sendSupportChatMessage failed: ${failure.runtimeType}',
+          ),
       });
     }
     return (await access.signOut()).map(
@@ -957,6 +986,15 @@ final class Exchange {
   Future<Result<UserSummary, ExchangeFailure>> getUserSummary([
     ExchangeEnvironment? environment,
   ]) => _getUserSummary(environment);
+
+  /// The summary of [session]'s account. For a session that is no longer
+  /// the current one nothing is read ([ExchangeOperationStaleFailure]).
+  @useResult
+  Future<Result<UserSummary, ExchangeFailure>> getSessionUserSummary(
+    ExchangeSession session,
+  ) async => _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _getUserSummary(session.environment);
 
   /// Checks account eligibility and then the IBAN under one session. A failed
   /// lookup is distinct from an eligible account without an active IBAN.
@@ -1058,7 +1096,7 @@ final class Exchange {
   Future<int?> _epochOf(ExchangeEnvironment environment) async =>
       switch (await _readSessionPoint()) {
         Ok(:final value) when value.environment == environment => value.epoch,
-        _ => null,
+        Ok() || Err() => null,
       };
 
   /// Binds operations to the caller's selected backend, not to a credential.
@@ -1066,9 +1104,9 @@ final class Exchange {
   ///
   /// With a journal, a confirm, accelerate or DCA create whose outcome is
   /// unknown is recorded before its result is returned.
-  ExchangeOrders orders(ExchangeEnvironment environment) =>
+  OrdersRepository orders(ExchangeEnvironment environment) =>
       switch (_unknownWrites) {
-        final journal? => JournalingExchangeOrders(
+        final journal? => JournalingOrdersRepository(
           _orders(environment),
           UnknownWriteRecorder(journal),
           environment: environment,
@@ -1077,53 +1115,52 @@ final class Exchange {
         null => _orders(environment),
       };
 
+  /// The open journal entries of [session]'s environment: writes that may
+  /// have reached the exchange and are not settled yet. Empty without a
+  /// journal. For a session that is no longer the current one the journal
+  /// is not read ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<DefaultWallets, ExchangeFailure>> getDefaultWallets() =>
-      _defaultWallets.get();
-
-  /// The open journal entries of the current session's environment: writes
-  /// that may have reached the exchange and are not settled yet. Empty
-  /// without a journal.
-  @useResult
-  Future<Result<List<UnknownWrite>, Failure>> openUnknownWrites() async {
+  Future<Result<List<UnknownWrite>, ExchangeFailure>> openUnknownWrites(
+    ExchangeSession session,
+  ) async {
     final journal = _unknownWrites;
     if (journal == null) return const Ok([]);
-    return switch (await _readSessionPoint()) {
-      Ok(:final value) => await journal.open(value.environment),
-      Err(:final failure) => Err(failure),
-    };
+    if (_access?.session != session) {
+      return const Err(ExchangeOperationStaleFailure());
+    }
+    return journal.open(session.environment);
   }
 
-  /// Re-reads what each open journal entry of the current environment would
+  /// Re-reads what each open journal entry of [session]'s environment would
   /// have changed and settles the entries the re-read decides. Never sends a
-  /// write again. Nothing to do without a journal.
+  /// write again. Nothing to do without a journal. A session that is no
+  /// longer the current one reconciles nothing
+  /// ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<UnknownWriteReconciliation, Failure>>
-  reconcileUnknownWrites() async {
+  Future<Result<UnknownWriteReconciliation, ExchangeFailure>>
+  reconcileUnknownWrites(ExchangeSession session) async {
     final journal = _unknownWrites;
     if (journal == null) {
       return const Ok(UnknownWriteReconciliation(settled: 0, open: 0));
     }
-    switch (await _readSessionPoint()) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        return ReconcileUnknownWritesUsecase(
-          journal: journal,
-          orders: _orders,
-          getUserSummary: (environment) => _getUserSummary(environment),
-          listRecentLimitOrders: limitOrders.listRecent,
-          getDefaultWallets: _defaultWallets.get,
-          recipients: recipients,
-        ).execute(value.environment);
+    if (_access?.session != session) {
+      return const Err(ExchangeOperationStaleFailure());
     }
+    return ReconcileUnknownWritesUsecase(
+      journal: journal,
+      orders: _orders,
+      getUserSummary: (environment) => _getUserSummary(environment),
+      listRecentLimitOrders: () => limitOrders.listRecent(session),
+      getDefaultWallets: _defaultWallets.get,
+      recipients: recipients,
+    ).execute(session.environment);
   }
 
-  /// [WriteOutcomeUnknown] means the default wallet may be saved: re-read the
+  /// [ExchangeWriteOutcomeUnknownFailure] means the default wallet may be saved: re-read the
   /// default wallets before saving again.
   /// With a journal, an unknown outcome is recorded before it is returned.
   @useResult
-  Future<ExchangeWrite<DefaultWallet>> saveDefaultWallet({
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> saveDefaultWallet({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
@@ -1134,7 +1171,10 @@ final class Exchange {
       existingRecipientId: existingRecipientId,
     );
     final journal = _unknownWrites;
-    if (journal == null || write is! WriteOutcomeUnknown<DefaultWallet>) {
+    final unknown =
+        write is Err<DefaultWallet, ExchangeWriteFailure> &&
+        write.failure is ExchangeWriteOutcomeUnknownFailure;
+    if (journal == null || !unknown) {
       return write;
     }
     if (await _readSessionPoint() case Ok(:final value)) {
@@ -1154,10 +1194,10 @@ final class Exchange {
     return write;
   }
 
-  /// [WriteOutcomeUnknown] means the default flag may be unset: re-read the
+  /// [ExchangeWriteOutcomeUnknownFailure] means the default flag may be unset: re-read the
   /// default wallets before unsetting again.
   @useResult
-  Future<ExchangeWrite<void>> deleteDefaultWallet({
+  Future<Result<void, ExchangeWriteFailure>> deleteDefaultWallet({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
@@ -1171,14 +1211,16 @@ final class Exchange {
   /// is no longer the current one is never sent
   /// ([ExchangeSessionRejection.sessionChanged]).
   @useResult
-  Future<ExchangeRead<DefaultWallets>> readDefaultWallets(
+  Future<Result<DefaultWallets, ExchangeReadFailure>> readDefaultWallets(
     ExchangeSession session,
   ) async {
     if (_access?.session != session) {
-      return const ReadSessionRejected(ExchangeSessionRejection.sessionChanged);
+      return const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.sessionChanged),
+      );
     }
     return switch (await _defaultWallets.get()) {
-      Ok(:final value) => ReadGot(value),
+      Ok(:final value) => Ok(value),
       Err(:final failure) => readNotRun(failure),
     };
   }
@@ -1187,7 +1229,8 @@ final class Exchange {
   /// ([FinancialWriteKind.defaultWalletSave]), so it never runs next to
   /// another financial write of that account or over an unsettled one.
   @useResult
-  Future<GatedWrite<ExchangeWrite<DefaultWallet>>> saveSessionDefaultWallet(
+  Future<Result<DefaultWallet, ExchangeGatedWriteFailure>>
+  saveSessionDefaultWallet(
     ExchangeSession session, {
     required BtcNetwork walletType,
     required String address,
@@ -1196,18 +1239,21 @@ final class Exchange {
     session,
     FinancialWriteKind.defaultWalletSave,
     () async => _access?.session != session
-        ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+        ? const Err(
+            ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+          )
         : await saveDefaultWallet(
             walletType: walletType,
             address: address,
             existingRecipientId: existingRecipientId,
           ),
+    refused: refusedWrite,
   );
 
   /// Unsets a default wallet of [session]'s account through [writeGate]
   /// ([FinancialWriteKind.defaultWalletUnset]).
   @useResult
-  Future<GatedWrite<ExchangeWrite<void>>> unsetSessionDefaultWallet(
+  Future<Result<void, ExchangeGatedWriteFailure>> unsetSessionDefaultWallet(
     ExchangeSession session, {
     required String recipientId,
     required BtcNetwork walletType,
@@ -1216,47 +1262,70 @@ final class Exchange {
     session,
     FinancialWriteKind.defaultWalletUnset,
     () async => _access?.session != session
-        ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+        ? const Err(
+            ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+          )
         : await deleteDefaultWallet(
             recipientId: recipientId,
             walletType: walletType,
             address: address,
           ),
+    refused: refusedWrite,
   );
 
+  /// The support messages of [session]'s user; never read for a session
+  /// that is no longer the current one ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages({
+  Future<Result<List<SupportChatMessage>, ExchangeFailure>> getSupportMessages(
+    ExchangeSession session, {
     int? page,
     int? pageSize,
-  }) => _chat.getMessages(page: page, pageSize: pageSize);
+  }) async => _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _chat.getMessages(session, page: page, pageSize: pageSize);
 
+  /// Sends a support message as [session]'s user; never sent for a session
+  /// that is no longer the current one ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<void, ExchangeFailure>> sendSupportMessage({
+  Future<Result<void, ExchangeFailure>> sendSupportMessage(
+    ExchangeSession session, {
     required String text,
     List<SupportChatMessageAttachment>? attachments,
-  }) => _chat.sendMessage(text: text, attachments: attachments);
+  }) async => _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _chat.sendMessage(session, text: text, attachments: attachments);
 
+  /// One attachment of [session]'s chat; never read for a session that is
+  /// no longer the current one ([ExchangeOperationStaleFailure]).
   @useResult
   Future<Result<SupportChatMessageAttachment, ExchangeFailure>>
-  getSupportAttachment(String attachmentId) =>
-      _chat.getAttachment(attachmentId);
+  getSupportAttachment(ExchangeSession session, String attachmentId) async =>
+      _access?.session != session
+      ? const Err(ExchangeOperationStaleFailure())
+      : await _chat.getAttachment(session, attachmentId);
 
   /// How many support messages [session]'s user has not read. A read for a
   /// session that is no longer the current one is never sent.
   @useResult
-  Future<ExchangeRead<int>> readUnreadSupportCount(
+  Future<Result<int, ExchangeReadFailure>> readUnreadSupportCount(
     ExchangeSession session,
   ) async => _access?.session != session
-      ? const ReadSessionRejected(ExchangeSessionRejection.sessionChanged)
+      ? const Err(
+          ExchangeSessionRejectedFailure(
+            ExchangeSessionRejection.sessionChanged,
+          ),
+        )
       : await _chat.getUnreadCount(session);
 
   /// Marks every support message of [session]'s user as read; never sent
   /// for a session that is no longer the current one.
   @useResult
-  Future<ExchangeWrite<void>> markSupportMessagesRead(
+  Future<Result<void, ExchangeWriteFailure>> markSupportMessagesRead(
     ExchangeSession session,
   ) async => _access?.session != session
-      ? const WriteNotSent(ExchangeNotSentReason.sessionChanged)
+      ? const Err(
+          ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+        )
       : await _chat.markAllRead(session);
 
   /// Broadcasts messages and recoverable failures from the active socket.
@@ -1282,18 +1351,18 @@ final class Exchange {
   Future<void> close() => _notifications.close();
 }
 
-ExchangeRecipients _journalRecipients(
-  ExchangeRecipients recipients,
+RecipientsRepository _journalRecipients(
+  RecipientsRepository recipients,
   UnknownWriteRecorder? recorder,
   Future<Result<_SessionPoint, ExchangeFailure>> Function() readSessionPoint,
 ) => switch (recorder) {
   null => recipients,
-  final recorder => JournalingExchangeRecipients(
+  final UnknownWriteRecorder recorder => JournalingRecipientsRepository(
     recipients,
     recorder,
     readEpoch: (environment) async => switch (await readSessionPoint()) {
       Ok(:final value) when value.environment == environment => value.epoch,
-      _ => null,
+      Ok() || Err() => null,
     },
   ),
 };
@@ -1325,27 +1394,27 @@ Exchange exchangeForTesting({
   })?
   saveUserPreference,
   Future<Result<DefaultWallets, ExchangeFailure>> Function()? getDefaultWallets,
-  Future<ExchangeWrite<DefaultWallet>> Function({
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> Function({
     required BtcNetwork walletType,
     required String address,
     String? existingRecipientId,
   })?
   saveDefaultWallet,
-  Future<ExchangeWrite<void>> Function({
+  Future<Result<void, ExchangeWriteFailure>> Function({
     required String recipientId,
     required BtcNetwork walletType,
     required String address,
   })?
   deleteDefaultWallet,
-  ExchangeOrders Function(ExchangeEnvironment)? orders,
+  OrdersRepository Function(ExchangeEnvironment)? orders,
   ExchangeChatOperations? chat,
   ExchangeNotificationOperations? notifications,
-  ExchangeLimitOrders? limitOrders,
-  ExchangeFunding? funding,
-  ExchangeVirtualIbans? virtualIbans,
+  LimitOrdersRepository? limitOrders,
+  FundingRepository? funding,
+  VirtualIbansRepository? virtualIbans,
   Future<Result<ConfidentialSepaAvailability, ExchangeFailure>> Function()?
   getConfidentialSepaAvailability,
-  ExchangeRecipients? recipients,
+  RecipientsRepository? recipients,
   ExchangeAccessLifecycle? access,
   Preferences? sessionPreferences,
   ExchangeBasicAuthStore? basicAuth,
@@ -1391,11 +1460,11 @@ Exchange exchangeForTesting({
   orders ?? (_) => throw StateError('Unexpected order request'),
   chat ??
       (
-        getMessages: ({page, pageSize}) =>
+        getMessages: (_, {page, pageSize}) =>
             throw StateError('Unexpected chat history request'),
-        sendMessage: ({required text, attachments}) =>
+        sendMessage: (_, {required text, attachments}) =>
             throw StateError('Unexpected chat send'),
-        getAttachment: (_) =>
+        getAttachment: (_, _) =>
             throw StateError('Unexpected chat attachment request'),
         getUnreadCount: (_) =>
             throw StateError('Unexpected chat unread count request'),
@@ -1409,39 +1478,16 @@ Exchange exchangeForTesting({
         disconnect: () {},
         close: () async {},
       ),
-  limitOrders ??
-      ExchangeLimitOrdersImpl(
-        list: () => throw StateError('Unexpected limit order listing'),
-        listRecent: () => throw StateError('Unexpected limit order listing'),
-        get: (_) => throw StateError('Unexpected limit order read'),
-        create: (_) => throw StateError('Unexpected limit order create'),
-        cancel: (_) => throw StateError('Unexpected limit order cancel'),
-        cancelAll: () => throw StateError('Unexpected limit order bulk cancel'),
-        rate: (_) => throw StateError('Unexpected limit order rate'),
-      ),
-  funding ??
-      ExchangeFundingImpl(
-        account: (_) => throw StateError('Unexpected funding account read'),
-        instructions: (_, _) =>
-            throw StateError('Unexpected funding instructions request'),
-        institutions: (_, _) =>
-            throw StateError('Unexpected funding institution lookup'),
-        consent: (_) => throw StateError('Unexpected funding consent'),
-        consentOnAccount: (_) =>
-            throw StateError('Unexpected funding consent re-read'),
-      ),
-  virtualIbans ??
-      ExchangeVirtualIbansImpl(
-        find: (_) => throw StateError('Unexpected virtual IBAN lookup'),
-        create: (_) => throw StateError('Unexpected virtual IBAN creation'),
-      ),
+  limitOrders ?? const _UnexpectedLimitOrders(),
+  funding ?? const _UnexpectedFunding(),
+  virtualIbans ?? const _UnexpectedVirtualIbans(),
   null,
   getConfidentialSepaAvailability ??
       () => throw StateError('Unexpected Confidential SEPA availability check'),
   access,
   _journalRecipients(
     recipients ??
-        ExchangeRecipientsImpl(
+        BbxApiRecipientsRepository(
           read: <T>(_, _) => throw StateError('Unexpected fiat recipient read'),
           write: <T>(_, _) =>
               throw StateError('Unexpected fiat recipient write'),
@@ -1470,3 +1516,94 @@ Exchange exchangeWithTransportForTesting({
   access: access,
   unknownWrites: unknownWrites,
 );
+
+/// [exchangeForTesting]'s limit orders when a test gives none: every call is
+/// a test bug.
+final class _UnexpectedLimitOrders implements LimitOrdersRepository {
+  const _UnexpectedLimitOrders();
+
+  @override
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listActive(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected limit order listing');
+
+  @override
+  Future<Result<List<LimitOrder>, ExchangeFailure>> listRecent(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected limit order listing');
+
+  @override
+  Future<Result<LimitOrder, ExchangeFailure>> get(
+    ExchangeSession session,
+    String id,
+  ) => throw StateError('Unexpected limit order read');
+
+  @override
+  Future<Result<LimitOrder, ExchangeWriteFailure>> create(
+    ExchangeSession session,
+    LimitOrderDraft draft,
+  ) => throw StateError('Unexpected limit order create');
+
+  @override
+  Future<Result<LimitOrder, ExchangeFailure>> cancel(
+    ExchangeSession session,
+    String id,
+  ) => throw StateError('Unexpected limit order cancel');
+
+  @override
+  Future<Result<List<LimitOrder>, ExchangeFailure>> cancelAll(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected limit order bulk cancel');
+
+  @override
+  Future<Result<LimitOrderRate, ExchangeFailure>> getRate(
+    ExchangeSession session,
+    String currencyCode,
+  ) => throw StateError('Unexpected limit order rate');
+}
+
+/// [exchangeForTesting]'s funding when a test gives none.
+final class _UnexpectedFunding implements FundingRepository {
+  const _UnexpectedFunding();
+
+  @override
+  Future<Result<FundingAccount, ExchangeReadFailure>> account(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected funding account read');
+
+  @override
+  Future<Result<FundingAnswer, ExchangeReadFailure>> instructions(
+    ExchangeSession session,
+    FundingRequest request,
+  ) => throw StateError('Unexpected funding instructions request');
+
+  @override
+  Future<Result<List<FundingInstitution>, ExchangeReadFailure>> institutions(
+    ExchangeSession session,
+    Jurisdiction jurisdiction,
+  ) => throw StateError('Unexpected funding institution lookup');
+
+  @override
+  Future<Result<void, ExchangeWriteFailure>> consent(ExchangeSession session) =>
+      throw StateError('Unexpected funding consent');
+
+  @override
+  Future<Result<bool, ExchangeReadFailure>> consentOnAccount(
+    ExchangeSession session,
+  ) => throw StateError('Unexpected funding consent re-read');
+}
+
+/// [exchangeForTesting]'s virtual IBANs when a test gives none.
+final class _UnexpectedVirtualIbans implements VirtualIbansRepository {
+  const _UnexpectedVirtualIbans();
+
+  @override
+  Future<Result<VirtualIban?, ExchangeFailure>> find(
+    ExchangeEnvironment environment,
+  ) => throw StateError('Unexpected virtual IBAN lookup');
+
+  @override
+  Future<Result<VirtualIban, ExchangeFailure>> create(
+    ExchangeEnvironment environment,
+  ) => throw StateError('Unexpected virtual IBAN creation');
+}

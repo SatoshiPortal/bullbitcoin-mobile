@@ -1,5 +1,6 @@
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_state.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_event.dart';
 import 'package:bull_exchange/src/autobuy/ui/autobuy_flow_shell.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
@@ -10,17 +11,19 @@ import 'package:material_ui/material_ui.dart';
 
 import '../autobuy_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 AutoBuyFlowState _apply(AutoBuyFlowState state, List<AutoBuyFlowEvent> events) {
   var next = state;
   for (final event in events) {
-    next = transitionAutoBuyFlow(next, event).state;
+    next = next.next(event).state;
   }
   return next;
 }
 
 AutoBuyFlowState _review({bool active = false}) =>
     _apply(autoBuyFlowStart(autoBuySession).state, [
-      AutoBuyContextLoaded(1, ReadGot(autoBuyContext(active: active))),
+      AutoBuyContextLoaded(1, Ok(autoBuyContext(active: active))),
       const AutoBuyGetStartedPressed(),
       const AutoBuyWalletsContinued(autoBuyWallets),
     ]);
@@ -87,7 +90,7 @@ void main() {
     final verifying = _apply(_review(), const [
       AutoBuyActivatePressed(),
       AutoBuyConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(1, Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       ),
     ]);
     final labels = await _pump(tester, verifying, []);
@@ -99,7 +102,7 @@ void main() {
     final restricted = _apply(autoBuyFlowStart(autoBuySession).state, [
       AutoBuyContextLoaded(
         1,
-        ReadGot(
+        Ok(
           autoBuyContext(
             groups: const ['KYC_IDENTITY_VERIFIED', 'RESTRICTED_FULL'],
           ),

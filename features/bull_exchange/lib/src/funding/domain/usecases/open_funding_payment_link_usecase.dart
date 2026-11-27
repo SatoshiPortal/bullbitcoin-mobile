@@ -1,5 +1,5 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/funding/domain/external_link_port.dart';
-import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -22,7 +22,7 @@ class OpenFundingPaymentLinkUsecase {
   const OpenFundingPaymentLinkUsecase({required this._externalLink});
 
   @useResult
-  Future<Result<OpenFundingPaymentLinkResult, FundExchangeFailure>> execute(
+  Future<Result<OpenFundingPaymentLinkResult, ExchangeFailure>> execute(
     OpenFundingPaymentLinkCommand command,
   ) async {
     // The link is backend-supplied, so an unparseable value is a normal
@@ -32,7 +32,7 @@ class OpenFundingPaymentLinkUsecase {
     // else anyway, but stating it here keeps a compromised or malformed
     // backend response from reaching the platform channel at all.
     if (url == null || !_allowedSchemes.contains(url.scheme)) {
-      return const Err(FundExchangePaymentLinkUnavailableFailure());
+      return const Err(ExchangePaymentLinkUnavailableFailure());
     }
 
     final result = await _externalLink.open(url);

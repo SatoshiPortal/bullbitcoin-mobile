@@ -1,5 +1,5 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_statistics_usecase.dart';
 import 'package:bull_exchange/src/settings/presentation/statistics_cubit.dart';
 import 'package:bull_exchange/src/settings/ui/screens/statistics_screen.dart';
@@ -18,7 +18,7 @@ class _MockGetStatistics extends Mock implements GetExchangeStatisticsUsecase {}
 
 Future<StatisticsCubit> _pump(
   WidgetTester tester, {
-  required ExchangeSettingsFailure failure,
+  required ExchangeFailure failure,
 }) async {
   final usecase = _MockGetStatistics();
   when(usecase.execute).thenAnswer((_) async => Err(failure));
@@ -62,7 +62,7 @@ void main() {
   ) async {
     await _pump(
       tester,
-      failure: const ExchangeSettingsStatisticsUnavailableFailure(_rawReason),
+      failure: const ExchangeStatisticsUnavailableFailure(_rawReason),
     );
 
     expect(
@@ -77,7 +77,7 @@ void main() {
   testWidgets('the raw reason never reaches the screen', (tester) async {
     await _pump(
       tester,
-      failure: const ExchangeSettingsStatisticsUnavailableFailure(_rawReason),
+      failure: const ExchangeStatisticsUnavailableFailure(_rawReason),
     );
 
     final painted = _painted(tester);
@@ -90,10 +90,7 @@ void main() {
   testWidgets('the catch-all renders the generic message, not logMessage', (
     tester,
   ) async {
-    await _pump(
-      tester,
-      failure: const ExchangeSettingsUnexpectedFailure(_rawReason),
-    );
+    await _pump(tester, failure: const ExchangeUnexpectedFailure(_rawReason));
 
     expect(find.text('Oops! Something went wrong'), findsOneWidget);
     expect(_painted(tester), isNot(contains(_rawReason)));
@@ -102,7 +99,7 @@ void main() {
   testWidgets('retry asks the use-case again', (tester) async {
     final cubit = await _pump(
       tester,
-      failure: const ExchangeSettingsStatisticsUnavailableFailure(_rawReason),
+      failure: const ExchangeStatisticsUnavailableFailure(_rawReason),
     );
     expect(cubit.state.failure, isNotNull);
 

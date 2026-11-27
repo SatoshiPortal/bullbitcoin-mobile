@@ -16,7 +16,7 @@ class CheckSinpeResult {
 }
 
 class CheckSinpeUsecase {
-  final ExchangeRecipients _recipientsRepository;
+  final RecipientsRepository _recipientsRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   CheckSinpeUsecase({
@@ -25,7 +25,7 @@ class CheckSinpeUsecase {
   });
 
   @useResult
-  Future<Result<CheckSinpeResult, RecipientsFailure>> execute(
+  Future<Result<CheckSinpeResult, ExchangeFailure>> execute(
     CheckSinpeParams params,
   ) async {
     final bool isTestnet;

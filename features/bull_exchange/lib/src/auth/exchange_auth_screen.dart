@@ -1,5 +1,6 @@
 import '../exchange_l10n.dart';
-import 'exchange_auth_machine.dart';
+import 'exchange_auth_state.dart';
+import 'exchange_auth_event.dart';
 
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 
@@ -38,7 +39,7 @@ typedef ExchangeAuthHost = ({
   Future<void> Function(BuildContext) retryAccess,
 });
 
-/// The sign-in WebView, driven by [transitionAuth]. [onDone] runs once, when
+/// The sign-in WebView, driven by [ExchangeAuthState.next]. [onDone] runs once, when
 /// the API key is stored; [onExit] once, when the user leaves first.
 class ExchangeAuthScreen extends StatefulWidget {
   final VoidCallback onExit;
@@ -71,7 +72,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   void _add(ExchangeAuthEvent event) {
     if (!mounted) return;
     final previous = _state;
-    final next = transitionAuth(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     setState(() => _state = next);
     switch (next) {

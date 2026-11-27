@@ -14,7 +14,7 @@ import '../map_virtual_iban_failure.dart';
 /// notification (so activation is reflected as soon as the server pushes it),
 /// and falls back to a poll in case the best-effort socket is unavailable.
 class WatchVirtualIbanUsecase {
-  final ExchangeVirtualIbans _virtualIbans;
+  final VirtualIbansRepository _virtualIbans;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
   final Stream<Result<NotificationMessage, ExchangeFailure>> _notifications;
   final Duration _pollInterval;
@@ -28,7 +28,7 @@ class WatchVirtualIbanUsecase {
 
   static const _activatedEvent = 'VIRTUAL_IBAN_ACTIVATED';
 
-  Stream<Result<VirtualIban?, RecipientsFailure>> execute({
+  Stream<Result<VirtualIban?, ExchangeFailure>> execute({
     required bool createIfAbsent,
   }) async* {
     final ExchangeEnvironment environment;
@@ -89,9 +89,7 @@ class WatchVirtualIbanUsecase {
             yield Ok(value);
           case Ok(value: null):
             yield const Err(
-              RecipientsUnexpectedFailure(
-                'The pending virtual IBAN disappeared',
-              ),
+              ExchangeUnexpectedFailure('The pending virtual IBAN disappeared'),
             );
             return;
           case Err(:final failure):

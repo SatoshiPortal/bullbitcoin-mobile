@@ -1,6 +1,7 @@
+import 'package:exchange/exchange.dart';
+
 import 'dart:typed_data';
 
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/data/attachment_picker_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -68,7 +69,7 @@ void main() {
 
       final failure = failureOf(await build().pickImages());
 
-      expect(failure, isA<PickFilesFailure>());
+      expect(failure, isA<ExchangeChatPickImagesFailure>());
       expect(failure.logMessage, contains('/data/user/0/secret'));
     },
   );

@@ -17,7 +17,7 @@ class ListCadBillersResult {
 }
 
 class ListCadBillersUsecase {
-  final ExchangeRecipients _recipientsRepository;
+  final RecipientsRepository _recipientsRepository;
   final GetRecipientsEnvironmentUsecase _getRecipientsEnvironmentUsecase;
 
   ListCadBillersUsecase({
@@ -26,7 +26,7 @@ class ListCadBillersUsecase {
   });
 
   @useResult
-  Future<Result<ListCadBillersResult, RecipientsFailure>> execute(
+  Future<Result<ListCadBillersResult, ExchangeFailure>> execute(
     ListCadBillersParams params,
   ) async {
     final bool isTestnet;

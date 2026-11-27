@@ -1,11 +1,13 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/default_wallets/domain/validate_default_wallet_destination_usecase.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_state.dart';
+import 'package:bull_exchange/src/default_wallets/domain/default_wallets_event.dart';
 import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_bloc.dart';
-import 'package:bull_exchange/src/default_wallets/presentation/default_wallets_machine.dart';
 import 'package:exchange/exchange.dart';
-import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../default_wallets_usecase_fakes.dart';
+
 import 'package:primitives/primitives.dart';
 
 const _s = ExchangeSession(
@@ -15,30 +17,62 @@ const _s = ExchangeSession(
 );
 const _btc = BtcNetwork.bitcoin;
 
-DefaultWalletsBloc _bloc(Exchange exchange) => DefaultWalletsBloc(
-  exchange: exchange,
-  validateDestination: ValidateDefaultWalletDestinationUsecase(
-    (_, raw) async => raw.trim(),
+Never _unused(String call) => throw StateError('$call was not expected');
+
+/// Builds the bloc over fakes; every call is logged with its session.
+DefaultWalletsBloc _bloc({
+  ExchangeSession? session = _s,
+  required List<String> calls,
+  Future<Result<DefaultWallets, ExchangeReadFailure>> Function()? read,
+  Future<Result<DefaultWallet, ExchangeGatedWriteFailure>> Function(
+    String? existingRecipientId,
+  )?
+  save,
+  Future<Result<void, ExchangeGatedWriteFailure>> Function()? unset,
+  Future<Result<DefaultWallets, ExchangeReadFailure>> Function()? verify,
+}) => DefaultWalletsBloc(
+  session: session,
+  getWallets: FakeGetDefaultWalletsUsecase((session) {
+    calls.add('read ${session.sessionId}');
+    return read == null ? _unused('read') : read();
+  }),
+  validateAddress: FakeValidateDefaultWalletDestinationUsecase(
+    (_, text) async => WalletAddressValid(text.trim()),
   ),
+  saveWallet: FakeSaveDefaultWalletUsecase((
+    session, {
+    required network,
+    required address,
+    existingRecipientId,
+  }) {
+    calls.add('save ${session.sessionId} ${network.name} $address');
+    return save == null ? _unused('save') : save(existingRecipientId);
+  }),
+  unsetWallet: FakeUnsetDefaultWalletUsecase((
+    session, {
+    required network,
+    required recipientId,
+    required address,
+  }) {
+    calls.add('unset ${session.sessionId} ${network.name} $recipientId');
+    return unset == null ? _unused('unset') : unset();
+  }),
+  verifyWallets: FakeVerifyDefaultWalletsUsecase((session) {
+    calls.add('verify ${session.sessionId}');
+    return verify == null ? _unused('verify') : verify();
+  }),
 );
 
 Future<void> _settle() => Future<void>.delayed(Duration.zero);
 
 void main() {
   test('without a session nothing is read', () async {
-    var reads = 0;
-    final bloc = _bloc(
-      exchangeForTesting(
-        getDefaultWallets: () async {
-          reads++;
-          return const Ok(DefaultWallets());
-        },
-      ),
-    );
+    final calls = <String>[];
+    final bloc = _bloc(session: null, calls: calls);
     addTearDown(bloc.close);
     await _settle();
     expect(bloc.state, const WalletsSessionEnded());
-    expect(reads, 0);
+    expect(calls, isEmpty);
   });
 
   test('an unknown save re-reads, and the next save updates the recipient '
@@ -50,23 +84,16 @@ void main() {
         address: 'bc1qnew',
       ),
     );
-    var reads = 0;
+    final calls = <String>[];
     final saves = <String?>[];
     final bloc = _bloc(
-      exchangeForTesting(
-        access: fixedAccessForTesting(const ExchangeAccessSignedIn(_s)),
-        getDefaultWallets: () async =>
-            Ok(reads++ == 0 ? const DefaultWallets() : created),
-        saveDefaultWallet:
-            ({
-              required walletType,
-              required address,
-              existingRecipientId,
-            }) async {
-              saves.add(existingRecipientId);
-              return const WriteOutcomeUnknown('receive timeout');
-            },
-      ),
+      calls: calls,
+      read: () async => const Ok(DefaultWallets()),
+      save: (existingRecipientId) async {
+        saves.add(existingRecipientId);
+        return const Err(ExchangeWriteOutcomeUnknownFailure('receive timeout'));
+      },
+      verify: () async => const Ok(created),
     );
     addTearDown(bloc.close);
     await _settle();
@@ -87,29 +114,30 @@ void main() {
       await _settle();
     }
     expect(saves, [null, 'r-1']);
+    expect(calls, [
+      'read s',
+      'save s bitcoin bc1qnew',
+      'verify s',
+      'save s bitcoin bc1qother',
+      'verify s',
+    ]);
   });
 
   test('a second unset while one runs sends nothing (DW-4)', () async {
-    final release = Completer<ExchangeWrite<void>>();
-    var unsets = 0;
+    final release = Completer<Result<void, ExchangeGatedWriteFailure>>();
+    final calls = <String>[];
     final bloc = _bloc(
-      exchangeForTesting(
-        access: fixedAccessForTesting(const ExchangeAccessSignedIn(_s)),
-        getDefaultWallets: () async => const Ok(
-          DefaultWallets(
-            bitcoin: DefaultWallet(
-              recipientId: 'r-1',
-              walletType: BtcNetwork.bitcoin,
-              address: 'bc1qsaved',
-            ),
+      calls: calls,
+      read: () async => const Ok(
+        DefaultWallets(
+          bitcoin: DefaultWallet(
+            recipientId: 'r-1',
+            walletType: BtcNetwork.bitcoin,
+            address: 'bc1qsaved',
           ),
         ),
-        deleteDefaultWallet:
-            ({required recipientId, required walletType, required address}) {
-              unsets++;
-              return release.future;
-            },
       ),
+      unset: () => release.future,
     );
     addTearDown(bloc.close);
     await _settle();
@@ -117,8 +145,8 @@ void main() {
       ..add(const SlotUnsetPressed(_btc))
       ..add(const SlotUnsetPressed(_btc));
     await _settle();
-    expect(unsets, 1);
-    release.complete(const WriteDone(null));
+    expect(calls, ['read s', 'unset s bitcoin r-1']);
+    release.complete(const Ok(null));
     await _settle();
     await _settle();
     expect(
@@ -128,13 +156,8 @@ void main() {
   });
 
   test('a result arriving after close is dropped (DW-1)', () async {
-    final release = Completer<Result<DefaultWallets, ExchangeFailure>>();
-    final bloc = _bloc(
-      exchangeForTesting(
-        access: fixedAccessForTesting(const ExchangeAccessSignedIn(_s)),
-        getDefaultWallets: () => release.future,
-      ),
-    );
+    final release = Completer<Result<DefaultWallets, ExchangeReadFailure>>();
+    final bloc = _bloc(calls: [], read: () => release.future);
     await bloc.close();
     release.complete(const Ok(DefaultWallets()));
     await _settle();

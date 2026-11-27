@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
 import 'package:bull_exchange/src/payout/ui/payout_requirement_view.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_pick_screen.dart';
 import 'package:bull_exchange/src/session/exchange_session_scope.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_exchange/src/ui/widgets/flow_status_page.dart';
-import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_state.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_event.dart';
 import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow_bloc.dart';
 import 'package:bull_exchange/src/withdraw/ui/screens/withdraw_amount_page.dart';
 import 'package:bull_exchange/src/withdraw/ui/screens/withdraw_review_page.dart';
@@ -207,7 +208,9 @@ List<Page<void>> withdrawPagesFor(
           onBack: () => onEvent(const WithdrawBackPressed()),
           problem: refused == null
               ? null
-              : const RecipientsSelectionFailure().toTranslated(context),
+              : const ExchangeRecipientsSelectionFailure().toTranslated(
+                  context,
+                ),
         ),
       ),
     ),

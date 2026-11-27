@@ -1,8 +1,11 @@
-import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_state.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 
 import '../recipients/recipient_fixture.dart';
+
+import 'package:primitives/primitives.dart';
 
 const withdrawSession = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -58,7 +61,7 @@ WithdrawFlowState applyWithdraw(
 ) {
   var current = state;
   for (final event in events) {
-    current = transitionWithdrawFlow(current, event).state;
+    current = current.next(event).state;
   }
   return current;
 }
@@ -66,9 +69,9 @@ WithdrawFlowState applyWithdraw(
 final withdrawAmountState = applyWithdraw(
   withdrawFlowStart(withdrawSession).state,
   [
-    WithdrawContextLoaded(1, ReadGot(withdrawContext)),
+    WithdrawContextLoaded(1, Ok(withdrawContext)),
     const WithdrawAmountChanged(
-      AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+      AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
     ),
   ],
 );
@@ -80,7 +83,5 @@ final withdrawRecipientState = applyWithdraw(withdrawAmountState, const [
 
 final withdrawReviewState = applyWithdraw(withdrawRecipientState, [
   WithdrawRecipientPicked(withdrawBankRecipient),
-  WithdrawOrderChanged(
-    OrderCreateAnswered(1, GateAdmitted(WriteDone(withdrawOrder()))),
-  ),
+  WithdrawOrderChanged(OrderCreateAnswered(1, Ok(withdrawOrder()))),
 ]);

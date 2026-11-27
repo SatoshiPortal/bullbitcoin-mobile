@@ -1,9 +1,9 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
-import 'package:bull_exchange/src/funding/data/url_launcher_external_link_adapter.dart';
 import 'package:bull_exchange/src/funding/domain/usecases/open_funding_payment_link_usecase.dart';
-import 'package:bull_exchange/src/funding/presentation/fund_exchange_failure_l10n.dart';
-import 'package:bull_exchange/src/funding/presentation/fund_flow.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
+import 'package:bull_exchange/src/funding/domain/fund_state.dart';
+import 'package:bull_exchange/src/funding/domain/fund_event.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_bloc.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_l10n.dart';
 import 'package:bull_exchange/src/funding/ui/screens/fund_cop_input_page.dart';
@@ -24,7 +24,9 @@ import 'package:primitives/primitives.dart';
 /// state, and Back (app bar, system, a dismissed sheet) is an event the
 /// machine answers (FUND-9: no page holds a bloc of its own).
 class FundFlowShell extends StatelessWidget {
-  const FundFlowShell({super.key});
+  const FundFlowShell({super.key, required this.openLink});
+
+  final OpenFundingPaymentLinkUsecase openLink;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class FundFlowShell extends StatelessWidget {
         final pages = fundPagesFor(
           state,
           onEvent: bloc.add,
-          onOpenLink: (link) => _openLink(context, link),
+          onOpenLink: (link) => _openLink(context, openLink, link),
         );
         return PopScope(
           canPop: switch (state) {
@@ -79,10 +81,14 @@ class FundFlowShell extends StatelessWidget {
     );
   }
 
-  static Future<void> _openLink(BuildContext context, Uri link) async {
-    final result = await const OpenFundingPaymentLinkUsecase(
-      externalLink: UrlLauncherExternalLinkAdapter(),
-    ).execute(OpenFundingPaymentLinkCommand(paymentLink: link.toString()));
+  static Future<void> _openLink(
+    BuildContext context,
+    OpenFundingPaymentLinkUsecase openLink,
+    Uri link,
+  ) async {
+    final result = await openLink.execute(
+      OpenFundingPaymentLinkCommand(paymentLink: link.toString()),
+    );
     if (!context.mounted) return;
     if (result case Err(:final failure)) {
       ScaffoldMessenger.of(context)

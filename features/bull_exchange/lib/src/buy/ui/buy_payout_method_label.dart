@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/buy/presentation/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';

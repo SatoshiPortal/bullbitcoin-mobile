@@ -23,8 +23,8 @@ class SettingsRouter {
 
   static final exchangeSettingsHost = ExchangeSettingsHost(
     exchange: () => locator<Exchange>(),
-    savePreferences: (patch) =>
-        locator<Exchange>().updateCurrentPreferences(patch),
+    savePreferences: (session, patch) =>
+        locator<Exchange>().updatePreferences(session, patch),
     refreshSession: ExchangeSessionScope.refresh,
     isSuperuser: (context) => Settings.isSuperuserOf(context),
     securityUrl: (context) => switch (Settings.networkOf(context)) {

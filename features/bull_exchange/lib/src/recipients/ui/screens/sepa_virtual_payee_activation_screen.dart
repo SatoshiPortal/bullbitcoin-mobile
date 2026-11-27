@@ -1,6 +1,6 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/src/recipients/presentation/sepa_virtual_payee_activation_cubit.dart';
 import 'package:bull_exchange/src/recipients/recipients_scope.dart';
 import 'package:bull_ui/bull_ui.dart';

@@ -1,8 +1,8 @@
 import 'package:bbx_api/bbx_api_testing.dart';
 import 'package:dio/dio.dart';
 import 'package:exchange/exchange.dart';
-import 'package:exchange/src/data/journaling_exchange_orders.dart';
-import 'package:exchange/src/data/journaling_exchange_recipients.dart';
+import 'package:exchange/src/data/journaling_orders_repository.dart';
+import 'package:exchange/src/data/journaling_recipients_repository.dart';
 import 'package:exchange/testing.dart';
 import 'package:mocktail/mocktail.dart' show Fake;
 import 'package:primitives/primitives.dart';
@@ -10,25 +10,32 @@ import 'package:test/test.dart';
 
 import 'bbx_api_test_http.dart';
 
-final class _Orders extends Fake implements ExchangeOrders {
-  final ExchangeWrite<Never> Function() answer;
+final class _Orders extends Fake implements OrdersRepository {
+  final Result<Never, ExchangeWriteFailure> Function() answer;
 
   _Orders(this.answer);
 
-  ExchangeWrite<T> _write<T>() => switch (answer()) {
-    WriteOutcomeUnknown(:final reason) => WriteOutcomeUnknown<T>(reason),
-    WriteRefused(:final reason) => WriteRefused<T>(reason),
-    WriteNotSent(:final reason) => WriteNotSent<T>(reason),
-    WriteSessionRejected() => WriteSessionRejected<T>(),
-    WriteDone() => throw StateError('use _DoneOrders'),
+  Result<T, ExchangeWriteFailure> _write<T>() => switch (answer()) {
+    Err(failure: ExchangeWriteOutcomeUnknownFailure(:final reason)) =>
+      Err<T, ExchangeWriteFailure>(ExchangeWriteOutcomeUnknownFailure(reason)),
+    Err(failure: ExchangeWriteRefusedFailure(:final reason)) =>
+      Err<T, ExchangeWriteFailure>(ExchangeWriteRefusedFailure(reason)),
+    Err(failure: ExchangeWriteNotSentFailure(:final reason)) =>
+      Err<T, ExchangeWriteFailure>(ExchangeWriteNotSentFailure(reason)),
+    Err(failure: ExchangeSessionRejectedFailure()) =>
+      Err<T, ExchangeWriteFailure>(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
+    Ok() => throw StateError('use _DoneOrders'),
   };
 
   @override
-  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId) async =>
-      _write();
+  Future<Result<BuyOrder, ExchangeWriteFailure>> confirmBuyOrder(
+    String orderId,
+  ) async => _write();
 
   @override
-  Future<ExchangeWrite<WithdrawOrder>> confirmWithdrawOrder(
+  Future<Result<WithdrawOrder, ExchangeWriteFailure>> confirmWithdrawOrder(
     String orderId, {
     ({
       String recipientId,
@@ -40,11 +47,12 @@ final class _Orders extends Fake implements ExchangeOrders {
   }) async => _write();
 
   @override
-  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId) async =>
-      _write();
+  Future<Result<BuyOrder, ExchangeWriteFailure>> accelerateBuyOrder(
+    String orderId,
+  ) async => _write();
 
   @override
-  Future<ExchangeWrite<Dca>> createDca({
+  Future<Result<Dca, ExchangeWriteFailure>> createDca({
     required double amount,
     required FiatCurrency currency,
     required DcaBuyFrequency frequency,
@@ -53,14 +61,14 @@ final class _Orders extends Fake implements ExchangeOrders {
   }) async => _write();
 }
 
-final class _Recipients extends Fake implements ExchangeRecipients {
-  final Result<Recipient, RecipientsFailure> answer;
+final class _Recipients extends Fake implements RecipientsRepository {
+  final Result<Recipient, ExchangeFailure> answer;
   final saved = <RecipientDetails>[];
 
   _Recipients(this.answer);
 
   @override
-  Future<Result<Recipient, RecipientsFailure>> saveRecipient(
+  Future<Result<Recipient, ExchangeFailure>> saveRecipient(
     RecipientDetails details, {
     bool isFiatRecipient = true,
     required bool isTestnet,
@@ -70,7 +78,9 @@ final class _Recipients extends Fake implements ExchangeRecipients {
   }
 }
 
-typedef _Call = Future<ExchangeWrite<Object?>> Function(ExchangeOrders);
+typedef _Call = Future<Result<Object?, ExchangeWriteFailure>> Function(
+  OrdersRepository,
+);
 
 final Map<UnknownWriteKind, (_Call, Map<String, String>, String?)> _calls = {
   UnknownWriteKind.buyConfirm: (
@@ -115,11 +125,17 @@ final Map<UnknownWriteKind, (_Call, Map<String, String>, String?)> _calls = {
   ),
 };
 
+const _limitSession = ExchangeSession(
+  environment: ExchangeEnvironment.testnet,
+  epoch: 7,
+  sessionId: 'limit',
+);
+
 void main() {
-  JournalingExchangeOrders journaling(
-    ExchangeOrders orders,
+  JournalingOrdersRepository journaling(
+    OrdersRepository orders,
     UnknownWriteJournal journal,
-  ) => JournalingExchangeOrders(
+  ) => JournalingOrdersRepository(
     orders,
     UnknownWriteRecorder(journal),
     environment: ExchangeEnvironment.testnet,
@@ -132,13 +148,24 @@ void main() {
       test('$kind with an unknown outcome is journaled first', () async {
         final journal = InMemoryUnknownWriteJournal();
         final orders = journaling(
-          _Orders(() => const WriteOutcomeUnknown('receive timeout')),
+          _Orders(
+            () => const Err(
+              ExchangeWriteOutcomeUnknownFailure('receive timeout'),
+            ),
+          ),
           journal,
         );
 
         final write = await call(orders);
 
-        expect(write, isA<WriteOutcomeUnknown<Object?>>());
+        expect(
+          write,
+          isA<Err<Object?, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
+        );
         final (entry, settlement) = journal.entries.single;
         expect(settlement, isNull);
         expect(entry.kind, kind);
@@ -148,10 +175,14 @@ void main() {
         expect(entry.request, request);
       });
 
-      for (final answer in <ExchangeWrite<Never>>[
-        const WriteRefused(ExchangeRefusal(rpcCode: -1)),
-        const WriteNotSent(ExchangeNotSentReason.unreachable),
-        const WriteSessionRejected(),
+      for (final answer in <Result<Never, ExchangeWriteFailure>>[
+        const Err(ExchangeWriteRefusedFailure(ExchangeRefusal(rpcCode: -1))),
+        const Err(
+          ExchangeWriteNotSentFailure(ExchangeNotSentReason.unreachable),
+        ),
+        const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
       ]) {
         test('$kind answered ${answer.runtimeType} is not journaled', () async {
           final journal = InMemoryUnknownWriteJournal();
@@ -168,7 +199,10 @@ void main() {
       final (call, _, _) = _calls[UnknownWriteKind.withdrawConfirm]!;
 
       final _ = await call(
-        journaling(_Orders(() => const WriteOutcomeUnknown('x')), journal),
+        journaling(
+          _Orders(() => const Err(ExchangeWriteOutcomeUnknownFailure('x'))),
+          journal,
+        ),
       );
 
       final values = journal.entries.single.$1.request.values.join(' ');
@@ -186,10 +220,10 @@ void main() {
       securityAnswer: 'orange',
     );
 
-    JournalingExchangeRecipients journaling(
+    JournalingRecipientsRepository journaling(
       _Recipients recipients,
       UnknownWriteJournal journal,
-    ) => JournalingExchangeRecipients(
+    ) => JournalingRecipientsRepository(
       recipients,
       UnknownWriteRecorder(journal),
       readEpoch: (environment) async =>
@@ -199,7 +233,7 @@ void main() {
     test('an unknown outcome is journaled with the identity sent', () async {
       final journal = InMemoryUnknownWriteJournal();
       final inner = _Recipients(
-        const Err(RecipientsSaveOutcomeUnknownFailure('504')),
+        const Err(ExchangeRecipientsSaveOutcomeUnknownFailure('504')),
       );
 
       final result = await journaling(
@@ -209,10 +243,10 @@ void main() {
 
       expect(
         result,
-        isA<Err<Recipient, RecipientsFailure>>().having(
+        isA<Err<Recipient, ExchangeFailure>>().having(
           (r) => r.failure,
           'failure',
-          isA<RecipientsSaveOutcomeUnknownFailure>(),
+          isA<ExchangeRecipientsSaveOutcomeUnknownFailure>(),
         ),
       );
       expect(inner.saved, [details]);
@@ -230,10 +264,10 @@ void main() {
       expect(values, isNot(contains('colour')));
     });
 
-    for (final answer in <Result<Recipient, RecipientsFailure>>[
-      const Err(RecipientsSaveFailure()),
-      const Err(RecipientsNetworkFailure()),
-      const Err(RecipientsNotAuthenticatedFailure()),
+    for (final answer in <Result<Recipient, ExchangeFailure>>[
+      const Err(ExchangeRecipientsSaveFailure()),
+      const Err(ExchangeNetworkFailure()),
+      const Err(ExchangeNotAuthenticatedFailure()),
     ]) {
       test('${answer.runtimeType} is not journaled', () async {
         final journal = InMemoryUnknownWriteJournal();
@@ -253,7 +287,7 @@ void main() {
         final journal = InMemoryUnknownWriteJournal();
         final exchange = exchangeForTesting(
           recipients: _Recipients(
-            const Err(RecipientsSaveOutcomeUnknownFailure('timeout')),
+            const Err(ExchangeRecipientsSaveOutcomeUnknownFailure('timeout')),
           ),
           unknownWrites: journal,
           readSessionPoint: () async =>
@@ -367,6 +401,9 @@ void main() {
             readActiveApiKey: readKey,
           ),
           unknownWrites: journal,
+          access: fixedAccessForTesting(
+            const ExchangeAccessSignedIn(_limitSession),
+          ),
         );
 
     test('a buy confirm that times out after sending is journaled', () async {
@@ -380,7 +417,14 @@ void main() {
           .orders(ExchangeEnvironment.testnet)
           .confirmBuyOrder('o-9');
 
-      expect(write, isA<WriteOutcomeUnknown<BuyOrder>>());
+      expect(
+        write,
+        isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
+      );
       final entry = journal.entries.single.$1;
       expect(entry.kind, UnknownWriteKind.buyConfirm);
       expect(entry.orderId, 'o-9');
@@ -395,6 +439,7 @@ void main() {
       );
 
       final result = await exchange.limitOrders.create(
+        _limitSession,
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,
@@ -403,7 +448,14 @@ void main() {
         ),
       );
 
-      expect(result, isA<WriteOutcomeUnknown<LimitOrder>>());
+      expect(
+        result,
+        isA<Err<LimitOrder, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
+      );
       final entry = journal.entries.single.$1;
       expect(entry.kind, UnknownWriteKind.limitOrderCreate);
       expect(entry.environment, ExchangeEnvironment.testnet);
@@ -428,6 +480,7 @@ void main() {
       );
 
       final _ = await exchange.limitOrders.create(
+        _limitSession,
         LimitOrderDraft(
           limitPrice: 90000,
           fiatAmount: 100,
@@ -448,7 +501,7 @@ void main() {
             required walletType,
             required address,
             existingRecipientId,
-          }) async => const WriteOutcomeUnknown('504'),
+          }) async => const Err(ExchangeWriteOutcomeUnknownFailure('504')),
           unknownWrites: journal,
           readSessionPoint: () async =>
               const Ok((environment: ExchangeEnvironment.mainnet, epoch: 2)),
@@ -459,7 +512,14 @@ void main() {
           address: 'bc1qdefault',
         );
 
-        expect(write, isA<WriteOutcomeUnknown<DefaultWallet>>());
+        expect(
+          write,
+          isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
+        );
         final entry = journal.entries.single.$1;
         expect(entry.kind, UnknownWriteKind.defaultWalletSave);
         expect(entry.environment, ExchangeEnvironment.mainnet);
@@ -479,7 +539,7 @@ void main() {
             required walletType,
             required address,
             existingRecipientId,
-          }) async => const WriteOutcomeUnknown('504'),
+          }) async => const Err(ExchangeWriteOutcomeUnknownFailure('504')),
         );
 
         expect(
@@ -487,7 +547,11 @@ void main() {
             walletType: BtcNetwork.bitcoin,
             address: 'bc1qdefault',
           ),
-          isA<WriteOutcomeUnknown<DefaultWallet>>(),
+          isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteOutcomeUnknownFailure>(),
+          ),
         );
       },
     );

@@ -77,7 +77,10 @@ final class ExchangeStore {
             DatabaseKeyUnavailable(
               reason: DatabaseKeyProblem.locked,
             ) => const Err(LegacyImportDeferred()),
-            _ => const Err(LegacyImportUnavailable()),
+            DatabaseKeyUnavailable() ||
+            DatabaseFileUnavailable() ||
+            DatabaseCipherUnavailable() ||
+            DatabaseViewsUnsupported() => const Err(LegacyImportUnavailable()),
           };
       }
     } on Exception {

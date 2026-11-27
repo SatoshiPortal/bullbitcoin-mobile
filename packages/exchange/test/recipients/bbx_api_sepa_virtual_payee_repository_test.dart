@@ -74,12 +74,12 @@ List<(String, String, Object?)> _sent(FakeBbxHttp http) => [
     (r.path, jsonEncode(r.data), r.headers['x-api-version']),
 ];
 
-T _valueOf<T>(Result<T, RecipientsFailure> result) => switch (result) {
+T _valueOf<T>(Result<T, ExchangeFailure> result) => switch (result) {
   Ok(:final value) => value,
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
-RecipientsFailure _failureOf<T>(Result<T, RecipientsFailure> result) =>
+ExchangeFailure _failureOf<T>(Result<T, ExchangeFailure> result) =>
     switch (result) {
       Ok() => fail('expected an Err, got Ok'),
       Err(:final failure) => failure,
@@ -112,7 +112,7 @@ void main() {
             .activate(recipientId: 'r-1', isTestnet: false),
       );
 
-      expect(failure, isA<RecipientsUnexpectedFailure>());
+      expect(failure, isA<ExchangeUnexpectedFailure>());
       expect(
         failure.logMessage,
         'BbxRpcFailure(code: -32602, apiCode: ERR_RCP_400)',
@@ -126,7 +126,7 @@ void main() {
             FakeBbxHttp(error: DioExceptionType.connectionError),
           ).activate(recipientId: 'r-1', isTestnet: false),
         ),
-        isA<RecipientsNetworkFailure>(),
+        isA<ExchangeNetworkFailure>(),
       );
     });
 
@@ -141,7 +141,7 @@ void main() {
         _failureOf(
           await repository.activate(recipientId: 'r-1', isTestnet: false),
         ),
-        isA<RecipientsNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
       expect(http.requests, isEmpty);
     });
@@ -158,7 +158,7 @@ void main() {
         await repository.activate(recipientId: 'r-1', isTestnet: false),
       );
 
-      expect(failure, isA<RecipientsUnexpectedFailure>());
+      expect(failure, isA<ExchangeUnexpectedFailure>());
       expect(failure.logMessage, 'Exchange credential unavailable');
     });
   });
@@ -287,14 +287,14 @@ void main() {
         ]),
       ).findStatus(recipientId: 'b', isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsLoadFailure>());
+      expect(_failureOf(result), isA<ExchangeRecipientsLoadFailure>());
     });
 
     test('a refusal is a load failure', () async {
       final result = await _repository(FakeBbxHttp(body: _refusal))
           .findStatus(recipientId: 'b', isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsLoadFailure>());
+      expect(_failureOf(result), isA<ExchangeRecipientsLoadFailure>());
     });
 
     test('a page without its total is a load failure', () async {
@@ -308,7 +308,7 @@ void main() {
         ),
       ).findStatus(recipientId: 'b', isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsLoadFailure>());
+      expect(_failureOf(result), isA<ExchangeRecipientsLoadFailure>());
     });
 
     test('a timeout is a network failure', () async {
@@ -316,7 +316,7 @@ void main() {
         FakeBbxHttp(error: DioExceptionType.receiveTimeout),
       ).findStatus(recipientId: 'b', isTestnet: false);
 
-      expect(_failureOf(result), isA<RecipientsNetworkFailure>());
+      expect(_failureOf(result), isA<ExchangeNetworkFailure>());
     });
   });
 }

@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
-import 'package:bull_exchange/src/funding/presentation/fund_flow.dart';
+import 'package:bull_exchange/src/funding/domain/fund_event.dart';
 import 'package:bull_exchange/src/funding/presentation/fund_flow_l10n.dart';
 import 'package:bull_exchange/src/funding/presentation/funding_rail_copy.dart';
 import 'package:bull_exchange/src/funding/ui/widgets/fund_exchange_jurisdiction_dropdown.dart';

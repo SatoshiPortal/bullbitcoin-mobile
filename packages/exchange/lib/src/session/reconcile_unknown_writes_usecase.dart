@@ -10,12 +10,12 @@ import '../domain/entities/order.dart';
 import '../domain/entities/user_summary.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
-import '../domain/exchange_orders.dart';
+import '../domain/repositories/orders_repository.dart';
 import '../domain/order_create_journal.dart';
 import '../domain/unknown_write_journal.dart';
 import '../recipients/domain/entities/recipient.dart';
 import '../recipients/domain/recipient_identity.dart';
-import '../recipients/exchange_recipients.dart';
+import '../recipients/domain/repositories/recipients_repository.dart';
 
 /// What one reconciliation did: how many open entries it settled and how
 /// many are still open (a re-read failed or could not decide).
@@ -46,7 +46,7 @@ final class UnknownWriteReconciliation {
 /// [UnknownWrite.maxAge]: then it is closed as expired and logged.
 final class ReconcileUnknownWritesUsecase {
   final UnknownWriteJournal _journal;
-  final ExchangeOrders Function(ExchangeEnvironment) _orders;
+  final OrdersRepository Function(ExchangeEnvironment) _orders;
   final Future<Result<UserSummary, ExchangeFailure>> Function(
     ExchangeEnvironment,
   )
@@ -55,7 +55,7 @@ final class ReconcileUnknownWritesUsecase {
   _listRecentLimitOrders;
   final Future<Result<DefaultWallets, ExchangeFailure>> Function()
   _getDefaultWallets;
-  final ExchangeRecipients _recipients;
+  final RecipientsRepository _recipients;
 
   const ReconcileUnknownWritesUsecase({
     required this._journal,
@@ -74,8 +74,9 @@ final class ReconcileUnknownWritesUsecase {
   static const recipientPageSize = 50;
 
   @useResult
-  Future<Result<UnknownWriteReconciliation, UnknownWriteJournalFailure>>
-  execute(ExchangeEnvironment environment) async {
+  Future<Result<UnknownWriteReconciliation, ExchangeJournalFailure>> execute(
+    ExchangeEnvironment environment,
+  ) async {
     final List<UnknownWrite> entries;
     switch (await _journal.open(environment)) {
       case Err(:final failure):

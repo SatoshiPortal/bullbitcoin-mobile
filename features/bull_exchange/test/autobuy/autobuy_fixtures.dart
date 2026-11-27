@@ -1,4 +1,4 @@
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_flow.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_state.dart';
 import 'package:exchange/exchange.dart';
 
 const autoBuySession = ExchangeSession(

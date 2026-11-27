@@ -9,7 +9,7 @@ export 'src/buy/ui/buy_router.dart' show BuyRoute;
 export 'src/buy/ui/widgets/accelerate_transaction_list_tile.dart'
     show AccelerateTransactionListTile;
 export 'src/dca/ui/dca_router.dart' show DcaRoute;
-export 'src/exchange_failure_l10n.dart' show ExchangeFailureL10n;
+export 'src/presentation/exchange_failure_l10n.dart' show ExchangeFailureL10n;
 export 'src/pay/ui/pay_router.dart' show PayRoute;
 export 'src/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart'
     show showSinpeReceiptBottomSheet;

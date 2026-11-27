@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bbx_api/bbx_api_testing.dart';
+import 'package:bull_exchange/src/payin/payin_runner.dart';
 import 'package:bull_exchange/src/payin/payin_spend_calls.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
@@ -94,7 +95,7 @@ Exchange _exchange(HttpClientAdapter adapter) =>
 
 void main() {
   // Sell and pay read their order after the payin broadcast (recheck,
-  // verify, receipt) through the same PayinCalls.readOrder.
+  // verify, receipt) through the same PayinUsecases.getOrder.
   test('a failed post-broadcast order read keeps foreign text out of disk logs '
       'and the reporter', () async {
     const socket = SocketException("Failed host lookup: '$_host'");
@@ -126,18 +127,22 @@ void main() {
       payjoinSender: _PayjoinSender(),
       payjoinSessions: _PayjoinSessions(),
       labels: _Labels(),
-      coins: (_) async => null,
+      coins: (_) async => const Err(ExchangeWalletCoinsUnavailableFailure()),
     );
-    final calls = payinCallsOf(_exchange(transport), _session, services);
+    final payin = PayinUsecases.of(_exchange(transport), services);
 
-    final read = await calls.readOrder(_orderId);
+    final read = await payin.getOrder.execute(_session, _orderId);
 
     expect(
       read,
-      isA<ReadUnreachable<Order>>().having(
-        (r) => r.isNetwork,
-        'isNetwork',
-        isTrue,
+      isA<Err<Order, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>().having(
+          (r) => r.isNetwork,
+          'isNetwork',
+          isTrue,
+        ),
       ),
     );
     expect(transport.requests, hasLength(1));
@@ -151,7 +156,12 @@ void main() {
     final disk = await log.logsFile.exists()
         ? await log.logsFile.readAsString()
         : '';
-    expect((read as ReadUnreachable<Order>).reason, 'ExchangeNetworkFailure');
+    expect(
+      ((read as Err<Order, ExchangeReadFailure>).failure
+              as ExchangeUnreachableFailure)
+          .reason,
+      'ExchangeNetworkFailure',
+    );
     final diagnostics = '$disk\n${reporter.reports.join('\n')}\n$read';
     for (final sentinel in [
       _host,

@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/withdraw/presentation/withdraw_flow.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_state.dart';
+import 'package:bull_exchange/src/withdraw/domain/withdraw_event.dart';
 import 'package:bull_exchange/src/withdraw/ui/screens/withdraw_amount_page.dart';
 import 'package:bull_exchange/src/withdraw/ui/screens/withdraw_review_page.dart';
 import 'package:bull_exchange/src/withdraw/ui/withdraw_flow_shell.dart';

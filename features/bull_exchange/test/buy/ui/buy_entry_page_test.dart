@@ -1,7 +1,8 @@
 import 'dart:ui' show Tristate;
 
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/buy/presentation/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_event.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
 import 'package:bull_exchange/src/buy/ui/screens/buy_entry_page.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:bull_ui/testing.dart';
@@ -17,11 +18,11 @@ import '../buy_fixtures.dart';
 /// payjoin row shows once the bitcoin wallet is the destination.
 final _payjoinEntry =
     applyBuy(buyLoadingState, [
-          BuyContextLoaded(1, ReadGot(buyContext)),
+          BuyContextLoaded(1, Ok(buyContext)),
           const BuyAmountChanged(
-            AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+            AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
           ),
-          BuyDestinationChanged(PickChose(buyBitcoinWallet.option)),
+          BuyDestinationPicked(buyBitcoinWallet.option),
           BuyDestinationChanged(
             PickResolved(
               buyBitcoinWallet.option,

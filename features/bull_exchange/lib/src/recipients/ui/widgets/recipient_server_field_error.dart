@@ -1,5 +1,5 @@
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,10 +12,10 @@ extension RecipientServerFieldError on BuildContext {
     final failure = select(
       (RecipientsBloc bloc) => bloc.state.failedToAddRecipient,
     );
-    return switch (failure) {
-      RecipientsInvalidFieldsFailure(:final fields) =>
-        fields[field]?.toTranslated(this),
-      _ => null,
-    };
+    // Only a refusal of named fields says something about one field.
+    if (failure case ExchangeRecipientsInvalidFieldsFailure(:final fields)) {
+      return fields[field]?.toTranslated(this);
+    }
+    return null;
   }
 }

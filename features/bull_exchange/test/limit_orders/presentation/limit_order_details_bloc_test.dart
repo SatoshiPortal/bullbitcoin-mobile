@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/limit_orders/presentation/limit_order_cancel.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_cancel_event.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_details_state.dart';
+import 'package:bull_exchange/src/limit_orders/domain/limit_order_details_event.dart';
 import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_bloc.dart';
-import 'package:bull_exchange/src/limit_orders/presentation/limit_order_details_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
-import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart';
 
 import '../limit_order_fixtures.dart';
+import '../limit_order_usecase_fakes.dart';
 
-class _Orders extends Mock implements ExchangeLimitOrders {}
+import 'package:primitives/primitives.dart';
 
 Future<void> _settle() async {
   for (var i = 0; i < 4; i++) {
@@ -20,43 +20,43 @@ Future<void> _settle() async {
   }
 }
 
-void main() {
-  late _Orders orders;
-  late Exchange exchange;
+/// The details use cases as fakes answering [reads] in turn and [cancel];
+/// every call is logged, with the session it got where it takes one.
+final class _Calls {
+  final List<Result<LimitOrder, ExchangeReadFailure>> reads;
+  final Result<LimitOrder, ExchangeGatedWriteFailure> cancel;
+  final log = <String>[];
+  final sessions = <ExchangeSession>{};
 
-  setUp(() {
-    orders = _Orders();
-    exchange = exchangeForTesting(
-      limitOrders: orders,
-      access: fixedAccessForTesting(const ExchangeAccessSignedIn(limitSession)),
-    );
+  _Calls(
+    this.reads, {
+    this.cancel = const Err(ExchangeWriteOutcomeUnknownFailure('unsure')),
   });
 
-  LimitDetailsBloc details() => LimitDetailsBloc(
-    calls: (session) => limitDetailsCallsOf(exchange, session),
-    session: limitSession,
-    orderId: 'lo-1',
-    accessChanges: const Stream.empty(),
-  );
-
-  test('a failed cancel shows the order as read again (LIM-3)', () async {
-    var reads = 0;
-    when(() => orders.get('lo-1')).thenAnswer((_) async {
-      reads++;
-      return Ok(
-        limitOrder(
-          status: reads == 1
-              ? LimitOrderStatus.active
-              : LimitOrderStatus.executed,
-        ),
+  LimitDetailsBloc bloc({ExchangeSession? session = limitSession}) =>
+      LimitDetailsBloc(
+        session: session,
+        orderId: 'lo-1',
+        accessChanges: const Stream.empty(),
+        getOrder: FakeGetLimitOrderUsecase((_, orderId) async {
+          log.add('get $orderId');
+          return reads.length > 1 ? reads.removeAt(0) : reads.single;
+        }),
+        cancelOrder: FakeCancelLimitOrderUsecase((session, orderId) async {
+          sessions.add(session);
+          log.add('cancel $orderId');
+          return cancel;
+        }),
       );
-    });
-    when(() => orders.cancel('lo-1')).thenAnswer(
-      (_) async => const Err(
-        ExchangeLimitOrderFailure(ExchangeLimitOrderProblem.cancel, 'filled'),
-      ),
-    );
-    final bloc = details();
+}
+
+void main() {
+  test('a failed cancel shows the order as read again (LIM-3)', () async {
+    final calls = _Calls([
+      Ok(limitOrder()),
+      Ok(limitOrder(status: LimitOrderStatus.executed)),
+    ]);
+    final bloc = calls.bloc();
     addTearDown(bloc.close);
     await _settle();
     expect(bloc.state, isA<DetailsShown>());
@@ -72,15 +72,15 @@ void main() {
             .having((c) => c.problem, 'problem', isA<CancelNotApplied>()),
       ),
     );
-    verify(() => orders.cancel('lo-1')).called(1);
+    expect(calls.log, ['get lo-1', 'cancel lo-1', 'get lo-1']);
+    expect(calls.sessions, {limitSession});
   });
 
   test('a cancelled order closes as changed', () async {
-    when(() => orders.get('lo-1')).thenAnswer((_) async => Ok(limitOrder()));
-    when(() => orders.cancel('lo-1')).thenAnswer(
-      (_) async => Ok(limitOrder(status: LimitOrderStatus.cancelled)),
-    );
-    final bloc = details();
+    final calls = _Calls([
+      Ok(limitOrder()),
+    ], cancel: Ok(limitOrder(status: LimitOrderStatus.cancelled)));
+    final bloc = calls.bloc();
     addTearDown(bloc.close);
     await _settle();
     bloc
@@ -90,16 +90,11 @@ void main() {
     bloc.add(const DetailsBackPressed());
     await _settle();
     expect(bloc.state, const DetailsClosed(changed: true));
-    verify(() => orders.cancel('lo-1')).called(1);
+    expect(calls.log.where((l) => l.startsWith('cancel')), ['cancel lo-1']);
   });
 
   test('a missing order is not found, not a network failure', () async {
-    when(() => orders.get('lo-1')).thenAnswer(
-      (_) async => const Err(
-        ExchangeLimitOrderFailure(ExchangeLimitOrderProblem.notFound, '404'),
-      ),
-    );
-    final bloc = details();
+    final bloc = _Calls([const Err(ExchangeMissingFailure())]).bloc();
     addTearDown(bloc.close);
     await _settle();
     expect(
@@ -110,5 +105,13 @@ void main() {
         isA<ReadProblemMissing>(),
       ),
     );
+  });
+
+  test('without a session nothing runs', () async {
+    final calls = _Calls([Ok(limitOrder())]);
+    final bloc = calls.bloc(session: null);
+    addTearDown(bloc.close);
+    await _settle();
+    expect(calls.log, isEmpty);
   });
 }

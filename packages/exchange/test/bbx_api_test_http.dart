@@ -40,7 +40,7 @@ Exchange testExchange(
   ),
 );
 
-ExchangeOrders testExchangeOrders(
+OrdersRepository testExchangeOrders(
   HttpClientAdapter adapter, {
   bool isTestnet = false,
   ReadExchangeApiKey? readApiKey,

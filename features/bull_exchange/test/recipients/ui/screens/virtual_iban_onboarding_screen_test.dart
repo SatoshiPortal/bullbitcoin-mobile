@@ -22,7 +22,7 @@ class _MockWatchVirtualIbanUsecase extends Mock
 class _MockGetAccountOwnerNameUsecase extends Mock
     implements GetAccountOwnerNameUsecase {}
 
-typedef _Event = Result<VirtualIban?, RecipientsFailure>;
+typedef _Event = Result<VirtualIban?, ExchangeFailure>;
 
 void main() {
   late StreamController<_Event> events;
@@ -89,7 +89,7 @@ void main() {
   ) async {
     final loc = await pumpView(tester, withReturnHome: true);
     await emit(tester, const Ok(PendingVirtualIban()));
-    await emit(tester, const Err(RecipientsNetworkFailure()));
+    await emit(tester, const Err(ExchangeNetworkFailure()));
     final colors = tester.element(find.byType(BullButton).first).bull;
     final fills = [
       for (final element in find.byType(BullButton).evaluate())
@@ -203,7 +203,7 @@ void main() {
     final loc = await pumpView(tester);
     await emit(tester, const Ok(null));
 
-    await emit(tester, const Err(RecipientsEuResidencyRequiredFailure()));
+    await emit(tester, const Err(ExchangeEuResidencyRequiredFailure()));
 
     expect(find.text(loc.recipientsErrorEuResidencyRequired), findsOne);
   });

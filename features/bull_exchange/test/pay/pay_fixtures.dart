@@ -1,10 +1,13 @@
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
 import 'package:fees/fees.dart';
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_state.dart';
+import 'package:bull_exchange/src/pay/domain/pay_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 
 import '../recipients/recipient_fixture.dart';
+
+import 'package:primitives/primitives.dart';
 
 const paySession = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -78,23 +81,21 @@ final payInteracRecipient = recipientFixture(
 PayFlowState applyPay(PayFlowState state, List<PayFlowEvent> events) {
   var current = state;
   for (final event in events) {
-    current = transitionPayFlow(current, event).state;
+    current = current.next(event).state;
   }
   return current;
 }
 
 final payLoadingState = payFlowStart(paySession).state;
 final payRecipientState = applyPay(payLoadingState, [
-  PayContextLoaded(1, ReadGot(payContext)),
+  PayContextLoaded(1, Ok(payContext)),
 ]);
 final payRequirementsState = applyPay(payRecipientState, [
   PayRecipientPicked(payInteracRecipient),
 ]);
 final payAmountState = applyPay(payRecipientState, [
   PayRecipientPicked(payBankRecipient),
-  const PayAmountChanged(
-    AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
-  ),
+  const PayAmountChanged(AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0))),
 ]);
 final paySourceState = applyPay(payAmountState, const [
   PayAmountChanged(AmountTyped('10')),
@@ -112,9 +113,9 @@ const payFees = FeeOptions(
 
 final payReviewState = applyPay(payOrderingState, [
   PayOrderChanged(
-    OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(payOrder()))),
+    OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(payOrder())),
   ),
-  const PaySpendChanged(SpendFeesLoaded(1, payFees)),
+  const PaySpendChanged(SpendFeesRead(1, Ok(payFees))),
 ]);
 final payPayingState = applyPay(payReviewState, [PayConfirmPressed(payNow)]);
 final payDoneState = PayDone(

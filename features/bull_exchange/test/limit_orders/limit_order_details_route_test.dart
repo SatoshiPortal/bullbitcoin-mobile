@@ -11,14 +11,14 @@ import 'package:primitives/primitives.dart';
 
 import 'limit_order_fixtures.dart';
 
-class _Orders extends Mock implements ExchangeLimitOrders {}
+class _Orders extends Mock implements LimitOrdersRepository {}
 
 void main() {
   testWidgets('the mounted details route loads the selected active order', (
     tester,
   ) async {
     final orders = _Orders();
-    when(() => orders.get('selected'))
+    when(() => orders.get(limitSession, 'selected'))
         .thenAnswer((_) async => Ok(limitOrder(id: 'selected')));
     final exchange = exchangeForTesting(
       limitOrders: orders,
@@ -46,7 +46,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    verify(() => orders.get('selected')).called(1);
+    verify(() => orders.get(limitSession, 'selected')).called(1);
     expect(find.text('LO-1'), findsOneWidget);
   });
 }

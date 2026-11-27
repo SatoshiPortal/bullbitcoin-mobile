@@ -17,6 +17,8 @@ import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/spei
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/spei_clabe_mxn_form.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/spei_sms_mxn_form.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_type_selector.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:flutter/widgets.dart';

@@ -2,7 +2,7 @@ import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RecipientFormContinueButton extends StatelessWidget {
@@ -47,13 +47,9 @@ class RecipientFormContinueButton extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
-              switch (failedToAddRecipient) {
-                final RecipientsInvalidFieldsFailure refused => refused.summary(
-                  context,
-                  shownFields,
-                ),
-                final failure => failure.toTranslated(context),
-              },
+              failedToAddRecipient is ExchangeRecipientsInvalidFieldsFailure
+                  ? failedToAddRecipient.summary(context, shownFields)
+                  : failedToAddRecipient.toTranslated(context),
               style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),
@@ -64,7 +60,8 @@ class RecipientFormContinueButton extends StatelessWidget {
           onPressed:
               (isLoading ||
                   formDisabled ||
-                  failedToAddRecipient is RecipientsSaveOutcomeUnknownFailure)
+                  failedToAddRecipient
+                      is ExchangeRecipientsSaveOutcomeUnknownFailure)
               ? null
               : onPressed,
         ),

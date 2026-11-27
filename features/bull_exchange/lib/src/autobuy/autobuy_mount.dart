@@ -4,9 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preferences/preferences.dart';
 
+import '../account/domain/usecases/get_user_summary_usecase.dart';
 import '../default_wallets/default_wallets_payout_fields.dart';
+import 'domain/usecases/load_autobuy_context_usecase.dart';
+import 'domain/usecases/save_autobuy_preference_usecase.dart';
 import 'presentation/autobuy_bloc.dart';
-import 'presentation/autobuy_switch.dart';
+import 'domain/autobuy_switch_event.dart';
 import 'ui/autobuy_flow_shell.dart';
 import 'ui/widgets/autobuy_home_card.dart';
 
@@ -33,11 +36,16 @@ GoRoute autoBuyRoute(AutoBuyHost host) => GoRoute(
   builder: (_, _) {
     final exchange = host.exchange();
     return BlocProvider(
-      create: (_) => AutoBuyFlowBloc(
-        calls: (session) => autoBuyCallsOf(exchange, session),
-        session: exchange.currentSession,
-        accessChanges: exchange.watchAccess(),
-      ),
+      create: (_) {
+        final getUserSummary = GetUserSummaryUsecase(exchange);
+        return AutoBuyFlowBloc(
+          session: exchange.currentSession,
+          accessChanges: exchange.watchAccess(),
+          loadContext: LoadAutoBuyContextUsecase(exchange, getUserSummary),
+          saveAutoBuy: SaveAutoBuyPreferenceUsecase(exchange),
+          getUserSummary: getUserSummary,
+        );
+      },
       child: AutoBuyFlowShell(
         host: (
           exchange: exchange,
@@ -71,9 +79,10 @@ class ExchangeAutoBuyCard extends StatefulWidget {
 class _ExchangeAutoBuyCardState extends State<ExchangeAutoBuyCard> {
   late final AutoBuySwitchBloc _bloc = () {
     final exchange = widget.exchange();
-    final session = exchange.currentSession;
     return AutoBuySwitchBloc(
-      calls: session == null ? null : autoBuyCallsOf(exchange, session),
+      session: exchange.currentSession,
+      saveAutoBuy: SaveAutoBuyPreferenceUsecase(exchange),
+      getUserSummary: GetUserSummaryUsecase(exchange),
       active: widget.isActive,
       restricted: widget.isRestricted,
       onAccountChanged: widget.onStatusChanged,

@@ -8,16 +8,15 @@ import '../domain/entities/confidential_sepa_availability.dart';
 import '../domain/entities/funding_institution.dart';
 import '../domain/entities/user_summary.dart';
 import '../domain/entities/virtual_iban.dart';
-import '../domain/exchange_call_result.dart';
 import '../domain/exchange_failure.dart';
 import '../funding/funding_instructions.dart';
 import '../funding/funding_request.dart';
-import 'bbx_api_virtual_iban_repository.dart';
+import 'bbx_api_virtual_ibans_repository.dart';
 import 'exchange_call_classifier.dart';
 import 'read_user_summary.dart';
 
 /// The funding calls on one client, as closed results. A missing field the
-/// rail shows is [ReadMalformed], never a thrown error or an empty value
+/// rail shows is [ExchangeMalformedFailure], never a thrown error or an empty value
 /// (FUND-1).
 final class BbxApiFundingRails {
   final bbx.Bbx _api;
@@ -25,24 +24,26 @@ final class BbxApiFundingRails {
 
   const BbxApiFundingRails(this._api, {required this.paymentReturnUrl});
 
-  Future<ExchangeRead<FundingAccount>> account() async {
-    final summary = await readUserSummary(_api);
-    if (summary is! ReadGot<UserSummary>) return _same(summary);
-    final user = summary.value;
-    final ExchangeRead<ConfidentialSepaAvailability> confidentialSepa =
-        user.isEligibleForConfidentialSepa
-        ? switch (await BbxApiVirtualIbanRepository(_api).find()) {
-            Ok(value: ActiveVirtualIban()) => const ReadGot(
+  Future<Result<FundingAccount, ExchangeReadFailure>> account() async {
+    final UserSummary user;
+    switch (await readUserSummary(_api)) {
+      case Ok(:final value):
+        user = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    final Result<ConfidentialSepaAvailability, ExchangeReadFailure>
+    confidentialSepa = user.isEligibleForConfidentialSepa
+        ? switch (await BbxApiVirtualIbansRepository.findOn(_api)) {
+            Ok(value: ActiveVirtualIban()) => const Ok(
               ConfidentialSepaAvailability.ready,
             ),
-            Ok() => const ReadGot(
-              ConfidentialSepaAvailability.needsVirtualIban,
-            ),
+            Ok() => const Ok(ConfidentialSepaAvailability.needsVirtualIban),
             Err(:final failure) => readOfFailure(failure),
           }
-        : const ReadGot(ConfidentialSepaAvailability.unavailable);
+        : const Ok(ConfidentialSepaAvailability.unavailable);
     return switch (confidentialSepa) {
-      ReadGot(value: final availability) => ReadGot(
+      Ok(value: final availability) => Ok(
         FundingAccount(
           userNumber: user.userNumber,
           firstName: user.profile.firstName,
@@ -56,31 +57,35 @@ final class BbxApiFundingRails {
           confidentialSepa: availability,
         ),
       ),
-      _ => _same(confidentialSepa),
+      Err(:final failure) => Err(failure),
     };
   }
 
-  Future<ExchangeRead<bool>> consentOnAccount() async =>
+  Future<Result<bool, ExchangeReadFailure>> consentOnAccount() async =>
       switch (await readUserSummary(_api)) {
-        ReadGot(:final value) => ReadGot(value.hasConsentedScamWarning),
-        final other => _same(other),
+        Ok(:final value) => Ok(value.hasConsentedScamWarning),
+        Err(:final failure) => Err(failure),
       };
 
   /// Only `success: true` is a consent; any other answer may or may not
   /// have recorded it, so the gate re-reads.
-  Future<ExchangeWrite<void>> consent() async {
+  Future<Result<void, ExchangeWriteFailure>> consent() async {
     switch (await _api.users.registerResponsibilityConsent()) {
       case Ok(value: true):
-        return const WriteDone(null);
+        return const Ok(null);
       case Ok():
         log.warning('registerResponsibilityConsent answered without success');
-        return const WriteOutcomeUnknown('consent answered without success');
+        return const Err(
+          ExchangeWriteOutcomeUnknownFailure(
+            'consent answered without success',
+          ),
+        );
       case Err(:final failure):
         return writeOf(failure);
     }
   }
 
-  Future<ExchangeRead<List<FundingInstitution>>> institutions(
+  Future<Result<List<FundingInstitution>, ExchangeReadFailure>> institutions(
     Jurisdiction jurisdiction,
   ) => exchangeRead<bbx.InstitutionList, List<FundingInstitution>>(
     'listInstitutionCodes',
@@ -100,13 +105,14 @@ final class BbxApiFundingRails {
     },
   );
 
-  Future<ExchangeRead<FundingAnswer>> instructions(FundingRequest request) =>
-      switch (request) {
-        ProcessorCodeRequest() => _processorCode(request),
-        CopPaymentRequest() => _copLink(request),
-      };
+  Future<Result<FundingAnswer, ExchangeReadFailure>> instructions(
+    FundingRequest request,
+  ) => switch (request) {
+    ProcessorCodeRequest() => _processorCode(request),
+    CopPaymentRequest() => _copLink(request),
+  };
 
-  Future<ExchangeRead<FundingAnswer>> _processorCode(
+  Future<Result<FundingAnswer, ExchangeReadFailure>> _processorCode(
     ProcessorCodeRequest request,
   ) async {
     final rail = request.rail;
@@ -114,7 +120,7 @@ final class BbxApiFundingRails {
       rail.paymentProcessorCode,
     );
     if (_refusal(answer) case final refusal?) {
-      return ReadGot(FundingRefused(refusal));
+      return Ok(FundingRefused(refusal));
     }
     final read =
         await exchangeRead<
@@ -125,26 +131,29 @@ final class BbxApiFundingRails {
           () async => answer,
           (details) => details,
         );
-    if (read is! ReadGot<bbx.PaymentProcessorDetails>) return _same(read);
+    final bbx.PaymentProcessorDetails details;
+    switch (read) {
+      case Ok(:final value):
+        details = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
     final rows = <InstructionRow>[];
     for (final field in rail.fields) {
-      final value = switch (field) {
-        InstructionField.secretAnswer => '${request.userNumber}',
-        _ => _wireValue(read.value, field),
-      };
+      final value = _wireValue(details, field, request.userNumber);
       if (value == null || value.trim().isEmpty) {
         log.warning(
           'getUserPaymentProcessorCode: ${rail.name} answer has no '
           '${field.name}',
         );
-        return ReadMalformed('missing ${field.name}');
+        return Err(ExchangeMalformedFailure('missing ${field.name}'));
       }
       rows.add(InstructionRow(field, value));
     }
-    return ReadGot(FundingInstructionsGot(rail.present(rows)));
+    return Ok(FundingInstructionsGot(rail.present(rows)));
   }
 
-  Future<ExchangeRead<FundingAnswer>> _copLink(
+  Future<Result<FundingAnswer, ExchangeReadFailure>> _copLink(
     CopPaymentRequest request,
   ) async {
     final answer = await _api.orders.getCopPaymentLink(
@@ -153,22 +162,30 @@ final class BbxApiFundingRails {
       callbackUrl: paymentReturnUrl.toString(),
     );
     if (_refusal(answer) case final refusal?) {
-      return ReadGot(FundingRefused(refusal));
+      return Ok(FundingRefused(refusal));
     }
     final read = await exchangeRead<String, String>(
       'getCopPaymentLink',
       () async => answer,
       (link) => link,
     );
-    if (read is! ReadGot<String>) return _same(read);
-    final link = Uri.tryParse(read.value.trim());
+    final String answered;
+    switch (read) {
+      case Ok(:final value):
+        answered = value;
+      case Err(:final failure):
+        return Err(failure);
+    }
+    final link = Uri.tryParse(answered.trim());
     if (link == null ||
         !(link.isScheme('https') || link.isScheme('http')) ||
         link.host.isEmpty) {
       log.warning('getCopPaymentLink answered a link that is not a web page');
-      return const ReadMalformed('payment link is not a web page');
+      return const Err(
+        ExchangeMalformedFailure('payment link is not a web page'),
+      );
     }
-    return ReadGot(FundingInstructionsGot(FundingInstructionLink(link)));
+    return Ok(FundingInstructionsGot(FundingInstructionLink(link)));
   }
 
   static FundingRefusal? _refusal(Result<Object?, bbx.BbxFailure> answer) =>
@@ -190,12 +207,13 @@ final class BbxApiFundingRails {
   static String? _wireValue(
     bbx.PaymentProcessorDetails details,
     InstructionField field,
+    int userNumber,
   ) => switch (field) {
     InstructionField.beneficiaryName => details.beneficiaryName,
     InstructionField.beneficiaryEmail => details.beneficiaryEmail,
     InstructionField.secretQuestion ||
     InstructionField.transferCode => details.code,
-    InstructionField.secretAnswer => null,
+    InstructionField.secretAnswer => '$userNumber',
     InstructionField.bankAccountDetails => details.bankAccountDetails,
     InstructionField.swift => details.swift,
     InstructionField.institutionNumber => details.institutionNumber,
@@ -229,34 +247,103 @@ final class BbxApiFundingRails {
   }
 }
 
-/// [read] with no value, retyped. Only for reads that are not [ReadGot].
-ExchangeRead<T> _same<T>(ExchangeRead<Object?> read) => switch (read) {
-  ReadGot() => throw StateError('a read with a value is not retyped'),
-  ReadMissing() => ReadMissing<T>(),
-  ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable<T>(
-    reason,
-    isNetwork: isNetwork,
-  ),
-  ReadSessionRejected(:final why) => ReadSessionRejected<T>(why),
-  ReadMalformed(:final reason) => ReadMalformed<T>(reason),
-};
-
 /// The read result of a call that failed before or around the server: the
 /// session check of `withClient`, or a repository that still answers
 /// [ExchangeFailure].
-ExchangeRead<T> readOfFailure<T>(ExchangeFailure failure) => switch (failure) {
-  ExchangeNotAuthenticatedFailure() => const ReadSessionRejected(
-    ExchangeSessionRejection.signedOut,
-  ),
-  ExchangeCredentialReadFailure() => const ReadSessionRejected(
-    ExchangeSessionRejection.credentialUnavailable,
-  ),
-  ExchangeSessionRejectedFailure() => const ReadSessionRejected(
-    ExchangeSessionRejection.server,
-  ),
-  ExchangeNetworkFailure(:final logMessage) => ReadUnreachable(
-    logMessage ?? 'network',
-    isNetwork: true,
-  ),
-  _ => ReadUnreachable(failure.runtimeType.toString(), isNetwork: false),
-};
+Result<T, ExchangeReadFailure> readOfFailure<T>(ExchangeFailure failure) =>
+    switch (failure) {
+      ExchangeNotAuthenticatedFailure() => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.signedOut),
+      ),
+      ExchangeCredentialReadFailure() => const Err(
+        ExchangeSessionRejectedFailure(
+          ExchangeSessionRejection.credentialUnavailable,
+        ),
+      ),
+      ExchangeSessionRejectedFailure() => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
+      ExchangeNetworkFailure(:final logMessage) => Err(
+        ExchangeUnreachableFailure(logMessage ?? 'network', isNetwork: true),
+      ),
+      // Any other failure left the read without an answer.
+      ExchangeAccountUnavailableFailure() ||
+      ExchangeAuthenticationDeferredFailure() ||
+      ExchangeAuthenticationFailure() ||
+      ExchangeApiKeyStorageFailure() ||
+      ExchangeSessionClearFailure() ||
+      ExchangePlatformNotAllowedFailure() ||
+      ExchangePreferencesSaveFailure() ||
+      ExchangePreferencesSaveOutcomeUnknownFailure() ||
+      ExchangeNotificationsUnavailableFailure() ||
+      ExchangeAnnouncementsUnavailableFailure() ||
+      ExchangeAccountDeletionRequestFailure() ||
+      ExchangeUnexpectedFailure() ||
+      ExchangeOperationStaleFailure() ||
+      ExchangeUnsupportedNetworkFailure() ||
+      ExchangeOrderInventoryUnavailableFailure() ||
+      ExchangeCredentialsUnavailableFailure() ||
+      ExchangeBasicAuthSaveFailure() ||
+      ExchangeApiKeyInvalidFailure() ||
+      ExchangeApiKeySaveFailure() ||
+      ExchangeApiKeyDeleteFailure() ||
+      ExchangeOrderLimitFailure() ||
+      ExchangeConfidentialSepaInactiveFailure() ||
+      ExchangeOrderLoadFailure() ||
+      ExchangeOrderRejectedFailure() ||
+      ExchangeStatisticsUnavailableFailure() ||
+      ExchangeDocumentUploadFailure() ||
+      ExchangeAccountDetailsUnavailableFailure() ||
+      ExchangeUploadStatusUnavailableFailure() ||
+      ExchangeDocumentAlreadySubmittedFailure() ||
+      ExchangeDocumentEmptyFailure() ||
+      ExchangeDocumentTooLargeFailure() ||
+      ExchangeDocumentTypeNotAllowedFailure() ||
+      ExchangeDocumentUnreadableFailure() ||
+      ExchangeWriteBusyFailure() ||
+      ExchangePaymentLinkUnavailableFailure() ||
+      ExchangeDefaultWalletAddressEmptyFailure() ||
+      ExchangeDefaultWalletAddressInvalidFailure() ||
+      ExchangeDefaultWalletSaveFailure() ||
+      ExchangeDefaultWalletDeleteFailure() ||
+      ExchangeConsentRegistrationFailure() ||
+      ExchangeChatLoadMessagesFailure() ||
+      ExchangeChatSendMessageFailure() ||
+      ExchangeChatLoadAttachmentFailure() ||
+      ExchangeChatNotAuthenticatedFailure() ||
+      ExchangeChatMessageEmptyFailure() ||
+      ExchangeChatAttachmentEmptyFailure() ||
+      ExchangeChatPickImagesFailure() ||
+      ExchangeChatAttachLogsFailure() ||
+      ExchangeLimitOrderFailure() ||
+      ExchangeFundingFailure() ||
+      ExchangeVirtualIbanNotAvailableFailure() ||
+      ExchangeEuResidencyRequiredFailure() ||
+      ExchangeJournalFailure() ||
+      ExchangeDestinationUnavailableFailure() ||
+      ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
+      ExchangeMissingFailure() ||
+      ExchangeUnreachableFailure() ||
+      ExchangeMalformedFailure() ||
+      ExchangeWriteRefusedFailure() ||
+      ExchangeWriteOutcomeUnknownFailure() ||
+      ExchangeWriteNotSentFailure() ||
+      ExchangePayinBuildFailure() ||
+      ExchangeRecipientsLoadFailure() ||
+      ExchangeRecipientsSaveFailure() ||
+      ExchangeRecipientsInvalidFieldsFailure() ||
+      ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+      ExchangeRecipientsSinpeLookupFailure() ||
+      ExchangeRecipientsCadBillerSearchFailure() ||
+      ExchangeRecipientsSelectionFailure() ||
+      ExchangeRecipientsSavedButNotSelectedFailure() ||
+      ExchangeRecipientsInvalidSecurityDetailsFailure() => Err(
+        ExchangeUnreachableFailure(
+          failure.runtimeType.toString(),
+          isNetwork: false,
+        ),
+      ),
+    };

@@ -1,12 +1,17 @@
 import 'dart:async';
 
 import 'package:bull_exchange/src/buy/presentation/buy_accelerate_bloc.dart';
-import 'package:bull_exchange/src/buy/presentation/buy_accelerate_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_state.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../orders/order_usecase_fakes.dart';
 import '../buy_fixtures.dart';
+import '../buy_usecase_fakes.dart';
+
+import 'package:primitives/primitives.dart';
 
 final _quote = AccelerateQuote(
   buyOrder(status: OrderStatus.inProgress),
@@ -14,26 +19,40 @@ final _quote = AccelerateQuote(
   const [],
 );
 
+/// The accelerate use cases as fakes; every call is logged with the
+/// session it got.
 final class _Calls {
   final log = <String>[];
-  Completer<GatedWrite<ExchangeWrite<BuyOrder>>> answer = Completer();
-  ExchangeRead<Order> reread = ReadGot(
+  final sessions = <ExchangeSession>{};
+  Completer<Result<BuyOrder, ExchangeGatedWriteFailure>> answer = Completer();
+  Result<Order, ExchangeReadFailure> reread = Ok(
     buyOrder(status: OrderStatus.inProgress),
   );
 
-  AccelerateFlowCalls of(ExchangeSession session) => (
-    load: (orderId) async {
-      log.add('load $orderId');
-      return ReadGot(_quote);
-    },
-    accelerate: (effect) async {
-      log.add('accelerate ${effect.attempt}');
+  void _called(ExchangeSession session, String call) {
+    sessions.add(session);
+    log.add(call);
+  }
+
+  AccelerateFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => AccelerateFlowBloc(
+    session: session,
+    orderId: 'b-1',
+    accessChanges: accessChanges,
+    loadQuote: FakeLoadAccelerateQuoteUsecase((session, orderId) async {
+      _called(session, 'load $orderId');
+      return Ok(_quote);
+    }),
+    accelerateOrder: FakeAccelerateBuyOrderUsecase((session, effect) async {
+      _called(session, 'accelerate ${effect.attempt}');
       return ConfirmAnswered(effect.attempt, await answer.future);
-    },
-    readOrder: (orderId) async {
-      log.add('read $orderId');
+    }),
+    getOrder: FakeGetOrderUsecase((session, orderId) async {
+      _called(session, 'read $orderId');
       return reread;
-    },
+    }),
   );
 }
 
@@ -51,12 +70,7 @@ void main() {
   setUp(() {
     calls = _Calls();
     access = StreamController<ExchangeAccess>.broadcast();
-    bloc = AccelerateFlowBloc(
-      calls: calls.of,
-      session: buySession,
-      orderId: 'b-1',
-      accessChanges: access.stream,
-    );
+    bloc = calls.bloc(session: buySession, accessChanges: access.stream);
   });
 
   tearDown(() async {
@@ -73,18 +87,19 @@ void main() {
       ..add(const AccelerateConfirmPressed());
     await _settle();
     expect(calls.log, ['load b-1', 'accelerate 1']);
-    calls.answer.complete(
-      GateAdmitted(WriteDone(buyOrder(status: OrderStatus.inProgress))),
-    );
+    calls.answer.complete(Ok(buyOrder(status: OrderStatus.inProgress)));
     await _settle();
     expect(bloc.state, isA<AccelerateDone>());
+    expect(calls.sessions, {buySession});
   });
 
   test('an unknown accelerate re-reads, never accelerates again', () async {
     await _settle();
     bloc.add(const AccelerateConfirmPressed());
     await _settle();
-    calls.answer.complete(const GateAdmitted(WriteOutcomeUnknown('lost')));
+    calls.answer.complete(
+      const Err(ExchangeWriteOutcomeUnknownFailure('lost')),
+    );
     await _settle();
     expect(calls.log.last, 'read b-1');
     expect(
@@ -101,5 +116,14 @@ void main() {
     access.add(const ExchangeAccessSignedOut(ExchangeEnvironment.mainnet));
     await _settle();
     expect(bloc.state, isA<AccelerateSessionEnded>());
+  });
+
+  test('without a session nothing runs', () async {
+    final none = _Calls();
+    final ended = none.bloc(session: null, accessChanges: const Stream.empty());
+    addTearDown(ended.close);
+    await _settle();
+    expect(ended.state, isA<AccelerateSessionEnded>());
+    expect(none.log, isEmpty);
   });
 }

@@ -3,7 +3,8 @@ import 'package:exchange/exchange.dart';
 import '../../../exchange_l10n.dart';
 import '../../presentation/statistics_cubit.dart';
 import '../../presentation/statistics_state.dart';
-import '../../presentation/exchange_settings_failure_l10n.dart';
+
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';

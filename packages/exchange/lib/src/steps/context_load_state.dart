@@ -1,0 +1,120 @@
+import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
+
+import '../domain/exchange_failure.dart';
+import 'context_load_effect.dart';
+import 'context_load_event.dart';
+import 'step_next.dart';
+
+/// Loads the typed context [C] a flow needs (composition §4.2). Its output is
+/// the value of [ContextReady]; gates that read the summary take [C], so they
+/// never run on a missing one. Each load is tagged with its [attempt].
+@immutable
+sealed class ContextLoadState<C> {
+  const ContextLoadState();
+
+  StepNext<ContextLoadState<C>, ContextLoadEffect> next(
+    ContextLoadEvent<C> event,
+  ) {
+    final state = this;
+    return switch ((state, event)) {
+      (
+        ContextLoading(:final attempt),
+        ContextLoaded(attempt: final answered, :final read),
+      )
+          when answered == attempt =>
+        switch (read) {
+          Ok(:final value) => StepNext(ContextReady<C>(value)),
+          Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+            ContextSessionRejected<C>(),
+          ),
+          Err(failure: ExchangeMissingFailure()) ||
+          Err(failure: ExchangeUnreachableFailure()) ||
+          Err(
+            failure: ExchangeMalformedFailure(),
+          ) => StepNext(ContextFailed<C>(attempt, ReadProblem.of(read)!)),
+        },
+      (ContextLoading(), ContextLoaded() || ContextRetryPressed()) =>
+        StepNext.stay(state),
+
+      (ContextFailed(:final attempt), ContextRetryPressed()) => StepNext(
+        ContextLoading<C>(attempt + 1),
+        [ContextFetch(attempt + 1)],
+      ),
+      (ContextFailed(), ContextLoaded()) => StepNext.stay(state),
+
+      (
+        ContextReady() || ContextSessionRejected(),
+        ContextLoaded() || ContextRetryPressed(),
+      ) =>
+        StepNext.stay(state),
+    };
+  }
+}
+
+final class ContextLoading<C> extends ContextLoadState<C> {
+  final int attempt;
+
+  const ContextLoading(this.attempt);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ContextLoading && other.attempt == attempt;
+
+  @override
+  int get hashCode => Object.hash(ContextLoading, attempt);
+
+  @override
+  String toString() => 'ContextLoading($attempt)';
+}
+
+final class ContextReady<C> extends ContextLoadState<C> {
+  final C context;
+
+  const ContextReady(this.context);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ContextReady && other.context == context;
+
+  @override
+  int get hashCode => Object.hash(ContextReady, context);
+
+  @override
+  String toString() => 'ContextReady($context)';
+}
+
+/// The load of [attempt] gave no context; Retry loads again.
+final class ContextFailed<C> extends ContextLoadState<C> {
+  final int attempt;
+  final ReadProblem problem;
+
+  const ContextFailed(this.attempt, this.problem);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ContextFailed &&
+      other.attempt == attempt &&
+      other.problem == problem;
+
+  @override
+  int get hashCode => Object.hash(ContextFailed, attempt, problem);
+
+  @override
+  String toString() => 'ContextFailed($attempt, $problem)';
+}
+
+/// The server rejected the session's key: the flow ends its session.
+/// Terminal.
+final class ContextSessionRejected<C> extends ContextLoadState<C> {
+  const ContextSessionRejected();
+
+  @override
+  bool operator ==(Object other) => other is ContextSessionRejected;
+
+  @override
+  int get hashCode => (ContextSessionRejected).hashCode;
+}
+
+StepNext<ContextLoadState<C>, ContextLoadEffect> contextLoadStart<C>() =>
+    StepNext(ContextLoading<C>(1), const [ContextFetch(1)]);

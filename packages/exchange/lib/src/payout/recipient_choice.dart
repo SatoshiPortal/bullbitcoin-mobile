@@ -1,6 +1,9 @@
+import '../steps/lists_equal.dart';
+
 import 'package:meta/meta.dart';
 
 import '../recipients/domain/entities/recipient.dart';
+import '../recipients/domain/entities/recipient_details.dart';
 import 'payout_rail.dart';
 import 'payout_requirement.dart';
 
@@ -20,7 +23,7 @@ final class RecipientFilter {
       rails.contains(recipient.rail) &&
       switch (owner) {
         null => true,
-        final owner => recipient.isOwner == owner.isOwner,
+        final RecipientOwnership owner => recipient.isOwner == owner.isOwner,
       };
 
   /// [recipient] chosen under this filter, or null when the filter doesn't
@@ -32,18 +35,10 @@ final class RecipientFilter {
   bool operator ==(Object other) =>
       other is RecipientFilter &&
       other.owner == owner &&
-      _sameRails(other.rails, rails);
+      listsEqual(other.rails, rails);
 
   @override
   int get hashCode => Object.hash(owner, Object.hashAll(rails));
-}
-
-bool _sameRails(List<PayoutRail> a, List<PayoutRail> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 /// The output of the recipient pick step: a recipient a flow's filter
@@ -64,7 +59,9 @@ final class ChosenRecipient {
   /// null when the rail has none.
   ChosenRecipient? get fallback => switch (recipient.onRail.fallback) {
     null => null,
-    final details => ChosenRecipient._(recipient.withDetails(details)),
+    final RecipientDetails details => ChosenRecipient._(
+      recipient.withDetails(details),
+    ),
   };
 
   @override

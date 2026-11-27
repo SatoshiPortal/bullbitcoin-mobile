@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:test/test.dart';
+import 'package:primitives/primitives.dart';
 
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -19,16 +20,16 @@ Exchange _exchange({
 }) => exchangeForTesting(
   access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
   chat: (
-    getMessages: ({page, pageSize}) => fail('unexpected history'),
-    sendMessage: ({required text, attachments}) => fail('unexpected send'),
-    getAttachment: (_) => fail('unexpected attachment'),
+    getMessages: (_, {page, pageSize}) => fail('unexpected history'),
+    sendMessage: (_, {required text, attachments}) => fail('unexpected send'),
+    getAttachment: (_, _) => fail('unexpected attachment'),
     getUnreadCount: (session) async {
       reads.add(session);
-      return const ReadGot(2);
+      return const Ok(2);
     },
     markAllRead: (session) async {
       marks.add(session);
-      return const WriteDone(null);
+      return const Ok(null);
     },
   ),
 );
@@ -39,7 +40,7 @@ void main() {
     final exchange = _exchange(reads: reads, marks: []);
     expect(
       await exchange.readUnreadSupportCount(_session),
-      isA<ReadGot<int>>().having((r) => r.value, 'value', 2),
+      isA<Ok<int, ExchangeReadFailure>>().having((r) => r.value, 'value', 2),
     );
     expect(reads, [_session]);
   });
@@ -50,18 +51,26 @@ void main() {
     final exchange = _exchange(reads: reads, marks: marks);
     expect(
       await exchange.readUnreadSupportCount(_other),
-      isA<ReadSessionRejected<int>>().having(
-        (r) => r.why,
-        'why',
-        ExchangeSessionRejection.sessionChanged,
+      isA<Err<int, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>().having(
+          (r) => r.why,
+          'why',
+          ExchangeSessionRejection.sessionChanged,
+        ),
       ),
     );
     expect(
       await exchange.markSupportMessagesRead(_other),
-      isA<WriteNotSent<void>>().having(
-        (w) => w.reason,
-        'reason',
-        ExchangeNotSentReason.sessionChanged,
+      isA<Err<void, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteNotSentFailure>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.sessionChanged,
+        ),
       ),
     );
     expect(reads, isEmpty);
@@ -73,7 +82,7 @@ void main() {
     final exchange = _exchange(reads: [], marks: marks);
     expect(
       await exchange.markSupportMessagesRead(_session),
-      isA<WriteDone<void>>(),
+      isA<Ok<void, ExchangeWriteFailure>>(),
     );
     expect(marks, [_session]);
   });
@@ -86,7 +95,11 @@ void main() {
     );
     expect(
       await exchange.readUnreadSupportCount(_session),
-      isA<ReadSessionRejected<int>>(),
+      isA<Err<int, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
     );
   });
 }

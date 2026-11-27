@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/buy/presentation/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
 import 'package:bull_exchange/src/buy/ui/screens/buy_done_page.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart'

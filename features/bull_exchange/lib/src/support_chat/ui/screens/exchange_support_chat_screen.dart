@@ -16,27 +16,32 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:intl/intl.dart';
 
 import '../../../exchange_l10n.dart';
-import '../../data/attachment_picker_repository_impl.dart';
 import '../../domain/usecases/create_log_attachment_usecase.dart';
 import '../../domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import '../../domain/usecases/get_support_chat_messages_usecase.dart';
 import '../../domain/usecases/open_support_chat_attachment_usecase.dart';
 import '../../domain/usecases/pick_image_attachments_usecase.dart';
 import '../../domain/usecases/send_support_chat_message_usecase.dart';
-import '../../presentation/exchange_support_chat_failure_l10n.dart';
+import '../../domain/usecases/watch_support_chat_pushes_usecase.dart';
+
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
+
 import '../../presentation/support_chat_bloc.dart';
-import '../../presentation/support_chat_machine.dart';
+import '../../domain/support_chat_state.dart';
+import '../../domain/support_chat_event.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({
     super.key,
     required this.exchange,
+    required this.pickImages,
     required this.onExit,
     required this.onMessagesRead,
     this.initialMessage,
   });
 
   final Exchange exchange;
+  final PickImageAttachmentsUsecase pickImages;
   final VoidCallback onExit;
 
   /// Called each time the newest messages have been shown to the user.
@@ -46,35 +51,21 @@ class ExchangeSupportChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) {
-        final messages = GetSupportChatMessagesUsecase(exchange: exchange);
-        final send = SendSupportChatMessageUsecase(exchange: exchange);
-        final pick = PickImageAttachmentsUsecase(
-          repository: AttachmentPickerRepositoryImpl(),
-        );
-        final logs = CreateLogAttachmentUsecase();
-        final open = OpenSupportChatAttachmentUsecase(
+      create: (context) => SupportChatBloc(
+        session: exchange.currentSession,
+        getMessages: GetSupportChatMessagesUsecase(exchange: exchange),
+        sendMessage: SendSupportChatMessageUsecase(exchange: exchange),
+        pickImages: pickImages,
+        createLogAttachment: CreateLogAttachmentUsecase(),
+        openAttachment: OpenSupportChatAttachmentUsecase(
           getAttachment: GetSupportChatMessageAttachmentUsecase(
             exchange: exchange,
           ),
-        );
-        return SupportChatBloc(
-          effects: (
-            fetchPage: (page) =>
-                messages.execute(page: page, pageSize: supportChatPageSize),
-            send: (text, attachments) => send.execute(
-              text: text,
-              attachments: attachments.isEmpty ? null : attachments,
-            ),
-            pickImages: pick.execute,
-            buildLogs: logs.execute,
-            openAttachment: open.execute,
-            newestShown: onMessagesRead,
-          ),
-          notifications: exchange.notifications,
-          draft: initialMessage,
-        );
-      },
+        ),
+        watchPushes: WatchSupportChatPushesUsecase(exchange),
+        onNewestShown: onMessagesRead,
+        draft: initialMessage,
+      ),
       child: Scaffold(
         appBar: AppBar(
           leading: BackButton(

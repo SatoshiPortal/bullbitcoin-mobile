@@ -2,8 +2,9 @@ import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/bank_account_cop_form.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/nequi_cop_form.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
-import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bloc_test/bloc_test.dart';
@@ -16,24 +17,12 @@ class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
 
 void main() {
-  setUpAll(
-    () => registerFallbackValue(
-      const RecipientsEvent.added(
-        NequiColombiaFormDataModel(
-          phoneNumber: '',
-          documentType: '',
-          documentId: '',
-          holder: CopIndividualFormData(firstName: '', lastName: ''),
-          email: '',
-        ),
-      ),
-    ),
-  );
+  setUpAll(() => registerFallbackValue(const RecipientsEvent.refreshed()));
 
   Future<(_MockRecipientsBloc, ExchangeLocalizations)> pumpForm(
     WidgetTester tester,
     Widget form, {
-    RecipientsFailure? failedToAddRecipient,
+    ExchangeFailure? failedToAddRecipient,
   }) async {
     final bloc = _MockRecipientsBloc();
     whenListen(
@@ -41,7 +30,9 @@ void main() {
       const Stream<RecipientsState>.empty(),
       initialState: RecipientsState(
         allowedRecipientFilters: RecipientFilterCriteria(),
-        failedToAddRecipient: failedToAddRecipient,
+        save: failedToAddRecipient == null
+            ? const SaveIdle()
+            : SaveFailed(failedToAddRecipient),
       ),
     );
     await tester.pumpWidget(
@@ -139,8 +130,7 @@ void main() {
 
     final event =
         verify(() => bloc.add(captureAny())).captured.single as RecipientsAdded;
-    final details =
-        event.recipient.toInput().toDomain() as NequiColombiaDetails;
+    final details = event.recipient.toDomain() as NequiColombiaDetails;
     final contact = details.payee as ColombiaContact;
     expect(contact.email, 'ada@example.com');
     expect(
@@ -167,8 +157,7 @@ void main() {
 
     final event =
         verify(() => bloc.add(captureAny())).captured.single as RecipientsAdded;
-    final details =
-        event.recipient.toInput().toDomain() as NequiColombiaDetails;
+    final details = event.recipient.toDomain() as NequiColombiaDetails;
     expect(
       (details.payee as ColombiaContact).holder,
       isA<ColombiaCorporate>().having(
@@ -185,13 +174,12 @@ void main() {
     final (_, loc) = await pumpForm(
       tester,
       const NequiCopForm(),
-      failedToAddRecipient: RecipientsInvalidFieldsFailure.fromFieldErrors(
-        const {
-          'email': 'ERR_VALIDATION_EMAIL',
-          'lastname': 'ERR_VALIDATION_REQUIRED',
-          'bankCode': 'ERR_VALIDATION_REQUIRED',
-        },
-      ),
+      failedToAddRecipient:
+          ExchangeRecipientsInvalidFieldsFailure.fromFieldErrors(const {
+            'email': 'ERR_VALIDATION_EMAIL',
+            'lastname': 'ERR_VALIDATION_REQUIRED',
+            'bankCode': 'ERR_VALIDATION_REQUIRED',
+          }),
     );
 
     expect(

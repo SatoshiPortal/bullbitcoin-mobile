@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 import 'package:primitives/primitives.dart';
 
 import '../domain/exchange_environment.dart';
+import '../domain/exchange_failure.dart';
 import '../domain/unknown_write_journal.dart';
 import 'storage/exchange_database.dart';
 
@@ -19,7 +20,7 @@ final class DriftUnknownWriteJournal implements UnknownWriteJournal {
     : _newId = newId ?? _randomId;
 
   @override
-  Future<Result<UnknownWrite, UnknownWriteJournalFailure>> record(
+  Future<Result<UnknownWrite, ExchangeJournalFailure>> record(
     UnknownWriteDraft draft,
   ) async {
     final entry = UnknownWrite(
@@ -48,12 +49,12 @@ final class DriftUnknownWriteJournal implements UnknownWriteJournal {
       return Ok(entry);
     } on Exception catch (e) {
       // SQL errors can quote the request: keep only the type.
-      return Err(UnknownWriteJournalFailure('record: ${e.runtimeType}'));
+      return Err(ExchangeJournalFailure('record: ${e.runtimeType}'));
     }
   }
 
   @override
-  Future<Result<List<UnknownWrite>, UnknownWriteJournalFailure>> open(
+  Future<Result<List<UnknownWrite>, ExchangeJournalFailure>> open(
     ExchangeEnvironment environment,
   ) async {
     try {
@@ -70,7 +71,7 @@ final class DriftUnknownWriteJournal implements UnknownWriteJournal {
         final kind = UnknownWriteKind.fromWire(row.read<String>('kind'));
         final request = jsonDecode(row.read<String>('request'));
         if (kind == null || request is! Map<String, dynamic>) {
-          return const Err(UnknownWriteJournalFailure('unreadable entry'));
+          return const Err(ExchangeJournalFailure('unreadable entry'));
         }
         entries.add(
           UnknownWrite(
@@ -92,12 +93,12 @@ final class DriftUnknownWriteJournal implements UnknownWriteJournal {
       }
       return Ok(entries);
     } on Exception catch (e) {
-      return Err(UnknownWriteJournalFailure('open: ${e.runtimeType}'));
+      return Err(ExchangeJournalFailure('open: ${e.runtimeType}'));
     }
   }
 
   @override
-  Future<Result<void, UnknownWriteJournalFailure>> settle(
+  Future<Result<void, ExchangeJournalFailure>> settle(
     String id,
     UnknownWriteSettlement settlement,
   ) async {
@@ -114,7 +115,7 @@ final class DriftUnknownWriteJournal implements UnknownWriteJournal {
       );
       return const Ok(null);
     } on Exception catch (e) {
-      return Err(UnknownWriteJournalFailure('settle: ${e.runtimeType}'));
+      return Err(ExchangeJournalFailure('settle: ${e.runtimeType}'));
     }
   }
 }
@@ -130,7 +131,7 @@ final class InMemoryUnknownWriteJournal implements UnknownWriteJournal {
       List.unmodifiable(_entries.values);
 
   @override
-  Future<Result<UnknownWrite, UnknownWriteJournalFailure>> record(
+  Future<Result<UnknownWrite, ExchangeJournalFailure>> record(
     UnknownWriteDraft draft,
   ) async {
     final entry = UnknownWrite(
@@ -147,7 +148,7 @@ final class InMemoryUnknownWriteJournal implements UnknownWriteJournal {
   }
 
   @override
-  Future<Result<List<UnknownWrite>, UnknownWriteJournalFailure>> open(
+  Future<Result<List<UnknownWrite>, ExchangeJournalFailure>> open(
     ExchangeEnvironment environment,
   ) async => Ok([
     for (final (entry, settlement) in _entries.values)
@@ -155,7 +156,7 @@ final class InMemoryUnknownWriteJournal implements UnknownWriteJournal {
   ]);
 
   @override
-  Future<Result<void, UnknownWriteJournalFailure>> settle(
+  Future<Result<void, ExchangeJournalFailure>> settle(
     String id,
     UnknownWriteSettlement settlement,
   ) async {

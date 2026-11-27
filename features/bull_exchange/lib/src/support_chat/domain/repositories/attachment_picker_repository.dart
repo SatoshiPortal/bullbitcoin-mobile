@@ -1,7 +1,5 @@
 import 'package:exchange/exchange.dart';
 
-import '../exchange_support_chat_failure.dart';
-
 import 'package:primitives/primitives.dart';
 import 'package:meta/meta.dart';
 
@@ -11,6 +9,6 @@ import 'package:meta/meta.dart';
 abstract interface class AttachmentPickerRepository {
   /// Returns the picked attachments, or an empty list when the user dismissed the picker without choosing anything, since a cancellation is not a failure.
   @useResult
-  Future<Result<List<SupportChatMessageAttachment>, ExchangeSupportChatFailure>>
+  Future<Result<List<SupportChatMessageAttachment>, ExchangeFailure>>
   pickImages();
 }

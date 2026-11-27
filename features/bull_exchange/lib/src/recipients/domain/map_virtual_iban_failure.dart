@@ -1,16 +1,87 @@
 import 'package:exchange/exchange.dart';
 
-RecipientsFailure mapVirtualIbanFailure(ExchangeFailure failure) =>
+/// The failure the virtual IBAN screens show for a failed virtual IBAN call.
+ExchangeFailure mapVirtualIbanFailure(ExchangeFailure failure) =>
     switch (failure) {
-      ExchangeNotAuthenticatedFailure() =>
-        const RecipientsNotAuthenticatedFailure(),
-      ExchangeNetworkFailure() => const RecipientsNetworkFailure(),
-      ExchangeVirtualIbanNotAvailableFailure() =>
-        const RecipientsVirtualIbanNotAvailableFailure(),
-      ExchangeEuResidencyRequiredFailure() =>
-        const RecipientsEuResidencyRequiredFailure(),
-      ExchangeCredentialReadFailure() => const RecipientsUnexpectedFailure(
+      ExchangeNotAuthenticatedFailure() ||
+      ExchangeNetworkFailure() ||
+      ExchangeVirtualIbanNotAvailableFailure() ||
+      ExchangeEuResidencyRequiredFailure() => failure,
+      ExchangeCredentialReadFailure() => const ExchangeUnexpectedFailure(
         'Exchange credential unavailable',
       ),
-      _ => RecipientsUnexpectedFailure(failure.logMessage),
+      ExchangeAccountUnavailableFailure() ||
+      ExchangeAuthenticationDeferredFailure() ||
+      ExchangeAuthenticationFailure() ||
+      ExchangeApiKeyStorageFailure() ||
+      ExchangeSessionClearFailure() ||
+      ExchangePlatformNotAllowedFailure() ||
+      ExchangePreferencesSaveFailure() ||
+      ExchangePreferencesSaveOutcomeUnknownFailure() ||
+      ExchangeNotificationsUnavailableFailure() ||
+      ExchangeAnnouncementsUnavailableFailure() ||
+      ExchangeAccountDeletionRequestFailure() ||
+      ExchangeUnexpectedFailure() ||
+      ExchangeOperationStaleFailure() ||
+      ExchangeUnsupportedNetworkFailure() ||
+      ExchangeOrderInventoryUnavailableFailure() ||
+      ExchangeCredentialsUnavailableFailure() ||
+      ExchangeBasicAuthSaveFailure() ||
+      ExchangeApiKeyInvalidFailure() ||
+      ExchangeApiKeySaveFailure() ||
+      ExchangeApiKeyDeleteFailure() ||
+      ExchangeOrderLimitFailure() ||
+      ExchangeConfidentialSepaInactiveFailure() ||
+      ExchangeOrderLoadFailure() ||
+      ExchangeOrderRejectedFailure() ||
+      ExchangeStatisticsUnavailableFailure() ||
+      ExchangeDocumentUploadFailure() ||
+      ExchangeAccountDetailsUnavailableFailure() ||
+      ExchangeUploadStatusUnavailableFailure() ||
+      ExchangeDocumentAlreadySubmittedFailure() ||
+      ExchangeDocumentEmptyFailure() ||
+      ExchangeDocumentTooLargeFailure() ||
+      ExchangeDocumentTypeNotAllowedFailure() ||
+      ExchangeDocumentUnreadableFailure() ||
+      ExchangeWriteBusyFailure() ||
+      ExchangePaymentLinkUnavailableFailure() ||
+      ExchangeDefaultWalletAddressEmptyFailure() ||
+      ExchangeDefaultWalletAddressInvalidFailure() ||
+      ExchangeDefaultWalletSaveFailure() ||
+      ExchangeDefaultWalletDeleteFailure() ||
+      ExchangeConsentRegistrationFailure() ||
+      ExchangeChatLoadMessagesFailure() ||
+      ExchangeChatSendMessageFailure() ||
+      ExchangeChatLoadAttachmentFailure() ||
+      ExchangeChatNotAuthenticatedFailure() ||
+      ExchangeChatMessageEmptyFailure() ||
+      ExchangeChatAttachmentEmptyFailure() ||
+      ExchangeChatPickImagesFailure() ||
+      ExchangeChatAttachLogsFailure() ||
+      ExchangeLimitOrderFailure() ||
+      ExchangeFundingFailure() ||
+      ExchangeJournalFailure() ||
+      ExchangeDestinationUnavailableFailure() ||
+      ExchangeDestinationInvalidFailure() ||
+      ExchangeFeeEstimatesUnavailableFailure() ||
+      ExchangeWalletCoinsUnavailableFailure() ||
+      ExchangeTransactionLookupFailure() ||
+      ExchangeMissingFailure() ||
+      ExchangeUnreachableFailure() ||
+      ExchangeMalformedFailure() ||
+      ExchangeSessionRejectedFailure() ||
+      ExchangeWriteRefusedFailure() ||
+      ExchangeWriteOutcomeUnknownFailure() ||
+      ExchangeWriteNotSentFailure() ||
+      ExchangePayinBuildFailure() ||
+      ExchangeRecipientsLoadFailure() ||
+      ExchangeRecipientsSaveFailure() ||
+      ExchangeRecipientsInvalidFieldsFailure() ||
+      ExchangeRecipientsSaveOutcomeUnknownFailure() ||
+      ExchangeRecipientsSinpeLookupFailure() ||
+      ExchangeRecipientsCadBillerSearchFailure() ||
+      ExchangeRecipientsSelectionFailure() ||
+      ExchangeRecipientsSavedButNotSelectedFailure() ||
+      ExchangeRecipientsInvalidSecurityDetailsFailure() =>
+        ExchangeUnexpectedFailure(failure.logMessage),
     };

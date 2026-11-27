@@ -50,15 +50,22 @@ String _where(File source, CompilationUnit unit, AstNode node) =>
 // (a) No catch-all arm in the machines.
 
 /// Files whose every switch is over a flow or step state or event: the step
-/// library, and the flow and machine files of the exchange feature.
+/// library, and the machine files of the exchange feature (each machine's
+/// `_state.dart` with its `next`, `_event.dart` and `_effect.dart`; blocs'
+/// own state and event files under `presentation/` are not machines).
 bool _isMachineFile(String path) {
   final normalized = p.normalize(path);
   if (p.isWithin(p.join(_exchangeLib, 'src', 'steps'), normalized)) {
     return true;
   }
   if (!p.isWithin(_exchangeFeatureLib, normalized)) return false;
+  if (p.split(normalized).contains('presentation')) return false;
   final name = p.basename(normalized);
-  return name.endsWith('_flow.dart') || name.endsWith('_machine.dart');
+  return const [
+    '_state.dart',
+    '_event.dart',
+    '_effect.dart',
+  ].any(name.endsWith);
 }
 
 /// `_`, or a record of nothing but `_`: an arm that answers every value
@@ -119,19 +126,23 @@ class _CatchAllArms extends RecursiveAstVisitor<void> {
   }
 }
 
-/// Transition functions outside the machine files (named `transition*`).
+/// Transitions outside the machine files: functions named `transition*`
+/// and a state's `next` method.
 class _TransitionFunctions extends RecursiveAstVisitor<void> {
   final found = <AstNode>[];
 
+  bool _isTransition(String name) =>
+      name.startsWith('transition') || name == 'next';
+
   @override
   void visitFunctionDeclaration(FunctionDeclaration node) {
-    if (node.name.lexeme.startsWith('transition')) found.add(node);
+    if (_isTransition(node.name.lexeme)) found.add(node);
     super.visitFunctionDeclaration(node);
   }
 
   @override
   void visitMethodDeclaration(MethodDeclaration node) {
-    if (node.name.lexeme.startsWith('transition')) found.add(node);
+    if (_isTransition(node.name.lexeme)) found.add(node);
     super.visitMethodDeclaration(node);
   }
 }
@@ -289,14 +300,14 @@ List<String> uiImports(Iterable<File> sources) {
 // (d) Screens never write: writes run in blocs, through the write gate.
 
 /// Names of the exchange's write calls: every method of packages/exchange
-/// that answers an `ExchangeWrite`.
+/// that answers a `Result<T, ExchangeWriteFailure>`.
 class _WriteMethods extends RecursiveAstVisitor<void> {
   final names = <String>{};
 
   @override
   void visitMethodDeclaration(MethodDeclaration node) {
     final returns = node.returnType?.toSource() ?? '';
-    if (returns.contains('ExchangeWrite<')) names.add(node.name.lexeme);
+    if (returns.contains('ExchangeWriteFailure>')) names.add(node.name.lexeme);
     super.visitMethodDeclaration(node);
   }
 }

@@ -13,7 +13,7 @@ void main() {
       final result = await GetConfidentialSepaAvailabilityUsecase(exchange)
           .execute();
       expect(
-        (result as Ok<ConfidentialSepaAvailability, RecipientsFailure>).value,
+        (result as Ok<ConfidentialSepaAvailability, ExchangeFailure>).value,
         availability,
       );
     }
@@ -27,8 +27,8 @@ void main() {
     final result = await GetConfidentialSepaAvailabilityUsecase(exchange)
         .execute();
     expect(
-      (result as Err<ConfidentialSepaAvailability, RecipientsFailure>).failure,
-      isA<RecipientsNetworkFailure>(),
+      (result as Err<ConfidentialSepaAvailability, ExchangeFailure>).failure,
+      isA<ExchangeNetworkFailure>(),
     );
   });
 }

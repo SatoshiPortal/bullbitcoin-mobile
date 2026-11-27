@@ -6,40 +6,55 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
+import 'payout_requirements_fakes.dart';
+
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.testnet,
+  epoch: 3,
+  sessionId: 's',
+);
+
 void main() {
   late List<String> calls;
+  late List<ExchangeSession> sessions;
   late List<RequirementsEvent> events;
   late PayoutRequirementsRunner runner;
 
-  PayoutRequirementsCalls fakeCalls() => (
-    loadVirtualIban: () async {
+  PayoutRequirementsUsecases fakeUsecases() => PayoutRequirementsUsecases(
+    loadVirtualIban: FakeLoadVirtualIbanContextUsecase((session) async {
+      sessions.add(session);
       calls.add('load');
-      return const ReadGot(
+      return const Ok(
         VirtualIbanContext(virtualIban: null, ownerName: 'Ada Lovelace'),
       );
-    },
-    createVirtualIban: () async {
+    }),
+    createVirtualIban: FakeCreateVirtualIbanUsecase((session) async {
+      sessions.add(session);
       calls.add('create');
-      return const WriteOutcomeUnknown('lost');
-    },
-    findVirtualIban: () async {
+      return const Err(ExchangeWriteOutcomeUnknownFailure('lost'));
+    }),
+    findVirtualIban: FakeFindVirtualIbanUsecase((session) async {
+      sessions.add(session);
       calls.add('find');
-      return const ReadGot(null);
-    },
-    payeeStatus: (id) async {
+      return const Ok(null);
+    }),
+    payeeStatus: FakeGetVirtualPayeeStatusUsecase((session, id) async {
+      sessions.add(session);
       calls.add('status $id');
-      return const ReadGot(SepaVirtualPayeeStatus.pending);
-    },
-    activatePayee: (id) async {
+      return const Ok(SepaVirtualPayeeStatus.pending);
+    }),
+    activatePayee: FakeActivateVirtualPayeeUsecase((session, id) async {
+      sessions.add(session);
       calls.add('activate $id');
-      return const WriteDone(SepaVirtualPayeeStatus.pending);
-    },
+      return const Ok(SepaVirtualPayeeStatus.pending);
+    }),
   );
 
   setUp(() {
     calls = [];
+    sessions = [];
     events = [];
-    runner = PayoutRequirementsRunner(fakeCalls(), events.add);
+    runner = PayoutRequirementsRunner(fakeUsecases(), _session, events.add);
   });
 
   test('each virtual IBAN effect answers its event with its attempt', () {
@@ -51,6 +66,7 @@ void main() {
       ]);
       async.flushMicrotasks();
       expect(calls, ['load', 'create', 'find']);
+      expect(sessions, everyElement(_session));
       expect(events, [
         isA<RequirementVirtualIbanEvent>().having(
           (e) => e.event,
@@ -114,6 +130,7 @@ void main() {
       ]);
       async.elapse(const Duration(seconds: 3));
       expect(calls, ['status r-1', 'activate r-1', 'status r-1']);
+      expect(sessions, everyElement(_session));
       expect(events.map((e) => (e as RequirementVirtualPayeeEvent).event), [
         isA<PayeeLoaded>(),
         isA<PayeeActivated>(),
@@ -137,36 +154,68 @@ void main() {
     test('a failure is never read as a value', () {
       expect(
         readOfResult<int>(const Err(ExchangeNetworkFailure())),
-        isA<ReadUnreachable<int>>().having((r) => r.isNetwork, 'net', true),
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeUnreachableFailure>().having(
+            (r) => r.isNetwork,
+            'net',
+            true,
+          ),
+        ),
       );
       expect(
-        readOfResult<int>(const Err(ExchangeSessionRejectedFailure())),
-        isA<ReadSessionRejected<int>>(),
+        readOfResult<int>(
+          const Err(
+            ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+          ),
+        ),
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
       );
       expect(
         readOfResult<int>(const Ok(1)),
-        isA<ReadGot<int>>().having((r) => r.value, 'value', 1),
+        isA<Ok<int, ExchangeReadFailure>>().having((r) => r.value, 'value', 1),
       );
     });
 
     test('a write failure that may have reached the server is unknown', () {
       expect(
         writeOfResult<int>(const Err(ExchangeNetworkFailure())),
-        isA<WriteOutcomeUnknown<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
       expect(
         writeOfResult<int>(const Err(ExchangeUnexpectedFailure())),
-        isA<WriteOutcomeUnknown<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
       );
       expect(
         writeOfResult<int>(const Err(ExchangeNotAuthenticatedFailure())),
-        isA<WriteNotSent<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>(),
+        ),
       );
       expect(
         writeOfResult<int>(
           const Err(ExchangeOrderRejectedFailure(apiCode: 'X')),
         ),
-        isA<WriteRefused<int>>(),
+        isA<Err<int, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteRefusedFailure>(),
+        ),
       );
     });
   });

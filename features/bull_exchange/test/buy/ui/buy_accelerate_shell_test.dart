@@ -1,11 +1,12 @@
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/buy/presentation/buy_accelerate_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_state.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_event.dart';
 import 'package:bull_exchange/src/buy/ui/buy_accelerate_shell.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
 import '../buy_fixtures.dart';
 
@@ -42,10 +43,7 @@ void main() {
     _fee,
     const [],
   );
-  final ready = transitionAccelerateFlow(
-    loading,
-    AccelerateLoaded(1, ReadGot(quote)),
-  ).state;
+  final ready = loading.next(AccelerateLoaded(1, Ok(quote))).state;
 
   // The accelerate route is often opened with nothing under it (from an
   // order's details): its back is the flow's event, never implied.

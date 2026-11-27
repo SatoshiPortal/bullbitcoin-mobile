@@ -3,9 +3,11 @@ import 'package:exchange/exchange.dart';
 import 'package:material_ui/material_ui.dart' show MaterialLocalizations;
 import 'package:bull_exchange/src/recipients/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipients_list_tile.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/screens/virtual_iban_onboarding_screen.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/confidential_sepa_availability_status.dart';
@@ -228,7 +230,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               style: context.bullType.body.copyWith(color: context.bull.error),
             ),
           ),
-        BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
+        BlocSelector<RecipientsBloc, RecipientsState, ExchangeFailure?>(
           selector: (state) => state.failedToSelectRecipient,
           builder: (context, failure) {
             if (failure == null) return const SizedBox.shrink();
@@ -278,7 +280,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
       }
 
       // Translated from the failure rather than one static string:
-      //  RecipientsNetworkFailure exists to tell the user to check their
+      //  ExchangeNetworkFailure exists to tell the user to check their
       //  connection, and this is the only place a load failure is shown, so a
       //  static message would throw that advice away. The pull-to-retry hint
       //  the static string used to carry is kept as its own line, since it is

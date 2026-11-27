@@ -1,4 +1,5 @@
-import 'package:bull_exchange/src/buy/presentation/buy_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_state.dart';
+import 'package:bull_exchange/src/buy/domain/buy_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:primitives/primitives.dart';
@@ -102,23 +103,20 @@ BuyOrder buyOrder({
   isTestnet: false,
 ) as BuyOrder;
 
-GateAdmitted<ExchangeWrite<T>> buyDone<T>(T value) =>
-    GateAdmitted(WriteDone(value));
+Result<T, ExchangeGatedWriteFailure> buyDone<T>(T value) => Ok(value);
 
 BuyFlowNext applyBuy(BuyFlowState state, List<BuyFlowEvent> events) {
   var next = BuyFlowNext.stay(state);
   for (final event in events) {
-    next = transitionBuyFlow(next.state, event);
+    next = next.state.next(event);
   }
   return next;
 }
 
 final buyLoadingState = buyFlowStart(buySession).state;
 final buyEntryState = applyBuy(buyLoadingState, [
-  BuyContextLoaded(1, ReadGot(buyContext)),
-  const BuyAmountChanged(
-    AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
-  ),
+  BuyContextLoaded(1, Ok(buyContext)),
+  const BuyAmountChanged(AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0))),
   BuyDestinationChanged(
     PickResolved(buyLiquidWallet.option, const Ok(buyLiquidDestination)),
   ),

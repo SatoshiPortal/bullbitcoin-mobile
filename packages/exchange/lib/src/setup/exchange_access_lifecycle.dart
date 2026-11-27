@@ -10,13 +10,13 @@ import '../domain/exchange_access.dart';
 import '../domain/exchange_availability.dart';
 import '../domain/exchange_environment.dart';
 import '../domain/exchange_failure.dart';
-import '../session/exchange_access_machine.dart';
+import '../session/exchange_access_event.dart';
 import 'exchange_credentials.dart';
 
 /// Foreground session authority. Platform storage and WebView cleanup are
 /// supplied during setup; their ordering and the journal belong here.
 ///
-/// Every state change goes through [transitionAccess]. A session starts only
+/// Every state change goes through [ExchangeAccess.next]. A session starts only
 /// when a key is stored or found for an environment without a current
 /// session, so a failed sign-in or a repeated read ends nothing. The
 /// notification socket is an effect of [ExchangeAccessSignedIn]: it is
@@ -150,7 +150,7 @@ final class _ExchangeAccessLifecycle implements ExchangeAccessLifecycle {
 
   void _apply(ExchangeAccessEvent event) {
     final previous = _current;
-    final next = transitionAccess(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     final started = switch (next) {
       ExchangeAccessSignedIn(:final session) ||

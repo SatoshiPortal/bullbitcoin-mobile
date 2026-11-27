@@ -680,13 +680,9 @@ sealed class Order with _$Order {
       return (ConvertAmount.btcToSats(payinAmount), 'sats');
     }
 
-    final (amount, currency) = switch (orderType) {
-      // Rewards are admin-initiated: there is no real pay-in, so the credit is
-      // only on the payout side.
-      OrderType.reward => (payoutAmount, payoutCurrency),
-      OrderType.refund => (payoutAmount, payoutCurrency),
-      _ => (payoutAmount, payoutCurrency),
-    };
+    // Every other order type credits the payout side (rewards are
+    // admin-initiated: there is no real pay-in).
+    final (amount, currency) = (payoutAmount, payoutCurrency);
     if (currency == 'BTC' || currency == 'LBTC') {
       return (ConvertAmount.btcToSats(amount), 'sats');
     }
@@ -711,7 +707,12 @@ sealed class Order with _$Order {
       case final FiatPaymentOrder fiatPaymentOrder:
         return fiatPaymentOrder.bitcoinTransactionId ??
             fiatPaymentOrder.liquidTransactionId;
-      case _:
+      case FundingOrder() ||
+          WithdrawOrder() ||
+          RewardOrder() ||
+          RefundOrder() ||
+          BalanceAdjustmentOrder() ||
+          GenericOrder():
         return null;
     }
   }
@@ -725,7 +726,12 @@ sealed class Order with _$Order {
         return o.bip21URI;
       case final FiatPaymentOrder o:
         return o.bip21URI;
-      case _:
+      case FundingOrder() ||
+          WithdrawOrder() ||
+          RewardOrder() ||
+          RefundOrder() ||
+          BalanceAdjustmentOrder() ||
+          GenericOrder():
         return null;
     }
   }
@@ -738,7 +744,12 @@ sealed class Order with _$Order {
         return o.payjoinDetails;
       case final FiatPaymentOrder o:
         return o.payjoinDetails;
-      case _:
+      case FundingOrder() ||
+          WithdrawOrder() ||
+          RewardOrder() ||
+          RefundOrder() ||
+          BalanceAdjustmentOrder() ||
+          GenericOrder():
         return null;
     }
   }
@@ -773,7 +784,12 @@ sealed class Order with _$Order {
       case final FiatPaymentOrder fiatPaymentOrder:
         return fiatPaymentOrder.bitcoinAddress ??
             fiatPaymentOrder.liquidAddress;
-      case _:
+      case FundingOrder() ||
+          WithdrawOrder() ||
+          RewardOrder() ||
+          RefundOrder() ||
+          BalanceAdjustmentOrder() ||
+          GenericOrder():
         return null;
     }
   }
@@ -788,7 +804,11 @@ sealed class Order with _$Order {
         return fiatPaymentOrder.payinMethod == OrderPaymentMethod.liquid;
       case final RewardOrder rewardOrder:
         return rewardOrder.liquidAddress != null;
-      default:
+      case FundingOrder() ||
+          WithdrawOrder() ||
+          RefundOrder() ||
+          BalanceAdjustmentOrder() ||
+          GenericOrder():
         return false;
     }
   }
@@ -803,7 +823,11 @@ sealed class Order with _$Order {
         return fiatPaymentOrder.payinMethod == OrderPaymentMethod.bitcoin;
       case final RewardOrder rewardOrder:
         return rewardOrder.bitcoinAddress != null;
-      default:
+      case FundingOrder() ||
+          WithdrawOrder() ||
+          RefundOrder() ||
+          BalanceAdjustmentOrder() ||
+          GenericOrder():
         return false;
     }
   }

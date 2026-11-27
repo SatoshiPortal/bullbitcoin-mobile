@@ -89,7 +89,7 @@ void main() {
 
     for (final failure in const <ExchangeFailure>[
       ExchangeNetworkFailure(),
-      ExchangeSessionRejectedFailure(),
+      ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
       ExchangeCredentialReadFailure(),
       ExchangeOrderLoadFailure(),
       ExchangeUnexpectedFailure(),

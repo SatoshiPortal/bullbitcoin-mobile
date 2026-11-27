@@ -18,7 +18,7 @@ T _valueOf<T, F extends Failure>(Result<T, F> result) => switch (result) {
   Err(:final failure) => fail('expected an Ok, got ${failure.runtimeType}'),
 };
 
-class _MockExchangeOrders extends Mock implements ExchangeOrders {}
+class _MockOrdersRepository extends Mock implements OrdersRepository {}
 
 class _MockPreferences extends Mock implements Preferences {}
 
@@ -41,13 +41,13 @@ Order _order() => Order.buy(
 );
 
 void main() {
-  late _MockExchangeOrders getOrder;
+  late _MockOrdersRepository getOrder;
   late GetTransactionOrderUsecase usecase;
   late _MockPreferences preferences;
   late List<ExchangeEnvironment> requestedEnvironments;
 
   setUp(() {
-    getOrder = _MockExchangeOrders();
+    getOrder = _MockOrdersRepository();
     preferences = _MockPreferences();
     requestedEnvironments = [];
     when(preferences.fetch).thenAnswer(

@@ -3,8 +3,10 @@ import 'package:exchange/exchange.dart';
 import '../../../exchange_l10n.dart';
 import '../../domain/entities/exchange_preferences.dart';
 import '../../presentation/exchange_preferences_bloc.dart';
-import '../../presentation/exchange_preferences_machine.dart';
-import '../../presentation/exchange_settings_failure_l10n.dart';
+import '../../domain/exchange_preferences_state.dart';
+import '../../domain/exchange_preferences_event.dart';
+
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';

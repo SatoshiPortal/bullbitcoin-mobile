@@ -119,7 +119,7 @@ void main() {
         await expectLater(pending, throwsStateError);
         noReport();
       } else {
-        expect(await pending, isNot(isA<ReadGot<Object>>()));
+        expect(await pending, isNot(isA<Ok<Object, ExchangeReadFailure>>()));
         if (refusal is _MissingKey || refusal is _UnreadableKey) noReport();
       }
     });
@@ -143,16 +143,22 @@ void main() {
         final exchange = exchangeForTesting(
           access: fixedAccessForTesting(const ExchangeAccessSignedIn(session)),
           getDefaultWallets: () async => Err(failure),
-          saveDefaultWallet: ({
-            required walletType,
-            required address,
-            existingRecipientId,
-          }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
-          deleteDefaultWallet: ({
-            required recipientId,
-            required walletType,
-            required address,
-          }) async => const WriteNotSent(ExchangeNotSentReason.signedOut),
+          saveDefaultWallet:
+              ({
+                required walletType,
+                required address,
+                existingRecipientId,
+              }) async => const Err(
+                ExchangeWriteNotSentFailure(ExchangeNotSentReason.signedOut),
+              ),
+          deleteDefaultWallet:
+              ({
+                required recipientId,
+                required walletType,
+                required address,
+              }) async => const Err(
+                ExchangeWriteNotSentFailure(ExchangeNotSentReason.signedOut),
+              ),
         );
         Future<DefaultWalletsEvent> run(DefaultWalletsEffect effect) =>
             defaultWalletsEffectForTesting(
@@ -166,7 +172,7 @@ void main() {
           isA<WalletsLoaded>().having(
             (e) => e.read,
             'read',
-            isNot(isA<ReadGot<DefaultWallets>>()),
+            isNot(isA<Ok<DefaultWallets, ExchangeReadFailure>>()),
           ),
         );
         expect(

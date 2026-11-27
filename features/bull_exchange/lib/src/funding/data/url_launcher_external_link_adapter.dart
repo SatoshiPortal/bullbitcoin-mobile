@@ -1,5 +1,5 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/funding/domain/external_link_port.dart';
-import 'package:bull_exchange/src/funding/domain/fund_exchange_failure.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
@@ -15,20 +15,20 @@ class UrlLauncherExternalLinkAdapter implements ExternalLinkPort {
 
   @override
   @useResult
-  Future<Result<void, FundExchangeFailure>> open(Uri url) async {
+  Future<Result<void, ExchangeFailure>> open(Uri url) async {
     try {
       final launched = await launchUrl(url, mode: LaunchMode.inAppBrowserView);
 
       if (!launched) {
         // No handler for the scheme — a normal device condition, not a bug.
         log.warning('No handler available for external link');
-        return const Err(FundExchangePaymentLinkUnavailableFailure());
+        return const Err(ExchangePaymentLinkUnavailableFailure());
       }
 
       return const Ok(null);
     } catch (e, st) {
       log.severe(message: 'Failed to open external link', error: e, trace: st);
-      return Err(FundExchangePaymentLinkUnavailableFailure(e.toString()));
+      return Err(ExchangePaymentLinkUnavailableFailure(e.toString()));
     }
   }
 }

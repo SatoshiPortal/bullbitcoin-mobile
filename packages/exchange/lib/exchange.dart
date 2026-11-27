@@ -31,16 +31,16 @@ export 'src/domain/exchange_availability.dart';
 export 'src/domain/exchange_basic_auth.dart'
     show ExchangeBasicAuthValues, ExchangeWebPreferences;
 export 'src/domain/exchange_preferences_patch.dart';
-export 'src/domain/exchange_call_result.dart';
 export 'src/domain/exchange_kyc_configuration.dart';
 export 'src/domain/exchange_failure.dart';
+export 'src/domain/exchange_page.dart';
 export 'src/domain/exchange_environment.dart' show ExchangeEnvironment;
 export 'src/exchange.dart' show Exchange;
-export 'src/domain/exchange_limit_orders.dart'
-    show ExchangeLimitOrders, LimitOrderRefusal, limitOrderRefusalOf;
-export 'src/domain/exchange_funding.dart' show ExchangeFunding;
-export 'src/domain/exchange_virtual_ibans.dart' show ExchangeVirtualIbans;
-export 'src/domain/exchange_orders.dart' show ExchangeOrders;
+export 'src/domain/repositories/limit_orders_repository.dart';
+export 'src/domain/entities/limit_order_refusal.dart';
+export 'src/domain/repositories/funding_repository.dart';
+export 'src/domain/repositories/virtual_ibans_repository.dart';
+export 'src/domain/repositories/orders_repository.dart' show OrdersRepository;
 export 'src/domain/order_deadline_scheduler.dart';
 export 'src/domain/unknown_write_journal.dart';
 export 'src/domain/order_create_journal.dart';
@@ -61,5 +61,4 @@ export 'src/recipients/domain/entities/cad_biller.dart';
 export 'src/recipients/domain/entities/sepa_virtual_payee_status.dart';
 export 'src/recipients/domain/entities/interac_security_details.dart';
 export 'src/recipients/domain/recipient_field_checks.dart';
-export 'src/recipients/exchange_recipients.dart'
-    show ExchangeRecipients, RecipientPage;
+export 'src/recipients/domain/repositories/recipients_repository.dart';

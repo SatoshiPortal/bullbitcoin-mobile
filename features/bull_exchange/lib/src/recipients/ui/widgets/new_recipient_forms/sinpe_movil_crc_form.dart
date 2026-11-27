@@ -5,9 +5,11 @@ import 'dart:async';
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/bb_text_form_field.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipient_form_continue_button.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
@@ -89,7 +91,9 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
         label: _label.isEmpty ? null : _label,
       );
 
-      context.read<RecipientsBloc>().add(RecipientsEvent.added(formData));
+      context.read<RecipientsBloc>().add(
+        RecipientsEvent.added(formData.toInput()),
+      );
     }
   }
 
@@ -135,7 +139,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
           // A failed lookup used to just stop the spinner, leaving the owner
           //  field blank with no explanation. Shown under the phone field
           //  because that is what the message asks the user to check.
-          BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
+          BlocSelector<RecipientsBloc, RecipientsState, ExchangeFailure?>(
             selector: (state) => state.failedToCheckSinpe,
             builder: (context, failure) {
               if (failure == null) return const SizedBox.shrink();

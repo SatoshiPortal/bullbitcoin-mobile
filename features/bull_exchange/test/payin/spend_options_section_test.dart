@@ -4,7 +4,8 @@ import 'dart:ui' show Tristate;
 
 import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
 import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
 import 'package:bull_ui/testing.dart';
 import 'package:fees/fees.dart';

@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:bull_exchange/src/buy/presentation/buy_accelerate_bloc.dart';
-import 'package:bull_exchange/src/buy/presentation/buy_accelerate_flow.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_state.dart';
+import 'package:bull_exchange/src/buy/domain/buy_accelerate_event.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';

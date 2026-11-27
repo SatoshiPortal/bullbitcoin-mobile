@@ -4,14 +4,17 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'support_unread_machine.dart';
+import '../domain/support_unread_state.dart';
+import '../domain/support_unread_event.dart';
+import '../domain/usecases/get_unread_support_count_usecase.dart';
+import '../domain/usecases/mark_support_messages_read_usecase.dart';
 
-/// Shell of [transitionSupportUnread]: applies events one at a time and
+/// Shell of [SupportUnreadState.next]: applies events one at a time and
 /// starts the read or the mark of the state it enters. Each answer carries
 /// the session and attempt that started it.
 class SupportUnreadBloc extends Bloc<SupportUnreadEvent, SupportUnreadState> {
   SupportUnreadBloc({
-    required this._readCount,
+    required this._getUnreadCount,
     required this._markRead,
     required ExchangeAccess Function() currentAccess,
     required Stream<ExchangeAccess> accessChanges,
@@ -27,14 +30,14 @@ class SupportUnreadBloc extends Bloc<SupportUnreadEvent, SupportUnreadState> {
     });
   }
 
-  final Future<ExchangeRead<int>> Function(ExchangeSession) _readCount;
-  final Future<ExchangeWrite<void>> Function(ExchangeSession) _markRead;
+  final GetUnreadSupportCountUsecase _getUnreadCount;
+  final MarkSupportMessagesReadUsecase _markRead;
   StreamSubscription<ExchangeAccess>? _access;
   StreamSubscription<NotificationMessage>? _messages;
 
   void _onEvent(SupportUnreadEvent event, Emitter<SupportUnreadState> emit) {
     final previous = state;
-    final next = transitionSupportUnread(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     emit(next);
     switch (next) {
@@ -52,12 +55,12 @@ class SupportUnreadBloc extends Bloc<SupportUnreadEvent, SupportUnreadState> {
   }
 
   Future<void> _read(ExchangeSession session, int attempt) async {
-    final read = await _readCount(session);
+    final read = await _getUnreadCount.execute(session);
     if (!isClosed) add(UnreadCountAnswered(session, attempt, read));
   }
 
   Future<void> _mark(ExchangeSession session, int attempt) async {
-    final write = await _markRead(session);
+    final write = await _markRead.execute(session);
     if (!isClosed) add(UnreadMarkAnswered(session, attempt, write));
   }
 

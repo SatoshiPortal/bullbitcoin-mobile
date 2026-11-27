@@ -126,7 +126,7 @@ void main() {
   }
 
   test('malformed SINPE response remains a typed lookup failure', () async {
-    final repository = BbxApiRecipientsRepository(
+    final repository = BbxApiRecipientsDatasource(
       api: FakeBbxHttp(
         body: {
           'result': {'ownerName': 42},
@@ -135,10 +135,10 @@ void main() {
     );
     expect(
       await repository.checkSinpe(phoneNumber: 'synthetic', isTestnet: true),
-      isA<Err<String, RecipientsFailure>>().having(
+      isA<Err<String, ExchangeFailure>>().having(
         (r) => r.failure,
         'failure',
-        isA<RecipientsSinpeLookupFailure>(),
+        isA<ExchangeRecipientsSinpeLookupFailure>(),
       ),
     );
   });

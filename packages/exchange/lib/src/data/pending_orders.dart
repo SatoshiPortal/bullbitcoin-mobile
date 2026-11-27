@@ -38,7 +38,7 @@ final class PendingOrders {
     Future<Result<String?, BbxFailure>> readMatchingKey() async =>
         switch (await _readSession()) {
           Ok(value: final current) when current == session => Ok(key),
-          _ => const Err(BbxCredentialUnavailableFailure()),
+          Ok() || Err() => const Err(BbxCredentialUnavailableFailure()),
         };
 
     final client = _openClient(session.endpoint, readMatchingKey);
@@ -54,14 +54,25 @@ final class PendingOrders {
         }
         if (result case Err(:final failure)) {
           return Err(switch (failure) {
-            BbxHttpFailure(status: 401) =>
-              const ExchangeSessionRejectedFailure(),
+            BbxHttpFailure(status: 401) => const ExchangeSessionRejectedFailure(
+              ExchangeSessionRejection.server,
+            ),
             BbxCredentialUnavailableFailure() ||
             BbxMissingCredentialFailure() =>
               const ExchangeOperationStaleFailure(),
             BbxConnectionFailure() ||
             BbxTimeoutFailure() => const ExchangeNetworkFailure(),
-            _ => const ExchangeOrderInventoryUnavailableFailure(),
+            BbxHttpFailure() ||
+            BbxRpcFailure() ||
+            BbxOrderLimitFailure() ||
+            BbxConfidentialSepaInactiveFailure() ||
+            BbxBadCertificateFailure() ||
+            BbxRequestCancelledFailure() ||
+            BbxTransformTimeoutFailure() ||
+            BbxTransportFailure() ||
+            BbxOutcomeUnknownFailure() ||
+            BbxResponseFormatFailure() =>
+              const ExchangeOrderInventoryUnavailableFailure(),
           });
         }
 

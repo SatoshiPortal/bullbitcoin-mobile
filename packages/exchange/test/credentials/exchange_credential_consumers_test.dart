@@ -38,7 +38,7 @@ void main() {
   late _NoNetwork network;
   late Bbx api;
   late Exchange user;
-  late ExchangeOrders orders;
+  late OrdersRepository orders;
   Result<String?, ExchangeFailure> credential = const Ok(null);
 
   setUp(() {
@@ -68,6 +68,7 @@ void main() {
         adapter: network,
         readActiveApiKey: readKey,
       ),
+      access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
     );
     orders = user.orders(ExchangeEnvironment.testnet);
   });
@@ -89,12 +90,16 @@ void main() {
             paymentProcessor: SepaPaymentProcessor.regular,
             network: BtcNetwork.bitcoin,
           ),
-          isA<WriteNotSent<FiatPaymentOrder>>().having(
-            (r) => r.reason,
-            'reason',
-            storageFailure
-                ? ExchangeNotSentReason.credentialUnavailable
-                : ExchangeNotSentReason.signedOut,
+          isA<Err<FiatPaymentOrder, ExchangeWriteFailure>>().having(
+            (r) => r.failure,
+            'failure',
+            isA<ExchangeWriteNotSentFailure>().having(
+              (r) => r.reason,
+              'reason',
+              storageFailure
+                  ? ExchangeNotSentReason.credentialUnavailable
+                  : ExchangeNotSentReason.signedOut,
+            ),
           ),
         );
       },
@@ -124,7 +129,7 @@ void main() {
           isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
-      final messages = await user.getSupportMessages();
+      final messages = await user.getSupportMessages(_session);
       expect(
         messages,
         isA<Err>().having(
@@ -167,7 +172,7 @@ void main() {
         ),
       );
       expect(
-        await user.getSupportMessages(),
+        await user.getSupportMessages(_session),
         isA<Err>().having(
           (r) => r.failure,
           'chat',
@@ -196,14 +201,18 @@ void main() {
     'shared Dio features distinguish missing credentials from read failures',
     () async {
       final funding = user.funding;
-      final recipients = BbxApiRecipientsRepository(api: api);
+      final recipients = BbxApiRecipientsDatasource(api: api);
       final limits = user.limitOrders;
       expect(
         await funding.institutions(_session, Jurisdiction.canada),
-        isA<ReadSessionRejected<List<FundingInstitution>>>().having(
-          (r) => r.why,
-          'funding',
-          ExchangeSessionRejection.signedOut,
+        isA<Err<List<FundingInstitution>, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>().having(
+            (r) => r.why,
+            'funding',
+            ExchangeSessionRejection.signedOut,
+          ),
         ),
       );
       expect(
@@ -211,11 +220,11 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'recipients',
-          isA<RecipientsNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       expect(
-        await limits.listActive(),
+        await limits.listActive(_session),
         isA<Err>().having(
           (r) => r.failure,
           'limit orders',
@@ -225,10 +234,14 @@ void main() {
       credential = const Err(ExchangeCredentialReadFailure());
       expect(
         await funding.institutions(_session, Jurisdiction.canada),
-        isA<ReadSessionRejected<List<FundingInstitution>>>().having(
-          (r) => r.why,
-          'funding unavailable',
-          ExchangeSessionRejection.credentialUnavailable,
+        isA<Err<List<FundingInstitution>, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>().having(
+            (r) => r.why,
+            'funding unavailable',
+            ExchangeSessionRejection.credentialUnavailable,
+          ),
         ),
       );
       expect(
@@ -236,11 +249,11 @@ void main() {
         isA<Err>().having(
           (r) => r.failure,
           'recipients unavailable',
-          isA<RecipientsLoadFailure>(),
+          isA<ExchangeRecipientsLoadFailure>(),
         ),
       );
       expect(
-        await limits.listActive(),
+        await limits.listActive(_session),
         isA<Err>().having(
           (r) => r.failure,
           'limit orders unavailable',

@@ -11,9 +11,9 @@ void main() {
       securityAnswer: '  Montreal  ',
     );
 
-    expect(result, isA<Ok<InteracSecurityDetails, RecipientsFailure>>());
+    expect(result, isA<Ok<InteracSecurityDetails, ExchangeFailure>>());
     final details =
-        (result as Ok<InteracSecurityDetails, RecipientsFailure>).value;
+        (result as Ok<InteracSecurityDetails, ExchangeFailure>).value;
     expect(details.securityQuestion, 'Favourite city?');
     expect(details.securityAnswer, 'Montreal');
     expect(details.toString(), isNot(contains('Montreal')));
@@ -27,7 +27,7 @@ void main() {
       securityAnswer: null,
     );
 
-    expect(result, isA<Ok<InteracSecurityDetails, RecipientsFailure>>());
+    expect(result, isA<Ok<InteracSecurityDetails, ExchangeFailure>>());
   });
 
   test('rejects incomplete or invalid security details', () {
@@ -44,10 +44,10 @@ void main() {
       securityAnswer: 'Montréal!',
     );
 
-    expect(incomplete, isA<Err<InteracSecurityDetails, RecipientsFailure>>());
+    expect(incomplete, isA<Err<InteracSecurityDetails, ExchangeFailure>>());
     expect(
       invalidCharacters,
-      isA<Err<InteracSecurityDetails, RecipientsFailure>>(),
+      isA<Err<InteracSecurityDetails, ExchangeFailure>>(),
     );
   });
 
@@ -67,8 +67,8 @@ void main() {
 
     expect(
       missingRecipientId,
-      isA<Err<InteracSecurityDetails, RecipientsFailure>>(),
+      isA<Err<InteracSecurityDetails, ExchangeFailure>>(),
     );
-    expect(missingEmail, isA<Err<InteracSecurityDetails, RecipientsFailure>>());
+    expect(missingEmail, isA<Err<InteracSecurityDetails, ExchangeFailure>>());
   });
 }

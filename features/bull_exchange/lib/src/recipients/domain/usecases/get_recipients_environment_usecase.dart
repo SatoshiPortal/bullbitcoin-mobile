@@ -10,17 +10,17 @@ class GetRecipientsEnvironmentUsecase {
   const GetRecipientsEnvironmentUsecase(this._settingsRepository);
 
   @useResult
-  Future<Result<Environment, RecipientsFailure>> execute() async {
+  Future<Result<Environment, ExchangeFailure>> execute() async {
     try {
       return switch (await _settingsRepository.fetch()) {
         Ok(value: final settings)
             when settings.environment != Environment.regtest =>
           Ok(settings.environment),
-        Ok() => const Err(RecipientsUnsupportedNetworkFailure()),
-        Err() => const Err(RecipientsUnexpectedFailure()),
+        Ok() => const Err(ExchangeUnsupportedNetworkFailure()),
+        Err() => const Err(ExchangeUnexpectedFailure()),
       };
     } on Exception {
-      return const Err(RecipientsUnexpectedFailure());
+      return const Err(ExchangeUnexpectedFailure());
     }
   }
 }

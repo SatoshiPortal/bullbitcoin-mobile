@@ -10,10 +10,9 @@ export 'src/setup/fixed_access_for_testing.dart';
 export 'src/testing/fake_exchange_users.dart';
 export 'src/data/unknown_write_journal_store.dart'
     show InMemoryUnknownWriteJournal;
-export 'src/recipients/data/bbx_api_recipients_repository.dart';
+export 'src/recipients/data/bbx_api_recipients_datasource.dart';
 export 'src/recipients/data/bbx_api_sepa_virtual_payee_repository.dart';
 export 'src/recipients/data/sepa_virtual_payee_status_mapper.dart';
-export 'src/recipients/domain/repositories/recipients_repository.dart';
 export 'src/recipients/domain/repositories/sepa_virtual_payee_repository.dart';
 export 'src/session/expire_exchange_session_usecase.dart';
 export 'src/session/complete_exchange_authentication_usecase.dart';

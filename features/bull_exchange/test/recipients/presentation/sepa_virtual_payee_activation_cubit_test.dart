@@ -10,7 +10,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockWatchSepaVirtualPayeeActivationUsecase extends Mock
     implements WatchSepaVirtualPayeeActivationUsecase {}
 
-typedef _Event = Result<SepaVirtualPayeeStatus, RecipientsFailure>;
+typedef _Event = Result<SepaVirtualPayeeStatus, ExchangeFailure>;
 
 void main() {
   late _MockWatchSepaVirtualPayeeActivationUsecase usecase;
@@ -65,10 +65,10 @@ void main() {
   test('a failure stops the watch and retry starts it again', () async {
     final cubit = build()..start();
 
-    streams.single.add(const Err(RecipientsNetworkFailure()));
+    streams.single.add(const Err(ExchangeNetworkFailure()));
     await streams.single.close();
     await settle();
-    expect(cubit.state.failure, isA<RecipientsNetworkFailure>());
+    expect(cubit.state.failure, isA<ExchangeNetworkFailure>());
     expect(cubit.state.isWatching, isFalse);
 
     await cubit.retry();

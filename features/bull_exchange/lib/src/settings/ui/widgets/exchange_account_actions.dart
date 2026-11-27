@@ -5,7 +5,10 @@ import 'package:primitives/primitives.dart';
 
 import 'package:go_router/go_router.dart';
 
-import '../../presentation/account_deletion_machine.dart';
+import '../../domain/account_deletion_state.dart';
+import '../../domain/account_deletion_event.dart';
+import '../../domain/usecases/delete_exchange_account_usecase.dart';
+import '../../domain/usecases/sign_out_of_exchange_usecase.dart';
 import '../exchange_access_settings_route.dart';
 import 'exchange_account_sheets.dart';
 import '../../../exchange_l10n.dart';
@@ -15,13 +18,19 @@ import 'package:bull_ui/bull_ui.dart' show BullSettingsEntryItem, BullSnackBar;
 
 class ExchangeAccountActions extends StatefulWidget {
   final bool showDeleteAccount;
-  final Exchange Function() exchange;
+
+  /// The session the deletion is asked for; null when signed out.
+  final ExchangeSession? session;
+  final DeleteExchangeAccountUsecase deleteAccount;
+  final SignOutOfExchangeUsecase signOut;
   final String Function(BuildContext, ExchangeFailure) failureMessage;
   final bool Function(BuildContext) hasAccount;
 
   const ExchangeAccountActions({
     required this.showDeleteAccount,
-    required this.exchange,
+    required this.session,
+    required this.deleteAccount,
+    required this.signOut,
     required this.failureMessage,
     required this.hasAccount,
     super.key,
@@ -36,7 +45,7 @@ class _ExchangeAccountActionsState extends State<ExchangeAccountActions> {
 
   void _addDeletion(AccountDeletionEvent event) {
     if (!mounted) return;
-    final next = transitionAccountDeletion(_deletion, event);
+    final next = _deletion.next(event);
     if (next == _deletion) return;
     setState(() => _deletion = next);
     switch (next) {
@@ -62,7 +71,7 @@ class _ExchangeAccountActionsState extends State<ExchangeAccountActions> {
   }
 
   Future<void> _requestDeletion() async {
-    final result = await widget.exchange().deleteAccount();
+    final result = await widget.deleteAccount.execute(widget.session);
     _addDeletion(switch (result) {
       Ok(value: ExchangeAccountDeletionOutcome.completed) =>
         const AccountDeletionSent(),
@@ -104,7 +113,7 @@ class _ExchangeAccountActionsState extends State<ExchangeAccountActions> {
                 final overlay = Overlay.of(context, rootOverlay: true);
                 final router = GoRouter.of(context);
                 final loc = context.loc;
-                final result = await widget.exchange().signOut();
+                final result = await widget.signOut.execute();
                 if (result case Err()) {
                   BullSnackBar.showOnOverlay(
                     overlay,

@@ -12,7 +12,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-import '../auth/exchange_auth_machine.dart';
+import '../auth/exchange_kyc_state.dart';
+import '../auth/exchange_kyc_event.dart';
 import 'exchange_kyc_host.dart';
 import 'exchange_kyc_navigation.dart';
 
@@ -39,7 +40,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
   }
 
   void _leave(ExchangeKycEvent event) {
-    final next = transitionKyc(_kyc, event);
+    final next = _kyc.next(event);
     if (next == _kyc) return;
     _kyc = next;
     switch (next) {

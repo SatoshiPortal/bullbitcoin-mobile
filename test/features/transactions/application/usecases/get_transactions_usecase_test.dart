@@ -24,7 +24,7 @@ class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockExchangeOrders extends Mock implements ExchangeOrders {}
+class _MockOrdersRepository extends Mock implements OrdersRepository {}
 
 class _MockLabelExchangeOrdersUsecase extends Mock
     implements LabelExchangeOrdersUsecase {}
@@ -76,8 +76,8 @@ void main() {
   late _MockWalletTransactionRepository walletTransactionRepository;
   late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
-  late _MockExchangeOrders mainnetOrderRepository;
-  late _MockExchangeOrders testnetOrderRepository;
+  late _MockOrdersRepository mainnetOrderRepository;
+  late _MockOrdersRepository testnetOrderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
   late List<Order> orders;
   late _MockGetTransactionOrderSwapsUsecase getOrderSwaps;
@@ -104,8 +104,8 @@ void main() {
     walletTransactionRepository = _MockWalletTransactionRepository();
     swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
-    mainnetOrderRepository = _MockExchangeOrders();
-    testnetOrderRepository = _MockExchangeOrders();
+    mainnetOrderRepository = _MockOrdersRepository();
+    testnetOrderRepository = _MockOrdersRepository();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
     orders = [];
     getOrderSwaps = _MockGetTransactionOrderSwapsUsecase();

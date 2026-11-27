@@ -7,7 +7,7 @@ abstract class SepaVirtualPayeeActivationState
     /// `null` until the first status is known.
     SepaVirtualPayeeStatus? status,
     @Default(false) bool isWatching,
-    RecipientsFailure? failure,
+    ExchangeFailure? failure,
   }) = _SepaVirtualPayeeActivationState;
   const SepaVirtualPayeeActivationState._();
 

@@ -6,10 +6,10 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockRepository extends Mock implements ExchangeRecipients {}
+class _MockRepository extends Mock implements RecipientsRepository {}
 
 class _MockSepaVirtualPayeeRepository extends Mock
-    implements ExchangeRecipients {}
+    implements RecipientsRepository {}
 
 class _MockGetRecipientsEnvironmentUsecase extends Mock
     implements GetRecipientsEnvironmentUsecase {}
@@ -66,9 +66,7 @@ void main() {
     final result = await usecase.execute(
       AddRecipientParams(recipientDetails: _sepaForm(type)),
     );
-    return (result as Ok<AddRecipientResult, RecipientsFailure>)
-        .value
-        .recipient;
+    return (result as Ok<AddRecipientResult, ExchangeFailure>).value.recipient;
   }
 
   test(
@@ -100,7 +98,7 @@ void main() {
         recipientId: any(named: 'recipientId'),
         isTestnet: any(named: 'isTestnet'),
       ),
-    ).thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+    ).thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
 
     final recipient = await add(RecipientType.confidentialSepaEur);
 

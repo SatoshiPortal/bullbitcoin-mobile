@@ -10,7 +10,7 @@ class GetConfidentialSepaAvailabilityUsecase {
   const GetConfidentialSepaAvailabilityUsecase(this._exchange);
 
   @useResult
-  Future<Result<ConfidentialSepaAvailability, RecipientsFailure>>
+  Future<Result<ConfidentialSepaAvailability, ExchangeFailure>>
   execute() async => (await _exchange.getConfidentialSepaAvailability()).mapErr(
     mapVirtualIbanFailure,
   );

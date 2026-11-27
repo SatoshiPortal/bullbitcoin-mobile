@@ -222,7 +222,13 @@ final class OnchainBitcoinRail extends BitcoinRail {
     SellOrder(:final bitcoinAddress) ||
     FiatPaymentOrder(:final bitcoinAddress) => bitcoinAddress,
     // Only sell and pay orders take a bitcoin payin.
-    _ => null,
+    BuyOrder() ||
+    FundingOrder() ||
+    WithdrawOrder() ||
+    RewardOrder() ||
+    RefundOrder() ||
+    BalanceAdjustmentOrder() ||
+    GenericOrder() => null,
   };
 }
 
@@ -258,7 +264,13 @@ final class LiquidRail extends BitcoinRail {
     SellOrder(:final liquidAddress) ||
     FiatPaymentOrder(:final liquidAddress) => liquidAddress,
     // Only sell and pay orders take a bitcoin payin.
-    _ => null,
+    BuyOrder() ||
+    FundingOrder() ||
+    WithdrawOrder() ||
+    RewardOrder() ||
+    RefundOrder() ||
+    BalanceAdjustmentOrder() ||
+    GenericOrder() => null,
   };
 }
 
@@ -294,7 +306,13 @@ final class LightningRail extends BitcoinRail {
     SellOrder(:final lightningInvoice) ||
     FiatPaymentOrder(:final lightningInvoice) => lightningInvoice,
     // Only sell and pay orders take a bitcoin payin.
-    _ => null,
+    BuyOrder() ||
+    FundingOrder() ||
+    WithdrawOrder() ||
+    RewardOrder() ||
+    RefundOrder() ||
+    BalanceAdjustmentOrder() ||
+    GenericOrder() => null,
   };
 }
 

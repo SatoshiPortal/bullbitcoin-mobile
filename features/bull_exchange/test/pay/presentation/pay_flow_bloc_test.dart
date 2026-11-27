@@ -1,69 +1,108 @@
+import 'dart:async';
+
 import 'package:clock/clock.dart';
 import 'package:fees/fees.dart';
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_state.dart';
+import 'package:bull_exchange/src/pay/domain/pay_event.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow_bloc.dart';
 import 'package:bull_exchange/src/payin/payin_runner.dart';
-import 'package:bull_exchange/src/payout/payout_requirements_runner.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../orders/order_usecase_fakes.dart';
+import '../../payin/payin_usecase_fakes.dart';
+import '../../payout/payout_requirements_fakes.dart';
 import '../pay_fixtures.dart';
+import '../pay_usecase_fakes.dart';
 
-final class _Calls {
+import 'package:primitives/primitives.dart';
+
+/// The pay use cases as fakes; every call is logged with the session it
+/// got.
+final class _Usecases {
   final log = <String>[];
+  final sessions = <ExchangeSession>{};
 
-  PayoutRequirementsCalls get requirements => (
-    loadVirtualIban: () => throw StateError('no virtual IBAN in this test'),
-    createVirtualIban: () => throw StateError('no virtual IBAN in this test'),
-    findVirtualIban: () => throw StateError('no virtual IBAN in this test'),
-    payeeStatus: (_) => throw StateError('no payee in this test'),
-    activatePayee: (_) => throw StateError('no payee in this test'),
-  );
+  /// The order the create answers with.
+  final FiatPaymentOrder? created;
 
-  PayinCalls get payin => (
-    build: (effect) async {
-      log.add('build ${effect.walletId}');
-      return const PayinBuildFailed(PayinBuildProblem.insufficientFunds);
-    },
-    send: (built) async => throw StateError('not sent in this test'),
-    readOrder: (orderId) async => ReadGot<Order>(payOrder()),
-    txSeen: (txid) async => null,
-    watchPayjoin: (sessionId) => const Stream.empty(),
-    retryPayjoin: (sessionId) async {},
-    journalUnknown: (orderId, network, txid) async {},
-  );
+  /// The payin use cases; by default the build fails for lack of funds.
+  final PayinUsecases Function(List<String> log)? payin;
 
-  PayFlowCalls of(ExchangeSession session) => (
-    loadContext: () async {
-      log.add('load');
-      return ReadGot(payContext);
-    },
-    rate: (market) async {
+  _Usecases({this.created, this.payin});
+
+  void _called(ExchangeSession session, String call) {
+    sessions.add(session);
+    log.add(call);
+  }
+
+  PayFlowBloc bloc({
+    required ExchangeSession? session,
+    required Stream<ExchangeAccess> accessChanges,
+  }) => PayFlowBloc(
+    session: session,
+    accessChanges: accessChanges,
+    loadContext: FakeLoadPayContextUsecase((session) async {
+      _called(session, 'load');
+      return Ok(payContext);
+    }),
+    getMarketRate: FakeGetMarketRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
-      return const ReadGot(50000.0);
-    },
-    create: (effect) async {
-      log.add('create ${effect.attempt}');
+      return const Ok(50000.0);
+    }),
+    createOrder: FakeCreatePayOrderUsecase((session, effect) async {
+      _called(session, 'create ${effect.attempt}');
       return OrderCreateAnswered(
         effect.attempt,
-        GateAdmitted(WriteDone<Order>(payOrder())),
+        Ok<Order, ExchangeWriteFailure>(created ?? payOrder()),
       );
-    },
-    findCreated: (request, sentAt) async => const ReadMissing(),
-    refresh: (order) async => ReadGot<Order>(payOrder()),
-    requirements: requirements,
-    payin: payin,
-    spend: (
-      fees: () async {
-        log.add('fees');
-        return payFees;
-      },
-      coins: (walletId) async => const [],
-      presets: (shape, fees) async => const {},
-      custom: (shape, fee) async => const BitcoinFeePreviewSlot(),
+    }),
+    findCreatedOrder: FakeFindCreatedOrderUsecase((
+      session,
+      journal,
+      sentAt,
+    ) async {
+      _called(session, 'find');
+      return const Err(ExchangeMissingFailure());
+    }),
+    refreshOrder: FakeRefreshPayOrderUsecase((session, orderId) async {
+      _called(session, 'refresh $orderId');
+      return Ok<Order, ExchangeReadFailure>(payOrder());
+    }),
+    getOrder: FakeGetOrderUsecase((session, orderId) async {
+      _called(session, 'read $orderId');
+      return Ok<Order, ExchangeReadFailure>(payOrder());
+    }),
+    requirements: unusedPayoutRequirements(),
+    payin:
+        payin?.call(log) ??
+        fakePayin(
+          build: FakeBuildPayinUsecase((effect) async {
+            log.add('build ${effect.walletId}');
+            return const Err(
+              ExchangePayinBuildFailure(PayinBuildProblem.insufficientFunds),
+            );
+          }),
+          getOrder: FakeGetOrderUsecase(
+            (session, orderId) async =>
+                Ok<Order, ExchangeReadFailure>(payOrder()),
+          ),
+        ),
+    spendOptions: fakeSpendOptions(
+      getFees: FakeGetFeeOptionsUsecase((session) async {
+        _called(session, 'fees');
+        return const Ok(payFees);
+      }),
+      getCoins: FakeGetWalletCoinsUsecase((walletId) async => const Ok([])),
+      previewPresets: FakePreviewFeePresetsUsecase(
+        (shape, fees) async => const {},
+      ),
+      previewCustom: FakePreviewCustomFeeUsecase(
+        (shape, fee) async => const BitcoinFeePreviewSlot(),
+      ),
     ),
-    gate: ExchangeWriteGate(),
   );
 }
 
@@ -77,9 +116,8 @@ void main() {
   test(
     'creates once, then Confirm builds the payin from the wallet',
     () => withClock(Clock.fixed(payNow), () async {
-      final calls = _Calls();
-      final bloc = PayFlowBloc(
-        calls: calls.of,
+      final calls = _Usecases();
+      final bloc = calls.bloc(
         session: paySession,
         accessChanges: const Stream.empty(),
       );
@@ -105,10 +143,72 @@ void main() {
         ..add(PayConfirmPressed(payNow));
       await _settle();
       expect(calls.log, ['load', 'rate CAD', 'create 1', 'fees', 'build w-1']);
+      expect(calls.sessions, {paySession});
       expect(
         (bloc.state as PayPaying).payin,
         isA<PayinSendFailed<PayinSpend>>(),
       );
     }),
   );
+
+  test('a SINPE payout watches for the receipt with the flow session', () {
+    fakeAsync((async) {
+      withClock(Clock.fixed(payNow), () {
+        final sinpe = payOrder(payoutMethod: OrderPaymentMethod.sinpe);
+        final seen = payOrder(
+          payinStatus: OrderPayinStatus.underReview,
+          payoutMethod: OrderPaymentMethod.sinpe,
+        );
+        final calls = _Usecases(
+          created: sinpe,
+          payin: (log) => fakePayin(
+            build: FakeBuildPayinUsecase(
+              (effect) async => Ok(
+                PayinBuilt(
+                  effect.spend,
+                  'tx-1',
+                  const SignedBitcoinPayin<String>('signed'),
+                ),
+              ),
+            ),
+            send: FakeSendPayinUsecase(
+              (session, effect) async => PayinSendAnswered(
+                effect.attempt,
+                const Ok(PayinBroadcastAccepted('tx-1')),
+              ),
+            ),
+            getOrder: FakeGetOrderUsecase((session, orderId) async {
+              log.add('payin read $orderId');
+              return Ok<Order, ExchangeReadFailure>(seen);
+            }),
+          ),
+        );
+        final bloc = calls.bloc(
+          session: paySession,
+          accessChanges: const Stream.empty(),
+        );
+        async.flushMicrotasks();
+        bloc.add(PayRecipientPicked(payBankRecipient));
+        async.flushMicrotasks();
+        for (final event in const [
+          PayAmountChanged(AmountTyped('10')),
+          PayAmountChanged(AmountContinuePressed()),
+          PaySourcePicked(payAppWallet),
+        ]) {
+          bloc.add(event);
+        }
+        async.flushMicrotasks();
+        bloc.add(PayConfirmPressed(payNow));
+        async
+          ..flushMicrotasks()
+          ..elapse(const Duration(minutes: 2));
+        expect(bloc.state, isA<PayDone>());
+        expect(calls.log, contains('payin read ${sinpe.orderId}'));
+        expect(calls.log, contains('read ${sinpe.orderId}'));
+        expect(calls.sessions, {paySession});
+        unawaited(bloc.close());
+        async.flushMicrotasks();
+      });
+    });
+  });
 }

@@ -1,6 +1,8 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_tab.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/recipients_list_tab.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_view_model.dart';
@@ -9,7 +11,7 @@ import 'package:bull_exchange/src/recipients/recipients_scope.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:exchange/exchange.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 
 enum RecipientsTab { newRecipient, recipientsList }
 
@@ -148,8 +150,9 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
                     return const SizedBox.shrink();
                   }
                   return Text(
-                    const RecipientsVirtualIbanNotAvailableFailure()
-                        .toTranslated(context),
+                    const ExchangeVirtualIbanNotAvailableFailure().toTranslated(
+                      context,
+                    ),
                     style: context.bullType.body,
                   );
                 },

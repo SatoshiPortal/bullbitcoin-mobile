@@ -55,7 +55,7 @@ LimitOrder _limitOrder({
   address: address,
 );
 
-final class _Orders extends Fake implements ExchangeOrders {
+final class _Orders extends Fake implements OrdersRepository {
   final Map<String, Result<Order, ExchangeFailure>> answers;
   final Result<List<Order>, ExchangeFailure> recent;
   final reads = <String>[];
@@ -91,14 +91,14 @@ Recipient _recipient(RecipientDetails details, {String id = 'r-1'}) =>
       details: details,
     );
 
-final class _Recipients extends Fake implements ExchangeRecipients {
-  final List<Result<RecipientPage, RecipientsFailure>> pages;
+final class _Recipients extends Fake implements RecipientsRepository {
+  final List<Result<RecipientPage, ExchangeFailure>> pages;
   final reads = <int>[];
 
   _Recipients(this.pages);
 
   @override
-  Future<Result<RecipientPage, RecipientsFailure>> listRecipients({
+  Future<Result<RecipientPage, ExchangeFailure>> listRecipients({
     required bool isTestnet,
     bool fiatOnly = true,
     int page = 1,
@@ -207,18 +207,17 @@ void main() {
         getUserSummary: (_) async => const Err(ExchangeNetworkFailure()),
         listRecentLimitOrders: () async => const Err(ExchangeNetworkFailure()),
         getDefaultWallets: () async => const Err(ExchangeNetworkFailure()),
-        recipients: _Recipients([const Err(RecipientsNetworkFailure())]),
+        recipients: _Recipients([const Err(ExchangeNetworkFailure())]),
       ).execute(ExchangeEnvironment.testnet);
 
       expect(orders.reads, ['o-1']);
       expect(
         result,
-        isA<Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>>()
-            .having(
-              (r) => r.value,
-              'value',
-              const UnknownWriteReconciliation(settled: 1, open: 0),
-            ),
+        isA<Ok<UnknownWriteReconciliation, ExchangeJournalFailure>>().having(
+          (r) => r.value,
+          'value',
+          const UnknownWriteReconciliation(settled: 1, open: 0),
+        ),
       );
     });
 
@@ -240,7 +239,7 @@ void main() {
       final open = await journal.open(ExchangeEnvironment.mainnet);
       expect(
         open,
-        isA<Ok<List<UnknownWrite>, UnknownWriteJournalFailure>>().having(
+        isA<Ok<List<UnknownWrite>, ExchangeJournalFailure>>().having(
           (r) => r.value.single,
           'entry',
           isA<UnknownWrite>()
@@ -719,7 +718,7 @@ void main() {
       getDefaultWallets: () async =>
           defaultWallets ?? const Err(ExchangeNetworkFailure()),
       recipients:
-          recipients ?? _Recipients([const Err(RecipientsNetworkFailure())]),
+          recipients ?? _Recipients([const Err(ExchangeNetworkFailure())]),
     );
 
     test('settles what the re-reads decide and keeps the rest open', () async {
@@ -752,12 +751,11 @@ void main() {
 
       expect(
         result,
-        isA<Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>>()
-            .having(
-              (r) => r.value,
-              'value',
-              const UnknownWriteReconciliation(settled: 3, open: 2),
-            ),
+        isA<Ok<UnknownWriteReconciliation, ExchangeJournalFailure>>().having(
+          (r) => r.value,
+          'value',
+          const UnknownWriteReconciliation(settled: 3, open: 2),
+        ),
       );
       expect(orders.reads, ['confirmed', 'unreadable', 'odd']);
       expect(
@@ -803,7 +801,7 @@ void main() {
         final result = await reconcile(orders)
             .execute(ExchangeEnvironment.testnet);
         return (result
-                as Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>)
+                as Ok<UnknownWriteReconciliation, ExchangeJournalFailure>)
             .value;
       });
 
@@ -923,7 +921,7 @@ void main() {
         _Orders(const {}),
         recipients: _Recipients([
           Ok((recipients: [other], totalRecipients: 2)),
-          const Err(RecipientsNetworkFailure()),
+          const Err(ExchangeNetworkFailure()),
         ]),
       ).execute(ExchangeEnvironment.testnet);
 
@@ -1014,12 +1012,11 @@ void main() {
 
       expect(
         result,
-        isA<Ok<UnknownWriteReconciliation, UnknownWriteJournalFailure>>()
-            .having(
-              (r) => r.value,
-              'value',
-              const UnknownWriteReconciliation(settled: 0, open: 1),
-            ),
+        isA<Ok<UnknownWriteReconciliation, ExchangeJournalFailure>>().having(
+          (r) => r.value,
+          'value',
+          const UnknownWriteReconciliation(settled: 0, open: 1),
+        ),
       );
     });
   });
@@ -1027,7 +1024,13 @@ void main() {
   group('Exchange.reconcileUnknownWrites', () {
     test('without a journal there is nothing to do', () async {
       expect(
-        await exchangeForTesting().reconcileUnknownWrites(),
+        await exchangeForTesting().reconcileUnknownWrites(
+          const ExchangeSession(
+            environment: ExchangeEnvironment.mainnet,
+            epoch: 1,
+            sessionId: 's',
+          ),
+        ),
         isA<Ok<UnknownWriteReconciliation, Failure>>().having(
           (r) => r.value,
           'value',
@@ -1046,7 +1049,13 @@ void main() {
           request: {'orderId': 'o-1'},
         ),
       );
+      const session = ExchangeSession(
+        environment: ExchangeEnvironment.mainnet,
+        epoch: 1,
+        sessionId: 's',
+      );
       final exchange = exchangeForTesting(
+        access: fixedAccessForTesting(const ExchangeAccessSignedIn(session)),
         unknownWrites: journal,
         readSessionPoint: () async =>
             const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
@@ -1054,8 +1063,8 @@ void main() {
             _Orders({'o-1': Ok(_order(orderStatus: OrderStatus.canceled))}),
       );
 
-      final open = await exchange.openUnknownWrites();
-      final result = await exchange.reconcileUnknownWrites();
+      final open = await exchange.openUnknownWrites(session);
+      final result = await exchange.reconcileUnknownWrites(session);
 
       expect(
         open,

@@ -1,11 +1,14 @@
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_state.dart';
+import 'package:bull_exchange/src/pay/domain/pay_event.dart';
 import 'package:bull_exchange/src/pay/ui/pay_flow_shell.dart';
 import 'package:bull_exchange/src/pay/ui/screens/pay_amount_page.dart';
 import 'package:bull_exchange/src/payin/exchange_payin_ui.dart';
 import 'package:bull_exchange/src/payin/ui/payin_source_page.dart';
 import 'package:bull_exchange/src/payin/ui/payin_view.dart';
 import 'package:bull_exchange/src/payin/ui/quote_review_page.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_pick_screen.dart';
@@ -20,6 +23,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../pay_fixtures.dart';
+
+import 'package:primitives/primitives.dart';
 
 class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
@@ -176,8 +181,8 @@ void main() {
       PayOrderChanged(
         OrderCreateAnswered(
           1,
-          GateAdmitted(
-            WriteRefused(
+          Err(
+            ExchangeWriteRefusedFailure(
               ExchangeRefusal(
                 orderLimit: const ExchangeOrderLimit(
                   ExchangeOrderAmountBound.minimum,

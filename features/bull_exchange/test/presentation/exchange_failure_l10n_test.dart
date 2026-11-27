@@ -21,6 +21,16 @@ const _everyFailure = <ExchangeFailure>[
   ExchangeNotificationsUnavailableFailure(_rawReason),
   ExchangeAccountDeletionRequestFailure(_rawReason),
   ExchangeNetworkFailure(_rawReason),
+  ExchangeUnreachableFailure(_rawReason, isNetwork: true),
+  ExchangeAccountDetailsUnavailableFailure(_rawReason),
+  ExchangePaymentLinkUnavailableFailure(_rawReason),
+  ExchangeChatNotAuthenticatedFailure(_rawReason),
+  ExchangeChatLoadMessagesFailure(_rawReason),
+  ExchangeChatSendMessageFailure(_rawReason),
+  ExchangeChatLoadAttachmentFailure(_rawReason),
+  ExchangeChatAttachmentEmptyFailure(_rawReason),
+  ExchangeChatPickImagesFailure(_rawReason),
+  ExchangeChatAttachLogsFailure(_rawReason),
   ExchangeUnexpectedFailure(_rawReason),
 ];
 

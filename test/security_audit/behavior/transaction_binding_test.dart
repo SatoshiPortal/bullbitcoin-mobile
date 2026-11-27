@@ -39,7 +39,7 @@ class _MockSwapStore extends Mock implements SwapStore {}
 
 class _MockPayjoinSessions extends Mock implements PayjoinSessions {}
 
-class _MockExchangeOrders extends Mock implements ExchangeOrders {}
+class _MockOrdersRepository extends Mock implements OrdersRepository {}
 
 class _MockLabelExchangeOrdersUsecase extends Mock
     implements LabelExchangeOrdersUsecase {}
@@ -80,7 +80,7 @@ void main() {
   late _MockWalletTransactionRepository walletTransactionRepository;
   late _MockSwapStore swapStore;
   late _MockPayjoinSessions payjoinSessions;
-  late _MockExchangeOrders orderRepository;
+  late _MockOrdersRepository orderRepository;
   late _MockLabelExchangeOrdersUsecase labelExchangeOrdersUsecase;
   late _MockGetTransactionOrderSwapsUsecase getTransactionOrderSwapsUsecase;
   late GetTransactionsUsecase usecase;
@@ -94,7 +94,7 @@ void main() {
     walletTransactionRepository = _MockWalletTransactionRepository();
     swapStore = _MockSwapStore();
     payjoinSessions = _MockPayjoinSessions();
-    orderRepository = _MockExchangeOrders();
+    orderRepository = _MockOrdersRepository();
     labelExchangeOrdersUsecase = _MockLabelExchangeOrdersUsecase();
     getTransactionOrderSwapsUsecase = _MockGetTransactionOrderSwapsUsecase();
 
@@ -128,7 +128,7 @@ void main() {
       payjoinSessions: payjoinSessions,
       exchange: exchangeForTesting(
         orders: (environment) => environment == ExchangeEnvironment.testnet
-            ? _MockExchangeOrders()
+            ? _MockOrdersRepository()
             : orderRepository,
       ),
       labelExchangeOrdersUsecase: labelExchangeOrdersUsecase,

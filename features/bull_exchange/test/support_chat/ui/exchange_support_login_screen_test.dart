@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:primitives/primitives.dart';
 
+import '../support_chat_usecase_fakes.dart';
+
 Future<void> _pumpLogin(
   WidgetTester tester, {
   required Future<Result<void, ExchangeFailure>> Function() enable,
@@ -20,6 +22,9 @@ Future<void> _pumpLogin(
       GoRoute(path: '/home', builder: (_, _) => const Scaffold()),
       ExchangeSupportChatRouter.route(
         exchange: () => fail('unexpected Exchange lookup'),
+        pickImages: FakePickImageAttachmentsUsecase(
+          () => fail('unexpected image pick'),
+        ),
         isLoggedIn: (_) => false,
         enableLogin: (_) => enable(),
         onLogin: (_, draft) => onLogin(draft),

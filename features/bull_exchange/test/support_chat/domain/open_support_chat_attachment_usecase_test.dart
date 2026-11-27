@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/open_support_chat_attachment_usecase.dart';
 import 'package:exchange/exchange.dart';
@@ -11,6 +10,12 @@ import 'package:primitives/primitives.dart';
 
 class _MockGetAttachmentUsecase extends Mock
     implements GetSupportChatMessageAttachmentUsecase {}
+
+const _chatSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'chat',
+);
 
 void main() {
   late _MockGetAttachmentUsecase getAttachment;
@@ -37,7 +42,7 @@ void main() {
     test('a server-supplied traversal fileName cannot write outside the '
         'temp directory', () async {
       const payload = '../outside_the_sandbox.txt';
-      when(() => getAttachment.execute('att-1')).thenAnswer(
+      when(() => getAttachment.execute(_chatSession, 'att-1')).thenAnswer(
         (_) async => Ok(
           SupportChatMessageAttachment(
             attachmentId: 'att-1',
@@ -48,8 +53,8 @@ void main() {
       );
 
       expect(
-        await open.execute('att-1'),
-        isA<Ok<void, ExchangeSupportChatFailure>>(),
+        await open.execute(_chatSession, 'att-1'),
+        isA<Ok<void, ExchangeFailure>>(),
       );
 
       final escaped = File('${tempDir.parent.path}/outside_the_sandbox.txt');
@@ -67,7 +72,7 @@ void main() {
     test(
       'a plain fileName is written as-is inside the temp directory',
       () async {
-        when(() => getAttachment.execute('att-2')).thenAnswer(
+        when(() => getAttachment.execute(_chatSession, 'att-2')).thenAnswer(
           (_) async => Ok(
             SupportChatMessageAttachment(
               attachmentId: 'att-2',
@@ -78,8 +83,8 @@ void main() {
         );
 
         expect(
-          await open.execute('att-2'),
-          isA<Ok<void, ExchangeSupportChatFailure>>(),
+          await open.execute(_chatSession, 'att-2'),
+          isA<Ok<void, ExchangeFailure>>(),
         );
 
         expect(File('${tempDir.path}/receipt.pdf').existsSync(), isTrue);
@@ -88,14 +93,14 @@ void main() {
   });
 
   test('an attachment without data is a fetch failure', () async {
-    when(() => getAttachment.execute('att-3')).thenAnswer(
+    when(() => getAttachment.execute(_chatSession, 'att-3')).thenAnswer(
       (_) async =>
           const Ok(SupportChatMessageAttachment(attachmentId: 'att-3')),
     );
-    final result = await open.execute('att-3');
+    final result = await open.execute(_chatSession, 'att-3');
     expect(
-      (result as Err<void, ExchangeSupportChatFailure>).failure,
-      isA<FetchFileDataFailure>(),
+      (result as Err<void, ExchangeFailure>).failure,
+      isA<ExchangeChatAttachmentEmptyFailure>(),
     );
   });
 
@@ -105,7 +110,7 @@ void main() {
       temporaryDirectory: () async => tempDir,
       share: (_, _) async => throw const FileSystemException('no popover'),
     );
-    when(() => getAttachment.execute('att-4')).thenAnswer(
+    when(() => getAttachment.execute(_chatSession, 'att-4')).thenAnswer(
       (_) async => Ok(
         SupportChatMessageAttachment(
           attachmentId: 'att-4',
@@ -114,10 +119,10 @@ void main() {
         ),
       ),
     );
-    final result = await open.execute('att-4');
+    final result = await open.execute(_chatSession, 'att-4');
     expect(
-      (result as Err<void, ExchangeSupportChatFailure>).failure,
-      isA<LoadAttachmentFailure>(),
+      (result as Err<void, ExchangeFailure>).failure,
+      isA<ExchangeChatLoadAttachmentFailure>(),
     );
   });
 }

@@ -1,10 +1,13 @@
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_event.dart';
 import 'package:fees/fees.dart';
-import 'package:bull_exchange/src/sell/presentation/sell_flow.dart';
+import 'package:bull_exchange/src/sell/domain/sell_state.dart';
+import 'package:bull_exchange/src/sell/domain/sell_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 
 import '../recipients/recipient_fixture.dart';
+
+import 'package:primitives/primitives.dart';
 
 const sellSession = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -80,17 +83,15 @@ final sellThirdPartyRecipient = recipientFixture(
 SellFlowState applySell(SellFlowState state, List<SellFlowEvent> events) {
   var current = state;
   for (final event in events) {
-    current = transitionSellFlow(current, event).state;
+    current = current.next(event).state;
   }
   return current;
 }
 
 final sellLoadingState = sellFlowStart(sellSession).state;
 final sellAmountState = applySell(sellLoadingState, [
-  SellContextLoaded(1, ReadGot(sellContext)),
-  const SellAmountChanged(
-    AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
-  ),
+  SellContextLoaded(1, Ok(sellContext)),
+  const SellAmountChanged(AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0))),
 ]);
 final sellSourceState = applySell(sellAmountState, const [
   SellAmountChanged(AmountTyped('10')),
@@ -129,9 +130,9 @@ const sellDefaultOptions = PayinSpendOptions(
 
 final sellReviewState = applySell(sellOrderingState, [
   SellOrderChanged(
-    OrderCreateAnswered(1, GateAdmitted(WriteDone<Order>(sellOrder()))),
+    OrderCreateAnswered(1, Ok<Order, ExchangeWriteFailure>(sellOrder())),
   ),
-  const SellSpendChanged(SpendFeesLoaded(1, sellFees)),
+  const SellSpendChanged(SpendFeesRead(1, Ok(sellFees))),
 ]);
 final sellPayingState = applySell(sellReviewState, [
   SellConfirmPressed(sellNow),

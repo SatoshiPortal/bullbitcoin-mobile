@@ -5,24 +5,26 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
+import '../account/domain/usecases/get_account_usecase.dart';
+import '../dca/domain/usecases/stop_dca_usecase.dart';
+import 'domain/usecases/get_announcements_usecase.dart';
+import 'domain/usecases/reconcile_unknown_writes_usecase.dart';
 import 'exchange_event.dart';
-import 'exchange_machine.dart';
 import 'exchange_state.dart';
 
-/// Shell of [transitionExchange]: applies events one at a time and starts
+/// Shell of [ExchangeState.next]: applies events one at a time and starts
 /// the effects of the state it enters. Each effect result carries the
 /// session that started it.
 class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   ExchangeBloc({
-    required this._getAccount,
-    required this._getAnnouncements,
-    required this._stopDca,
     required ExchangeAccess Function() currentAccess,
     required Stream<ExchangeAccess> accessChanges,
     required Stream<NotificationMessage> accountChanges,
-    Future<void> Function()? reconcileUnknownWrites,
-  }) : _reconcileUnknownWrites = reconcileUnknownWrites ?? _nothing,
-       super(const ExchangeSignedOut()) {
+    required this._getAccount,
+    required this._getAnnouncements,
+    required this._stopDca,
+    required this._reconcileUnknownWrites,
+  }) : super(const ExchangeSignedOut()) {
     on<ExchangeEvent>(_onEvent, transformer: sequential());
     add(ExchangeAccessChanged(currentAccess()));
     _access = accessChanges.listen((access) {
@@ -33,23 +35,16 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
     });
   }
 
-  final Future<Result<UserSummary, ExchangeFailure>> Function(ExchangeSession)
-  _getAccount;
-  final Future<Result<List<Announcement>, ExchangeFailure>> Function(
-    ExchangeSession,
-  )
-  _getAnnouncements;
-  final Future<Result<void, ExchangeFailure>> Function(ExchangeSession)
-  _stopDca;
-  final Future<void> Function() _reconcileUnknownWrites;
+  final GetAccountUsecase _getAccount;
+  final GetAnnouncementsUsecase _getAnnouncements;
+  final StopDcaUsecase _stopDca;
+  final ReconcileUnknownWritesUsecase _reconcileUnknownWrites;
   StreamSubscription<ExchangeAccess>? _access;
   StreamSubscription<NotificationMessage>? _notifications;
 
-  static Future<void> _nothing() async {}
-
   void _onEvent(ExchangeEvent event, Emitter<ExchangeState> emit) {
     final previous = state;
-    final next = transitionExchange(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     emit(next);
     _runEffects(previous, next);
@@ -61,7 +56,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
         if (previous.session != session) {
           // Settles writes whose outcome was unknown by re-reading them;
           // never sends them again.
-          unawaited(_reconcileUnknownWrites());
+          unawaited(_reconcileUnknownWrites.execute(session));
         }
         unawaited(_loadSummary(session));
       case ExchangeLoaded(
@@ -90,7 +85,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   }
 
   Future<void> _loadSummary(ExchangeSession session) async {
-    final result = await _getAccount(session);
+    final result = await _getAccount.execute(session);
     if (isClosed) return;
     add(switch (result) {
       Ok(:final value) => ExchangeSummaryLoaded(session, value),
@@ -99,7 +94,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   }
 
   Future<void> _loadAnnouncements(ExchangeSession session) async {
-    final result = await _getAnnouncements(session);
+    final result = await _getAnnouncements.execute(session);
     if (isClosed) return;
     add(switch (result) {
       Ok(:final value) => ExchangeAnnouncementsLoaded(session, value),
@@ -108,7 +103,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
   }
 
   Future<void> _stopRecurringBuy(ExchangeSession session) async {
-    final result = await _stopDca(session);
+    final result = await _stopDca.execute(session);
     if (isClosed) return;
     add(switch (result) {
       Ok() => ExchangeDcaStopped(session),

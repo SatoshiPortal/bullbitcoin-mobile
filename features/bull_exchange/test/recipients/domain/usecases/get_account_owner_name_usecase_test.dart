@@ -41,7 +41,7 @@ void main() {
       exchangeForTesting(getUserSummary: (_) => summary.execute()),
     ).execute();
 
-    final name = (result as Ok<AccountOwnerName, RecipientsFailure>).value;
+    final name = (result as Ok<AccountOwnerName, ExchangeFailure>).value;
     expect(name.firstName, 'Mary Ann');
     expect(name.lastName, 'Smith');
     expect(name.fullName, 'Mary Ann Smith');
@@ -57,8 +57,8 @@ void main() {
     ).execute();
 
     expect(
-      (result as Err<AccountOwnerName, RecipientsFailure>).failure,
-      isA<RecipientsUnexpectedFailure>(),
+      (result as Err<AccountOwnerName, ExchangeFailure>).failure,
+      isA<ExchangeUnexpectedFailure>(),
     );
   });
 }

@@ -1,5 +1,9 @@
 import 'package:primitives/primitives.dart' show Failure;
 
+import 'entities/btc_network.dart';
+import 'exchange_write_gate.dart' show WriteGateRefusal;
+
+part 'exchange_call_failure.dart';
 part '../recipients/domain/recipients_failure.dart';
 
 /// Recoverable exchange failures. Consumers localize them at the UI boundary.
@@ -14,12 +18,6 @@ sealed class ExchangeFailure extends Failure {
 /// actionable signal is "log in", not "retry".
 final class ExchangeNotAuthenticatedFailure extends ExchangeFailure {
   const ExchangeNotAuthenticatedFailure([super.logMessage]);
-}
-
-/// A server HTTP 401 rejected the active request's credential.
-/// Only this failure may expire a session automatically.
-final class ExchangeSessionRejectedFailure extends ExchangeFailure {
-  const ExchangeSessionRejectedFailure([super.logMessage]);
 }
 
 /// The signed-in account could not be read, so balances, KYC level and
@@ -167,12 +165,105 @@ final class ExchangeOrderRejectedFailure extends ExchangeFailure {
   const ExchangeOrderRejectedFailure({this.apiCode, this.rpcCode});
 }
 
+/// The trading statistics could not be retrieved.
 final class ExchangeStatisticsUnavailableFailure extends ExchangeFailure {
   const ExchangeStatisticsUnavailableFailure([super.logMessage]);
 }
 
+/// The document was read but the exchange rejected or dropped the upload.
+///
+/// The API's own sentence arrives in `logMessage` and stays there.
 final class ExchangeDocumentUploadFailure extends ExchangeFailure {
   const ExchangeDocumentUploadFailure([super.logMessage]);
+}
+
+/// The account details of the settings screens could not be retrieved.
+final class ExchangeAccountDetailsUnavailableFailure extends ExchangeFailure {
+  const ExchangeAccountDetailsUnavailableFailure([super.logMessage]);
+}
+
+/// The secure file upload status could not be retrieved.
+final class ExchangeUploadStatusUnavailableFailure extends ExchangeFailure {
+  const ExchangeUploadStatusUnavailableFailure([super.logMessage]);
+}
+
+/// A document has already been submitted, so no further upload is accepted.
+final class ExchangeDocumentAlreadySubmittedFailure extends ExchangeFailure {
+  const ExchangeDocumentAlreadySubmittedFailure([super.logMessage]);
+}
+
+/// The chosen file is empty.
+final class ExchangeDocumentEmptyFailure extends ExchangeFailure {
+  const ExchangeDocumentEmptyFailure([super.logMessage]);
+}
+
+/// The chosen file exceeds the size the exchange accepts.
+final class ExchangeDocumentTooLargeFailure extends ExchangeFailure {
+  const ExchangeDocumentTooLargeFailure([super.logMessage]);
+}
+
+/// The chosen file is not one of the accepted document formats.
+final class ExchangeDocumentTypeNotAllowedFailure extends ExchangeFailure {
+  const ExchangeDocumentTypeNotAllowedFailure([super.logMessage]);
+}
+
+/// The chosen file could not be read off the device.
+final class ExchangeDocumentUnreadableFailure extends ExchangeFailure {
+  const ExchangeDocumentUnreadableFailure([super.logMessage]);
+}
+
+/// The account's write gate refused the write ([refusal]: another exchange
+/// write of the account is running, one is unsettled, or the journal can't
+/// tell): nothing was sent.
+final class ExchangeWriteBusyFailure extends ExchangeFailure
+    implements ExchangeGatedWriteFailure {
+  final WriteGateRefusal refusal;
+
+  const ExchangeWriteBusyFailure(this.refusal);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExchangeWriteBusyFailure && other.refusal == refusal;
+
+  @override
+  int get hashCode => Object.hash(ExchangeWriteBusyFailure, refusal);
+}
+
+/// The COP payment link could not be handed to a browser, so the user cannot
+/// reach the payment page from here.
+final class ExchangePaymentLinkUnavailableFailure extends ExchangeFailure {
+  const ExchangePaymentLinkUnavailableFailure([super.logMessage]);
+}
+
+/// The default-wallet address field is empty.
+final class ExchangeDefaultWalletAddressEmptyFailure extends ExchangeFailure {
+  const ExchangeDefaultWalletAddressEmptyFailure();
+}
+
+/// The default-wallet address is not a [network] address.
+final class ExchangeDefaultWalletAddressInvalidFailure extends ExchangeFailure {
+  final BtcNetwork network;
+
+  const ExchangeDefaultWalletAddressInvalidFailure(this.network);
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExchangeDefaultWalletAddressInvalidFailure &&
+      other.network == network;
+
+  @override
+  int get hashCode =>
+      Object.hash(ExchangeDefaultWalletAddressInvalidFailure, network);
+}
+
+/// The default wallet could not be saved.
+final class ExchangeDefaultWalletSaveFailure extends ExchangeFailure {
+  const ExchangeDefaultWalletSaveFailure();
+}
+
+/// The default wallet could not be removed.
+final class ExchangeDefaultWalletDeleteFailure extends ExchangeFailure {
+  const ExchangeDefaultWalletDeleteFailure();
 }
 
 final class ExchangeConsentRegistrationFailure extends ExchangeFailure {
@@ -189,6 +280,32 @@ final class ExchangeChatSendMessageFailure extends ExchangeFailure {
 
 final class ExchangeChatLoadAttachmentFailure extends ExchangeFailure {
   const ExchangeChatLoadAttachmentFailure([super.logMessage]);
+}
+
+/// The support chat needs a Bull Bitcoin account: the actionable signal is
+/// "log in", not "retry".
+final class ExchangeChatNotAuthenticatedFailure extends ExchangeFailure {
+  const ExchangeChatNotAuthenticatedFailure([super.logMessage]);
+}
+
+/// The user tried to send an empty chat message.
+final class ExchangeChatMessageEmptyFailure extends ExchangeFailure {
+  const ExchangeChatMessageEmptyFailure();
+}
+
+/// A chat attachment came back without usable file data.
+final class ExchangeChatAttachmentEmptyFailure extends ExchangeFailure {
+  const ExchangeChatAttachmentEmptyFailure([super.logMessage]);
+}
+
+/// Picking images for a chat message failed.
+final class ExchangeChatPickImagesFailure extends ExchangeFailure {
+  const ExchangeChatPickImagesFailure([super.logMessage]);
+}
+
+/// Building or attaching the diagnostic logs failed.
+final class ExchangeChatAttachLogsFailure extends ExchangeFailure {
+  const ExchangeChatAttachLogsFailure([super.logMessage]);
 }
 
 enum ExchangeLimitOrderProblem {
@@ -227,10 +344,46 @@ final class ExchangeFundingFailure extends ExchangeFailure {
   const ExchangeFundingFailure(this.problem, [super.logMessage]);
 }
 
+/// The user's account cannot get a virtual IBAN: their KYC is insufficient
+/// or Confidential SEPA is not offered to them.
 final class ExchangeVirtualIbanNotAvailableFailure extends ExchangeFailure {
-  const ExchangeVirtualIbanNotAvailableFailure();
+  const ExchangeVirtualIbanNotAvailableFailure([super.logMessage]);
 }
 
+/// A virtual IBAN is only issued to residents of the European Union.
 final class ExchangeEuResidencyRequiredFailure extends ExchangeFailure {
-  const ExchangeEuResidencyRequiredFailure();
+  const ExchangeEuResidencyRequiredFailure([super.logMessage]);
+}
+
+/// The unknown-write journal could not be read or written.
+final class ExchangeJournalFailure extends ExchangeFailure {
+  const ExchangeJournalFailure([super.logMessage]);
+}
+
+/// The picked destination gave no usable address: the app wallet is no
+/// longer listed or gave no receive address.
+final class ExchangeDestinationUnavailableFailure extends ExchangeFailure {
+  const ExchangeDestinationUnavailableFailure([super.logMessage]);
+}
+
+/// The fee estimates of the payin's bitcoin network could not be read.
+final class ExchangeFeeEstimatesUnavailableFailure extends ExchangeFailure {
+  const ExchangeFeeEstimatesUnavailableFailure([super.logMessage]);
+}
+
+/// The coins of the payin wallet could not be listed: it is not a wallet
+/// this device signs for, or it could not be read.
+final class ExchangeWalletCoinsUnavailableFailure extends ExchangeFailure {
+  const ExchangeWalletCoinsUnavailableFailure([super.logMessage]);
+}
+
+/// Whether the source wallet or its network shows a payin transaction could
+/// not be told: no payjoin session carries it, or the look-up failed.
+final class ExchangeTransactionLookupFailure extends ExchangeFailure {
+  const ExchangeTransactionLookupFailure([super.logMessage]);
+}
+
+/// The typed text is not an address the flow can pay out to.
+final class ExchangeDestinationInvalidFailure extends ExchangeFailure {
+  const ExchangeDestinationInvalidFailure([super.logMessage]);
 }

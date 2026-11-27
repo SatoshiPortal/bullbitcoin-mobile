@@ -5,23 +5,35 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/manage_exchange_access_usecase.dart';
-import 'exchange_access_settings_machine.dart';
+import '../domain/exchange_access_settings_state.dart';
+import '../domain/exchange_access_settings_event.dart';
+import '../domain/usecases/enable_exchange_access_usecase.dart';
+import '../domain/usecases/get_exchange_access_usecase.dart';
+import '../domain/usecases/resolve_exchange_access_usecase.dart';
+import '../domain/usecases/sign_out_of_exchange_usecase.dart';
+import '../domain/usecases/watch_exchange_access_usecase.dart';
 
-/// Shell of [transitionAccessSettings]: applies events in order and runs
+/// Shell of [ExchangeAccessSettingsState.next]: applies events in order and runs
 /// the attempt of the [AccessSettingsWorking] state it enters.
 class ExchangeAccessSettingsBloc
     extends Bloc<ExchangeAccessSettingsEvent, ExchangeAccessSettingsState> {
-  ExchangeAccessSettingsBloc(this._watch, this._set)
-    : super(AccessSettingsIdle(_watch.current)) {
+  ExchangeAccessSettingsBloc({
+    required this._getAccess,
+    required WatchExchangeAccessUsecase watchAccess,
+    required this._enableAccess,
+    required this._signOut,
+    required this._resolveAccess,
+  }) : super(AccessSettingsIdle(_getAccess.execute())) {
     on<ExchangeAccessSettingsEvent>(_onEvent, transformer: sequential());
-    _subscription = _watch.execute().listen((access) {
+    _subscription = watchAccess.execute().listen((access) {
       if (!isClosed) add(AccessSettingsAccessChanged(access));
     });
   }
 
-  final WatchExchangeAccessUsecase _watch;
-  final ManageExchangeAccessUsecase _set;
+  final GetExchangeAccessUsecase _getAccess;
+  final EnableExchangeAccessUsecase _enableAccess;
+  final SignOutOfExchangeUsecase _signOut;
+  final ResolveExchangeAccessUsecase _resolveAccess;
   StreamSubscription<ExchangeAccess>? _subscription;
 
   void _onEvent(
@@ -29,7 +41,7 @@ class ExchangeAccessSettingsBloc
     Emitter<ExchangeAccessSettingsState> emit,
   ) {
     final previous = state;
-    final next = transitionAccessSettings(previous, event);
+    final next = previous.next(event);
     if (next == previous) return;
     emit(next);
     if (previous is! AccessSettingsWorking && next is AccessSettingsWorking) {
@@ -39,13 +51,13 @@ class ExchangeAccessSettingsBloc
 
   Future<void> _run(ExchangeAccessAttempt attempt) async {
     final result = await switch (attempt) {
-      ExchangeAccessAttempt.enable => _set.execute(true),
-      ExchangeAccessAttempt.signOut => _set.execute(false),
-      ExchangeAccessAttempt.retry => _set.retry(),
+      ExchangeAccessAttempt.enable => _enableAccess.execute(),
+      ExchangeAccessAttempt.signOut => _signOut.execute(),
+      ExchangeAccessAttempt.retry => _resolveAccess.execute(),
     };
     if (isClosed) return;
     add(switch (result) {
-      Ok() => AccessSettingsAttemptSucceeded(_watch.current),
+      Ok() => AccessSettingsAttemptSucceeded(_getAccess.execute()),
       Err(:final failure) => AccessSettingsAttemptFailed(failure),
     });
   }

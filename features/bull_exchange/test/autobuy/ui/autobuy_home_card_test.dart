@@ -9,9 +9,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../account/account_usecase_fakes.dart';
+import '../autobuy_usecase_fakes.dart';
+
 Widget _app({required bool active}) => BlocProvider(
   create: (_) => AutoBuySwitchBloc(
-    calls: null,
+    session: null,
+    saveAutoBuy: FakeSaveAutoBuyPreferenceUsecase(
+      (session, effect) => throw StateError('no write expected'),
+    ),
+    getUserSummary: FakeGetUserSummaryUsecase(
+      (session) => throw StateError('no read expected'),
+    ),
     active: active,
     restricted: false,
     onAccountChanged: () async {},

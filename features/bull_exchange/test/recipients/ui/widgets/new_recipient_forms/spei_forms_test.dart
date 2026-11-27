@@ -2,8 +2,9 @@ import 'package:bull_ui/testing.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/spei_card_mxn_form.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/spei_clabe_mxn_form.dart';
 import 'package:bull_exchange/src/recipients/ui/widgets/new_recipient_forms/spei_sms_mxn_form.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_event.dart';
+import 'package:bull_exchange/src/recipients/domain/recipients_state.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
-import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_filter_criteria.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bloc_test/bloc_test.dart';
@@ -16,13 +17,7 @@ class _MockRecipientsBloc extends MockBloc<RecipientsEvent, RecipientsState>
     implements RecipientsBloc {}
 
 void main() {
-  setUpAll(
-    () => registerFallbackValue(
-      const RecipientsEvent.added(
-        SpeiClabeMxnFormDataModel(clabe: '', name: ''),
-      ),
-    ),
-  );
+  setUpAll(() => registerFallbackValue(const RecipientsEvent.refreshed()));
 
   Future<(_MockRecipientsBloc, ExchangeLocalizations)> pumpForm(
     WidgetTester tester,
@@ -95,10 +90,7 @@ void main() {
 
     final event =
         verify(() => bloc.add(captureAny())).captured.single as RecipientsAdded;
-    expect(
-      (event.recipient as SpeiClabeMxnFormDataModel).clabe,
-      '002010077777777771',
-    );
+    expect(event.recipient.clabe, '002010077777777771');
   });
 
   testWidgets('an SMS phone that is not 10 digits is shown and not sent', (

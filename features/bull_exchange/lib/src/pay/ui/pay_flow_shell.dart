@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:transactions/routes.dart';
-import 'package:bull_exchange/src/payin/spend_options.dart';
+import 'package:bull_exchange/src/payin/spend_options_state.dart';
 import 'package:bull_exchange/src/payin/ui/review_details.dart';
 import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/exchange_landing_navigation.dart';
-import 'package:bull_exchange/src/pay/presentation/pay_flow.dart';
+import 'package:bull_exchange/src/pay/domain/pay_state.dart';
+import 'package:bull_exchange/src/pay/domain/pay_event.dart';
 import 'package:bull_exchange/src/pay/presentation/pay_flow_bloc.dart';
 import 'package:bull_exchange/src/pay/ui/screens/pay_amount_page.dart';
 import 'package:bull_exchange/src/pay/ui/widgets/sinpe_receipt_card.dart';
@@ -15,7 +16,7 @@ import 'package:bull_exchange/src/payin/ui/payin_source_page.dart';
 import 'package:bull_exchange/src/payin/ui/payin_view.dart';
 import 'package:bull_exchange/src/payin/ui/quote_review_page.dart';
 import 'package:bull_exchange/src/payout/ui/payout_requirement_view.dart';
-import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 import 'package:bull_exchange/src/recipients/public/recipient_pick_screen.dart';
 import 'package:bull_exchange/src/sell/ui/sell_flow_shell.dart'
     show sellReviewRows;
@@ -195,7 +196,9 @@ List<Page<void>> payPagesFor(
           onBack: () => onEvent(const PayBackPressed()),
           problem: refused == null
               ? null
-              : const RecipientsSelectionFailure().toTranslated(context),
+              : const ExchangeRecipientsSelectionFailure().toTranslated(
+                  context,
+                ),
         ),
       ),
     ),

@@ -15,7 +15,7 @@ class _MockWatchVirtualIbanUsecase extends Mock
 class _MockGetAccountOwnerNameUsecase extends Mock
     implements GetAccountOwnerNameUsecase {}
 
-typedef _Event = Result<VirtualIban?, RecipientsFailure>;
+typedef _Event = Result<VirtualIban?, ExchangeFailure>;
 
 final _active = VirtualIban.fromBankDetails(
   iban: 'FR7616958000016918327146718',
@@ -105,14 +105,12 @@ void main() {
     await settle();
 
     await cubit.activate();
-    streams[true]!.single.add(
-      const Err(RecipientsEuResidencyRequiredFailure()),
-    );
+    streams[true]!.single.add(const Err(ExchangeEuResidencyRequiredFailure()));
     await settle();
 
     expect(cubit.state.step, VirtualIbanOnboardingStep.intro);
     expect(cubit.state.isCreating, isFalse);
-    expect(cubit.state.failure, isA<RecipientsEuResidencyRequiredFailure>());
+    expect(cubit.state.failure, isA<ExchangeEuResidencyRequiredFailure>());
     await cubit.close();
   });
 
@@ -120,12 +118,12 @@ void main() {
     'an unreadable owner name is a failure and nothing is watched',
     () async {
       when(() => ownerName.execute())
-          .thenAnswer((_) async => const Err(RecipientsUnexpectedFailure()));
+          .thenAnswer((_) async => const Err(ExchangeUnexpectedFailure()));
       final cubit = build();
 
       await cubit.start();
 
-      expect(cubit.state.failure, isA<RecipientsUnexpectedFailure>());
+      expect(cubit.state.failure, isA<ExchangeUnexpectedFailure>());
       expect(streams[false], isEmpty);
       await cubit.close();
     },

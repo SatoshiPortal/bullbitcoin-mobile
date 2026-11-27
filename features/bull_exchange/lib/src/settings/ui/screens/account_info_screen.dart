@@ -1,9 +1,11 @@
+import 'package:exchange/exchange.dart';
+
 import '../../../exchange_l10n.dart';
 import '../../domain/entities/account_info.dart';
 import '../../presentation/account_info_cubit.dart';
-import '../../domain/exchange_settings_failure.dart';
 import '../../presentation/account_info_state.dart';
-import '../../presentation/exchange_settings_failure_l10n.dart';
+
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -60,8 +62,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
 
     if (accountInfo == null) {
       // A retry can't help once the session ended (SET-3).
-      final signedOut =
-          state.failure is ExchangeSettingsNotAuthenticatedFailure;
+      final signedOut = state.failure is ExchangeNotAuthenticatedFailure;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/autobuy/presentation/autobuy_bloc.dart';
-import 'package:bull_exchange/src/autobuy/presentation/autobuy_switch.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch_state.dart';
+import 'package:bull_exchange/src/autobuy/domain/autobuy_switch_event.dart';
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_exchange/src/steps_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
@@ -27,17 +28,25 @@ class AutoBuyHomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<AutoBuySwitchBloc>().state;
     final problem = switch (state) {
-      SwitchShown(problem: SwitchWriteRefused(:final refusal)) =>
-        refusal.toTranslated(context),
-      SwitchShown(problem: SwitchWriteFailed()) =>
-        context.loc.autoBuyUpdateError,
+      SwitchOff(problem: SwitchWriteRefused(:final refusal)) ||
+      SwitchOn(
+        problem: SwitchWriteRefused(:final refusal),
+      ) => refusal.toTranslated(context),
+      SwitchOff(problem: SwitchWriteFailed()) ||
+      SwitchOn(problem: SwitchWriteFailed()) => context.loc.autoBuyUpdateError,
       SwitchDeactivating(confirm: ConfirmUnverified()) =>
         context.loc.exchangeStepUnverified,
-      SwitchShown() || SwitchDeactivating() || SwitchSessionEnded() => null,
+      SwitchOff(problem: null) ||
+      SwitchOn(problem: null) ||
+      SwitchDeactivating() ||
+      SwitchSessionEnded() => null,
     };
-    final label = state.active
-        ? context.loc.autoBuyDeactivate
-        : context.loc.autoBuyActivate;
+    final label = switch (state) {
+      SwitchOff() => context.loc.autoBuyActivate,
+      SwitchOn() ||
+      SwitchDeactivating() ||
+      SwitchSessionEnded() => context.loc.autoBuyDeactivate,
+    };
     final Widget control = switch (state) {
       SwitchDeactivating(confirm: ConfirmUnverified()) => BullButton.secondary(
         label: context.loc.exchangeStepCheckAgain,
@@ -51,21 +60,28 @@ class AutoBuyHomeCard extends StatelessWidget {
         height: 24,
         padding: EdgeInsets.zero,
       ),
-      SwitchShown(:final active, :final restricted) => MergeSemantics(
+      SwitchOff(:final restricted) => MergeSemantics(
         child: Semantics(
           label: label,
           child: BullSwitch(
-            value: active,
-            onChanged: restricted
-                ? null
-                : (value) => value ? onActivate() : _confirmDeactivate(context),
+            value: false,
+            onChanged: restricted ? null : (value) => _changed(context, value),
           ),
         ),
       ),
-      SwitchSessionEnded(:final active) => MergeSemantics(
+      SwitchOn(:final restricted) => MergeSemantics(
         child: Semantics(
           label: label,
-          child: BullSwitch(value: active, onChanged: null),
+          child: BullSwitch(
+            value: true,
+            onChanged: restricted ? null : (value) => _changed(context, value),
+          ),
+        ),
+      ),
+      SwitchSessionEnded() => MergeSemantics(
+        child: Semantics(
+          label: label,
+          child: const BullSwitch(value: true, onChanged: null),
         ),
       ),
     };
@@ -81,6 +97,9 @@ class AutoBuyHomeCard extends StatelessWidget {
           : Text(problem, style: TextStyle(color: context.appColors.error)),
     );
   }
+
+  void _changed(BuildContext context, bool value) =>
+      value ? onActivate() : _confirmDeactivate(context);
 
   void _confirmDeactivate(BuildContext context) {
     final bloc = context.read<AutoBuySwitchBloc>();

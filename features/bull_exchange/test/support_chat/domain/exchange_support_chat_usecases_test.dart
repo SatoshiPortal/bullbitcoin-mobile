@@ -1,4 +1,3 @@
-import 'package:bull_exchange/src/support_chat/domain/exchange_support_chat_failure.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bull_exchange/src/support_chat/domain/usecases/send_support_chat_message_usecase.dart';
@@ -13,6 +12,12 @@ import 'package:mocktail/mocktail.dart';
 class _MockSettingsRepository extends Mock implements Preferences {}
 
 class _MockSettingsEntity extends Mock implements SettingsEntity {}
+
+const _chatSession = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 'chat',
+);
 
 void main() {
   group('support chat use-cases', () {
@@ -32,21 +37,28 @@ void main() {
       () async {
         final usecase = GetSupportChatMessagesUsecase(
           exchange: exchangeForTesting(
+            access: fixedAccessForTesting(
+              const ExchangeAccessSignedIn(_chatSession),
+            ),
             chat: (
-              getMessages: ({page, pageSize}) async {
+              getMessages: (_, {page, pageSize}) async {
                 expect((page, pageSize), (1, 10));
                 return const Ok([SupportChatMessage(messageId: '1')]);
               },
-              sendMessage: ({required text, attachments}) async =>
+              sendMessage: (_, {required text, attachments}) async =>
                   fail('unexpected send'),
-              getAttachment: (_) async => fail('unexpected download'),
+              getAttachment: (_, _) async => fail('unexpected download'),
               getUnreadCount: (_) async => fail('unexpected unread count'),
               markAllRead: (_) async => fail('unexpected mark read'),
             ),
           ),
         );
 
-        final result = await usecase.execute(page: 1, pageSize: 10);
+        final result = await usecase.execute(
+          _chatSession,
+          page: 1,
+          pageSize: 10,
+        );
 
         expect((result as Ok).value.single.messageId, '1');
       },
@@ -69,12 +81,13 @@ void main() {
         when(() => settingsRepository.fetch())
             .thenAnswer((_) async => const Err(PreferencesReadFailure()));
 
-        final result = await usecase.execute(page: 1, pageSize: 10);
-
-        expect(
-          (result as Err).failure,
-          isA<ExchangeSupportChatUnexpectedFailure>(),
+        final result = await usecase.execute(
+          _chatSession,
+          page: 1,
+          pageSize: 10,
         );
+
+        expect((result as Err).failure, isA<ExchangeUnexpectedFailure>());
       },
     );
 
@@ -83,20 +96,24 @@ void main() {
       () async {
         final usecase = SendSupportChatMessageUsecase(
           exchange: exchangeForTesting(
+            access: fixedAccessForTesting(
+              const ExchangeAccessSignedIn(_chatSession),
+            ),
             chat: (
-              getMessages: ({page, pageSize}) async => fail('unexpected read'),
-              sendMessage: ({required text, attachments}) async =>
+              getMessages: (_, {page, pageSize}) async =>
+                  fail('unexpected read'),
+              sendMessage: (_, {required text, attachments}) async =>
                   const Err(ExchangeChatSendMessageFailure('raw')),
-              getAttachment: (_) async => fail('unexpected download'),
+              getAttachment: (_, _) async => fail('unexpected download'),
               getUnreadCount: (_) async => fail('unexpected unread count'),
               markAllRead: (_) async => fail('unexpected mark read'),
             ),
           ),
         );
 
-        final result = await usecase.execute(text: 'hi');
+        final result = await usecase.execute(_chatSession, text: 'hi');
 
-        expect((result as Err).failure, isA<SendMessageFailure>());
+        expect((result as Err).failure, isA<ExchangeChatSendMessageFailure>());
       },
     );
 
@@ -105,11 +122,15 @@ void main() {
       () async {
         final usecase = GetSupportChatMessageAttachmentUsecase(
           exchange: exchangeForTesting(
+            access: fixedAccessForTesting(
+              const ExchangeAccessSignedIn(_chatSession),
+            ),
             chat: (
-              getMessages: ({page, pageSize}) async => fail('unexpected read'),
-              sendMessage: ({required text, attachments}) async =>
+              getMessages: (_, {page, pageSize}) async =>
+                  fail('unexpected read'),
+              sendMessage: (_, {required text, attachments}) async =>
                   fail('unexpected send'),
-              getAttachment: (_) async =>
+              getAttachment: (_, _) async =>
                   const Err(ExchangeChatLoadAttachmentFailure('raw')),
               getUnreadCount: (_) async => fail('unexpected unread count'),
               markAllRead: (_) async => fail('unexpected mark read'),
@@ -117,9 +138,12 @@ void main() {
           ),
         );
 
-        final result = await usecase.execute('a1');
+        final result = await usecase.execute(_chatSession, 'a1');
 
-        expect((result as Err).failure, isA<LoadAttachmentFailure>());
+        expect(
+          (result as Err).failure,
+          isA<ExchangeChatLoadAttachmentFailure>(),
+        );
       },
     );
   });
