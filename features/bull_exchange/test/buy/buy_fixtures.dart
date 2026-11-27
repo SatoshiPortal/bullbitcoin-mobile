@@ -102,8 +102,8 @@ BuyOrder buyOrder({
   isTestnet: false,
 ) as BuyOrder;
 
-GateAdmitted<ExchangeWrite<T>> buyDone<T>(T value) =>
-    GateAdmitted(WriteDone(value));
+GateAdmitted<Result<T, ExchangeWriteFailure>> buyDone<T>(T value) =>
+    GateAdmitted(Ok(value));
 
 BuyFlowNext applyBuy(BuyFlowState state, List<BuyFlowEvent> events) {
   var next = BuyFlowNext.stay(state);
@@ -115,10 +115,8 @@ BuyFlowNext applyBuy(BuyFlowState state, List<BuyFlowEvent> events) {
 
 final buyLoadingState = buyFlowStart(buySession).state;
 final buyEntryState = applyBuy(buyLoadingState, [
-  BuyContextLoaded(1, ReadGot(buyContext)),
-  const BuyAmountChanged(
-    AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
-  ),
+  BuyContextLoaded(1, Ok(buyContext)),
+  const BuyAmountChanged(AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0))),
   BuyDestinationChanged(
     PickResolved(buyLiquidWallet.option, const Ok(buyLiquidDestination)),
   ),

@@ -1,6 +1,7 @@
 import 'package:bull_exchange/src/dca/domain/dca_flow.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
+import 'package:primitives/primitives.dart';
 
 /// Creates the recurring buy of the reviewed plan through the account's
 /// write gate; a done create answers the plan itself.
@@ -26,11 +27,19 @@ class CreateDcaUsecase {
           network: plan.payout.network,
           address: plan.payout.address,
         )) {
-      WriteDone() => WriteDone(plan),
-      WriteRefused(:final reason) => WriteRefused(reason),
-      WriteNotSent(:final reason) => WriteNotSent(reason),
-      WriteSessionRejected() => const WriteSessionRejected(),
-      WriteOutcomeUnknown(:final reason) => WriteOutcomeUnknown(reason),
+      Ok() => Ok(plan),
+      Err(failure: ExchangeWriteRefusedFailure(:final reason)) => Err(
+        ExchangeWriteRefusedFailure(reason),
+      ),
+      Err(failure: ExchangeWriteNotSentFailure(:final reason)) => Err(
+        ExchangeWriteNotSentFailure(reason),
+      ),
+      Err(failure: ExchangeSessionRejectedFailure()) => const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      ),
+      Err(failure: ExchangeWriteOutcomeUnknownFailure(:final reason)) => Err(
+        ExchangeWriteOutcomeUnknownFailure(reason),
+      ),
     },
   );
 }

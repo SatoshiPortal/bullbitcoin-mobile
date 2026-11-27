@@ -54,7 +54,7 @@ final _rate = _LimitOrders(
   Ok(LimitOrderRate(currencyCode: 'CAD', indexPrice: 50000, userPrice: 51000)),
 );
 
-Future<ExchangeRead<AccelerateQuote>> _load({
+Future<Result<AccelerateQuote, ExchangeReadFailure>> _load({
   required BuyTestOrders orders,
   _Fees? fees,
   _LimitOrders? rate,
@@ -83,7 +83,7 @@ void main() {
       Ok(LimitOrderRate(currencyCode: 'CAD', indexPrice: 50000, userPrice: 1)),
     );
     final read = await _load(orders: orders, fees: fees, rate: rate);
-    final quote = (read as ReadGot<AccelerateQuote>).value;
+    final quote = (read as Ok<AccelerateQuote, ExchangeReadFailure>).value;
     expect(quote.order.orderId, 'b-1');
     expect(quote.fee.satPerVbyte, _options.fastest.value.toDouble());
     expect(quote.fee.sats, _options.toAbsolute(140).fastest.value.toInt());
@@ -101,7 +101,14 @@ void main() {
       orders: BuyTestOrders()..read = Ok(payinOrder()),
       fees: fees,
     );
-    expect(read, isA<ReadMalformed<AccelerateQuote>>());
+    expect(
+      read,
+      isA<Err<AccelerateQuote, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeMalformedFailure>(),
+      ),
+    );
     expect(fees.asked, isEmpty);
   });
 
@@ -113,10 +120,14 @@ void main() {
         orders: orders,
         fees: _Fees(const Err(FeeEstimateUnavailableFailure())),
       ),
-      isA<ReadUnreachable<AccelerateQuote>>().having(
-        (r) => r.reason,
-        'reason',
-        'network fees',
+      isA<Err<AccelerateQuote, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>().having(
+          (r) => r.reason,
+          'reason',
+          'network fees',
+        ),
       ),
     );
     expect(
@@ -128,7 +139,11 @@ void main() {
           ),
         ),
       ),
-      isA<ReadSessionRejected<AccelerateQuote>>(),
+      isA<Err<AccelerateQuote, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
     );
   });
 }

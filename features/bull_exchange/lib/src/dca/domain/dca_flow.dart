@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The recurring buy (composition §5, DCA): session → account and exchange
 /// default wallets → amount and frequency (funding detour back to the same
@@ -188,16 +189,19 @@ const dcaConfirmPolicy = ServerConfirmPolicy<DcaPlan>(
 /// `dcaSettlement`).
 ConfirmCheck<DcaPlan> dcaConfirmCheck(
   DcaPlan plan,
-  ExchangeRead<UserSummary> read,
+  Result<UserSummary, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(value: UserSummary(:final dca))
+  Ok(value: UserSummary(:final dca))
       when dca.isActive && dca.address == plan.payout.address =>
     ConfirmSeenApplied(plan),
-  ReadGot() => const ConfirmSeenNotApplied(),
-  ReadSessionRejected() => const ConfirmCheckSessionRejected(),
-  ReadMissing() ||
-  ReadUnreachable() ||
-  ReadMalformed() => ConfirmCheckFailed(ReadProblem.of(read)!),
+  Ok() => const ConfirmSeenNotApplied(),
+  Err(failure: ExchangeSessionRejectedFailure()) =>
+    const ConfirmCheckSessionRejected(),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => ConfirmCheckFailed(ReadProblem.of(read)!),
 };
 
 typedef DcaConfirmState = ServerConfirmState<DcaPlan, DcaPlan>;
@@ -312,7 +316,7 @@ sealed class DcaFlowEvent {
 
 final class DcaContextLoaded extends DcaFlowEvent {
   final int attempt;
-  final ExchangeRead<DcaContext> read;
+  final Result<DcaContext, ExchangeReadFailure> read;
 
   const DcaContextLoaded(this.attempt, this.read);
 }
@@ -348,7 +352,7 @@ final class DcaKycReturned extends DcaFlowEvent {
 }
 
 final class DcaDetourLoaded extends DcaFlowEvent {
-  final ExchangeRead<DcaContext> read;
+  final Result<DcaContext, ExchangeReadFailure> read;
 
   const DcaDetourLoaded(this.read);
 }
@@ -366,7 +370,7 @@ final class DcaDefaultWalletsReturned extends DcaFlowEvent {
 
 final class DcaDefaultWalletsLoaded extends DcaFlowEvent {
   final int ticket;
-  final ExchangeRead<DefaultWallets> read;
+  final Result<DefaultWallets, ExchangeReadFailure> read;
 
   const DcaDefaultWalletsLoaded(this.ticket, this.read);
 }
@@ -683,14 +687,14 @@ DcaFlowNext _setup(DcaSetup state, DcaFlowEvent event) => switch (event) {
     AmountFundingDetour() ||
     AmountNoMarket() ||
     AmountKycDetour() => switch (read) {
-      ReadGot(value: final loaded) => _detourReturned(
+      Ok(value: final loaded) => _detourReturned(
         state,
         DcaOpen(state.open.session, state.open.context.withAccount(loaded)),
       ),
-      ReadSessionRejected() => _ended,
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => DcaFlowNext.stay(state),
+      Err(failure: ExchangeSessionRejectedFailure()) => _ended,
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(failure: ExchangeMalformedFailure()) => DcaFlowNext.stay(state),
     },
     AmountEditing() ||
     AmountDone() ||
@@ -744,7 +748,7 @@ DcaFlowNext _payout(DcaPayoutPick state, DcaFlowEvent event) => switch (event) {
   ),
   // A failed read keeps the wallets shown; the user can still type an
   // address or open the editor again.
-  DcaDefaultWalletsLoaded(:final ticket, read: ReadGot(value: final wallets))
+  DcaDefaultWalletsLoaded(:final ticket, read: Ok(value: final wallets))
       when ticket == state.walletsTicket =>
     DcaFlowNext(
       DcaPayoutPick(

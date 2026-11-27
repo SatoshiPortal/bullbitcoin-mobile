@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../buy_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _order = buyOrder(status: OrderStatus.inProgress);
 const _fee = AccelerateFee(satPerVbyte: 2.5, sats: 350, fiatPerBitcoin: 50000);
 final _quote = AccelerateQuote(_order, _fee, const []);
@@ -21,7 +23,7 @@ AccelerateFlowNext _apply(
 }
 
 final _loading = accelerateFlowStart(buySession, 'b-1').state;
-final _ready = _apply(_loading, [AccelerateLoaded(1, ReadGot(_quote))]).state;
+final _ready = _apply(_loading, [AccelerateLoaded(1, Ok(_quote))]).state;
 final _confirming = _apply(_ready, const [AccelerateConfirmPressed()]).state;
 final _accelerated = buyOrder(status: OrderStatus.inProgress);
 final _done = _apply(_confirming, [
@@ -38,7 +40,7 @@ final _states = <String, AccelerateFlowState>{
 };
 
 final _events = <String, AccelerateFlowEvent>{
-  'loaded': AccelerateLoaded(1, ReadGot(_quote)),
+  'loaded': AccelerateLoaded(1, Ok(_quote)),
   'retry': const AccelerateRetryPressed(),
   'confirmPressed': const AccelerateConfirmPressed(),
   'confirm': AccelerateConfirmChanged(
@@ -128,7 +130,10 @@ void main() {
 
   test('a failed load keeps a Retry that loads again (BUY-6)', () {
     final failed = _apply(_loading, const [
-      AccelerateLoaded(1, ReadUnreachable('down', isNetwork: true)),
+      AccelerateLoaded(
+        1,
+        Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+      ),
     ]).state;
     expect(
       (failed as AccelerateLoading).load,
@@ -170,7 +175,7 @@ void main() {
       recordedAt: DateTime.utc(2026, 11, 24),
     );
     final ready = _apply(_loading, [
-      AccelerateLoaded(1, ReadGot(AccelerateQuote(_order, _fee, [entry]))),
+      AccelerateLoaded(1, Ok(AccelerateQuote(_order, _fee, [entry]))),
     ]).state;
     expect(
       _confirmOf(
@@ -183,12 +188,15 @@ void main() {
   test('an unknown accelerate is never sent again', () {
     final verifying = _apply(_confirming, const [
       AccelerateConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
     ]).state;
     final pending = _apply(verifying, [
       AccelerateConfirmChanged(
-        ConfirmVerified(1, accelerateConfirmCheck(ReadGot(_order))),
+        ConfirmVerified(1, accelerateConfirmCheck(Ok(_order))),
       ),
     ]).state;
     expect(
@@ -214,7 +222,7 @@ void main() {
   test('an unbatched order after an unknown outcome was accelerated', () {
     final unbatched = _order.copyWith(unbatchedBuyOnchainFees: 0.00001);
     expect(
-      accelerateConfirmCheck(ReadGot(unbatched)),
+      accelerateConfirmCheck(Ok(unbatched)),
       isA<ConfirmSeenApplied<BuyOrder>>(),
     );
   });
@@ -222,7 +230,10 @@ void main() {
   test('Back from a refused accelerate returns to the fee page', () {
     final failed = _apply(_confirming, const [
       AccelerateConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteRefused(ExchangeRefusal()))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
+        ),
       ),
     ]).state;
     expect(

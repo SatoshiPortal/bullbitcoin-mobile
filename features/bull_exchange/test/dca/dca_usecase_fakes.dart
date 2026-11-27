@@ -8,14 +8,17 @@ import 'package:bull_exchange/src/dca/domain/usecases/stop_dca_usecase.dart';
 import 'package:primitives/primitives.dart';
 
 final class FakeLoadDcaContextUsecase implements LoadDcaContextUsecase {
-  final Future<ExchangeRead<DcaContext>> Function(ExchangeSession session)
+  final Future<Result<DcaContext, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeLoadDcaContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<DcaContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<DcaContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeCreateDcaUsecase implements CreateDcaUsecase {

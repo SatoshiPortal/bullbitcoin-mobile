@@ -65,7 +65,7 @@ Future<OrderCreateAnswered<BuyRequest, BuyOrder>> _create(
 
 void main() {
   test('a plain payout places the order with no receiver', () async {
-    final orders = BuyTestOrders()..placed = WriteDone(buyOrder());
+    final orders = BuyTestOrders()..placed = Ok(buyOrder());
     final receiver = BuyTestReceiver();
     final environments = <ExchangeEnvironment>[];
     final answer = await _create(
@@ -78,10 +78,10 @@ void main() {
     expect(answer.attempt, 1);
     expect(
       answer.answer,
-      isA<GateAdmitted<ExchangeWrite<BuyOrder>>>().having(
+      isA<GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>>().having(
         (a) => a.result,
         'result',
-        isA<WriteDone<BuyOrder>>(),
+        isA<Ok<BuyOrder, ExchangeWriteFailure>>(),
       ),
     );
     expect(orders.log, ['place lq1qreceive CAD liquid owner=true bip21=null']);
@@ -91,7 +91,7 @@ void main() {
 
   test('a payjoin wallet opens a receiver and the done order keeps its '
       'URI', () async {
-    final orders = BuyTestOrders()..placed = WriteDone(buyOrder());
+    final orders = BuyTestOrders()..placed = Ok(buyOrder());
     final receiver = BuyTestReceiver(_opened);
     final uris = BuyPayjoinUris();
     final answer = await _create(
@@ -107,13 +107,14 @@ void main() {
       'place bc1qreceive CAD bitcoin owner=true bip21=$_bip21',
     ]);
     final done =
-        (answer.answer as GateAdmitted<ExchangeWrite<BuyOrder>>).result;
-    expect((done as WriteDone<BuyOrder>).value.bip21URI, _bip21);
+        (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
+            .result;
+    expect((done as Ok<BuyOrder, ExchangeWriteFailure>).value.bip21URI, _bip21);
     expect(uris.withBip21(buyOrder()).bip21URI, _bip21);
   });
 
   test('a receiver that does not open leaves a plain order', () async {
-    final orders = BuyTestOrders()..placed = WriteDone(buyOrder());
+    final orders = BuyTestOrders()..placed = Ok(buyOrder());
     await _create(
       _withPayjoin(),
       orders: orders,
@@ -126,7 +127,8 @@ void main() {
   test('an unknown outcome is journaled and keeps the URI for the order a '
       'find matches', () async {
     final journal = InMemoryUnknownWriteJournal();
-    final orders = BuyTestOrders()..placed = const WriteOutcomeUnknown('lost');
+    final orders = BuyTestOrders()
+      ..placed = const Err(ExchangeWriteOutcomeUnknownFailure('lost'));
     final receiver = BuyTestReceiver(_opened);
     final uris = BuyPayjoinUris();
     final send = _withPayjoin();
@@ -147,7 +149,10 @@ void main() {
   });
 
   test('a create that took no effect drops its receiver', () async {
-    final orders = BuyTestOrders()..placed = const WriteSessionRejected();
+    final orders = BuyTestOrders()
+      ..placed = const Err(
+        ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+      );
     final receiver = BuyTestReceiver(_opened);
     await _create(
       _withPayjoin(),

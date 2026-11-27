@@ -1,6 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// Accelerating a confirmed buy's bitcoin payout (composition §5, buy's
 /// add-on): load the order and what the express payout costs → Confirm
@@ -108,19 +109,23 @@ const accelerateConfirmPolicy = ServerConfirmPolicy<AccelerateTarget>(
 /// whose payout was unbatched, sent or completed was accelerated. Anything
 /// else can't tell (the express payout may not show yet), so the flow
 /// checks again and never sends the accelerate twice.
-ConfirmCheck<BuyOrder> accelerateConfirmCheck(ExchangeRead<Order> read) =>
-    switch (read) {
-      ReadGot(value: final BuyOrder order)
-          when order.unbatchedBuyOnchainFees != null ||
-              order.transactionId != null ||
-              order.payoutStatus == OrderPayoutStatus.completed =>
-        ConfirmSeenApplied(order),
-      ReadGot() => const ConfirmCheckFailed(ReadProblemMissing()),
-      ReadSessionRejected() => const ConfirmCheckSessionRejected(),
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => ConfirmCheckFailed(ReadProblem.of(read)!),
-    };
+ConfirmCheck<BuyOrder> accelerateConfirmCheck(
+  Result<Order, ExchangeReadFailure> read,
+) => switch (read) {
+  Ok(value: final BuyOrder order)
+      when order.unbatchedBuyOnchainFees != null ||
+          order.transactionId != null ||
+          order.payoutStatus == OrderPayoutStatus.completed =>
+    ConfirmSeenApplied(order),
+  Ok() => const ConfirmCheckFailed(ReadProblemMissing()),
+  Err(failure: ExchangeSessionRejectedFailure()) =>
+    const ConfirmCheckSessionRejected(),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => ConfirmCheckFailed(ReadProblem.of(read)!),
+};
 
 typedef AccelerateConfirmState = ServerConfirmState<AccelerateTarget, BuyOrder>;
 typedef AccelerateConfirmEvent = ServerConfirmEvent<AccelerateTarget, BuyOrder>;
@@ -194,7 +199,7 @@ sealed class AccelerateFlowEvent {
 
 final class AccelerateLoaded extends AccelerateFlowEvent {
   final int attempt;
-  final ExchangeRead<AccelerateQuote> read;
+  final Result<AccelerateQuote, ExchangeReadFailure> read;
 
   const AccelerateLoaded(this.attempt, this.read);
 }

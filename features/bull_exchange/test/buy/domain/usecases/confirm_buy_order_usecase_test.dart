@@ -22,7 +22,7 @@ ConfirmSend<BuyConfirmTarget> _send() {
 void main() {
   test('confirms the quoted order; the done order keeps its URI', () async {
     final orders = BuyTestOrders()
-      ..confirmed = WriteDone(buyOrder(status: OrderStatus.inProgress));
+      ..confirmed = Ok(buyOrder(status: OrderStatus.inProgress));
     final uris = BuyPayjoinUris()..attachToOrder('b-1', 'bitcoin:x?pj=y');
     final send = _send();
     final answer = await ConfirmBuyOrderUsecase(
@@ -31,14 +31,18 @@ void main() {
     ).execute(buySession, send);
     expect(answer.attempt, send.attempt);
     final result =
-        (answer.answer as GateAdmitted<ExchangeWrite<BuyOrder>>).result;
-    expect((result as WriteDone<BuyOrder>).value.bip21URI, 'bitcoin:x?pj=y');
+        (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
+            .result;
+    expect(
+      (result as Ok<BuyOrder, ExchangeWriteFailure>).value.bip21URI,
+      'bitcoin:x?pj=y',
+    );
     expect(orders.log, ['confirm b-1']);
   });
 
   test('an unknown outcome is the answer, not a confirmed order', () async {
     final orders = BuyTestOrders()
-      ..confirmed = const WriteOutcomeUnknown('lost');
+      ..confirmed = const Err(ExchangeWriteOutcomeUnknownFailure('lost'));
     final answer = await ConfirmBuyOrderUsecase(
       exchangeForTesting(
         orders: (_) => orders,
@@ -49,8 +53,13 @@ void main() {
       BuyPayjoinUris(),
     ).execute(buySession, _send());
     expect(
-      (answer.answer as GateAdmitted<ExchangeWrite<BuyOrder>>).result,
-      isA<WriteOutcomeUnknown<BuyOrder>>(),
+      (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
+          .result,
+      isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
     );
   });
 }

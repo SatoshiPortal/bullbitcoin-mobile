@@ -4,6 +4,8 @@ import 'package:exchange/steps.dart';
 
 import '../buy/buy_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 export '../buy/buy_fixtures.dart'
     show buyOtherSession, buySession, buySummaryWith;
 
@@ -39,10 +41,8 @@ DcaFlowNext applyDca(DcaFlowState state, List<DcaFlowEvent> events) {
 
 final dcaLoadingState = dcaFlowStart(buySession).state;
 final dcaSetupState = applyDca(dcaLoadingState, [
-  DcaContextLoaded(1, ReadGot(dcaContext)),
-  const DcaAmountChanged(
-    AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
-  ),
+  DcaContextLoaded(1, Ok(dcaContext)),
+  const DcaAmountChanged(AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0))),
 ]).state;
 final dcaPayoutState = applyDca(dcaSetupState, const [
   DcaAmountChanged(AmountTyped('10')),
@@ -57,5 +57,5 @@ final dcaConfirmingState = applyDca(dcaReviewState, const [
 ]).state;
 final dcaPlan = (dcaReviewState as DcaReview).plan;
 final dcaDoneState = applyDca(dcaConfirmingState, [
-  DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(WriteDone(dcaPlan)))),
+  DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
 ]).state;

@@ -12,13 +12,16 @@ import '../../orders/order_usecase_fakes.dart';
 import '../dca_fixtures.dart';
 import '../dca_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// The DCA use cases as fakes; every call is logged, with the session it
 /// got where it takes one.
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<ExchangeWrite<DcaPlan>>> answer = Completer();
-  ExchangeRead<UserSummary> reread = ReadGot(buySummaryWith());
+  Completer<GatedWrite<Result<DcaPlan, ExchangeWriteFailure>>> answer =
+      Completer();
+  Result<UserSummary, ExchangeReadFailure> reread = Ok(buySummaryWith());
 
   void _called(ExchangeSession session, String call) {
     sessions.add(session);
@@ -33,15 +36,15 @@ final class _Calls {
     accessChanges: accessChanges,
     loadContext: FakeLoadDcaContextUsecase((session) async {
       _called(session, 'load');
-      return ReadGot(dcaContext);
+      return Ok(dcaContext);
     }),
     getMarketRate: FakeGetMarketRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
-      return const ReadGot(50000.0);
+      return const Ok(50000.0);
     }),
     getDefaultWallets: FakeGetDefaultWalletsUsecase((session) async {
       _called(session, 'wallets');
-      return const ReadGot(DefaultWallets());
+      return const Ok(DefaultWallets());
     }),
     createDca: FakeCreateDcaUsecase((session, effect) async {
       _called(session, 'create ${effect.attempt}');
@@ -102,9 +105,7 @@ void main() {
     expect(bloc.state, isA<DcaReview>());
     await send(const [DcaConfirmPressed(), DcaConfirmPressed()]);
     expect(calls.log.where((l) => l.startsWith('create')), ['create 1']);
-    calls.answer.complete(
-      GateAdmitted(WriteDone((bloc.state as DcaConfirming).plan)),
-    );
+    calls.answer.complete(GateAdmitted(Ok((bloc.state as DcaConfirming).plan)));
     await _settle();
     expect(bloc.state, isA<DcaDone>());
     expect(calls.log.last, 'activate');
@@ -114,12 +115,14 @@ void main() {
   test('an unknown create re-reads the account', () async {
     await toReview();
     await send(const [DcaConfirmPressed()]);
-    calls.reread = ReadGot(
+    calls.reread = Ok(
       buySummaryWith().copyWith(
         dca: const UserDca(isActive: true, address: 'bc1qdefault'),
       ),
     );
-    calls.answer.complete(const GateAdmitted(WriteOutcomeUnknown('lost')));
+    calls.answer.complete(
+      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+    );
     await _settle();
     expect(calls.log, contains('summary'));
     expect(bloc.state, isA<DcaDone>());

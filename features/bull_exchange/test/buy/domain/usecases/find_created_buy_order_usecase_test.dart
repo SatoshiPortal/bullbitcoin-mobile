@@ -24,7 +24,7 @@ BuyRequest _request() =>
 /// buyOrder() is created at 2026-11-24 10:00 UTC for 10 CAD.
 final _sentAt = DateTime.utc(2026, 11, 24, 10);
 
-Future<ExchangeRead<BuyOrder>> _find(
+Future<Result<BuyOrder, ExchangeReadFailure>> _find(
   BuyTestOrders orders,
   BuyPayjoinUris uris,
   BuyRequest request,
@@ -41,7 +41,7 @@ void main() {
     final request = _request();
     uris.attachToRequest(request, _bip21);
     final read = await _find(orders, uris, request);
-    expect((read as ReadGot<BuyOrder>).value.bip21URI, _bip21);
+    expect((read as Ok<BuyOrder, ExchangeReadFailure>).value.bip21URI, _bip21);
     expect(orders.log, ['list buy']);
     expect(uris.withBip21(buyOrder()).bip21URI, _bip21);
   });
@@ -49,13 +49,27 @@ void main() {
   test('no match is missing and attaches nothing', () async {
     final orders = BuyTestOrders()..listed = const Ok([]);
     final read = await _find(orders, BuyPayjoinUris(), _request());
-    expect(read, isA<ReadMissing<BuyOrder>>());
+    expect(
+      read,
+      isA<Err<BuyOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeMissingFailure>(),
+      ),
+    );
   });
 
   test('a failed list is never a found order', () async {
     final orders = BuyTestOrders()
       ..listed = const Err(ExchangeNetworkFailure());
     final read = await _find(orders, BuyPayjoinUris(), _request());
-    expect(read, isA<ReadUnreachable<BuyOrder>>());
+    expect(
+      read,
+      isA<Err<BuyOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

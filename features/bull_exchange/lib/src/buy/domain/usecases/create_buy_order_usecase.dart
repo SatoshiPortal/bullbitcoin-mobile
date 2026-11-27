@@ -60,18 +60,22 @@ class CreateBuyOrderUsecase {
     final attached = receiver;
     if (attached == null) return answer;
     switch (answer.answer) {
-      case GateAdmitted(result: WriteDone(:final value)):
+      case GateAdmitted(result: Ok(:final value)):
         _uris.attachToOrder(value.orderId, attached.bip21);
         return OrderCreateAnswered(
           answer.attempt,
-          GateAdmitted(WriteDone(_uris.withBip21(value))),
+          GateAdmitted(Ok(_uris.withBip21(value))),
         );
       // The order may exist and pay through this receiver.
-      case GateAdmitted(result: WriteOutcomeUnknown()):
+      case GateAdmitted(
+        result: Err(failure: ExchangeWriteOutcomeUnknownFailure()),
+      ):
         _uris.attachToRequest(effect.request, attached.bip21);
         return answer;
       case GateAdmitted(
-            result: WriteRefused() || WriteNotSent() || WriteSessionRejected(),
+            result: Err(failure: ExchangeWriteRefusedFailure()) ||
+                Err(failure: ExchangeWriteNotSentFailure()) ||
+                Err(failure: ExchangeSessionRejectedFailure()),
           ) ||
           GateRefused():
         await dropBuyPayjoin(_payjoinReceiver, attached.id);

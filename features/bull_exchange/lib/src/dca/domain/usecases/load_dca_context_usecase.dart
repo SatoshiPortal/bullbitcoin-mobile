@@ -12,7 +12,9 @@ class LoadDcaContextUsecase {
 
   const LoadDcaContextUsecase(this._exchange);
 
-  Future<ExchangeRead<DcaContext>> execute(ExchangeSession session) async {
+  Future<Result<DcaContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) async {
     final summary = readOfResult(
       await _exchange.getUserSummary(session.environment),
     );
@@ -24,23 +26,40 @@ class LoadDcaContextUsecase {
       Err() => const <UnknownWrite>[],
     };
     return switch ((summary, wallets)) {
-      (ReadGot(value: final summary), ReadGot(value: final wallets)) => ReadGot(
+      (Ok(value: final summary), Ok(value: final wallets)) => Ok(
         DcaContext(
           summary: summary,
           defaultWallets: wallets,
           openEntries: entries,
         ),
       ),
-      (ReadSessionRejected(:final why), _) ||
-      (_, ReadSessionRejected(:final why)) => ReadSessionRejected(why),
-      (ReadUnreachable(:final reason, :final isNetwork), _) ||
+      (Err(failure: ExchangeSessionRejectedFailure(:final why)), _) ||
       (
         _,
-        ReadUnreachable(:final reason, :final isNetwork),
-      ) => ReadUnreachable(reason, isNetwork: isNetwork),
-      (ReadMalformed(:final reason), _) ||
-      (_, ReadMalformed(:final reason)) => ReadMalformed(reason),
-      (ReadMissing(), _) || (_, ReadMissing()) => const ReadMissing(),
+        Err(failure: ExchangeSessionRejectedFailure(:final why)),
+      ) => Err(ExchangeSessionRejectedFailure(why)),
+      (
+        Err(
+          failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+        ),
+        _,
+      ) ||
+      (
+        _,
+        Err(
+          failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+        ),
+      ) => Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork)),
+      (Err(failure: ExchangeMalformedFailure(:final reason)), _) ||
+      (
+        _,
+        Err(failure: ExchangeMalformedFailure(:final reason)),
+      ) => Err(ExchangeMalformedFailure(reason)),
+      (Err(failure: ExchangeMissingFailure()), _) ||
+      (
+        _,
+        Err(failure: ExchangeMissingFailure()),
+      ) => const Err(ExchangeMissingFailure()),
     };
   }
 }

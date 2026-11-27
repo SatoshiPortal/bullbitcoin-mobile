@@ -16,7 +16,7 @@ ConfirmSend<AccelerateTarget> _send() {
     next.state,
     AccelerateLoaded(
       1,
-      ReadGot(
+      Ok(
         AccelerateQuote(
           buyOrder(status: OrderStatus.inProgress),
           const AccelerateFee(satPerVbyte: 2.5, sats: 350, fiatPerBitcoin: 1),
@@ -35,7 +35,7 @@ void main() {
       'environment', () async {
     final environments = <ExchangeEnvironment>[];
     final orders = BuyTestOrders()
-      ..accelerated = WriteDone(buyOrder(status: OrderStatus.inProgress));
+      ..accelerated = Ok(buyOrder(status: OrderStatus.inProgress));
     final send = _send();
     final answer = await AccelerateBuyOrderUsecase(
       exchangeForTesting(
@@ -47,8 +47,9 @@ void main() {
     ).execute(buySession, send);
     expect(answer.attempt, send.attempt);
     expect(
-      (answer.answer as GateAdmitted<ExchangeWrite<BuyOrder>>).result,
-      isA<WriteDone<BuyOrder>>(),
+      (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
+          .result,
+      isA<Ok<BuyOrder, ExchangeWriteFailure>>(),
     );
     expect(orders.log, ['accelerate b-1']);
     expect(environments, [ExchangeEnvironment.mainnet]);
@@ -57,7 +58,7 @@ void main() {
   test('an unknown outcome is journaled, never read as done', () async {
     final journal = InMemoryUnknownWriteJournal();
     final orders = BuyTestOrders()
-      ..accelerated = const WriteOutcomeUnknown('lost');
+      ..accelerated = const Err(ExchangeWriteOutcomeUnknownFailure('lost'));
     final answer = await AccelerateBuyOrderUsecase(
       exchangeForTesting(
         orders: (_) => orders,
@@ -67,8 +68,13 @@ void main() {
       ),
     ).execute(buySession, _send());
     expect(
-      (answer.answer as GateAdmitted<ExchangeWrite<BuyOrder>>).result,
-      isA<WriteOutcomeUnknown<BuyOrder>>(),
+      (answer.answer as GateAdmitted<Result<BuyOrder, ExchangeWriteFailure>>)
+          .result,
+      isA<Err<BuyOrder, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
     );
     expect(journal.entries, hasLength(1));
   });

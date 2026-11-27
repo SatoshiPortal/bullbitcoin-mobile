@@ -17,14 +17,17 @@ import 'package:exchange/steps.dart';
 import 'package:primitives/primitives.dart';
 
 final class FakeLoadBuyContextUsecase implements LoadBuyContextUsecase {
-  final Future<ExchangeRead<BuyContext>> Function(ExchangeSession session)
+  final Future<Result<BuyContext, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeLoadBuyContextUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<BuyContext>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<BuyContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeGetBuyReceiveAddressUsecase
@@ -69,7 +72,7 @@ final class FakeCreateBuyOrderUsecase implements CreateBuyOrderUsecase {
 
 final class FakeFindCreatedBuyOrderUsecase
     implements FindCreatedBuyOrderUsecase {
-  final Future<ExchangeRead<BuyOrder>> Function(
+  final Future<Result<BuyOrder, ExchangeReadFailure>> Function(
     ExchangeSession session,
     BuyRequest request,
     DateTime sentAt,
@@ -79,7 +82,7 @@ final class FakeFindCreatedBuyOrderUsecase
   FakeFindCreatedBuyOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<BuyOrder>> execute(
+  Future<Result<BuyOrder, ExchangeReadFailure>> execute(
     ExchangeSession session,
     BuyRequest request,
     DateTime sentAt,
@@ -87,7 +90,7 @@ final class FakeFindCreatedBuyOrderUsecase
 }
 
 final class FakeRefreshBuyOrderUsecase implements RefreshBuyOrderUsecase {
-  final Future<ExchangeRead<BuyOrder>> Function(
+  final Future<Result<BuyOrder, ExchangeReadFailure>> Function(
     ExchangeSession session,
     String orderId,
   )
@@ -96,7 +99,7 @@ final class FakeRefreshBuyOrderUsecase implements RefreshBuyOrderUsecase {
   FakeRefreshBuyOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<BuyOrder>> execute(
+  Future<Result<BuyOrder, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) => answer(session, orderId);
@@ -119,7 +122,7 @@ final class FakeConfirmBuyOrderUsecase implements ConfirmBuyOrderUsecase {
 }
 
 final class FakeGetBuyOrderUsecase implements GetBuyOrderUsecase {
-  final Future<ExchangeRead<BuyOrder>> Function(
+  final Future<Result<BuyOrder, ExchangeReadFailure>> Function(
     ExchangeSession session,
     String orderId,
   )
@@ -128,7 +131,7 @@ final class FakeGetBuyOrderUsecase implements GetBuyOrderUsecase {
   FakeGetBuyOrderUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<BuyOrder>> execute(
+  Future<Result<BuyOrder, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) => answer(session, orderId);
@@ -155,7 +158,7 @@ final class FakeSettleBuyPayoutUsecase implements SettleBuyPayoutUsecase {
 
 final class FakeLoadAccelerateQuoteUsecase
     implements LoadAccelerateQuoteUsecase {
-  final Future<ExchangeRead<AccelerateQuote>> Function(
+  final Future<Result<AccelerateQuote, ExchangeReadFailure>> Function(
     ExchangeSession session,
     String orderId,
   )
@@ -164,7 +167,7 @@ final class FakeLoadAccelerateQuoteUsecase
   FakeLoadAccelerateQuoteUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<AccelerateQuote>> execute(
+  Future<Result<AccelerateQuote, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) => answer(session, orderId);

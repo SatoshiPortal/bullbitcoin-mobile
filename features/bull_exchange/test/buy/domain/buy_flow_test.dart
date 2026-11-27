@@ -18,7 +18,7 @@ final _states = <String, BuyFlowState>{
 };
 
 final _events = <String, BuyFlowEvent>{
-  'contextLoaded': BuyContextLoaded(1, ReadGot(buyContext)),
+  'contextLoaded': BuyContextLoaded(1, Ok(buyContext)),
   'retry': const BuyRetryPressed(),
   'amount': const BuyAmountChanged(AmountTyped('5')),
   'picked': BuyDestinationPicked(buyBitcoinWallet.option),
@@ -30,7 +30,7 @@ final _events = <String, BuyFlowEvent>{
   'continue': const BuyContinuePressed(),
   'kycReturned': const BuyKycReturned(),
   'fundingReturned': const BuyFundingReturned(),
-  'detourLoaded': BuyDetourLoaded(ReadGot(buyContext)),
+  'detourLoaded': BuyDetourLoaded(Ok(buyContext)),
   'order': BuyOrderChanged(OrderCreateAnswered(1, buyDone(buyOrder()))),
   'confirmPressed': BuyConfirmPressed(buyBeforeDeadline),
   'confirm': BuyConfirmChanged(
@@ -40,7 +40,7 @@ final _events = <String, BuyFlowEvent>{
     WatchPolled(
       'b-1',
       1,
-      ReadGot(
+      Ok(
         buyOrder(
           status: OrderStatus.completed,
           payout: OrderPayoutStatus.completed,
@@ -153,7 +153,10 @@ void main() {
     test('a failed load has a Retry that loads again', () {
       final failed = transitionBuyFlow(
         buyLoadingState,
-        const BuyContextLoaded(1, ReadUnreachable('down', isNetwork: true)),
+        const BuyContextLoaded(
+          1,
+          Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+        ),
       );
       expect(
         (failed.state as BuyLoading).load,
@@ -167,7 +170,7 @@ void main() {
     test('the entry loads the rate and the initial wallet address', () {
       final next = transitionBuyFlow(
         buyLoadingState,
-        BuyContextLoaded(1, ReadGot(buyContext)),
+        BuyContextLoaded(1, Ok(buyContext)),
       );
       expect(next.effects, [
         const BuyFetchRate(ExchangeCatalog.cad),
@@ -180,7 +183,7 @@ void main() {
         buyLoadingState,
         BuyContextLoaded(
           1,
-          ReadGot(
+          Ok(
             buyContextWith(
               wallets: const [
                 buyLiquidWallet,
@@ -204,14 +207,14 @@ void main() {
       final empty = buyContextWith(summary: buySummaryWith(balances: const []));
       final entry = transitionBuyFlow(
         buyLoadingState,
-        BuyContextLoaded(1, ReadGot(empty)),
+        BuyContextLoaded(1, Ok(empty)),
       ).state;
       expect(_entryOf(entry).amount, isA<AmountNoMarket>());
       final reload = transitionBuyFlow(entry, const BuyFundingReturned());
       expect(reload.effects, [const BuyReloadForDetour()]);
       final funded = transitionBuyFlow(
         reload.state,
-        BuyDetourLoaded(ReadGot(buyContext)),
+        BuyDetourLoaded(Ok(buyContext)),
       );
       expect(_entryOf(funded.state).amount, isA<AmountEditing>());
       expect(funded.effects, [const BuyFetchRate(ExchangeCatalog.cad)]);
@@ -354,7 +357,7 @@ void main() {
       );
       final back = transitionBuyFlow(
         reload.state,
-        BuyDetourLoaded(ReadGot(rich)),
+        BuyDetourLoaded(Ok(rich)),
       ).state;
       expect(
         _entryOf(back).amount,
@@ -368,9 +371,9 @@ void main() {
     test('a KYC level too low is the KYC detour; Back re-checks the draft', () {
       final low = buyContextWith(summary: buySummaryWith(groups: const []));
       final entry = applyBuy(buyLoadingState, [
-        BuyContextLoaded(1, ReadGot(low)),
+        BuyContextLoaded(1, Ok(low)),
         const BuyAmountChanged(
-          AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+          AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
         ),
         BuyDestinationChanged(
           PickResolved(buyLiquidWallet.option, const Ok(buyLiquidDestination)),
@@ -409,7 +412,10 @@ void main() {
       final verifying = transitionBuyFlow(
         buyOrderingState,
         const BuyOrderChanged(
-          OrderCreateAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+          OrderCreateAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+          ),
         ),
       );
       expect(
@@ -427,7 +433,10 @@ void main() {
       final failed = transitionBuyFlow(
         buyOrderingState,
         const BuyOrderChanged(
-          OrderCreateAnswered(1, GateAdmitted(WriteRefused(ExchangeRefusal()))),
+          OrderCreateAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
+          ),
         ),
       ).state;
       final back = transitionBuyFlow(failed, const BuyBackPressed()).state;
@@ -486,9 +495,9 @@ void main() {
         recordedAt: DateTime.utc(2026, 11, 24),
       );
       final review = applyBuy(buyFlowStart(buySession).state, [
-        BuyContextLoaded(1, ReadGot(buyContextWith(openEntries: [entry]))),
+        BuyContextLoaded(1, Ok(buyContextWith(openEntries: [entry]))),
         const BuyAmountChanged(
-          AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+          AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
         ),
         BuyDestinationChanged(
           PickResolved(buyLiquidWallet.option, const Ok(buyLiquidDestination)),
@@ -537,7 +546,10 @@ void main() {
       final verifying = transitionBuyFlow(
         buyConfirmingState,
         const BuyConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+          ConfirmAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+          ),
         ),
       );
       expect(verifying.effects, [
@@ -566,7 +578,10 @@ void main() {
       final next = transitionBuyFlow(
         buyConfirmingState,
         const BuyConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteRefused(ExchangeRefusal()))),
+          ConfirmAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
+          ),
         ),
       );
       expect(
@@ -597,14 +612,15 @@ void main() {
       final verifying = transitionBuyFlow(
         buyConfirmingState,
         const BuyConfirmChanged(
-          ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+          ConfirmAnswered(
+            1,
+            GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+          ),
         ),
       ).state;
       final next = transitionBuyFlow(
         verifying,
-        BuyConfirmChanged(
-          ConfirmVerified(1, buyConfirmCheck(ReadGot(buyOrder()))),
-        ),
+        BuyConfirmChanged(ConfirmVerified(1, buyConfirmCheck(Ok(buyOrder())))),
       );
       expect(next.state, isA<BuyReview>());
     });
@@ -631,7 +647,7 @@ void main() {
       );
       final next = transitionBuyFlow(
         buyDoneState,
-        BuyWatchChanged(WatchPolled('b-1', 1, ReadGot(completed))),
+        BuyWatchChanged(WatchPolled('b-1', 1, Ok(completed))),
       );
       expect(next.effects, [
         const BuyWatchEffect(WatchStop('b-1')),
@@ -704,12 +720,14 @@ void main() {
         OrderCreateAnswered(
           1,
           GateAdmitted(
-            WriteRefused(
-              ExchangeRefusal(
-                orderLimit: const ExchangeOrderLimit(
-                  ExchangeOrderAmountBound.minimum,
-                  20,
-                  'CAD',
+            Err(
+              ExchangeWriteRefusedFailure(
+                ExchangeRefusal(
+                  orderLimit: const ExchangeOrderLimit(
+                    ExchangeOrderAmountBound.minimum,
+                    20,
+                    'CAD',
+                  ),
                 ),
               ),
             ),

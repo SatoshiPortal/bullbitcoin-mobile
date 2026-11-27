@@ -1,7 +1,7 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
-import 'package:primitives/primitives.dart' show Failure;
+import 'package:primitives/primitives.dart' show Err, Failure, Ok, Result;
 
 /// The buy flow (composition §5, Buy column): session → account and wallets
 /// → amount from a funded balance (KYC and funding detours come back to the
@@ -350,25 +350,29 @@ const buyOutcomePolicy = OutcomePolicy<BuyOrder>(
 /// The re-read of a buy whose confirm outcome is unknown: in progress or
 /// completed means it was confirmed; awaiting confirmation or ended means
 /// not; an unknown status can't tell.
-ConfirmCheck<BuyOrder> buyConfirmCheck(ExchangeRead<Order> read) =>
-    switch (read) {
-      ReadGot(value: final BuyOrder order) => switch (order.orderStatus) {
-        OrderStatus.inProgress ||
-        OrderStatus.completed => ConfirmSeenApplied(order),
-        OrderStatus.awaitingConfirmation ||
-        OrderStatus.canceled ||
-        OrderStatus.expired ||
-        OrderStatus.orderExpired ||
-        OrderStatus.rejected ||
-        OrderStatus.failed => const ConfirmSeenNotApplied(),
-        OrderStatus.unknown => const ConfirmCheckFailed(ReadProblemMalformed()),
-      },
-      ReadGot() => const ConfirmCheckFailed(ReadProblemMalformed()),
-      ReadSessionRejected() => const ConfirmCheckSessionRejected(),
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => ConfirmCheckFailed(ReadProblem.of(read)!),
-    };
+ConfirmCheck<BuyOrder> buyConfirmCheck(
+  Result<Order, ExchangeReadFailure> read,
+) => switch (read) {
+  Ok(value: final BuyOrder order) => switch (order.orderStatus) {
+    OrderStatus.inProgress ||
+    OrderStatus.completed => ConfirmSeenApplied(order),
+    OrderStatus.awaitingConfirmation ||
+    OrderStatus.canceled ||
+    OrderStatus.expired ||
+    OrderStatus.orderExpired ||
+    OrderStatus.rejected ||
+    OrderStatus.failed => const ConfirmSeenNotApplied(),
+    OrderStatus.unknown => const ConfirmCheckFailed(ReadProblemMalformed()),
+  },
+  Ok() => const ConfirmCheckFailed(ReadProblemMalformed()),
+  Err(failure: ExchangeSessionRejectedFailure()) =>
+    const ConfirmCheckSessionRejected(),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => ConfirmCheckFailed(ReadProblem.of(read)!),
+};
 
 typedef BuyDestinationState = PickState<DestinationOption, Destination>;
 typedef BuyDestinationEvent = PickEvent<DestinationOption, Destination>;
@@ -572,7 +576,7 @@ sealed class BuyFlowEvent {
 
 final class BuyContextLoaded extends BuyFlowEvent {
   final int attempt;
-  final ExchangeRead<BuyContext> read;
+  final Result<BuyContext, ExchangeReadFailure> read;
 
   const BuyContextLoaded(this.attempt, this.read);
 }
@@ -633,7 +637,7 @@ final class BuyFundingReturned extends BuyFlowEvent {
 
 /// The account read after a detour.
 final class BuyDetourLoaded extends BuyFlowEvent {
-  final ExchangeRead<BuyContext> read;
+  final Result<BuyContext, ExchangeReadFailure> read;
 
   const BuyDetourLoaded(this.read);
 }
@@ -1161,15 +1165,15 @@ BuyFlowNext _entry(BuyEntry state, BuyFlowEvent event) => switch (event) {
     AmountKycDetour() ||
     AmountFundingDetour() ||
     AmountNoMarket() => switch (read) {
-      ReadGot(value: final loaded) => _detourReturned(
+      Ok(value: final loaded) => _detourReturned(
         state,
         BuyOpen(state.open.session, state.open.context.withAccount(loaded)),
       ),
-      ReadSessionRejected() => _ended,
+      Err(failure: ExchangeSessionRejectedFailure()) => _ended,
       // The detour page stays; returning again reads again.
-      ReadMissing() ||
-      ReadUnreachable() ||
-      ReadMalformed() => BuyFlowNext.stay(state),
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(failure: ExchangeMalformedFailure()) => BuyFlowNext.stay(state),
     },
     AmountEditing() ||
     AmountDone() ||

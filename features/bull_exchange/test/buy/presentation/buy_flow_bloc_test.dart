@@ -17,8 +17,9 @@ import '../buy_usecase_fakes.dart';
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<ExchangeWrite<BuyOrder>>> confirmAnswer = Completer();
-  ExchangeRead<Order> reread = ReadGot(buyOrder());
+  Completer<GatedWrite<Result<BuyOrder, ExchangeWriteFailure>>> confirmAnswer =
+      Completer();
+  Result<Order, ExchangeReadFailure> reread = Ok(buyOrder());
 
   void _called(ExchangeSession session, String call) {
     sessions.add(session);
@@ -33,11 +34,11 @@ final class _Calls {
     accessChanges: accessChanges,
     loadContext: FakeLoadBuyContextUsecase((session) async {
       _called(session, 'load');
-      return ReadGot(buyContext);
+      return Ok(buyContext);
     }),
     getMarketRate: FakeGetMarketRateUsecase((_, market) async {
       log.add('rate ${market.currency.code}');
-      return const ReadGot(50000.0);
+      return const Ok(50000.0);
     }),
     getReceiveAddress: FakeGetBuyReceiveAddressUsecase((option) async {
       log.add('receive ${option.walletId}');
@@ -49,10 +50,7 @@ final class _Calls {
     }),
     createOrder: FakeCreateBuyOrderUsecase((session, effect) async {
       _called(session, 'create ${effect.attempt}');
-      return OrderCreateAnswered(
-        effect.attempt,
-        GateAdmitted(WriteDone(buyOrder())),
-      );
+      return OrderCreateAnswered(effect.attempt, GateAdmitted(Ok(buyOrder())));
     }),
     findCreatedOrder: FakeFindCreatedBuyOrderUsecase((
       session,
@@ -60,11 +58,11 @@ final class _Calls {
       sentAt,
     ) async {
       _called(session, 'find');
-      return const ReadMissing();
+      return const Err(ExchangeMissingFailure());
     }),
     refreshOrder: FakeRefreshBuyOrderUsecase((session, orderId) async {
       _called(session, 'refresh $orderId');
-      return ReadGot(buyOrder());
+      return Ok(buyOrder());
     }),
     confirmOrder: FakeConfirmBuyOrderUsecase((session, effect) async {
       _called(session, 'confirm ${effect.attempt}');
@@ -76,7 +74,7 @@ final class _Calls {
     }),
     getBuyOrder: FakeGetBuyOrderUsecase((session, orderId) async {
       _called(session, 'watch $orderId');
-      return ReadGot(buyOrder(status: OrderStatus.inProgress));
+      return Ok(buyOrder(status: OrderStatus.inProgress));
     }),
     releasePayjoin: FakeReleaseBuyPayjoinUsecase(
       (order) async => log.add('release ${order.orderId}'),
@@ -167,9 +165,9 @@ void main() {
       ]);
       expect(calls.log.where((l) => l.startsWith('confirm')), ['confirm 1']);
       expect(bloc.state, isA<BuyConfirming>());
-      calls.reread = ReadGot(buyOrder(status: OrderStatus.inProgress));
+      calls.reread = Ok(buyOrder(status: OrderStatus.inProgress));
       calls.confirmAnswer.complete(
-        const GateAdmitted(WriteOutcomeUnknown('lost')),
+        const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
       );
       await _settle();
       expect(calls.log, contains('read b-1'));
@@ -210,7 +208,7 @@ void main() {
       await send([BuyConfirmPressed(buyBeforeDeadline)]);
       calls.confirmAnswer.complete(
         GateAdmitted(
-          WriteDone(
+          Ok(
             buyOrder(
               status: OrderStatus.completed,
               payout: OrderPayoutStatus.completed,

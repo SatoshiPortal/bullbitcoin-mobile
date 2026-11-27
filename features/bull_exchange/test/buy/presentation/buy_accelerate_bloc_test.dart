@@ -10,6 +10,8 @@ import '../../orders/order_usecase_fakes.dart';
 import '../buy_fixtures.dart';
 import '../buy_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _quote = AccelerateQuote(
   buyOrder(status: OrderStatus.inProgress),
   const AccelerateFee(satPerVbyte: 2.5, sats: 350, fiatPerBitcoin: 50000),
@@ -21,8 +23,9 @@ final _quote = AccelerateQuote(
 final class _Calls {
   final log = <String>[];
   final sessions = <ExchangeSession>{};
-  Completer<GatedWrite<ExchangeWrite<BuyOrder>>> answer = Completer();
-  ExchangeRead<Order> reread = ReadGot(
+  Completer<GatedWrite<Result<BuyOrder, ExchangeWriteFailure>>> answer =
+      Completer();
+  Result<Order, ExchangeReadFailure> reread = Ok(
     buyOrder(status: OrderStatus.inProgress),
   );
 
@@ -40,7 +43,7 @@ final class _Calls {
     accessChanges: accessChanges,
     loadQuote: FakeLoadAccelerateQuoteUsecase((session, orderId) async {
       _called(session, 'load $orderId');
-      return ReadGot(_quote);
+      return Ok(_quote);
     }),
     accelerateOrder: FakeAccelerateBuyOrderUsecase((session, effect) async {
       _called(session, 'accelerate ${effect.attempt}');
@@ -85,7 +88,7 @@ void main() {
     await _settle();
     expect(calls.log, ['load b-1', 'accelerate 1']);
     calls.answer.complete(
-      GateAdmitted(WriteDone(buyOrder(status: OrderStatus.inProgress))),
+      GateAdmitted(Ok(buyOrder(status: OrderStatus.inProgress))),
     );
     await _settle();
     expect(bloc.state, isA<AccelerateDone>());
@@ -96,7 +99,9 @@ void main() {
     await _settle();
     bloc.add(const AccelerateConfirmPressed());
     await _settle();
-    calls.answer.complete(const GateAdmitted(WriteOutcomeUnknown('lost')));
+    calls.answer.complete(
+      const GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+    );
     await _settle();
     expect(calls.log.last, 'read b-1');
     expect(

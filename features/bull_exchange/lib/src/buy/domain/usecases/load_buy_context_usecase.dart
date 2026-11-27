@@ -24,7 +24,9 @@ class LoadBuyContextUsecase {
     this._listed,
   );
 
-  Future<ExchangeRead<BuyContext>> execute(ExchangeSession session) async {
+  Future<Result<BuyContext, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) async {
     final summary = readOfResult(
       await _exchange.getUserSummary(session.environment),
     );
@@ -40,10 +42,12 @@ class LoadBuyContextUsecase {
       Err() => const <UnknownWrite>[],
     };
     if (listed == null) {
-      return const ReadUnreachable('payout wallets', isNetwork: false);
+      return const Err(
+        ExchangeUnreachableFailure('payout wallets', isNetwork: false),
+      );
     }
     return switch (summary) {
-      ReadGot(:final value) => ReadGot(
+      Ok(:final value) => Ok(
         BuyContext(
           summary: value,
           wallets: listed,
@@ -51,13 +55,19 @@ class LoadBuyContextUsecase {
           openEntries: entries,
         ),
       ),
-      ReadMissing() => const ReadMissing(),
-      ReadUnreachable(:final reason, :final isNetwork) => ReadUnreachable(
-        reason,
-        isNetwork: isNetwork,
+      Err(failure: ExchangeMissingFailure()) => const Err(
+        ExchangeMissingFailure(),
       ),
-      ReadSessionRejected(:final why) => ReadSessionRejected(why),
-      ReadMalformed(:final reason) => ReadMalformed(reason),
+      Err(
+        failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+      ) =>
+        Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork)),
+      Err(failure: ExchangeSessionRejectedFailure(:final why)) => Err(
+        ExchangeSessionRejectedFailure(why),
+      ),
+      Err(failure: ExchangeMalformedFailure(:final reason)) => Err(
+        ExchangeMalformedFailure(reason),
+      ),
     };
   }
 

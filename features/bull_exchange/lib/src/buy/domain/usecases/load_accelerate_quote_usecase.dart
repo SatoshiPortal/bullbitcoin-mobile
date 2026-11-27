@@ -20,24 +20,26 @@ class LoadAccelerateQuoteUsecase {
 
   const LoadAccelerateQuoteUsecase(this._exchange, this._fees, this._getOrder);
 
-  Future<ExchangeRead<AccelerateQuote>> execute(
+  Future<Result<AccelerateQuote, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) async {
     final BuyOrder order;
     switch (await _getOrder.execute(session, orderId)) {
-      case ReadGot(value: final BuyOrder value):
+      case Ok(value: final BuyOrder value):
         order = value;
-      case ReadGot():
-        return const ReadMalformed('not a buy order');
-      case ReadMissing():
-        return const ReadMissing();
-      case ReadUnreachable(:final reason, :final isNetwork):
-        return ReadUnreachable(reason, isNetwork: isNetwork);
-      case ReadSessionRejected(:final why):
-        return ReadSessionRejected(why);
-      case ReadMalformed(:final reason):
-        return ReadMalformed(reason);
+      case Ok():
+        return const Err(ExchangeMalformedFailure('not a buy order'));
+      case Err(failure: ExchangeMissingFailure()):
+        return const Err(ExchangeMissingFailure());
+      case Err(
+        failure: ExchangeUnreachableFailure(:final reason, :final isNetwork),
+      ):
+        return Err(ExchangeUnreachableFailure(reason, isNetwork: isNetwork));
+      case Err(failure: ExchangeSessionRejectedFailure(:final why)):
+        return Err(ExchangeSessionRejectedFailure(why));
+      case Err(failure: ExchangeMalformedFailure(:final reason)):
+        return Err(ExchangeMalformedFailure(reason));
     }
     final FeeOptions estimate;
     switch (await _fees.estimate(
@@ -46,7 +48,9 @@ class LoadAccelerateQuoteUsecase {
       case Ok(:final value):
         estimate = value;
       case Err():
-        return const ReadUnreachable('network fees', isNetwork: false);
+        return const Err(
+          ExchangeUnreachableFailure('network fees', isNetwork: false),
+        );
     }
     final double fiatPerBitcoin;
     switch (await _exchange.limitOrders.getRate(session, order.payinCurrency)) {
@@ -59,7 +63,7 @@ class LoadAccelerateQuoteUsecase {
       Ok(:final value) => value,
       Err() => const <UnknownWrite>[],
     };
-    return ReadGot(
+    return Ok(
       AccelerateQuote(
         order,
         AccelerateFee(

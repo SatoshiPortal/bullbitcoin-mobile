@@ -7,7 +7,7 @@ import 'package:primitives/primitives.dart';
 
 import '../../dca_fixtures.dart';
 
-Future<ExchangeRead<DcaContext>> _load({
+Future<Result<DcaContext, ExchangeReadFailure>> _load({
   Result<UserSummary, ExchangeFailure>? summary,
   Result<DefaultWallets, ExchangeFailure> wallets = const Ok(dcaWallets),
   List<ExchangeEnvironment?>? asked,
@@ -31,7 +31,7 @@ void main() {
       'journal', () async {
     final asked = <ExchangeEnvironment?>[];
     final read = await _load(asked: asked);
-    final context = (read as ReadGot<DcaContext>).value;
+    final context = (read as Ok<DcaContext, ExchangeReadFailure>).value;
     expect(context.defaultWallets, dcaWallets);
     expect(context.openEntries, isEmpty);
     expect(asked, [ExchangeEnvironment.mainnet]);
@@ -46,11 +46,19 @@ void main() {
           ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
         ),
       ),
-      isA<ReadSessionRejected<DcaContext>>(),
+      isA<Err<DcaContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
     );
     expect(
       await _load(wallets: const Err(ExchangeNetworkFailure())),
-      isA<ReadUnreachable<DcaContext>>(),
+      isA<Err<DcaContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
     );
   });
 
@@ -66,10 +74,14 @@ void main() {
             sessionId: 'later',
           ),
         ),
-        isA<ReadSessionRejected<DcaContext>>().having(
-          (r) => r.why,
-          'why',
-          ExchangeSessionRejection.sessionChanged,
+        isA<Err<DcaContext, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>().having(
+            (r) => r.why,
+            'why',
+            ExchangeSessionRejection.sessionChanged,
+          ),
         ),
       );
     },

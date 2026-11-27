@@ -5,7 +5,7 @@ import 'package:bull_ui/testing.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit;
+import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 
 import '../buy_fixtures.dart';
 
@@ -44,7 +44,7 @@ void main() {
   );
   final ready = transitionAccelerateFlow(
     loading,
-    AccelerateLoaded(1, ReadGot(quote)),
+    AccelerateLoaded(1, Ok(quote)),
   ).state;
 
   // The accelerate route is often opened with nothing under it (from an

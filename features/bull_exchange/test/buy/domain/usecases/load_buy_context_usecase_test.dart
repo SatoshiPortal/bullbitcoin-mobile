@@ -29,7 +29,7 @@ final _liquid = walletRegistrationForTesting(
   signer: WalletSigner.local,
 );
 
-Future<(ExchangeRead<BuyContext>, BuyListedWallets)> _load({
+Future<(Result<BuyContext, ExchangeReadFailure>, BuyListedWallets)> _load({
   required BuyTestInventory inventory,
   bool? buyEnabled = true,
   Future<Result<UserSummary, ExchangeFailure>> Function(ExchangeEnvironment?)?
@@ -65,7 +65,7 @@ void main() {
         return Ok(buySummary);
       },
     );
-    final context = (read as ReadGot<BuyContext>).value;
+    final context = (read as Ok<BuyContext, ExchangeReadFailure>).value;
     expect(context.summary, buySummary);
     expect(context.wallets, const [
       BuyPayoutWallet(
@@ -98,7 +98,10 @@ void main() {
         }),
         buyEnabled: enabled,
       );
-      expect((read as ReadGot<BuyContext>).value.payjoinAllowed, isFalse);
+      expect(
+        (read as Ok<BuyContext, ExchangeReadFailure>).value.payjoinAllowed,
+        isFalse,
+      );
     }
   });
 
@@ -110,9 +113,13 @@ void main() {
     );
     expect(
       read,
-      isA<ReadUnreachable<BuyContext>>()
-          .having((r) => r.reason, 'reason', 'payout wallets')
-          .having((r) => r.isNetwork, 'isNetwork', isFalse),
+      isA<Err<BuyContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>()
+            .having((r) => r.reason, 'reason', 'payout wallets')
+            .having((r) => r.isNetwork, 'isNetwork', isFalse),
+      ),
     );
   });
 
@@ -126,6 +133,13 @@ void main() {
         ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
       ),
     );
-    expect(read, isA<ReadSessionRejected<BuyContext>>());
+    expect(
+      read,
+      isA<Err<BuyContext, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
   });
 }

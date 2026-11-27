@@ -9,19 +9,19 @@ import 'package:sync/write.dart' show WalletNativeLifecycle;
 /// The buy order calls of one test: each answers what it was given and
 /// throws when the test gave none; every call is logged.
 final class BuyTestOrders extends Fake implements OrdersRepository {
-  ExchangeWrite<BuyOrder>? placed;
+  Result<BuyOrder, ExchangeWriteFailure>? placed;
   Result<List<Order>, ExchangeFailure>? listed;
   Result<BuyOrder, ExchangeFailure>? refreshed;
-  ExchangeWrite<BuyOrder>? confirmed;
+  Result<BuyOrder, ExchangeWriteFailure>? confirmed;
   Result<Order, ExchangeFailure>? read;
-  ExchangeWrite<BuyOrder>? accelerated;
+  Result<BuyOrder, ExchangeWriteFailure>? accelerated;
   final log = <String>[];
 
   T _given<T>(T? answer, String call) =>
       answer ?? (throw StateError('unexpected $call'));
 
   @override
-  Future<ExchangeWrite<BuyOrder>> placeBuyOrder({
+  Future<Result<BuyOrder, ExchangeWriteFailure>> placeBuyOrder({
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
@@ -55,7 +55,9 @@ final class BuyTestOrders extends Fake implements OrdersRepository {
   }
 
   @override
-  Future<ExchangeWrite<BuyOrder>> confirmBuyOrder(String orderId) async {
+  Future<Result<BuyOrder, ExchangeWriteFailure>> confirmBuyOrder(
+    String orderId,
+  ) async {
     log.add('confirm $orderId');
     return _given(confirmed, 'confirm');
   }
@@ -67,7 +69,9 @@ final class BuyTestOrders extends Fake implements OrdersRepository {
   }
 
   @override
-  Future<ExchangeWrite<BuyOrder>> accelerateBuyOrder(String orderId) async {
+  Future<Result<BuyOrder, ExchangeWriteFailure>> accelerateBuyOrder(
+    String orderId,
+  ) async {
     log.add('accelerate $orderId');
     return _given(accelerated, 'accelerate');
   }

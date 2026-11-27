@@ -2,6 +2,7 @@ import 'package:bull_exchange/src/buy/domain/buy_flow.dart';
 import 'package:bull_exchange/src/buy/domain/buy_payjoin_uris.dart';
 import 'package:bull_exchange/src/orders/domain/usecases/find_created_order_usecase.dart';
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 /// After a buy create whose outcome is unknown: the shared find of the
 /// order it made; a found order takes the payjoin URI that create attached.
@@ -11,7 +12,7 @@ class FindCreatedBuyOrderUsecase {
 
   const FindCreatedBuyOrderUsecase(this._findCreatedOrder, this._uris);
 
-  Future<ExchangeRead<BuyOrder>> execute(
+  Future<Result<BuyOrder, ExchangeReadFailure>> execute(
     ExchangeSession session,
     BuyRequest request,
     DateTime sentAt,
@@ -21,9 +22,9 @@ class FindCreatedBuyOrderUsecase {
       request.journal,
       sentAt,
     );
-    if (read case ReadGot(value: final found)) {
+    if (read case Ok(value: final found)) {
       _uris.adopt(request, found.orderId);
-      return ReadGot(_uris.withBip21(found));
+      return Ok(_uris.withBip21(found));
     }
     return read;
   }

@@ -10,7 +10,7 @@ import '../../../payin/payin_fixtures.dart';
 import '../../buy_fixtures.dart';
 import '../../buy_test_ports.dart';
 
-Future<ExchangeRead<BuyOrder>> _get(
+Future<Result<BuyOrder, ExchangeReadFailure>> _get(
   BuyTestOrders orders,
   BuyPayjoinUris uris,
 ) => GetBuyOrderUsecase(
@@ -23,17 +23,31 @@ void main() {
     final orders = BuyTestOrders()..read = Ok(buyOrder());
     final uris = BuyPayjoinUris()..attachToOrder('b-1', 'bitcoin:x?pj=y');
     final read = await _get(orders, uris);
-    expect((read as ReadGot<BuyOrder>).value.bip21URI, 'bitcoin:x?pj=y');
+    expect(
+      (read as Ok<BuyOrder, ExchangeReadFailure>).value.bip21URI,
+      'bitcoin:x?pj=y',
+    );
     expect(orders.log, ['read b-1']);
   });
 
   test('another order class is malformed; a failure passes', () async {
     final sell = BuyTestOrders()..read = Ok(payinOrder());
-    expect(await _get(sell, BuyPayjoinUris()), isA<ReadMalformed<BuyOrder>>());
+    expect(
+      await _get(sell, BuyPayjoinUris()),
+      isA<Err<BuyOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeMalformedFailure>(),
+      ),
+    );
     final failed = BuyTestOrders()..read = const Err(ExchangeNetworkFailure());
     expect(
       await _get(failed, BuyPayjoinUris()),
-      isA<ReadUnreachable<BuyOrder>>(),
+      isA<Err<BuyOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
     );
   });
 }

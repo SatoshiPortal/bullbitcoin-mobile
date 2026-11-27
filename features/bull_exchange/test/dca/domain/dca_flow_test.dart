@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../dca_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 final _states = <String, DcaFlowState>{
   'loading': dcaLoadingState,
   'setup': dcaSetupState,
@@ -17,21 +19,19 @@ final _states = <String, DcaFlowState>{
 };
 
 final _events = <String, DcaFlowEvent>{
-  'contextLoaded': DcaContextLoaded(1, ReadGot(dcaContext)),
+  'contextLoaded': DcaContextLoaded(1, Ok(dcaContext)),
   'retry': const DcaRetryPressed(),
   'amount': const DcaAmountChanged(AmountTyped('5')),
   'frequency': const DcaFrequencyPicked(DcaBuyFrequency.daily),
   'continue': const DcaContinuePressed(),
   'fundingReturned': const DcaFundingReturned(),
   'kycReturned': const DcaKycReturned(),
-  'detourLoaded': DcaDetourLoaded(ReadGot(dcaContext)),
+  'detourLoaded': DcaDetourLoaded(Ok(dcaContext)),
   'payout': const DcaPayoutChosen(dcaPayout),
   'walletsReturned': const DcaDefaultWalletsReturned(),
-  'walletsLoaded': const DcaDefaultWalletsLoaded(0, ReadGot(DefaultWallets())),
+  'walletsLoaded': const DcaDefaultWalletsLoaded(0, Ok(DefaultWallets())),
   'confirmPressed': const DcaConfirmPressed(),
-  'confirm': DcaConfirmChanged(
-    ConfirmAnswered(1, GateAdmitted(WriteDone(dcaPlan))),
-  ),
+  'confirm': DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
   'back': const DcaBackPressed(),
   'donePressed': const DcaDonePressed(),
   'session': const DcaSessionChanged(buyOtherSession),
@@ -123,7 +123,10 @@ void main() {
   test('a failed load has a Retry that loads again', () {
     final failed = transitionDcaFlow(
       dcaLoadingState,
-      const DcaContextLoaded(1, ReadUnreachable('down', isNetwork: true)),
+      const DcaContextLoaded(
+        1,
+        Err(ExchangeUnreachableFailure('down', isNetwork: true)),
+      ),
     ).state;
     expect((failed as DcaLoading).load, isA<ContextFailed<DcaContext>>());
     expect(transitionDcaFlow(failed, const DcaRetryPressed()).effects, [
@@ -165,7 +168,7 @@ void main() {
     );
     final back = transitionDcaFlow(
       reload.state,
-      DcaDetourLoaded(ReadGot(rich)),
+      DcaDetourLoaded(Ok(rich)),
     ).state;
     expect(
       (back as DcaSetup).amount,
@@ -177,9 +180,9 @@ void main() {
   test('a KYC level too low is the KYC detour; it returns to the draft', () {
     final low = dcaContextWith(summary: buySummaryWith(groups: const []));
     final detour = applyDca(dcaLoadingState, [
-      DcaContextLoaded(1, ReadGot(low)),
+      DcaContextLoaded(1, Ok(low)),
       const DcaAmountChanged(
-        AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+        AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
       ),
       const DcaAmountChanged(AmountTyped('10')),
       const DcaFrequencyPicked(DcaBuyFrequency.daily),
@@ -190,7 +193,7 @@ void main() {
     expect(reload.effects, [const DcaReloadForDetour()]);
     final back = transitionDcaFlow(
       reload.state,
-      DcaDetourLoaded(ReadGot(dcaContext)),
+      DcaDetourLoaded(Ok(dcaContext)),
     ).state;
     expect(
       (back as DcaSetup).amount,
@@ -203,7 +206,7 @@ void main() {
     final empty = dcaContextWith(summary: buySummaryWith(balances: const []));
     final setup = transitionDcaFlow(
       dcaLoadingState,
-      DcaContextLoaded(1, ReadGot(empty)),
+      DcaContextLoaded(1, Ok(empty)),
     ).state;
     expect((setup as DcaSetup).amount, isA<AmountNoMarket>());
     expect(transitionDcaFlow(setup, const DcaFundingReturned()).effects, [
@@ -220,13 +223,13 @@ void main() {
     expect(asked.effects, [const DcaLoadDefaultWallets(2)]);
     final stale = transitionDcaFlow(
       asked.state,
-      const DcaDefaultWalletsLoaded(1, ReadGot(DefaultWallets())),
+      const DcaDefaultWalletsLoaded(1, Ok(DefaultWallets())),
     );
     expect(identical(stale.state, asked.state), isTrue);
     final fresh =
         transitionDcaFlow(
               asked.state,
-              const DcaDefaultWalletsLoaded(2, ReadGot(DefaultWallets())),
+              const DcaDefaultWalletsLoaded(2, Ok(DefaultWallets())),
             ).state
             as DcaPayoutPick;
     expect(fresh.open.context.defaultAddressOf(BtcNetwork.bitcoin), isNull);
@@ -282,7 +285,10 @@ void main() {
   test('an unknown create re-reads the account, never creates again', () {
     final verifying = applyDca(dcaConfirmingState, const [
       DcaConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
     ]);
     expect(verifying.effects, [DcaConfirmEffect(ConfirmVerify(dcaPlan, 1))]);
@@ -310,11 +316,11 @@ void main() {
       dca: const UserDca(isActive: true, address: 'bc1qdefault'),
     );
     expect(
-      dcaConfirmCheck(dcaPlan, ReadGot(active)),
+      dcaConfirmCheck(dcaPlan, Ok(active)),
       isA<ConfirmSeenApplied<DcaPlan>>(),
     );
     expect(
-      dcaConfirmCheck(dcaPlan, ReadGot(buySummaryWith())),
+      dcaConfirmCheck(dcaPlan, Ok(buySummaryWith())),
       isA<ConfirmSeenNotApplied<DcaPlan>>(),
     );
   });
@@ -323,7 +329,7 @@ void main() {
     expect(
       transitionDcaFlow(
         dcaConfirmingState,
-        DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(WriteDone(dcaPlan)))),
+        DcaConfirmChanged(ConfirmAnswered(1, GateAdmitted(Ok(dcaPlan)))),
       ).effects,
       [const DcaActivated()],
     );
@@ -332,7 +338,10 @@ void main() {
   test('a refused create goes back to the review on Back', () {
     final failed = applyDca(dcaConfirmingState, const [
       DcaConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteRefused(ExchangeRefusal()))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteRefusedFailure(ExchangeRefusal()))),
+        ),
       ),
     ]).state;
     expect(

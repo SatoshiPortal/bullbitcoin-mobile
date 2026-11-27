@@ -22,7 +22,10 @@ void main() {
       ),
       uris,
     ).execute(buySession, 'b-1');
-    expect((read as ReadGot<BuyOrder>).value.bip21URI, 'bitcoin:x?pj=y');
+    expect(
+      (read as Ok<BuyOrder, ExchangeReadFailure>).value.bip21URI,
+      'bitcoin:x?pj=y',
+    );
     expect(orders.log, ['refresh b-1']);
     expect(environments, [ExchangeEnvironment.mainnet]);
   });
@@ -34,6 +37,13 @@ void main() {
       exchangeForTesting(orders: (_) => orders),
       BuyPayjoinUris(),
     ).execute(buySession, 'b-1');
-    expect(read, isA<ReadUnreachable<BuyOrder>>());
+    expect(
+      read,
+      isA<Err<BuyOrder, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

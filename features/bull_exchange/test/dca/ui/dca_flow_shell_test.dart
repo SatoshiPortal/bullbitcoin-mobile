@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../dca_fixtures.dart';
 
+import 'package:primitives/primitives.dart';
+
 Widget _field({
   required BtcNetwork type,
   required String value,
@@ -49,9 +51,9 @@ void main() {
   test('the KYC detour is a page over the setup', () {
     final low = dcaContextWith(summary: buySummaryWith(groups: const []));
     final detour = applyDca(dcaLoadingState, [
-      DcaContextLoaded(1, ReadGot(low)),
+      DcaContextLoaded(1, Ok(low)),
       const DcaAmountChanged(
-        AmountRateArrived(ExchangeCatalog.cad, ReadGot(50000.0)),
+        AmountRateArrived(ExchangeCatalog.cad, Ok(50000.0)),
       ),
       const DcaAmountChanged(AmountTyped('10')),
       const DcaFrequencyPicked(DcaBuyFrequency.daily),
@@ -63,7 +65,10 @@ void main() {
   test('an unverified create is its own page, not the review', () {
     final unverified = applyDca(dcaConfirmingState, const [
       DcaConfirmChanged(
-        ConfirmAnswered(1, GateAdmitted(WriteOutcomeUnknown('lost'))),
+        ConfirmAnswered(
+          1,
+          GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('lost'))),
+        ),
       ),
       DcaConfirmChanged(
         ConfirmVerified(1, ConfirmCheckFailed(ReadProblemMalformed())),

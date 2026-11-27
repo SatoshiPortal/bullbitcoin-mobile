@@ -1,6 +1,7 @@
 import 'package:bull_exchange/src/buy/domain/buy_payjoin_uris.dart';
 import 'package:bull_exchange/src/exchange_answers.dart';
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 /// Asks the exchange for a fresh quote on the buy order, keeping the
 /// payjoin URI its create attached.
@@ -10,13 +11,13 @@ class RefreshBuyOrderUsecase {
 
   const RefreshBuyOrderUsecase(this._exchange, this._uris);
 
-  Future<ExchangeRead<BuyOrder>> execute(
+  Future<Result<BuyOrder, ExchangeReadFailure>> execute(
     ExchangeSession session,
     String orderId,
   ) async => switch (readOfResult(
     await _exchange.orders(session.environment).refreshBuyOrder(orderId),
   )) {
-    ReadGot(:final value) => ReadGot(_uris.withBip21(value)),
+    Ok(:final value) => Ok(_uris.withBip21(value)),
     final other => other,
   };
 }
