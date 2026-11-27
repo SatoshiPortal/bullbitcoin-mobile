@@ -250,26 +250,6 @@ void main() {
     });
   }
 
-  test(
-    'updateCurrentPreferences without a session is not authenticated',
-    () async {
-      final exchange = exchangeForTesting(
-        access: fixedAccessForTesting(
-          const ExchangeAccessSignedOut(ExchangeEnvironment.testnet),
-        ),
-      );
-
-      final result = await exchange.updateCurrentPreferences(
-        const ExchangePreferencesPatch(dcaEnabled: false),
-      );
-
-      expect(
-        (result as Err<void, ExchangeFailure>).failure,
-        isA<ExchangeNotAuthenticatedFailure>(),
-      );
-    },
-  );
-
   test('a patch names only the fields it changes', () {
     expect(
       const ExchangePreferencesPatch(

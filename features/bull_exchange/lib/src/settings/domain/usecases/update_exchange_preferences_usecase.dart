@@ -5,8 +5,10 @@ import 'package:primitives/primitives.dart';
 import '../entities/exchange_preferences.dart';
 import '../exchange_settings_failure.dart';
 
+/// Saves [patch] on [session]'s account (`Exchange.updatePreferences`).
 typedef SaveAccountPreferences = Future<Result<void, ExchangeFailure>> Function(
-  ExchangePreferencesPatch,
+  ExchangeSession session,
+  ExchangePreferencesPatch patch,
 );
 
 class UpdateExchangePreferencesUsecase {
@@ -32,15 +34,17 @@ class UpdateExchangePreferencesUsecase {
     final session => await _writeGate.run(
       session,
       FinancialWriteKind.preferenceWrite,
-      () => _send(loaded: loaded, edited: edited),
+      () => _send(session, loaded: loaded, edited: edited),
     ),
   };
 
-  Future<Result<void, ExchangeSettingsFailure>> _send({
+  Future<Result<void, ExchangeSettingsFailure>> _send(
+    ExchangeSession session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
   }) async {
     final result = await _save(
+      session,
       ExchangePreferencesPatch(
         language: edited.language == loaded.language ? null : edited.language,
         currency: edited.currency == loaded.currency ? null : edited.currency,

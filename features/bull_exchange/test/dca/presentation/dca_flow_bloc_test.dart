@@ -51,7 +51,9 @@ final class _Calls {
       _called(session, 'summary');
       return reread;
     }),
-    activateDca: FakeActivateDcaUsecase(() async => log.add('activate')),
+    activateDca: FakeActivateDcaUsecase(
+      (session) async => _called(session, 'activate'),
+    ),
   );
 }
 

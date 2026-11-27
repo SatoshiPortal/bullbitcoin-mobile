@@ -50,9 +50,13 @@ class SyncExchangeCurrencyUsecase {
     )) {
       return const Ok(null);
     }
+    // An app-level change: it goes to whichever account is signed in now.
+    final session = _exchange.currentSession;
+    if (session == null) return const Ok(null);
     // The writer re-reads the account, so a currency it already has sends
     // nothing and the other preferences are kept.
-    switch (await _exchange.updateCurrentPreferences(
+    switch (await _exchange.updatePreferences(
+      session,
       ExchangePreferencesPatch(currency: currency.code),
     )) {
       case Ok() || Err(failure: ExchangeNotAuthenticatedFailure()):

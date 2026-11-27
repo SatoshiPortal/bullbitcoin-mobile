@@ -46,6 +46,7 @@ class _MockUploadKycDocument extends Mock implements _Upload {}
 
 abstract interface class _SavePreferences {
   Future<Result<void, ExchangeFailure>> savePreferences(
+    ExchangeSession session,
     ExchangePreferencesPatch patch,
   );
 }
@@ -289,10 +290,20 @@ void main() {
       emailNotificationsEnabled: true,
     );
 
-    setUpAll(() => registerFallbackValue(const ExchangePreferencesPatch()));
+    setUpAll(() {
+      registerFallbackValue(const ExchangePreferencesPatch());
+      registerFallbackValue(
+        const ExchangeSession(
+          environment: ExchangeEnvironment.mainnet,
+          epoch: 0,
+          sessionId: 'fallback',
+        ),
+      );
+    });
 
     void stubSave(_MockExchangeFacade facade, Result<void, ExchangeFailure> r) {
-      when(() => facade.savePreferences(any())).thenAnswer((_) async => r);
+      when(() => facade.savePreferences(any(), any()))
+          .thenAnswer((_) async => r);
     }
 
     const session = ExchangeSession(
@@ -341,7 +352,7 @@ void main() {
           isA<WriteGateBusy>(),
         ),
       );
-      verifyNever(() => facade.savePreferences(any()));
+      verifyNever(() => facade.savePreferences(any(), any()));
       release.complete('done');
       await running;
     });
@@ -366,7 +377,7 @@ void main() {
           isA<ExchangeSettingsNotAuthenticatedFailure>(),
         ),
       );
-      verifyNever(() => facade.savePreferences(any()));
+      verifyNever(() => facade.savePreferences(any(), any()));
     });
 
     for (final (name, edited, patch) in [
@@ -408,7 +419,7 @@ void main() {
           await save(facade, edited),
           isA<Ok<void, ExchangeSettingsFailure>>(),
         );
-        verify(() => facade.savePreferences(patch)).called(1);
+        verify(() => facade.savePreferences(session, patch)).called(1);
       });
     }
 

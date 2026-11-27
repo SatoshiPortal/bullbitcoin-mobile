@@ -53,7 +53,7 @@ void main() {
         ),
         settings: ExchangeSettingsHost(
           exchange: () => exchange,
-          savePreferences: (_) => fail('unexpected preference change'),
+          savePreferences: (_, _) => fail('unexpected preference change'),
           refreshSession: (_) async {},
           isSuperuser: (_) => false,
           securityUrl: (_) => null,

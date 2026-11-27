@@ -799,15 +799,6 @@ final class Exchange {
     currentSession: () => _access?.session,
   ).execute(session, patch);
 
-  /// [updatePreferences] for the session signed in now.
-  @useResult
-  Future<Result<void, ExchangeFailure>> updateCurrentPreferences(
-    ExchangePreferencesPatch patch,
-  ) async => switch (_access?.session) {
-    null => const Err(ExchangeNotAuthenticatedFailure()),
-    final session => updatePreferences(session, patch),
-  };
-
   WatchExchangeNotificationsUsecase? get _currentNotifications {
     final access = _access;
     final preferences = _sessionPreferences;

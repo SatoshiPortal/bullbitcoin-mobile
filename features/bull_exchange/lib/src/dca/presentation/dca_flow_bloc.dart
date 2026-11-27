@@ -116,7 +116,7 @@ class DcaFlowBloc extends Bloc<DcaFlowEvent, DcaFlowState> {
                 ),
           );
         case DcaActivated():
-          unawaited(_activateDca.execute());
+          unawaited(_activateDca.execute(session));
       }
     }
   }

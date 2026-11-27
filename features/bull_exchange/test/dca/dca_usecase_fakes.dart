@@ -35,12 +35,12 @@ final class FakeCreateDcaUsecase implements CreateDcaUsecase {
 }
 
 final class FakeActivateDcaUsecase implements ActivateDcaUsecase {
-  final Future<void> Function() answer;
+  final Future<void> Function(ExchangeSession session) answer;
 
   FakeActivateDcaUsecase(this.answer);
 
   @override
-  Future<void> execute() => answer();
+  Future<void> execute(ExchangeSession session) => answer(session);
 }
 
 final class FakeStopDcaUsecase implements StopDcaUsecase {

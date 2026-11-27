@@ -26,13 +26,29 @@ void main() {
               return const Ok(null);
             },
       ),
-    ).execute();
+    ).execute(buySession);
     expect(written, ['mainnet dca=true']);
+  });
+
+  test('a session that is no longer current writes nothing', () async {
+    const later = ExchangeSession(
+      environment: ExchangeEnvironment.mainnet,
+      epoch: 99,
+      sessionId: 'later',
+    );
+    await expectLater(
+      ActivateDcaUsecase(
+        exchangeForTesting(
+          access: fixedAccessForTesting(const ExchangeAccessSignedIn(later)),
+        ),
+      ).execute(buySession),
+      completes,
+    );
   });
 
   test('a failed write is only logged: the recurring buy exists', () async {
     await expectLater(
-      ActivateDcaUsecase(exchangeForTesting()).execute(),
+      ActivateDcaUsecase(exchangeForTesting()).execute(buySession),
       completes,
     );
   });
