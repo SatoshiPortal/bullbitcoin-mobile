@@ -38,7 +38,7 @@ import 'package:bull_exchange/bull_exchange.dart'
         SellRoute;
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
+import 'package:bull_ui/bull_ui.dart' show BullSnackBar, BullSpacing;
 import 'package:settings/settings.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_quick_actions/setup.dart';
@@ -86,7 +86,7 @@ import 'package:bull_payjoin/bull_payjoin.dart'
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
+import 'package:overview/overview.dart' show WalletHomeAppBar;
 import 'package:bb_mobile/features/wallet/ui/widgets/silent_wallet_balance.dart'
     show SilentWalletPresentation;
 import 'package:bull_ark/ark_foreground_setup.dart';
@@ -100,6 +100,17 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// The main router of the app. It is the root of the routing tree and contains
 /// all the entry-level routes.
 class AppRouter {
+  static PreferredSizeWidget walletHomeAppBar() => WalletHomeAppBar(
+    title: SuperuserTapUnlocker(
+      child: SizedBox.square(
+        dimension: BullSpacing.xxl,
+        child: Center(
+          child: Assets.logos.bbLogoSmall.image(width: 40, height: 40),
+        ),
+      ),
+    ),
+  );
+
   static SilentFeature mountSilent({
     required GetIt locator,
     required ReadSilentFingerprint readDefaultFingerprint,
@@ -366,7 +377,7 @@ class AppRouter {
               child: Scaffold(
                 // The app bar of the exchange tab is rendered by the
                 // ExchangeHomeScreen itself, as an overlay.
-                appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+                appBar: tabIndex == 0 ? walletHomeAppBar() : null,
                 extendBodyBehindAppBar: true,
                 body: child,
               ),
