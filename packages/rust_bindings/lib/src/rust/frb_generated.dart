@@ -10299,11 +10299,12 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
   LnurlPayBounds dco_decode_lnurl_pay_bounds(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
     return LnurlPayBounds(
       minSendableMsat: dco_decode_u_64(arr[0]),
       maxSendableMsat: dco_decode_u_64(arr[1]),
+      description: dco_decode_opt_String(arr[2]),
     );
   }
 
@@ -12477,9 +12478,11 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_minSendableMsat = sse_decode_u_64(deserializer);
     var var_maxSendableMsat = sse_decode_u_64(deserializer);
+    var var_description = sse_decode_opt_String(deserializer);
     return LnurlPayBounds(
       minSendableMsat: var_minSendableMsat,
       maxSendableMsat: var_maxSendableMsat,
+      description: var_description,
     );
   }
 
@@ -15094,6 +15097,7 @@ class BullSdkApiImpl extends BullSdkApiImplPlatform implements BullSdkApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_64(self.minSendableMsat, serializer);
     sse_encode_u_64(self.maxSendableMsat, serializer);
+    sse_encode_opt_String(self.description, serializer);
   }
 
   @protected

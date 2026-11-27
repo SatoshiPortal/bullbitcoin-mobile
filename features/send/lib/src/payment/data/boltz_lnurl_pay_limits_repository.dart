@@ -15,6 +15,7 @@ final class BoltzLnurlPayLimitsRepository implements LnurlPayLimitsRepository {
       final limits = LnurlPayLimits.fromMillisatoshis(
         bounds.minSendableMsat,
         bounds.maxSendableMsat,
+        description: bounds.description,
       );
       return limits == null
           ? const Err(SendLnurlNoPayableAmountFailure())

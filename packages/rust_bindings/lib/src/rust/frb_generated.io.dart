@@ -2711,6 +2711,7 @@ abstract class BullSdkApiImplPlatform extends BaseApiImpl<BullSdkWire> {
   ) {
     wireObj.min_sendable_msat = cst_encode_u_64(apiObj.minSendableMsat);
     wireObj.max_sendable_msat = cst_encode_u_64(apiObj.maxSendableMsat);
+    wireObj.description = cst_encode_opt_String(apiObj.description);
   }
 
   @protected
@@ -12896,13 +12897,17 @@ final class wire_cst_lnurl_pay_bounds extends ffi.Struct {
   @ffi.Uint64()
   external int max_sendable_msat;
 
+  external ffi.Pointer<wire_cst_list_prim_u_8_strict> description;
+
   static ffi.Pointer<wire_cst_lnurl_pay_bounds> $allocate(
     ffi.Allocator $allocator, {
     required int min_sendable_msat,
     required int max_sendable_msat,
+    required ffi.Pointer<wire_cst_list_prim_u_8_strict> description,
   }) => $allocator<wire_cst_lnurl_pay_bounds>()
     ..ref.min_sendable_msat = min_sendable_msat
-    ..ref.max_sendable_msat = max_sendable_msat;
+    ..ref.max_sendable_msat = max_sendable_msat
+    ..ref.description = description;
 }
 
 final class wire_cst_lwk_error extends ffi.Struct {

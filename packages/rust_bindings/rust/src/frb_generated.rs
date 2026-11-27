@@ -7435,6 +7435,7 @@ const _: fn() = || {
         let LnurlPayBounds = None::<boltz::api::lnurl::LnurlPayBounds>.unwrap();
         let _: u64 = LnurlPayBounds.min_sendable_msat;
         let _: u64 = LnurlPayBounds.max_sendable_msat;
+        let _: Option<String> = LnurlPayBounds.description;
     }
     {
         let LwkError = None::<lwk::api::error::LwkError>.unwrap();
@@ -9115,9 +9116,11 @@ impl SseDecode for boltz::api::lnurl::LnurlPayBounds {
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
         let mut var_minSendableMsat = <u64>::sse_decode(deserializer);
         let mut var_maxSendableMsat = <u64>::sse_decode(deserializer);
+        let mut var_description = <Option<String>>::sse_decode(deserializer);
         return boltz::api::lnurl::LnurlPayBounds {
             min_sendable_msat: var_minSendableMsat,
             max_sendable_msat: var_maxSendableMsat,
+            description: var_description,
         };
     }
 }
@@ -11311,6 +11314,7 @@ impl flutter_rust_bridge::IntoDart for FrbWrapper<boltz::api::lnurl::LnurlPayBou
         [
             self.0.min_sendable_msat.into_into_dart().into_dart(),
             self.0.max_sendable_msat.into_into_dart().into_dart(),
+            self.0.description.into_into_dart().into_dart(),
         ]
         .into_dart()
     }
@@ -13666,6 +13670,7 @@ impl SseEncode for boltz::api::lnurl::LnurlPayBounds {
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
         <u64>::sse_encode(self.min_sendable_msat, serializer);
         <u64>::sse_encode(self.max_sendable_msat, serializer);
+        <Option<String>>::sse_encode(self.description, serializer);
     }
 }
 
@@ -15729,6 +15734,7 @@ mod io {
             boltz::api::lnurl::LnurlPayBounds {
                 min_sendable_msat: self.min_sendable_msat.cst_decode(),
                 max_sendable_msat: self.max_sendable_msat.cst_decode(),
+                description: self.description.cst_decode(),
             }
         }
     }
@@ -16716,6 +16722,7 @@ mod io {
             Self {
                 min_sendable_msat: Default::default(),
                 max_sendable_msat: Default::default(),
+                description: core::ptr::null_mut(),
             }
         }
     }
@@ -20892,6 +20899,7 @@ mod io {
     pub struct wire_cst_lnurl_pay_bounds {
         min_sendable_msat: u64,
         max_sendable_msat: u64,
+        description: *mut wire_cst_list_prim_u_8_strict,
     }
     #[repr(C)]
     #[derive(Clone, Copy)]
