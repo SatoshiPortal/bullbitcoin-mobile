@@ -29,7 +29,11 @@ cleanup() {
       "$engine" rm -f "$container" >/dev/null || echo "Could not remove $container" >&2
     fi
   done
-  rm -rf -- "$state"
+  if [[ "$engine" == docker ]]; then
+    sudo rm -rf -- "$state"
+  else
+    rm -rf -- "$state"
+  fi
 }
 trap cleanup EXIT
 trap 'exit 130' INT
