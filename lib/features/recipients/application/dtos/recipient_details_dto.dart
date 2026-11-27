@@ -183,7 +183,9 @@ class RecipientDetailsDto {
         if (name == null) {
           throw StateError('name is required for SPEI_CLABE_MXN.');
         }
-        return SpeiClabeMxnDetails.create(
+        return (isSaved
+            ? SpeiClabeMxnDetails.saved
+            : SpeiClabeMxnDetails.create)(
           label: label,
           isDefault: def,
           isOwner: isOwner,
@@ -201,7 +203,7 @@ class RecipientDetailsDto {
         if (name == null) {
           throw StateError('name is required for SPEI_SMS_MXN.');
         }
-        return SpeiSmsMxnDetails.create(
+        return (isSaved ? SpeiSmsMxnDetails.saved : SpeiSmsMxnDetails.create)(
           label: label,
           isDefault: def,
           isOwner: isOwner,
@@ -220,7 +222,7 @@ class RecipientDetailsDto {
         if (name == null) {
           throw StateError('name is required for SPEI_CARD_MXN.');
         }
-        return SpeiCardMxnDetails.create(
+        return (isSaved ? SpeiCardMxnDetails.saved : SpeiCardMxnDetails.create)(
           label: label,
           isDefault: def,
           isOwner: isOwner,
@@ -282,9 +284,6 @@ class RecipientDetailsDto {
           name: name!,
         );
       case RecipientType.pseColombia:
-        if (name == null) {
-          throw StateError('name is required for PSE_COLOMBIA.');
-        }
         if (accountType == null) {
           throw StateError('accountType is required for PSE_COLOMBIA.');
         }
@@ -300,30 +299,92 @@ class RecipientDetailsDto {
         if (documentType == null) {
           throw StateError('documentType is required for PSE_COLOMBIA.');
         }
+        if (isSaved) {
+          return PseColombiaDetails.saved(
+            label: label,
+            isDefault: def,
+            isOwner: isOwner,
+            payee: _savedColombiaPayee(),
+            accountType: accountType!,
+            bankAccount: bankAccount!,
+            bankCode: bankCode!,
+            documentId: documentId!,
+            documentType: documentType!,
+          );
+        }
         return PseColombiaDetails.create(
           label: label,
           isDefault: def,
           isOwner: isOwner,
-          name: name!,
+          payee: _newColombiaContact(),
           accountType: accountType!,
           bankAccount: bankAccount!,
           bankCode: bankCode!,
-          bankName: bankName ?? '',
           documentId: documentId!,
           documentType: documentType!,
         );
       case RecipientType.nequiColombia:
+        // Nequi uses the phone number as the bank account: phoneNumber is
+        // set when the user entered it, bankAccount when the API returned it.
+        final nequiPhone = phoneNumber ?? bankAccount;
+        if (nequiPhone == null) {
+          throw StateError('phoneNumber is required for NEQUI_COLOMBIA.');
+        }
+        if (documentId == null) {
+          throw StateError('documentId is required for NEQUI_COLOMBIA.');
+        }
+        if (documentType == null) {
+          throw StateError('documentType is required for NEQUI_COLOMBIA.');
+        }
+        if (isSaved) {
+          return NequiColombiaDetails.saved(
+            label: label,
+            isDefault: def,
+            isOwner: isOwner,
+            payee: _savedColombiaPayee(),
+            phoneNumber: nequiPhone,
+            documentId: documentId!,
+            documentType: documentType!,
+          );
+        }
         return NequiColombiaDetails.create(
           label: label,
           isDefault: def,
           isOwner: isOwner,
-          // Nequi uses phone number as bank account and API field is bankAccount
-          // Phone number has a value when entered by user, bank account has a value when retrieved from API
-          phoneNumber: phoneNumber ?? bankAccount!,
+          payee: _newColombiaContact(),
+          phoneNumber: nequiPhone,
           documentId: documentId!,
           documentType: documentType!,
-          name: name!,
         );
     }
+  }
+
+  ColombiaPayee _savedColombiaPayee() => colombiaPayeeFromSaved(
+    isCorporate: isCorporate,
+    name: name,
+    lastname: lastname,
+    corporateName: corporateName,
+    email: email,
+  );
+
+  /// The holder and email of a new Colombian recipient; throws when one is
+  /// missing, as the API would refuse it.
+  ColombiaContact _newColombiaContact() {
+    if (email == null) {
+      throw StateError('email is required for a Colombian recipient.');
+    }
+    final CopHolder holder;
+    if (isCorporate ?? false) {
+      if (corporateName == null) {
+        throw StateError('corporateName is required for a company.');
+      }
+      holder = CopCorporate(corporateName: corporateName!);
+    } else {
+      if (name == null || lastname == null) {
+        throw StateError('name and lastname are required for a person.');
+      }
+      holder = CopIndividual(name: name!, lastname: lastname!);
+    }
+    return ColombiaContact(holder: holder, email: email!);
   }
 }

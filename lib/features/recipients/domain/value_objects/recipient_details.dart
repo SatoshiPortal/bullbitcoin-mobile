@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_field_checks.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/sepa_virtual_payee_status.dart';
 import 'package:meta/meta.dart';
@@ -316,6 +317,10 @@ class SepaEurDetails extends RecipientDetails {
 }
 
 // ── SPEI (MXN)
+//
+// `create` is for a new recipient and also checks the format of the CLABE,
+// phone or card number, so a mistyped one is never sent. `saved` is for a
+// recipient the API already holds, listed as it is.
 @immutable
 class SpeiClabeMxnDetails extends RecipientDetails {
   final String clabe;
@@ -330,6 +335,26 @@ class SpeiClabeMxnDetails extends RecipientDetails {
   });
 
   factory SpeiClabeMxnDetails.create({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String clabe,
+    required String name,
+  }) {
+    final problem = speiClabeProblem(clabe);
+    if (problem != null) {
+      throw ArgumentError('Invalid CLABE: ${problem.name}');
+    }
+    return SpeiClabeMxnDetails.saved(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      clabe: clabe,
+      name: name,
+    );
+  }
+
+  factory SpeiClabeMxnDetails.saved({
     String? label,
     bool isDefault = false,
     bool? isOwner,
@@ -379,6 +404,28 @@ class SpeiSmsMxnDetails extends RecipientDetails {
     required String phone,
     required String name,
   }) {
+    final problem = speiPhoneProblem(phone);
+    if (problem != null) {
+      throw ArgumentError('Invalid SPEI phone: ${problem.name}');
+    }
+    return SpeiSmsMxnDetails.saved(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      institutionCode: institutionCode,
+      phone: phone,
+      name: name,
+    );
+  }
+
+  factory SpeiSmsMxnDetails.saved({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String institutionCode,
+    required String phone,
+    required String name,
+  }) {
     if (institutionCode.trim().isEmpty) {
       throw ArgumentError('Institution code cannot be empty');
     }
@@ -419,6 +466,28 @@ class SpeiCardMxnDetails extends RecipientDetails {
   });
 
   factory SpeiCardMxnDetails.create({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required String institutionCode,
+    required String debitcard,
+    required String name,
+  }) {
+    final problem = speiDebitCardProblem(debitcard);
+    if (problem != null) {
+      throw ArgumentError('Invalid SPEI debit card: ${problem.name}');
+    }
+    return SpeiCardMxnDetails.saved(
+      label: label,
+      isDefault: isDefault,
+      isOwner: isOwner,
+      institutionCode: institutionCode,
+      debitcard: debitcard,
+      name: name,
+    );
+  }
+
+  factory SpeiCardMxnDetails.saved({
     String? label,
     bool isDefault = false,
     bool? isOwner,
@@ -612,14 +681,140 @@ class BankAccountArgentinaDetails extends RecipientDetails {
   RecipientType get type => RecipientType.bankAccountArgentina;
 }
 
+// ── Colombia (PSE and Nequi)
+//
+// The API requires an email for every Colombian recipient, and either a
+// person's first and last name or, with `isCorporate`, a company name. A new
+// recipient takes a [ColombiaContact], which can only be built with both.
+
+/// Who holds a Colombian account: a person or a company.
+@immutable
+sealed class CopHolder {
+  const CopHolder();
+
+  String get displayName;
+}
+
+/// A person, sent as `isCorporate: false`, `name` and `lastname`.
+final class CopIndividual extends CopHolder {
+  final String name;
+  final String lastname;
+
+  const CopIndividual._({required this.name, required this.lastname});
+
+  factory CopIndividual({required String name, required String lastname}) {
+    if (name.trim().isEmpty) {
+      throw ArgumentError('First name cannot be empty');
+    }
+    if (lastname.trim().isEmpty) {
+      throw ArgumentError('Last name cannot be empty');
+    }
+    return CopIndividual._(name: name.trim(), lastname: lastname.trim());
+  }
+
+  @override
+  String get displayName => '$name $lastname';
+}
+
+/// A company, sent as `isCorporate: true` and `corporateName`.
+final class CopCorporate extends CopHolder {
+  final String corporateName;
+
+  const CopCorporate._({required this.corporateName});
+
+  factory CopCorporate({required String corporateName}) {
+    if (corporateName.trim().isEmpty) {
+      throw ArgumentError('Corporate name cannot be empty');
+    }
+    return CopCorporate._(corporateName: corporateName.trim());
+  }
+
+  @override
+  String get displayName => corporateName;
+}
+
+/// Who a Colombian recipient pays.
+@immutable
+sealed class ColombiaPayee {
+  const ColombiaPayee();
+
+  String get displayName;
+}
+
+/// A holder and an email: everything the API requires to create a
+/// recipient.
+final class ColombiaContact extends ColombiaPayee {
+  final CopHolder holder;
+  final String email;
+
+  const ColombiaContact._({required this.holder, required this.email});
+
+  factory ColombiaContact({required CopHolder holder, required String email}) {
+    if (!emailLooksValid(email)) {
+      throw ArgumentError('Email is not valid');
+    }
+    return ColombiaContact._(holder: holder, email: email.trim());
+  }
+
+  @override
+  String get displayName => holder.displayName;
+}
+
+/// A recipient the API holds without a full holder or an email, saved
+/// before the API required them. It is listed with the name it has.
+final class ColombiaNameOnly extends ColombiaPayee {
+  final String name;
+
+  const ColombiaNameOnly(this.name);
+
+  @override
+  String get displayName => name;
+}
+
+/// The payee of a recipient the API returned, from its raw fields.
+ColombiaPayee colombiaPayeeFromSaved({
+  bool? isCorporate,
+  String? name,
+  String? lastname,
+  String? corporateName,
+  String? email,
+}) {
+  String? text(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
+
+  final first = text(name);
+  final last = text(lastname);
+  final company = text(corporateName);
+  final address = text(email);
+  final corporate = isCorporate ?? company != null;
+
+  final CopHolder? holder = switch ((corporate, first, last, company)) {
+    (true, _, _, final String c) => CopCorporate(corporateName: c),
+    (false, final String f, final String l, _) => CopIndividual(
+      name: f,
+      lastname: l,
+    ),
+    _ => null,
+  };
+  if (holder != null && address != null && emailLooksValid(address)) {
+    return ColombiaContact(holder: holder, email: address);
+  }
+  return ColombiaNameOnly(
+    holder?.displayName ??
+        company ??
+        [first, last].whereType<String>().join(' '),
+  );
+}
+
 // ── PSE (Colombia)
 @immutable
 class PseColombiaDetails extends RecipientDetails {
-  final String name;
+  final ColombiaPayee payee;
   final String accountType;
   final String bankAccount;
   final String bankCode;
-  final String bankName;
   final String documentId;
   final String documentType;
 
@@ -627,30 +822,49 @@ class PseColombiaDetails extends RecipientDetails {
     super.label,
     super.isDefault = false,
     super.isOwner,
-    required this.name,
+    required this.payee,
     required this.accountType,
     required this.bankAccount,
     required this.bankCode,
-    required this.bankName,
     required this.documentId,
     required this.documentType,
   });
 
+  /// A new recipient: its payee must be a full [ColombiaContact].
   factory PseColombiaDetails.create({
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    required ColombiaContact payee,
     required String accountType,
     required String bankAccount,
     required String bankCode,
-    required String bankName,
+    required String documentId,
+    required String documentType,
+  }) => PseColombiaDetails.saved(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    payee: payee,
+    accountType: accountType,
+    bankAccount: bankAccount,
+    bankCode: bankCode,
+    documentId: documentId,
+    documentType: documentType,
+  );
+
+  /// A recipient the API already holds.
+  factory PseColombiaDetails.saved({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required ColombiaPayee payee,
+    required String accountType,
+    required String bankAccount,
+    required String bankCode,
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
-      throw ArgumentError('Name cannot be empty');
-    }
     if (accountType.trim().isEmpty) {
       throw ArgumentError('Account type cannot be empty');
     }
@@ -660,7 +874,6 @@ class PseColombiaDetails extends RecipientDetails {
     if (bankCode.trim().isEmpty) {
       throw ArgumentError('Bank code cannot be empty');
     }
-
     if (documentId.trim().isEmpty) {
       throw ArgumentError('Document ID cannot be empty');
     }
@@ -672,11 +885,10 @@ class PseColombiaDetails extends RecipientDetails {
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      payee: payee,
       accountType: accountType.trim(),
       bankAccount: bankAccount.trim(),
       bankCode: bankCode.trim(),
-      bankName: bankName.trim(),
       documentId: documentId.trim(),
       documentType: documentType.trim(),
     );
@@ -689,33 +901,50 @@ class PseColombiaDetails extends RecipientDetails {
 // ── Nequi (Colombia)
 @immutable
 class NequiColombiaDetails extends RecipientDetails {
+  final ColombiaPayee payee;
   final String phoneNumber;
   final String documentId;
   final String documentType;
-  final String name;
 
   const NequiColombiaDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
+    required this.payee,
     required this.phoneNumber,
     required this.documentId,
     required this.documentType,
-    required this.name,
   });
 
+  /// A new recipient: its payee must be a full [ColombiaContact].
   factory NequiColombiaDetails.create({
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    required ColombiaContact payee,
+    required String phoneNumber,
+    required String documentId,
+    required String documentType,
+  }) => NequiColombiaDetails.saved(
+    label: label,
+    isDefault: isDefault,
+    isOwner: isOwner,
+    payee: payee,
+    phoneNumber: phoneNumber,
+    documentId: documentId,
+    documentType: documentType,
+  );
+
+  /// A recipient the API already holds.
+  factory NequiColombiaDetails.saved({
+    String? label,
+    bool isDefault = false,
+    bool? isOwner,
+    required ColombiaPayee payee,
     required String phoneNumber,
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
-      throw ArgumentError('Name cannot be empty');
-    }
     if (phoneNumber.trim().isEmpty) {
       throw ArgumentError('Phone number cannot be empty');
     }
@@ -730,7 +959,7 @@ class NequiColombiaDetails extends RecipientDetails {
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      payee: payee,
       phoneNumber: phoneNumber.trim(),
       documentId: documentId.trim(),
       documentType: documentType.trim(),

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
+import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/new_recipient_forms/spei_field_validators.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/presentation/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/presentation/models/recipient_form_data_model.dart';
@@ -81,9 +82,7 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             focusNode: _debitCardFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? context.loc.recipientsValidationFieldRequired
-                : null,
+            validator: context.validateSpeiDebitCard,
             onChanged: (value) {
               setState(() {
                 _debitCard = value;

@@ -315,13 +315,36 @@ class BankAccountArgentinaFormDataModel extends RecipientFormDataModel {
 // ══════════════════════════════════════════════════════════════════════════════
 // COLOMBIA
 // ══════════════════════════════════════════════════════════════════════════════
+/// The holder of a Colombian recipient as the form collected it: a person
+/// by first and last name, or a company by its name.
+sealed class CopHolderFormData {
+  const CopHolderFormData();
+}
+
+class CopIndividualFormData extends CopHolderFormData {
+  final String firstName;
+  final String lastName;
+
+  const CopIndividualFormData({
+    required this.firstName,
+    required this.lastName,
+  });
+}
+
+class CopCorporateFormData extends CopHolderFormData {
+  final String corporateName;
+
+  const CopCorporateFormData({required this.corporateName});
+}
+
 class PseColombiaFormDataModel extends RecipientFormDataModel {
   final String bankCode;
   final String accountType;
   final String bankAccount;
   final String documentType;
   final String documentId;
-  final String name;
+  final CopHolderFormData holder;
+  final String email;
 
   const PseColombiaFormDataModel({
     required this.bankCode,
@@ -329,7 +352,8 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
     required this.bankAccount,
     required this.documentType,
     required this.documentId,
-    required this.name,
+    required this.holder,
+    required this.email,
     super.label,
   }) : super(type: RecipientType.pseColombia);
 
@@ -342,7 +366,20 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
       bankAccount: bankAccount,
       documentType: documentType,
       documentId: documentId,
-      name: name,
+      isCorporate: holder is CopCorporateFormData,
+      name: switch (holder) {
+        CopIndividualFormData(:final firstName) => firstName,
+        CopCorporateFormData() => null,
+      },
+      lastname: switch (holder) {
+        CopIndividualFormData(:final lastName) => lastName,
+        CopCorporateFormData() => null,
+      },
+      corporateName: switch (holder) {
+        CopCorporateFormData(:final corporateName) => corporateName,
+        CopIndividualFormData() => null,
+      },
+      email: email,
       label: label,
     );
   }
@@ -352,13 +389,15 @@ class NequiColombiaFormDataModel extends RecipientFormDataModel {
   final String phoneNumber;
   final String documentType;
   final String documentId;
-  final String name;
+  final CopHolderFormData holder;
+  final String email;
 
   const NequiColombiaFormDataModel({
     required this.phoneNumber,
     required this.documentType,
     required this.documentId,
-    required this.name,
+    required this.holder,
+    required this.email,
     super.label,
   }) : super(type: RecipientType.nequiColombia);
 
@@ -369,7 +408,20 @@ class NequiColombiaFormDataModel extends RecipientFormDataModel {
       phoneNumber: phoneNumber,
       documentType: documentType,
       documentId: documentId,
-      name: name,
+      isCorporate: holder is CopCorporateFormData,
+      name: switch (holder) {
+        CopIndividualFormData(:final firstName) => firstName,
+        CopCorporateFormData() => null,
+      },
+      lastname: switch (holder) {
+        CopIndividualFormData(:final lastName) => lastName,
+        CopCorporateFormData() => null,
+      },
+      corporateName: switch (holder) {
+        CopCorporateFormData(:final corporateName) => corporateName,
+        CopIndividualFormData() => null,
+      },
+      email: email,
       label: label,
     );
   }
