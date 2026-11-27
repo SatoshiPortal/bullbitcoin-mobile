@@ -109,10 +109,8 @@ final class ArkCubit extends Cubit<ArkViewState> {
   @override
   Future<void> close() async {
     _closing = true;
-    try {
-      await _watching?.cancel();
-    } finally {
-      await super.close();
-    }
+    final closing = super.close();
+    final cancellation = _watching?.cancel();
+    await Future.wait([closing, ?cancellation]);
   }
 }
