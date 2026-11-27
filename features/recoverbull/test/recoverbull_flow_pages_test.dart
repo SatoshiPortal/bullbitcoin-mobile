@@ -5,6 +5,9 @@ import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/backup_metadata_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/attempt_monitoring_repository.dart';
+import 'package:bull_recoverbull/src/domain/repositories/passkey_demo_repository.dart';
+import 'package:bull_recoverbull/src/domain/passkey_demo_operation.dart';
+import 'package:bull_recoverbull/src/domain/usecases/run_passkey_demo_usecase.dart';
 import 'package:file_system/file_system.dart';
 import 'package:bull_recoverbull/src/domain/repositories/vault_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
@@ -28,6 +31,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:screen_privacy/screen_privacy.dart';
 
 const _channel = MethodChannel('com.flutterplaza.no_screenshot_methods');
+
+final class _Demo implements PasskeyDemoRepository {
+  @override
+  Future<Result<String, PasskeyDemoFailure>> register(
+    PasskeyDemoOperation operation,
+  ) async => const Ok('demo');
+
+  @override
+  Future<Result<String, PasskeyDemoFailure>> open(
+    String accountId,
+    PasskeyDemoOperation operation,
+  ) async => const Ok('sample');
+}
 
 Widget app(Widget child) => MaterialApp(
   theme: ThemeData(extensions: testBullExtensions),
@@ -72,6 +88,7 @@ VaultFlowPresentation flow({
   RecoverBullWalletPort? wallets,
   BackupMetadataRepository? metadata,
   AttemptMonitoringRepository? monitoring,
+  RunPasskeyDemoUsecase? passkeyDemo,
 }) => VaultFlowPresentation(
   VaultFlowCubit(
     const ManageBackupSettingsUsecase(null, RecoverBullStorageFullFailure()),
@@ -99,6 +116,7 @@ VaultFlowPresentation flow({
   ),
   const Ok(BitcoinNetwork.testnet),
   null,
+  passkeyDemo: passkeyDemo,
 );
 
 void main() {
@@ -107,6 +125,107 @@ void main() {
     () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, null),
   );
+
+  testWidgets('passkey alternative preserves recovery choices and returns', (
+    tester,
+  ) async {
+    usePhoneScreen(tester);
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (_) async => true,
+    );
+    var enabled = true;
+    final presentation = flow(
+      passkeyDemo: RunPasskeyDemoUsecase(() async => enabled, _Demo()),
+    );
+    await tester.pumpWidget(recovery(presentation));
+    await tester.pumpAndSettle();
+    expect(find.text('Use a passkey instead'), findsOneWidget);
+    final button = tester.widget<BullButton>(
+      find.widgetWithText(BullButton, 'Use a passkey instead'),
+    );
+    expect(button.outlined, isFalse);
+    expect(find.text('Or enter the vault key'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Use a password instead')).dy,
+      lessThan(tester.getTopLeft(find.text('Use a passkey instead')).dy),
+    );
+    expect(
+      tester.getTopLeft(find.text('Use a passkey instead')).dy,
+      lessThan(tester.getTopLeft(find.text('Or enter the vault key')).dy),
+    );
+    await tester.tap(find.text('Use a password instead'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pick a PIN instead'), findsOneWidget);
+    expect(find.text('Use a passkey instead'), findsOneWidget);
+    await tester.tap(find.text('Use a passkey instead'));
+    await tester.pumpAndSettle();
+    expect(find.text('Passkey demo'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Pick a PIN instead'), findsOneWidget);
+    enabled = false;
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    expect(find.text('Use a passkey instead'), findsNothing);
+    await tester.tap(find.text('Pick a PIN instead'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pick a password instead'), findsOneWidget);
+    expect(find.text('Enter a vault key instead'), findsOneWidget);
+    expect(find.text('Use a password instead'), findsNothing);
+    expect(find.text('Or enter the vault key'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    await presentation.close();
+  });
+
+  for (final kind in [
+    RecoverBullFlow.secureVault,
+    RecoverBullFlow.testVault,
+    RecoverBullFlow.viewVaultKey,
+  ]) {
+    testWidgets('passkey alternative in $kind', (tester) async {
+      usePhoneScreen(tester);
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        _channel,
+        (_) async => true,
+      );
+      final presentation = flow(
+        passkeyDemo: RunPasskeyDemoUsecase(() async => true, _Demo()),
+      );
+      await tester.pumpWidget(
+        app(
+          RecoverBullFlowHost(
+            flow: kind,
+            presentation: presentation,
+            page: const PasswordInputPage(),
+            copiedMessage: 'Copied',
+            onTestVault: () {},
+            onFinished: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Use a password instead'), findsOneWidget);
+      expect(find.text('Use a passkey instead'), findsOneWidget);
+      final vaultKey = find.text('Or enter the vault key');
+      expect(
+        vaultKey,
+        kind == RecoverBullFlow.testVault ? findsOneWidget : findsNothing,
+      );
+      if (kind == RecoverBullFlow.testVault) {
+        expect(
+          tester.getTopLeft(find.text('Use a passkey instead')).dy,
+          lessThan(tester.getTopLeft(vaultKey).dy),
+        );
+        await tester.tap(vaultKey);
+        await tester.pumpAndSettle();
+        expect(vaultKey, findsNothing);
+        expect(find.text('Use a passkey instead'), findsOneWidget);
+      }
+      await tester.pumpWidget(const SizedBox());
+      await presentation.close();
+    });
+  }
 
   for (final warning in [true, false]) {
     testWidgets('recovery callback acknowledges accounting warning: $warning', (
