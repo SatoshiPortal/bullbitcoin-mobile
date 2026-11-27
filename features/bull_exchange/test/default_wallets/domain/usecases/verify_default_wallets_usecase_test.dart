@@ -31,7 +31,7 @@ void main() {
     ).execute(dwSession);
     // The reconcile's re-read of the saved wallet, then the read.
     expect(calls, ['read', 'read']);
-    expect((read as ReadGot<DefaultWallets>).value, dwSaved);
+    expect((read as Ok<DefaultWallets, ExchangeReadFailure>).value, dwSaved);
   });
 
   test('a journal that cannot be reconciled still reads', () async {
@@ -42,7 +42,7 @@ void main() {
         getDefaultWallets: () async => const Ok(dwSaved),
       ),
     ).execute(dwSession);
-    expect((read as ReadGot<DefaultWallets>).value, dwSaved);
+    expect((read as Ok<DefaultWallets, ExchangeReadFailure>).value, dwSaved);
   });
 
   test('the read for another session is never sent', () async {
@@ -56,7 +56,14 @@ void main() {
         },
       ),
     ).execute(dwOtherSession);
-    expect(read, isA<ReadSessionRejected<DefaultWallets>>());
+    expect(
+      read,
+      isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>(),
+      ),
+    );
     expect(reads, 0);
   });
 }

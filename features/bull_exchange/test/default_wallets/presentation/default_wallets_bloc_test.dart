@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../default_wallets_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 const _s = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,
@@ -20,13 +22,13 @@ Never _unused(String call) => throw StateError('$call was not expected');
 DefaultWalletsBloc _bloc({
   ExchangeSession? session = _s,
   required List<String> calls,
-  Future<ExchangeRead<DefaultWallets>> Function()? read,
-  Future<GatedWrite<ExchangeWrite<DefaultWallet>>> Function(
+  Future<Result<DefaultWallets, ExchangeReadFailure>> Function()? read,
+  Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>> Function(
     String? existingRecipientId,
   )?
   save,
-  Future<GatedWrite<ExchangeWrite<void>>> Function()? unset,
-  Future<ExchangeRead<DefaultWallets>> Function()? verify,
+  Future<GatedWrite<Result<void, ExchangeWriteFailure>>> Function()? unset,
+  Future<Result<DefaultWallets, ExchangeReadFailure>> Function()? verify,
 }) => DefaultWalletsBloc(
   session: session,
   getWallets: FakeGetDefaultWalletsUsecase((session) {
@@ -85,12 +87,14 @@ void main() {
     final saves = <String?>[];
     final bloc = _bloc(
       calls: calls,
-      read: () async => const ReadGot(DefaultWallets()),
+      read: () async => const Ok(DefaultWallets()),
       save: (existingRecipientId) async {
         saves.add(existingRecipientId);
-        return const GateAdmitted(WriteOutcomeUnknown('receive timeout'));
+        return const GateAdmitted(
+          Err(ExchangeWriteOutcomeUnknownFailure('receive timeout')),
+        );
       },
-      verify: () async => const ReadGot(created),
+      verify: () async => const Ok(created),
     );
     addTearDown(bloc.close);
     await _settle();
@@ -121,11 +125,11 @@ void main() {
   });
 
   test('a second unset while one runs sends nothing (DW-4)', () async {
-    final release = Completer<GatedWrite<ExchangeWrite<void>>>();
+    final release = Completer<GatedWrite<Result<void, ExchangeWriteFailure>>>();
     final calls = <String>[];
     final bloc = _bloc(
       calls: calls,
-      read: () async => const ReadGot(
+      read: () async => const Ok(
         DefaultWallets(
           bitcoin: DefaultWallet(
             recipientId: 'r-1',
@@ -143,7 +147,7 @@ void main() {
       ..add(const SlotUnsetPressed(_btc));
     await _settle();
     expect(calls, ['read s', 'unset s bitcoin r-1']);
-    release.complete(const GateAdmitted(WriteDone(null)));
+    release.complete(const GateAdmitted(Ok(null)));
     await _settle();
     await _settle();
     expect(
@@ -153,10 +157,10 @@ void main() {
   });
 
   test('a result arriving after close is dropped (DW-1)', () async {
-    final release = Completer<ExchangeRead<DefaultWallets>>();
+    final release = Completer<Result<DefaultWallets, ExchangeReadFailure>>();
     final bloc = _bloc(calls: [], read: () => release.future);
     await bloc.close();
-    release.complete(const ReadGot(DefaultWallets()));
+    release.complete(const Ok(DefaultWallets()));
     await _settle();
     expect(bloc.state, const WalletsLoading(_s, 1));
   });

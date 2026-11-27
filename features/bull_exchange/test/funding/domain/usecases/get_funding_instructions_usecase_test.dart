@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../funding_test_port.dart';
 
+import 'package:primitives/primitives.dart';
+
 const _rows = FundingInstructionRows([
   InstructionRow(InstructionField.beneficiaryName, 'Bull Bitcoin'),
 ]);
@@ -15,7 +17,7 @@ const _rows = FundingInstructionRows([
 FundingRequest _request() {
   final loaded = transitionFundFlow(
     fundFlowStart(fundingSession).state,
-    FundAccountLoaded(1, ReadGot(fundingAccount())),
+    FundAccountLoaded(1, Ok(fundingAccount())),
   );
   final picked = transitionFundFlow(
     loaded.state,
@@ -27,12 +29,12 @@ FundingRequest _request() {
 void main() {
   test('fetches the request rail instructions for the session', () async {
     final funding = FundingTestPort()
-      ..instructionsAnswer = const ReadGot(FundingInstructionsGot(_rows));
+      ..instructionsAnswer = const Ok(FundingInstructionsGot(_rows));
     final read = await GetFundingInstructionsUsecase(
       exchangeForTesting(funding: funding),
     ).execute(fundingSession, _request());
     expect(
-      (read as ReadGot<FundingAnswer>).value,
+      (read as Ok<FundingAnswer, ExchangeReadFailure>).value,
       const FundingInstructionsGot(_rows),
     );
     expect(funding.log, [

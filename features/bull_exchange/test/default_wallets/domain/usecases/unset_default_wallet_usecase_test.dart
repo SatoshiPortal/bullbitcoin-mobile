@@ -5,25 +5,25 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'default_wallets_usecase_test_support.dart';
 
-Exchange _exchange(List<String> sent, ExchangeWrite<void> answer) =>
-    exchangeForTesting(
-      access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
-      deleteDefaultWallet:
-          ({
-            required recipientId,
-            required walletType,
-            required address,
-          }) async {
-            sent.add('${walletType.name} $recipientId $address');
-            return answer;
-          },
-    );
+import 'package:primitives/primitives.dart';
+
+Exchange _exchange(
+  List<String> sent,
+  Result<void, ExchangeWriteFailure> answer,
+) => exchangeForTesting(
+  access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
+  deleteDefaultWallet:
+      ({required recipientId, required walletType, required address}) async {
+        sent.add('${walletType.name} $recipientId $address');
+        return answer;
+      },
+);
 
 void main() {
   test('unsets the recipient of the network it was given', () async {
     final sent = <String>[];
     final write =
-        await UnsetDefaultWalletUsecase(_exchange(sent, const WriteDone(null)))
+        await UnsetDefaultWalletUsecase(_exchange(sent, const Ok(null)))
             .execute(
               dwSession,
               network: BtcNetwork.bitcoin,
@@ -32,15 +32,20 @@ void main() {
             );
     expect(sent, ['bitcoin r-1 bc1qsaved']);
     expect(
-      (write as GateAdmitted<ExchangeWrite<void>>).result,
-      isA<WriteDone<void>>(),
+      (write as GateAdmitted<Result<void, ExchangeWriteFailure>>).result,
+      isA<Ok<void, ExchangeWriteFailure>>(),
     );
   });
 
   test('a refused unset stays refused', () async {
     final write =
         await UnsetDefaultWalletUsecase(
-          _exchange([], const WriteRefused(ExchangeRefusal(httpStatus: 400))),
+          _exchange(
+            [],
+            const Err(
+              ExchangeWriteRefusedFailure(ExchangeRefusal(httpStatus: 400)),
+            ),
+          ),
         ).execute(
           dwSession,
           network: BtcNetwork.bitcoin,
@@ -48,15 +53,19 @@ void main() {
           address: 'bc1qsaved',
         );
     expect(
-      (write as GateAdmitted<ExchangeWrite<void>>).result,
-      isA<WriteRefused<void>>(),
+      (write as GateAdmitted<Result<void, ExchangeWriteFailure>>).result,
+      isA<Err<void, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteRefusedFailure>(),
+      ),
     );
   });
 
   test('an unset for another session is never sent', () async {
     final sent = <String>[];
     final write =
-        await UnsetDefaultWalletUsecase(_exchange(sent, const WriteDone(null)))
+        await UnsetDefaultWalletUsecase(_exchange(sent, const Ok(null)))
             .execute(
               dwOtherSession,
               network: BtcNetwork.bitcoin,
@@ -65,8 +74,12 @@ void main() {
             );
     expect(sent, isEmpty);
     expect(
-      (write as GateAdmitted<ExchangeWrite<void>>).result,
-      isA<WriteNotSent<void>>(),
+      (write as GateAdmitted<Result<void, ExchangeWriteFailure>>).result,
+      isA<Err<void, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteNotSentFailure>(),
+      ),
     );
   });
 }

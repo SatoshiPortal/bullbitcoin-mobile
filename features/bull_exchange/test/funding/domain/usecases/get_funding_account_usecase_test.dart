@@ -6,14 +6,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../funding_test_port.dart';
 
+import 'package:primitives/primitives.dart';
+
 void main() {
   test('reads the funding account of the session', () async {
-    final funding = FundingTestPort()
-      ..accountAnswer = ReadGot(fundingAccount());
+    final funding = FundingTestPort()..accountAnswer = Ok(fundingAccount());
     final read = await GetFundingAccountUsecase(
       exchangeForTesting(funding: funding),
     ).execute(fundingSession);
-    expect((read as ReadGot<FundingAccount>).value.userNumber, 7);
+    expect(
+      (read as Ok<FundingAccount, ExchangeReadFailure>).value.userNumber,
+      7,
+    );
     expect(funding.log, ['account a']);
   });
 
@@ -21,9 +25,18 @@ void main() {
     final read = await GetFundingAccountUsecase(
       exchangeForTesting(
         funding: FundingTestPort()
-          ..accountAnswer = const ReadUnreachable('down', isNetwork: true),
+          ..accountAnswer = const Err(
+            ExchangeUnreachableFailure('down', isNetwork: true),
+          ),
       ),
     ).execute(fundingSession);
-    expect(read, isA<ReadUnreachable<FundingAccount>>());
+    expect(
+      read,
+      isA<Err<FundingAccount, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeUnreachableFailure>(),
+      ),
+    );
   });
 }

@@ -37,10 +37,14 @@ void main() {
           sessionId: 'session',
         ),
       ),
-      isA<WriteNotSent<void>>().having(
-        (result) => result.reason,
-        'reason',
-        ExchangeNotSentReason.unreachable,
+      isA<Err<void, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteNotSentFailure>().having(
+          (result) => result.reason,
+          'reason',
+          ExchangeNotSentReason.unreachable,
+        ),
       ),
     );
   });

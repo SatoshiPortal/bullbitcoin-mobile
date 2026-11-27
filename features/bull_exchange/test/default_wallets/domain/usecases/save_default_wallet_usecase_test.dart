@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'default_wallets_usecase_test_support.dart';
 
+import 'package:primitives/primitives.dart';
+
 const _wallet = DefaultWallet(
   recipientId: 'r-1',
   walletType: BtcNetwork.liquid,
@@ -15,7 +17,7 @@ const _wallet = DefaultWallet(
 
 Exchange _exchange(
   List<String> sent,
-  Future<ExchangeWrite<DefaultWallet>> Function() answer,
+  Future<Result<DefaultWallet, ExchangeWriteFailure>> Function() answer,
 ) => exchangeForTesting(
   access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
   saveDefaultWallet:
@@ -30,7 +32,7 @@ void main() {
     final sent = <String>[];
     final write =
         await SaveDefaultWalletUsecase(
-          _exchange(sent, () async => const WriteDone(_wallet)),
+          _exchange(sent, () async => const Ok(_wallet)),
         ).execute(
           dwSession,
           network: BtcNetwork.liquid,
@@ -39,40 +41,54 @@ void main() {
         );
     expect(sent, ['liquid lq1new r-1']);
     expect(
-      (write as GateAdmitted<ExchangeWrite<DefaultWallet>>).result,
-      isA<WriteDone<DefaultWallet>>(),
+      (write as GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>)
+          .result,
+      isA<Ok<DefaultWallet, ExchangeWriteFailure>>(),
     );
   });
 
   test('an unknown outcome stays unknown', () async {
     final write = await SaveDefaultWalletUsecase(
-      _exchange([], () async => const WriteOutcomeUnknown('timeout')),
+      _exchange(
+        [],
+        () async => const Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+      ),
     ).execute(dwSession, network: BtcNetwork.bitcoin, address: 'bc1q');
     expect(
-      (write as GateAdmitted<ExchangeWrite<DefaultWallet>>).result,
-      isA<WriteOutcomeUnknown<DefaultWallet>>(),
+      (write as GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>)
+          .result,
+      isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
     );
   });
 
   test('a save for another session is never sent', () async {
     final sent = <String>[];
     final write = await SaveDefaultWalletUsecase(
-      _exchange(sent, () async => const WriteDone(_wallet)),
+      _exchange(sent, () async => const Ok(_wallet)),
     ).execute(dwOtherSession, network: BtcNetwork.bitcoin, address: 'bc1q');
     expect(sent, isEmpty);
     expect(
-      (write as GateAdmitted<ExchangeWrite<DefaultWallet>>).result,
-      isA<WriteNotSent<DefaultWallet>>().having(
-        (w) => w.reason,
-        'reason',
-        ExchangeNotSentReason.sessionChanged,
+      (write as GateAdmitted<Result<DefaultWallet, ExchangeWriteFailure>>)
+          .result,
+      isA<Err<DefaultWallet, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteNotSentFailure>().having(
+          (w) => w.reason,
+          'reason',
+          ExchangeNotSentReason.sessionChanged,
+        ),
       ),
     );
   });
 
   test('a second save while one runs is refused by the gate', () async {
     final sent = <String>[];
-    final release = Completer<ExchangeWrite<DefaultWallet>>();
+    final release = Completer<Result<DefaultWallet, ExchangeWriteFailure>>();
     final usecase = SaveDefaultWalletUsecase(
       _exchange(sent, () => release.future),
     );
@@ -86,8 +102,11 @@ void main() {
       network: BtcNetwork.bitcoin,
       address: 'bc1qb',
     );
-    expect(second, isA<GateRefused<ExchangeWrite<DefaultWallet>>>());
-    release.complete(const WriteDone(_wallet));
+    expect(
+      second,
+      isA<GateRefused<Result<DefaultWallet, ExchangeWriteFailure>>>(),
+    );
+    release.complete(const Ok(_wallet));
     await first;
     expect(sent, ['bitcoin bc1qa null']);
   });

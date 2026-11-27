@@ -3,6 +3,7 @@ import 'package:bull_exchange/src/support_chat/domain/usecases/mark_support_mess
 import 'package:exchange/exchange.dart';
 import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.testnet,
@@ -17,8 +18,8 @@ const _other = ExchangeSession(
 
 Exchange _exchange(
   List<String> asked, {
-  ExchangeRead<int> count = const ReadGot(2),
-  ExchangeWrite<void> mark = const WriteDone(null),
+  Result<int, ExchangeReadFailure> count = const Ok(2),
+  Result<void, ExchangeWriteFailure> mark = const Ok(null),
 }) => exchangeForTesting(
   access: fixedAccessForTesting(const ExchangeAccessSignedIn(_session)),
   chat: (
@@ -43,22 +44,36 @@ void main() {
       final asked = <String>[];
       final read = await GetUnreadSupportCountUsecase(_exchange(asked))
           .execute(_session);
-      expect((read as ReadGot<int>).value, 2);
+      expect((read as Ok<int, ExchangeReadFailure>).value, 2);
       expect(asked, ['count unread']);
     });
 
     test('a failed read stays a failure, never a count', () async {
       final read = await GetUnreadSupportCountUsecase(
-        _exchange([], count: const ReadMalformed('negative')),
+        _exchange([], count: const Err(ExchangeMalformedFailure('negative'))),
       ).execute(_session);
-      expect(read, isA<ReadMalformed<int>>());
+      expect(
+        read,
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeMalformedFailure>(),
+        ),
+      );
     });
 
     test('a read for another session is never sent', () async {
       final asked = <String>[];
       final read = await GetUnreadSupportCountUsecase(_exchange(asked))
           .execute(_other);
-      expect(read, isA<ReadSessionRejected<int>>());
+      expect(
+        read,
+        isA<Err<int, ExchangeReadFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeSessionRejectedFailure>(),
+        ),
+      );
       expect(asked, isEmpty);
     });
   });
@@ -68,22 +83,39 @@ void main() {
       final asked = <String>[];
       final write = await MarkSupportMessagesReadUsecase(_exchange(asked))
           .execute(_session);
-      expect(write, isA<WriteDone<void>>());
+      expect(write, isA<Ok<void, ExchangeWriteFailure>>());
       expect(asked, ['mark unread']);
     });
 
     test('an unknown outcome stays unknown', () async {
       final write = await MarkSupportMessagesReadUsecase(
-        _exchange([], mark: const WriteOutcomeUnknown('timeout')),
+        _exchange(
+          [],
+          mark: const Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+        ),
       ).execute(_session);
-      expect(write, isA<WriteOutcomeUnknown<void>>());
+      expect(
+        write,
+        isA<Err<void, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteOutcomeUnknownFailure>(),
+        ),
+      );
     });
 
     test('a mark for another session is never sent', () async {
       final asked = <String>[];
       final write = await MarkSupportMessagesReadUsecase(_exchange(asked))
           .execute(_other);
-      expect(write, isA<WriteNotSent<void>>());
+      expect(
+        write,
+        isA<Err<void, ExchangeWriteFailure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeWriteNotSentFailure>(),
+        ),
+      );
       expect(asked, isEmpty);
     });
   });

@@ -1,5 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// Why the unread count could not be read. Never shown as zero.
 enum UnreadProblem { missing, unreachable, malformed, sessionRejected }
@@ -155,7 +156,7 @@ final class UnreadChatShown extends SupportUnreadEvent {
 final class UnreadCountAnswered extends SupportUnreadEvent {
   final ExchangeSession session;
   final int attempt;
-  final ExchangeRead<int> read;
+  final Result<int, ExchangeReadFailure> read;
 
   const UnreadCountAnswered(this.session, this.attempt, this.read);
 }
@@ -163,7 +164,7 @@ final class UnreadCountAnswered extends SupportUnreadEvent {
 final class UnreadMarkAnswered extends SupportUnreadEvent {
   final ExchangeSession session;
   final int attempt;
-  final ExchangeWrite<void> write;
+  final Result<void, ExchangeWriteFailure> write;
 
   const UnreadMarkAnswered(this.session, this.attempt, this.write);
 }
@@ -248,12 +249,14 @@ SupportUnreadState transitionSupportUnread(
       when from == session && at == attempt =>
     switch (write) {
       // Confirmed with the server; the badge stays clear meanwhile.
-      WriteDone() => UnreadRefreshing(session, attempt + 1, 0),
+      Ok() => UnreadRefreshing(session, attempt + 1, 0),
       // Not marked, or not known to be: read the real count.
-      WriteRefused() ||
-      WriteOutcomeUnknown() ||
-      WriteNotSent() ||
-      WriteSessionRejected() => UnreadReading(session, attempt + 1),
+      Err(failure: ExchangeWriteRefusedFailure()) ||
+      Err(failure: ExchangeWriteOutcomeUnknownFailure()) ||
+      Err(failure: ExchangeWriteNotSentFailure()) ||
+      Err(
+        failure: ExchangeSessionRejectedFailure(),
+      ) => UnreadReading(session, attempt + 1),
     },
   (
     UnreadSignedOut() ||
@@ -269,15 +272,19 @@ SupportUnreadState transitionSupportUnread(
 };
 
 SupportUnreadState _answered(
-  ExchangeRead<int> read, {
+  Result<int, ExchangeReadFailure> read, {
   required SupportUnreadState Function(int count) got,
   required SupportUnreadState Function(UnreadProblem problem) failed,
 }) => switch (read) {
-  ReadGot(:final value) => got(value),
-  ReadMissing() => failed(UnreadProblem.missing),
-  ReadUnreachable() => failed(UnreadProblem.unreachable),
-  ReadMalformed() => failed(UnreadProblem.malformed),
-  ReadSessionRejected() => failed(UnreadProblem.sessionRejected),
+  Ok(:final value) => got(value),
+  Err(failure: ExchangeMissingFailure()) => failed(UnreadProblem.missing),
+  Err(failure: ExchangeUnreachableFailure()) => failed(
+    UnreadProblem.unreachable,
+  ),
+  Err(failure: ExchangeMalformedFailure()) => failed(UnreadProblem.malformed),
+  Err(failure: ExchangeSessionRejectedFailure()) => failed(
+    UnreadProblem.sessionRejected,
+  ),
 };
 
 /// The count the chat icon shows; zero hides the badge. Nothing is shown

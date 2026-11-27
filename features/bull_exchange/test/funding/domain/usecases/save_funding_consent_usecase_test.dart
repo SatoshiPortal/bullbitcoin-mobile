@@ -5,13 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../funding_test_port.dart';
 
+import 'package:primitives/primitives.dart';
+
 void main() {
   test('records the consent for the session', () async {
-    final funding = FundingTestPort()..consentAnswer = const WriteDone(null);
+    final funding = FundingTestPort()..consentAnswer = const Ok(null);
     final write = await SaveFundingConsentUsecase(
       exchangeForTesting(funding: funding),
     ).execute(fundingSession);
-    expect(write, isA<WriteDone<void>>());
+    expect(write, isA<Ok<void, ExchangeWriteFailure>>());
     expect(funding.log, ['consent a']);
   });
 
@@ -19,9 +21,18 @@ void main() {
     final write = await SaveFundingConsentUsecase(
       exchangeForTesting(
         funding: FundingTestPort()
-          ..consentAnswer = const WriteOutcomeUnknown('lost'),
+          ..consentAnswer = const Err(
+            ExchangeWriteOutcomeUnknownFailure('lost'),
+          ),
       ),
     ).execute(fundingSession);
-    expect(write, isA<WriteOutcomeUnknown<void>>());
+    expect(
+      write,
+      isA<Err<void, ExchangeWriteFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeWriteOutcomeUnknownFailure>(),
+      ),
+    );
   });
 }

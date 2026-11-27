@@ -1,4 +1,5 @@
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 /// Saves [address] as the session account's default wallet of a network,
 /// through the account's write gate. With [existingRecipientId] it updates
@@ -9,7 +10,7 @@ class SaveDefaultWalletUsecase {
 
   const SaveDefaultWalletUsecase(this._exchange);
 
-  Future<GatedWrite<ExchangeWrite<DefaultWallet>>> execute(
+  Future<GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>>> execute(
     ExchangeSession session, {
     required BtcNetwork network,
     required String address,

@@ -1,6 +1,7 @@
 import 'package:bull_exchange/src/support_chat/domain/support_unread_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 
 const _a = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -16,7 +17,9 @@ const _b = ExchangeSession(
 const _signedInA = ExchangeAccessSignedIn(_a);
 const _signedInB = ExchangeAccessSignedIn(_b);
 const _signedOut = ExchangeAccessSignedOut(ExchangeEnvironment.mainnet);
-const _offline = ReadUnreachable<int>('offline', isNetwork: true);
+const _offline = Err<int, ExchangeReadFailure>(
+  ExchangeUnreachableFailure('offline', isNetwork: true),
+);
 
 /// One state of each kind, all on session a, attempt 2.
 const _states = <SupportUnreadState>[
@@ -62,7 +65,7 @@ final _table = <String, (SupportUnreadEvent, Map<int, SupportUnreadState>)>{
     {for (final i in _signedIn) i: const UnreadMarking(_a, 3)},
   ),
   'count read': (
-    const UnreadCountAnswered(_a, 2, ReadGot(7)),
+    const UnreadCountAnswered(_a, 2, Ok(7)),
     {1: const UnreadKnown(_a, 2, 7), 4: const UnreadKnown(_a, 2, 7)},
   ),
   'count failed': (
@@ -73,36 +76,35 @@ final _table = <String, (SupportUnreadEvent, Map<int, SupportUnreadState>)>{
     },
   ),
   'count malformed': (
-    const UnreadCountAnswered(_a, 2, ReadMalformed('negative')),
+    const UnreadCountAnswered(_a, 2, Err(ExchangeMalformedFailure('negative'))),
     {
       1: const UnreadUnavailable(_a, 2, UnreadProblem.malformed),
       4: const UnreadStale(_a, 2, 4, UnreadProblem.malformed),
     },
   ),
-  'count of an older attempt': (
-    const UnreadCountAnswered(_a, 1, ReadGot(7)),
-    {},
-  ),
-  'count of another session': (
-    const UnreadCountAnswered(_b, 2, ReadGot(7)),
-    {},
-  ),
+  'count of an older attempt': (const UnreadCountAnswered(_a, 1, Ok(7)), {}),
+  'count of another session': (const UnreadCountAnswered(_b, 2, Ok(7)), {}),
   'marked': (
-    const UnreadMarkAnswered(_a, 2, WriteDone(null)),
+    const UnreadMarkAnswered(_a, 2, Ok(null)),
     {6: const UnreadRefreshing(_a, 3, 0)},
   ),
   'mark refused': (
-    const UnreadMarkAnswered(_a, 2, WriteRefused(ExchangeRefusal())),
+    const UnreadMarkAnswered(
+      _a,
+      2,
+      Err(ExchangeWriteRefusedFailure(ExchangeRefusal())),
+    ),
     {6: const UnreadReading(_a, 3)},
   ),
   'mark outcome unknown': (
-    const UnreadMarkAnswered(_a, 2, WriteOutcomeUnknown('timeout')),
+    const UnreadMarkAnswered(
+      _a,
+      2,
+      Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+    ),
     {6: const UnreadReading(_a, 3)},
   ),
-  'mark of an older attempt': (
-    const UnreadMarkAnswered(_a, 1, WriteDone(null)),
-    {},
-  ),
+  'mark of an older attempt': (const UnreadMarkAnswered(_a, 1, Ok(null)), {}),
 };
 
 void main() {
@@ -129,7 +131,7 @@ void main() {
       state = transitionSupportUnread(state, const UnreadChatShown());
       state = transitionSupportUnread(
         state,
-        const UnreadCountAnswered(_a, 3, ReadGot(4)),
+        const UnreadCountAnswered(_a, 3, Ok(4)),
       );
       expect(supportUnreadBadge(state), 0);
     },
@@ -153,15 +155,15 @@ void main() {
       final answers = switch (state) {
         UnreadReading(:final session, :final attempt) ||
         UnreadRefreshing(:final session, :final attempt) => [
-          UnreadCountAnswered(session, attempt, const ReadGot(1)),
+          UnreadCountAnswered(session, attempt, const Ok(1)),
           UnreadCountAnswered(session, attempt, _offline),
         ],
         UnreadMarking(:final session, :final attempt) => [
-          UnreadMarkAnswered(session, attempt, const WriteDone(null)),
+          UnreadMarkAnswered(session, attempt, const Ok(null)),
           UnreadMarkAnswered(
             session,
             attempt,
-            const WriteOutcomeUnknown('timeout'),
+            const Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
           ),
         ],
         UnreadSignedOut() ||

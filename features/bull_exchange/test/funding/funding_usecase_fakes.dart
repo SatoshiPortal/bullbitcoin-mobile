@@ -5,41 +5,51 @@ import 'package:bull_exchange/src/funding/domain/usecases/get_funding_instructio
 import 'package:bull_exchange/src/funding/domain/usecases/save_funding_consent_usecase.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';
+import 'package:primitives/primitives.dart';
 
 final class FakeGetFundingAccountUsecase implements GetFundingAccountUsecase {
-  final Future<ExchangeRead<FundingAccount>> Function(ExchangeSession session)
+  final Future<Result<FundingAccount, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
   answer;
 
   FakeGetFundingAccountUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<FundingAccount>> execute(ExchangeSession session) =>
-      answer(session);
+  Future<Result<FundingAccount, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => answer(session);
 }
 
 final class FakeSaveFundingConsentUsecase implements SaveFundingConsentUsecase {
-  final Future<ExchangeWrite<void>> Function(ExchangeSession session) answer;
+  final Future<Result<void, ExchangeWriteFailure>> Function(
+    ExchangeSession session,
+  )
+  answer;
 
   FakeSaveFundingConsentUsecase(this.answer);
 
   @override
-  Future<ExchangeWrite<void>> execute(ExchangeSession session) =>
+  Future<Result<void, ExchangeWriteFailure>> execute(ExchangeSession session) =>
       answer(session);
 }
 
 final class FakeGetFundingConsentUsecase implements GetFundingConsentUsecase {
-  final Future<ExchangeRead<bool>> Function(ExchangeSession session) answer;
+  final Future<Result<bool, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
+  answer;
 
   FakeGetFundingConsentUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<bool>> execute(ExchangeSession session) =>
+  Future<Result<bool, ExchangeReadFailure>> execute(ExchangeSession session) =>
       answer(session);
 }
 
 final class FakeGetCopFundingInstitutionsUsecase
     implements GetCopFundingInstitutionsUsecase {
-  final Future<ExchangeRead<List<FundingInstitution>>> Function(
+  final Future<Result<List<FundingInstitution>, ExchangeReadFailure>> Function(
     ExchangeSession session,
   )
   answer;
@@ -47,14 +57,14 @@ final class FakeGetCopFundingInstitutionsUsecase
   FakeGetCopFundingInstitutionsUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<List<FundingInstitution>>> execute(
+  Future<Result<List<FundingInstitution>, ExchangeReadFailure>> execute(
     ExchangeSession session,
   ) => answer(session);
 }
 
 final class FakeGetFundingInstructionsUsecase
     implements GetFundingInstructionsUsecase {
-  final Future<ExchangeRead<FundingAnswer>> Function(
+  final Future<Result<FundingAnswer, ExchangeReadFailure>> Function(
     ExchangeSession session,
     FundingRequest request,
   )
@@ -63,7 +73,7 @@ final class FakeGetFundingInstructionsUsecase
   FakeGetFundingInstructionsUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<FundingAnswer>> execute(
+  Future<Result<FundingAnswer, ExchangeReadFailure>> execute(
     ExchangeSession session,
     FundingRequest request,
   ) => answer(session, request);

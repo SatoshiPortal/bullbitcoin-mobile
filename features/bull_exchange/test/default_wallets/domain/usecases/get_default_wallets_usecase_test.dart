@@ -14,7 +14,7 @@ void main() {
         getDefaultWallets: () async => const Ok(dwSaved),
       ),
     ).execute(dwSession);
-    expect((read as ReadGot<DefaultWallets>).value, dwSaved);
+    expect((read as Ok<DefaultWallets, ExchangeReadFailure>).value, dwSaved);
   });
 
   test('a read for another session is never sent', () async {
@@ -30,10 +30,14 @@ void main() {
     ).execute(dwOtherSession);
     expect(
       read,
-      isA<ReadSessionRejected<DefaultWallets>>().having(
-        (r) => r.why,
-        'why',
-        ExchangeSessionRejection.sessionChanged,
+      isA<Err<DefaultWallets, ExchangeReadFailure>>().having(
+        (r) => r.failure,
+        'failure',
+        isA<ExchangeSessionRejectedFailure>().having(
+          (r) => r.why,
+          'why',
+          ExchangeSessionRejection.sessionChanged,
+        ),
       ),
     );
     expect(reads, 0);
@@ -47,6 +51,6 @@ void main() {
             const Err(ExchangeNetworkFailure('offline')),
       ),
     ).execute(dwSession);
-    expect(read, isNot(isA<ReadGot<DefaultWallets>>()));
+    expect(read, isNot(isA<Ok<DefaultWallets, ExchangeReadFailure>>()));
   });
 }

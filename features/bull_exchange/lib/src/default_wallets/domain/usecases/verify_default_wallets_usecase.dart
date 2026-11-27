@@ -10,7 +10,9 @@ class VerifyDefaultWalletsUsecase {
 
   const VerifyDefaultWalletsUsecase(this._exchange);
 
-  Future<ExchangeRead<DefaultWallets>> execute(ExchangeSession session) async {
+  Future<Result<DefaultWallets, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) async {
     if (await _exchange.reconcileUnknownWrites(session) case Err(
       :final failure,
     )) {

@@ -1,5 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';
+import 'package:primitives/primitives.dart';
 
 /// Reads the account facts the fund flow decides from.
 class GetFundingAccountUsecase {
@@ -7,6 +8,7 @@ class GetFundingAccountUsecase {
 
   const GetFundingAccountUsecase(this._exchange);
 
-  Future<ExchangeRead<FundingAccount>> execute(ExchangeSession session) =>
-      _exchange.funding.account(session);
+  Future<Result<FundingAccount, ExchangeReadFailure>> execute(
+    ExchangeSession session,
+  ) => _exchange.funding.account(session);
 }

@@ -98,21 +98,28 @@ final class FakeWatchSupportChatPushesUsecase
 
 final class FakeGetUnreadSupportCountUsecase
     implements GetUnreadSupportCountUsecase {
-  final Future<ExchangeRead<int>> Function(ExchangeSession session) answer;
+  final Future<Result<int, ExchangeReadFailure>> Function(
+    ExchangeSession session,
+  )
+  answer;
 
   FakeGetUnreadSupportCountUsecase(this.answer);
 
   @override
-  Future<ExchangeRead<int>> execute(ExchangeSession session) => answer(session);
+  Future<Result<int, ExchangeReadFailure>> execute(ExchangeSession session) =>
+      answer(session);
 }
 
 final class FakeMarkSupportMessagesReadUsecase
     implements MarkSupportMessagesReadUsecase {
-  final Future<ExchangeWrite<void>> Function(ExchangeSession session) answer;
+  final Future<Result<void, ExchangeWriteFailure>> Function(
+    ExchangeSession session,
+  )
+  answer;
 
   FakeMarkSupportMessagesReadUsecase(this.answer);
 
   @override
-  Future<ExchangeWrite<void>> execute(ExchangeSession session) =>
+  Future<Result<void, ExchangeWriteFailure>> execute(ExchangeSession session) =>
       answer(session);
 }

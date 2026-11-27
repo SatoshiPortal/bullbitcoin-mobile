@@ -1,5 +1,6 @@
 import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';
+import 'package:primitives/primitives.dart';
 
 /// The banks the COP bank transfer can be paid from: the institutions of
 /// that rail's jurisdiction. An empty list is an answer.
@@ -8,7 +9,7 @@ class GetCopFundingInstitutionsUsecase {
 
   const GetCopFundingInstitutionsUsecase(this._exchange);
 
-  Future<ExchangeRead<List<FundingInstitution>>> execute(
+  Future<Result<List<FundingInstitution>, ExchangeReadFailure>> execute(
     ExchangeSession session,
   ) => _exchange.funding.institutions(
     session,

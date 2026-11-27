@@ -3,6 +3,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 
 typedef _Next = FundFlowNext;
 
@@ -97,51 +98,58 @@ final _states = <FundFlowState>[
 ];
 
 final _events = <FundFlowEvent>[
-  FundAccountLoaded(1, ReadGot(_acct)), // 0
-  const FundAccountLoaded(1, ReadUnreachable('timeout', isNetwork: true)), // 1
+  FundAccountLoaded(1, Ok(_acct)), // 0
   const FundAccountLoaded(
     1,
-    ReadSessionRejected(ExchangeSessionRejection.server),
+    Err(ExchangeUnreachableFailure('timeout', isNetwork: true)),
+  ), // 1
+  const FundAccountLoaded(
+    1,
+    Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
   ), // 2
-  FundAccountLoaded(2, ReadGot(_acct)), // 3
+  FundAccountLoaded(2, Ok(_acct)), // 3
   const FundRetryPressed(), // 4
   const FundJurisdictionPicked(Jurisdiction.europe), // 5
   const FundRailPicked(_eTransfer), // 6
   const FundRailPicked(CopBankTransferFundingRail()), // 7
   const FundConsentAccepted(), // 8
-  const FundConsentSubmitted(1, WriteDone(null)), // 9
-  const FundConsentVerified(1, ReadGot(true)), // 10
-  FundInstitutionsLoaded(1, ReadGot(_banks)), // 11
-  const FundInstitutionsLoaded(1, ReadGot([])), // 12
+  const FundConsentSubmitted(1, Ok(null)), // 9
+  const FundConsentVerified(1, Ok(true)), // 10
+  FundInstitutionsLoaded(1, Ok(_banks)), // 11
+  const FundInstitutionsLoaded(1, Ok([])), // 12
   FundCopSubmitted(_banks.first, _amount), // 13
   const FundRegularSepaChosen(), // 14
   FundInstructionsLoaded(
     1,
     _req,
-    const ReadGot(FundingInstructionsGot(_instructions)),
+    const Ok(FundingInstructionsGot(_instructions)),
   ), // 15
   FundInstructionsLoaded(
     1,
     _req,
-    const ReadGot(FundingRefused(FundingRefusal.sinpeNotRegistered)),
+    const Ok(FundingRefused(FundingRefusal.sinpeNotRegistered)),
   ), // 16
-  FundInstructionsLoaded(1, _req, const ReadMalformed('missing iban')), // 17
+  FundInstructionsLoaded(
+    1,
+    _req,
+    const Err(ExchangeMalformedFailure('missing iban')),
+  ), // 17
   FundInstructionsLoaded(
     1,
     _copReq,
-    const ReadGot(FundingInstructionsGot(_instructions)),
+    const Ok(FundingInstructionsGot(_instructions)),
   ), // 18
   FundInstructionsLoaded(
     1,
     _req,
-    const ReadSessionRejected(ExchangeSessionRejection.server),
+    const Err(ExchangeSessionRejectedFailure(ExchangeSessionRejection.server)),
   ), // 19
   const FundBackPressed(), // 20
   const FundDonePressed(), // 21
   const FundSessionChanged(_session), // 22
   const FundSessionChanged(_otherSession), // 23
   const FundSessionChanged(null), // 24
-  FundAccountLoaded(1, ReadGot(_restrictedAcct)), // 25
+  FundAccountLoaded(1, Ok(_restrictedAcct)), // 25
   const FundRailPicked(ConfidentialSepaFundingRail()), // 26
   const FundJurisdictionPicked(Jurisdiction.colombia), // 27
 ];
@@ -401,7 +409,7 @@ void main() {
         FundInstructionsLoaded(
           1,
           _req,
-          const ReadGot(FundingInstructionsGot(_instructions)),
+          const Ok(FundingInstructionsGot(_instructions)),
         ),
       );
       expect(identical(late.state, wire), isTrue);
@@ -421,7 +429,10 @@ void main() {
     test('an unknown consent outcome re-reads, never re-sends', () {
       final next = transitionFundFlow(
         _states[6],
-        const FundConsentSubmitted(1, WriteOutcomeUnknown('timeout')),
+        const FundConsentSubmitted(
+          1,
+          Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+        ),
       );
       expect(
         next,

@@ -3,6 +3,7 @@ import 'package:bull_exchange/src/default_wallets/domain/default_wallets_machine
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 
 const _s = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
@@ -23,10 +24,14 @@ const _newWallet = DefaultWallet(
   address: 'bc1qnorm',
 );
 const _withNew = DefaultWallets(bitcoin: _newWallet);
-const _netDown = ReadUnreachable<DefaultWallets>('down', isNetwork: true);
-const _serverDown = ReadUnreachable<DefaultWallets>('500', isNetwork: false);
-const _rejected = ReadSessionRejected<DefaultWallets>(
-  ExchangeSessionRejection.server,
+const _netDown = Err<DefaultWallets, ExchangeReadFailure>(
+  ExchangeUnreachableFailure('down', isNetwork: true),
+);
+const _serverDown = Err<DefaultWallets, ExchangeReadFailure>(
+  ExchangeUnreachableFailure('500', isNetwork: false),
+);
+const _rejected = Err<DefaultWallets, ExchangeReadFailure>(
+  ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
 );
 const _saveIntent = SlotSaveIntent(draft: 'bc1qnew', address: 'bc1qnorm');
 final _entry = UnknownWrite(
@@ -69,18 +74,18 @@ final _states = <DefaultWalletsState>[
   _ready(const SlotEditing('bc1qnew'), lightning: _lnSaving), // 11
 ];
 
-GatedWrite<ExchangeWrite<DefaultWallet>> _saveAnswer(
-  ExchangeWrite<DefaultWallet> write,
+GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>> _saveAnswer(
+  Result<DefaultWallet, ExchangeWriteFailure> write,
 ) => GateAdmitted(write);
 
 /// Per event, the states that change (by index into [_states]) and what they
 /// become. Every other state stays (same instance, no effects).
 final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
   'loaded': (
-    const WalletsLoaded(1, ReadGot(_saved)),
+    const WalletsLoaded(1, Ok(_saved)),
     {0: const WalletsReady(_s, _saved, attempts: 1)},
   ),
-  'loaded, stale attempt': (const WalletsLoaded(2, ReadGot(_saved)), {}),
+  'loaded, stale attempt': (const WalletsLoaded(2, Ok(_saved)), {}),
   'load unreachable (never empty wallets)': (
     const WalletsLoaded(1, _netDown),
     {
@@ -150,18 +155,26 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     {},
   ),
   'save done': (
-    SlotSaveAnswered(_btc, 5, _saveAnswer(const WriteDone(_newWallet))),
+    SlotSaveAnswered(_btc, 5, _saveAnswer(const Ok(_newWallet))),
     {7: _ready(const SlotShowing(notice: SlotNoticeSaved()), saved: _withNew)},
   ),
   'save outcome unknown (DW-2)': (
-    SlotSaveAnswered(_btc, 5, _saveAnswer(const WriteOutcomeUnknown('504'))),
+    SlotSaveAnswered(
+      _btc,
+      5,
+      _saveAnswer(const Err(ExchangeWriteOutcomeUnknownFailure('504'))),
+    ),
     {7: _ready(const SlotVerifying(_saveIntent, 6), attempts: 6)},
   ),
   'save refused': (
     SlotSaveAnswered(
       _btc,
       5,
-      _saveAnswer(const WriteRefused(ExchangeRefusal(httpStatus: 400))),
+      _saveAnswer(
+        const Err(
+          ExchangeWriteRefusedFailure(ExchangeRefusal(httpStatus: 400)),
+        ),
+      ),
     ),
     {
       7: _ready(
@@ -170,14 +183,26 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     },
   ),
   'save session rejected': (
-    SlotSaveAnswered(_btc, 5, _saveAnswer(const WriteSessionRejected())),
+    SlotSaveAnswered(
+      _btc,
+      5,
+      _saveAnswer(
+        const Err(
+          ExchangeSessionRejectedFailure(ExchangeSessionRejection.server),
+        ),
+      ),
+    ),
     {7: const WalletsSessionEnded()},
   ),
   'save session changed': (
     SlotSaveAnswered(
       _btc,
       5,
-      _saveAnswer(const WriteNotSent(ExchangeNotSentReason.sessionChanged)),
+      _saveAnswer(
+        const Err(
+          ExchangeWriteNotSentFailure(ExchangeNotSentReason.sessionChanged),
+        ),
+      ),
     ),
     {7: const WalletsSessionEnded()},
   ),
@@ -198,7 +223,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     {7: _ready(const SlotVerifying(_saveIntent, 6), attempts: 6)},
   ),
   'save answer, stale attempt': (
-    SlotSaveAnswered(_btc, 4, _saveAnswer(const WriteDone(_newWallet))),
+    SlotSaveAnswered(_btc, 4, _saveAnswer(const Ok(_newWallet))),
     {},
   ),
   'unset pressed (DW-4)': (
@@ -206,7 +231,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     {3: _ready(const SlotUnsetting(6), attempts: 6)},
   ),
   'unset done (DW-3)': (
-    const SlotUnsetAnswered(_btc, 5, GateAdmitted(WriteDone(null))),
+    const SlotUnsetAnswered(_btc, 5, GateAdmitted(Ok(null))),
     {
       8: _ready(
         const SlotShowing(notice: SlotNoticeUnset()),
@@ -215,14 +240,20 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     },
   ),
   'unset outcome unknown': (
-    const SlotUnsetAnswered(_btc, 5, GateAdmitted(WriteOutcomeUnknown('x'))),
+    const SlotUnsetAnswered(
+      _btc,
+      5,
+      GateAdmitted(Err(ExchangeWriteOutcomeUnknownFailure('x'))),
+    ),
     {8: _ready(const SlotVerifying(SlotUnsetIntent(), 6), attempts: 6)},
   ),
   'unset refused': (
     const SlotUnsetAnswered(
       _btc,
       5,
-      GateAdmitted(WriteRefused(ExchangeRefusal(httpStatus: 400))),
+      GateAdmitted(
+        Err(ExchangeWriteRefusedFailure(ExchangeRefusal(httpStatus: 400))),
+      ),
     ),
     {
       8: _ready(
@@ -233,11 +264,11 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     },
   ),
   'verified applied': (
-    const SlotVerified(_btc, 5, ReadGot(_withNew)),
+    const SlotVerified(_btc, 5, Ok(_withNew)),
     {9: _ready(const SlotShowing(notice: SlotNoticeSaved()), saved: _withNew)},
   ),
   'verified not applied': (
-    const SlotVerified(_btc, 5, ReadGot(_saved)),
+    const SlotVerified(_btc, 5, Ok(_saved)),
     {
       9: _ready(
         const SlotEditing('bc1qnew', problem: DefaultWalletsSaveFailure()),
@@ -259,7 +290,7 @@ final _table = <String, (DefaultWalletsEvent, Map<int, DefaultWalletsState>)>{
     const SlotVerified(_btc, 5, _rejected),
     {9: const WalletsSessionEnded()},
   ),
-  'verify, stale attempt': (const SlotVerified(_btc, 4, ReadGot(_withNew)), {}),
+  'verify, stale attempt': (const SlotVerified(_btc, 4, Ok(_withNew)), {}),
   'check again': (
     const SlotVerifyRetryPressed(_btc),
     {10: _ready(const SlotVerifying(_saveIntent, 6), attempts: 6)},
@@ -334,7 +365,7 @@ void main() {
           SlotSaveAnswered(
             _btc,
             5,
-            _saveAnswer(const WriteOutcomeUnknown('504')),
+            _saveAnswer(const Err(ExchangeWriteOutcomeUnknownFailure('504'))),
           ),
         ).effects,
         const [VerifyDefaultWallets(_s, _btc, 6)],
@@ -385,7 +416,7 @@ void main() {
       expect(
         transitionDefaultWallets(
           verifying,
-          const SlotVerified(_btc, 5, ReadGot(DefaultWallets())),
+          const SlotVerified(_btc, 5, Ok(DefaultWallets())),
         ).state,
         _ready(
           const SlotShowing(notice: SlotNoticeUnset()),
@@ -395,7 +426,7 @@ void main() {
       expect(
         transitionDefaultWallets(
           verifying,
-          const SlotVerified(_btc, 5, ReadGot(_saved)),
+          const SlotVerified(_btc, 5, Ok(_saved)),
         ).state,
         _ready(
           const SlotShowing(
@@ -470,7 +501,7 @@ const _userEvents = <DefaultWalletsEvent>[
 List<DefaultWalletsEvent> _answers(DefaultWalletsEffect effect) =>
     switch (effect) {
       FetchDefaultWallets(:final attempt) => [
-        WalletsLoaded(attempt, const ReadGot(_saved)),
+        WalletsLoaded(attempt, const Ok(_saved)),
         WalletsLoaded(attempt, _netDown),
         WalletsLoaded(attempt, _rejected),
       ],
@@ -478,26 +509,18 @@ List<DefaultWalletsEvent> _answers(DefaultWalletsEffect effect) =>
         SlotChecked(network, attempt, const WalletAddressValid('bc1qnorm')),
       ],
       SaveDefaultWallet(:final network, :final attempt) => [
+        SlotSaveAnswered(network, attempt, _saveAnswer(const Ok(_newWallet))),
         SlotSaveAnswered(
           network,
           attempt,
-          _saveAnswer(const WriteDone(_newWallet)),
-        ),
-        SlotSaveAnswered(
-          network,
-          attempt,
-          _saveAnswer(const WriteOutcomeUnknown('504')),
+          _saveAnswer(const Err(ExchangeWriteOutcomeUnknownFailure('504'))),
         ),
       ],
       UnsetDefaultWallet(:final network, :final attempt) => [
-        SlotUnsetAnswered(
-          network,
-          attempt,
-          const GateAdmitted(WriteDone(null)),
-        ),
+        SlotUnsetAnswered(network, attempt, const GateAdmitted(Ok(null))),
       ],
       VerifyDefaultWallets(:final network, :final attempt) => [
-        SlotVerified(network, attempt, const ReadGot(_withNew)),
+        SlotVerified(network, attempt, const Ok(_withNew)),
         SlotVerified(network, attempt, _serverDown),
       ],
     };

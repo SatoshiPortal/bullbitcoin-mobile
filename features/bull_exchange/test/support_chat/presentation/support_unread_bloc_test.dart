@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support_chat_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 const _a = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 1,
@@ -16,21 +18,21 @@ const _message = NotificationMessage(kind: NotificationMessageKind.message);
 
 /// Scripted answers, one queue per call.
 final class _Server {
-  final reads = <Completer<ExchangeRead<int>>>[];
-  final marks = <Completer<ExchangeWrite<void>>>[];
+  final reads = <Completer<Result<int, ExchangeReadFailure>>>[];
+  final marks = <Completer<Result<void, ExchangeWriteFailure>>>[];
 
   final sessions = <String>[];
 
-  Future<ExchangeRead<int>> read(ExchangeSession session) {
+  Future<Result<int, ExchangeReadFailure>> read(ExchangeSession session) {
     sessions.add('read ${session.sessionId}');
-    final answer = Completer<ExchangeRead<int>>();
+    final answer = Completer<Result<int, ExchangeReadFailure>>();
     reads.add(answer);
     return answer.future;
   }
 
-  Future<ExchangeWrite<void>> mark(ExchangeSession session) {
+  Future<Result<void, ExchangeWriteFailure>> mark(ExchangeSession session) {
     sessions.add('mark ${session.sessionId}');
-    final answer = Completer<ExchangeWrite<void>>();
+    final answer = Completer<Result<void, ExchangeWriteFailure>>();
     marks.add(answer);
     return answer.future;
   }
@@ -71,20 +73,20 @@ void main() {
     access.add(const ExchangeAccessSignedIn(_a));
     await pumpEventQueue();
     expect(bloc.state, const UnreadReading(_a, 0));
-    server.reads.single.complete(const ReadGot(2));
+    server.reads.single.complete(const Ok(2));
     await pumpEventQueue();
     expect(badge(bloc), 2);
 
     messages.add(_message);
     await pumpEventQueue();
-    server.reads.last.complete(const ReadGot(3));
+    server.reads.last.complete(const Ok(3));
     await pumpEventQueue();
     expect(badge(bloc), 3);
 
     messages.add(_message);
     await pumpEventQueue();
     server.reads.last.complete(
-      const ReadUnreachable('offline', isNetwork: true),
+      const Err(ExchangeUnreachableFailure('offline', isNetwork: true)),
     );
     await pumpEventQueue();
     expect(
@@ -102,7 +104,9 @@ void main() {
     current = const ExchangeAccessSignedIn(_a);
     final bloc = build();
     await pumpEventQueue();
-    server.reads.single.complete(const ReadMalformed('negative'));
+    server.reads.single.complete(
+      const Err(ExchangeMalformedFailure('negative')),
+    );
     await pumpEventQueue();
     expect(bloc.state, const UnreadUnavailable(_a, 0, UnreadProblem.malformed));
   });
@@ -113,7 +117,7 @@ void main() {
       current = const ExchangeAccessSignedIn(_a);
       final bloc = build();
       await pumpEventQueue();
-      server.reads.single.complete(const ReadGot(4));
+      server.reads.single.complete(const Ok(4));
       await pumpEventQueue();
       expect(badge(bloc), 4);
 
@@ -122,10 +126,10 @@ void main() {
       expect(badge(bloc), 0);
       expect(server.marks, hasLength(1));
 
-      server.marks.single.complete(const WriteDone(null));
+      server.marks.single.complete(const Ok(null));
       await pumpEventQueue();
       expect(badge(bloc), 0);
-      server.reads.last.complete(const ReadGot(1));
+      server.reads.last.complete(const Ok(1));
       await pumpEventQueue();
       expect(badge(bloc), 1);
       expect(server.sessions, ['read a', 'mark a', 'read a']);
@@ -140,7 +144,7 @@ void main() {
       await pumpEventQueue();
       bloc.add(const UnreadChatShown());
       await pumpEventQueue();
-      server.reads.first.complete(const ReadGot(5));
+      server.reads.first.complete(const Ok(5));
       await pumpEventQueue();
       expect(badge(bloc), 0);
       expect(bloc.state, isA<UnreadMarking>());
@@ -151,13 +155,15 @@ void main() {
     current = const ExchangeAccessSignedIn(_a);
     final bloc = build();
     await pumpEventQueue();
-    server.reads.single.complete(const ReadGot(4));
+    server.reads.single.complete(const Ok(4));
     await pumpEventQueue();
     bloc.add(const UnreadChatShown());
     await pumpEventQueue();
-    server.marks.single.complete(const WriteOutcomeUnknown('timeout'));
+    server.marks.single.complete(
+      const Err(ExchangeWriteOutcomeUnknownFailure('timeout')),
+    );
     await pumpEventQueue();
-    server.reads.last.complete(const ReadGot(4));
+    server.reads.last.complete(const Ok(4));
     await pumpEventQueue();
     expect(badge(bloc), 4);
   });

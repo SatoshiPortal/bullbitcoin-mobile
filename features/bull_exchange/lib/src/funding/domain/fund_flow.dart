@@ -2,6 +2,7 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/funding.dart';
 import 'package:exchange/steps.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 
 /// The fund flow (composition §5, Fund column): session → account load →
 /// restriction gate → jurisdiction and rail → consent gate → the rail's
@@ -280,7 +281,7 @@ sealed class FundFlowEvent {
 
 final class FundAccountLoaded extends FundFlowEvent {
   final int attempt;
-  final ExchangeRead<FundingAccount> read;
+  final Result<FundingAccount, ExchangeReadFailure> read;
 
   const FundAccountLoaded(this.attempt, this.read);
 }
@@ -307,21 +308,21 @@ final class FundConsentAccepted extends FundFlowEvent {
 
 final class FundConsentSubmitted extends FundFlowEvent {
   final int attempt;
-  final ExchangeWrite<void> write;
+  final Result<void, ExchangeWriteFailure> write;
 
   const FundConsentSubmitted(this.attempt, this.write);
 }
 
 final class FundConsentVerified extends FundFlowEvent {
   final int attempt;
-  final ExchangeRead<bool> read;
+  final Result<bool, ExchangeReadFailure> read;
 
   const FundConsentVerified(this.attempt, this.read);
 }
 
 final class FundInstitutionsLoaded extends FundFlowEvent {
   final int attempt;
-  final ExchangeRead<List<FundingInstitution>> read;
+  final Result<List<FundingInstitution>, ExchangeReadFailure> read;
 
   const FundInstitutionsLoaded(this.attempt, this.read);
 }
@@ -340,7 +341,7 @@ final class FundRegularSepaChosen extends FundFlowEvent {
 final class FundInstructionsLoaded extends FundFlowEvent {
   final int attempt;
   final FundingRequest request;
-  final ExchangeRead<FundingAnswer> read;
+  final Result<FundingAnswer, ExchangeReadFailure> read;
 
   const FundInstructionsLoaded(this.attempt, this.request, this.read);
 }
@@ -704,8 +705,11 @@ FundFlowNext _institutions(FundInstitutions state, FundFlowEvent event) {
     case FundInstitutionsLoaded(:final attempt, :final read):
       loadEvent = ContextLoaded(
         attempt,
-        read is ReadGot<List<FundingInstitution>> && read.value.isEmpty
-            ? const ReadMissing<List<FundingInstitution>>()
+        read is Ok<List<FundingInstitution>, ExchangeReadFailure> &&
+                read.value.isEmpty
+            ? const Err<List<FundingInstitution>, ExchangeReadFailure>(
+                ExchangeMissingFailure(),
+              )
             : read,
       );
     case FundRetryPressed():
@@ -836,49 +840,47 @@ FundFlowNext _back(FundOpen open, FundingRequest request, FundOrigin origin) =>
       ),
     };
 
-FundFlowNext _fetching(FundFetching state, FundFlowEvent event) =>
-    switch (event) {
-      FundInstructionsLoaded(:final attempt, :final request, :final read)
-          when attempt == state.attempt && request == state.request =>
-        switch (read) {
-          ReadGot(value: FundingInstructionsGot(:final instructions)) =>
-            FundFlowNext(
-              FundShowing(
-                state.open,
-                state.request,
-                state.origin,
-                instructions,
-              ),
-            ),
-          ReadGot(value: FundingRefused(:final reason)) => FundFlowNext(
-            FundRefused(state.open, state.request, state.origin, reason),
-          ),
-          ReadSessionRejected() => _ended,
-          ReadMissing() || ReadUnreachable() || ReadMalformed() => FundFlowNext(
-            FundFetchFailed(
-              state.open,
-              state.request,
-              state.origin,
-              state.attempt,
-              ReadProblem.of(read)!,
-            ),
-          ),
-        },
-      FundBackPressed() => _back(state.open, state.request, state.origin),
-      FundInstructionsLoaded() ||
-      FundAccountLoaded() ||
-      FundRetryPressed() ||
-      FundJurisdictionPicked() ||
-      FundRailPicked() ||
-      FundConsentAccepted() ||
-      FundConsentSubmitted() ||
-      FundConsentVerified() ||
-      FundInstitutionsLoaded() ||
-      FundCopSubmitted() ||
-      FundRegularSepaChosen() ||
-      FundDonePressed() ||
-      FundSessionChanged() => FundFlowNext.stay(state),
-    };
+FundFlowNext _fetching(
+  FundFetching state,
+  FundFlowEvent event,
+) => switch (event) {
+  FundInstructionsLoaded(:final attempt, :final request, :final read)
+      when attempt == state.attempt && request == state.request =>
+    switch (read) {
+      Ok(value: FundingInstructionsGot(:final instructions)) => FundFlowNext(
+        FundShowing(state.open, state.request, state.origin, instructions),
+      ),
+      Ok(value: FundingRefused(:final reason)) => FundFlowNext(
+        FundRefused(state.open, state.request, state.origin, reason),
+      ),
+      Err(failure: ExchangeSessionRejectedFailure()) => _ended,
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(failure: ExchangeMalformedFailure()) => FundFlowNext(
+        FundFetchFailed(
+          state.open,
+          state.request,
+          state.origin,
+          state.attempt,
+          ReadProblem.of(read)!,
+        ),
+      ),
+    },
+  FundBackPressed() => _back(state.open, state.request, state.origin),
+  FundInstructionsLoaded() ||
+  FundAccountLoaded() ||
+  FundRetryPressed() ||
+  FundJurisdictionPicked() ||
+  FundRailPicked() ||
+  FundConsentAccepted() ||
+  FundConsentSubmitted() ||
+  FundConsentVerified() ||
+  FundInstitutionsLoaded() ||
+  FundCopSubmitted() ||
+  FundRegularSepaChosen() ||
+  FundDonePressed() ||
+  FundSessionChanged() => FundFlowNext.stay(state),
+};
 
 FundFlowNext _showing(FundShowing state, FundFlowEvent event) =>
     switch (event) {

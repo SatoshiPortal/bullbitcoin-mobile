@@ -1,4 +1,5 @@
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 /// Unsets the session account's default wallet of a network (the recipient
 /// stays), through the account's write gate. Never sent for a session that
@@ -8,7 +9,7 @@ class UnsetDefaultWalletUsecase {
 
   const UnsetDefaultWalletUsecase(this._exchange);
 
-  Future<GatedWrite<ExchangeWrite<void>>> execute(
+  Future<GatedWrite<Result<void, ExchangeWriteFailure>>> execute(
     ExchangeSession session, {
     required BtcNetwork network,
     required String recipientId,

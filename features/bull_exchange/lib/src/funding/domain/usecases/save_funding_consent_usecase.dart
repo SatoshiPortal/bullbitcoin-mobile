@@ -1,4 +1,5 @@
 import 'package:exchange/exchange.dart';
+import 'package:primitives/primitives.dart';
 
 /// Records the scam-warning consent on the session's account.
 class SaveFundingConsentUsecase {
@@ -6,6 +7,6 @@ class SaveFundingConsentUsecase {
 
   const SaveFundingConsentUsecase(this._exchange);
 
-  Future<ExchangeWrite<void>> execute(ExchangeSession session) =>
+  Future<Result<void, ExchangeWriteFailure>> execute(ExchangeSession session) =>
       _exchange.funding.consent(session);
 }

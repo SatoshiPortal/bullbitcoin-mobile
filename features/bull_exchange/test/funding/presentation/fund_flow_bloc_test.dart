@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../funding_usecase_fakes.dart';
 
+import 'package:primitives/primitives.dart';
+
 const _session = ExchangeSession(
   environment: ExchangeEnvironment.mainnet,
   epoch: 0,
@@ -32,7 +34,7 @@ final class _Calls {
     accessChanges: accessChanges,
     getAccount: FakeGetFundingAccountUsecase((session) async {
       sessions.add(session);
-      return ReadGot(
+      return Ok(
         FundingAccount(
           userNumber: 7,
           firstName: 'Ada',
@@ -59,7 +61,7 @@ final class _Calls {
     ) async {
       sessions.add(session);
       requests.add(request);
-      return const ReadGot(FundingInstructionsGot(_rows));
+      return const Ok(FundingInstructionsGot(_rows));
     }),
   );
 }

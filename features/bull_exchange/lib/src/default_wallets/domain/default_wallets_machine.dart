@@ -4,6 +4,8 @@ import 'package:meta/meta.dart';
 
 import 'default_wallets_failure.dart';
 
+import 'package:primitives/primitives.dart';
+
 /// What checking a typed address said.
 @immutable
 sealed class WalletAddressCheck {
@@ -347,7 +349,7 @@ sealed class DefaultWalletsEvent {
 
 final class WalletsLoaded extends DefaultWalletsEvent {
   final int attempt;
-  final ExchangeRead<DefaultWallets> read;
+  final Result<DefaultWallets, ExchangeReadFailure> read;
 
   const WalletsLoaded(this.attempt, this.read);
 }
@@ -386,7 +388,7 @@ final class SlotChecked extends DefaultWalletsEvent {
 final class SlotSaveAnswered extends DefaultWalletsEvent {
   final BtcNetwork network;
   final int attempt;
-  final GatedWrite<ExchangeWrite<DefaultWallet>> answer;
+  final GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>> answer;
 
   const SlotSaveAnswered(this.network, this.attempt, this.answer);
 }
@@ -400,7 +402,7 @@ final class SlotUnsetPressed extends DefaultWalletsEvent {
 final class SlotUnsetAnswered extends DefaultWalletsEvent {
   final BtcNetwork network;
   final int attempt;
-  final GatedWrite<ExchangeWrite<void>> answer;
+  final GatedWrite<Result<void, ExchangeWriteFailure>> answer;
 
   const SlotUnsetAnswered(this.network, this.attempt, this.answer);
 }
@@ -408,7 +410,7 @@ final class SlotUnsetAnswered extends DefaultWalletsEvent {
 final class SlotVerified extends DefaultWalletsEvent {
   final BtcNetwork network;
   final int attempt;
-  final ExchangeRead<DefaultWallets> read;
+  final Result<DefaultWallets, ExchangeReadFailure> read;
 
   const SlotVerified(this.network, this.attempt, this.read);
 }
@@ -592,11 +594,15 @@ DefaultWalletsNext transitionDefaultWallets(
   (WalletsLoading(:final session, :final attempt), WalletsLoaded loaded)
       when loaded.attempt == attempt =>
     switch (loaded.read) {
-      ReadGot(:final value) => StepNext(
+      Ok(:final value) => StepNext(
         WalletsReady(session, value, attempts: attempt),
       ),
-      ReadSessionRejected() => StepNext(const WalletsSessionEnded()),
-      ReadMissing() || ReadUnreachable() || ReadMalformed() => StepNext(
+      Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+        const WalletsSessionEnded(),
+      ),
+      Err(failure: ExchangeMissingFailure()) ||
+      Err(failure: ExchangeUnreachableFailure()) ||
+      Err(failure: ExchangeMalformedFailure()) => StepNext(
         WalletsLoadFailed(session, attempt, ReadProblem.of(loaded.read)!),
       ),
     },
@@ -856,28 +862,36 @@ DefaultWalletsNext _saveAnswered(
   BtcNetwork network,
   String draft,
   String address,
-  GatedWrite<ExchangeWrite<DefaultWallet>> answer,
+  GatedWrite<Result<DefaultWallet, ExchangeWriteFailure>> answer,
 ) => switch (answer) {
-  GateAdmitted(result: WriteDone(:final value)) => _slot(
+  GateAdmitted(result: Ok(:final value)) => _slot(
     ready,
     network,
     const SlotShowing(notice: SlotNoticeSaved()),
     saved: withDefaultWallet(ready.saved, network, value),
   ),
-  GateAdmitted(result: WriteOutcomeUnknown()) ||
+  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) ||
   GateRefused(
     refusal: WriteGateUnsettled(),
   ) => _verify(ready, network, SlotSaveIntent(draft: draft, address: address)),
   GateAdmitted(
-    result: WriteSessionRejected() ||
-        WriteNotSent(reason: ExchangeNotSentReason.sessionChanged),
+    result: Err(failure: ExchangeSessionRejectedFailure()) ||
+        Err(
+          failure: ExchangeWriteNotSentFailure(
+            reason: ExchangeNotSentReason.sessionChanged,
+          ),
+        ),
   ) =>
     StepNext(const WalletsSessionEnded()),
-  GateAdmitted(result: WriteRefused() || WriteNotSent()) => _slot(
-    ready,
-    network,
-    SlotEditing(draft, problem: const DefaultWalletsSaveFailure()),
-  ),
+  GateAdmitted(
+    result: Err(failure: ExchangeWriteRefusedFailure()) ||
+        Err(failure: ExchangeWriteNotSentFailure()),
+  ) =>
+    _slot(
+      ready,
+      network,
+      SlotEditing(draft, problem: const DefaultWalletsSaveFailure()),
+    ),
   GateRefused(refusal: WriteGateBusy() || WriteGateJournalUnreadable()) =>
     _slot(
       ready,
@@ -889,28 +903,38 @@ DefaultWalletsNext _saveAnswered(
 DefaultWalletsNext _unsetAnswered(
   WalletsReady ready,
   BtcNetwork network,
-  GatedWrite<ExchangeWrite<void>> answer,
+  GatedWrite<Result<void, ExchangeWriteFailure>> answer,
 ) => switch (answer) {
-  GateAdmitted(result: WriteDone()) => _slot(
+  GateAdmitted(result: Ok()) => _slot(
     ready,
     network,
     const SlotShowing(notice: SlotNoticeUnset()),
     saved: withDefaultWallet(ready.saved, network, null),
   ),
-  GateAdmitted(result: WriteOutcomeUnknown()) ||
+  GateAdmitted(result: Err(failure: ExchangeWriteOutcomeUnknownFailure())) ||
   GateRefused(
     refusal: WriteGateUnsettled(),
   ) => _verify(ready, network, const SlotUnsetIntent()),
   GateAdmitted(
-    result: WriteSessionRejected() ||
-        WriteNotSent(reason: ExchangeNotSentReason.sessionChanged),
+    result: Err(failure: ExchangeSessionRejectedFailure()) ||
+        Err(
+          failure: ExchangeWriteNotSentFailure(
+            reason: ExchangeNotSentReason.sessionChanged,
+          ),
+        ),
   ) =>
     StepNext(const WalletsSessionEnded()),
-  GateAdmitted(result: WriteRefused() || WriteNotSent()) => _slot(
-    ready,
-    network,
-    const SlotShowing(notice: SlotNoticeFailed(DefaultWalletsDeleteFailure())),
-  ),
+  GateAdmitted(
+    result: Err(failure: ExchangeWriteRefusedFailure()) ||
+        Err(failure: ExchangeWriteNotSentFailure()),
+  ) =>
+    _slot(
+      ready,
+      network,
+      const SlotShowing(
+        notice: SlotNoticeFailed(DefaultWalletsDeleteFailure()),
+      ),
+    ),
   GateRefused(refusal: WriteGateBusy() || WriteGateJournalUnreadable()) =>
     _slot(
       ready,
@@ -923,9 +947,9 @@ DefaultWalletsNext _verified(
   WalletsReady ready,
   BtcNetwork network,
   SlotIntent intent,
-  ExchangeRead<DefaultWallets> read,
+  Result<DefaultWallets, ExchangeReadFailure> read,
 ) => switch (read) {
-  ReadGot(:final value) => switch (intent) {
+  Ok(:final value) => switch (intent) {
     SlotSaveIntent(:final draft, :final address) =>
       value.getWallet(network)?.address == address
           ? _slot(
@@ -957,10 +981,12 @@ DefaultWalletsNext _verified(
               saved: value,
             ),
   },
-  ReadSessionRejected() => StepNext(const WalletsSessionEnded()),
-  ReadMissing() || ReadUnreachable() || ReadMalformed() => _slot(
-    ready,
-    network,
-    SlotUnverified(intent, ReadProblem.of(read)!),
+  Err(failure: ExchangeSessionRejectedFailure()) => StepNext(
+    const WalletsSessionEnded(),
   ),
+  Err(failure: ExchangeMissingFailure()) ||
+  Err(failure: ExchangeUnreachableFailure()) ||
+  Err(
+    failure: ExchangeMalformedFailure(),
+  ) => _slot(ready, network, SlotUnverified(intent, ReadProblem.of(read)!)),
 };
