@@ -95,6 +95,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   int _catalogGeneration = 0;
   int _walletActionsEpoch = 0;
   bool _walletActionsAdmitted = false;
+  final _walletActionChanges = StreamController<void>.broadcast();
   bool _closing = false;
   int _ongoingSwapsReadVersion = 0;
   final Map<String, int> _walletUpdateVersions = {};
@@ -110,14 +111,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   int? get walletActionsGeneration =>
       _walletActionsAdmitted && !_closing ? _walletActionsEpoch : null;
 
+  Stream<void> get walletActionChanges => _walletActionChanges.stream;
+
   void _retireWalletActions() {
+    if (_closing) return;
     _walletActionsEpoch++;
     _walletActionsAdmitted = false;
+    _walletActionChanges.add(null);
+  }
+
+  void _admitWalletActions() {
+    if (_closing || _walletActionsAdmitted) return;
+    _walletActionsAdmitted = true;
+    _walletActionChanges.add(null);
   }
 
   @override
   Future<void> close() async {
     _closing = true;
+    unawaited(_walletActionChanges.close());
     final amountDisplayClosed = _amountDisplaySubscription?.cancel();
     await _silentHome.close();
     await amountDisplayClosed;
@@ -229,7 +241,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       for (final wallet in wallets) wallet.network.environment,
     });
     _backupStatusGeneration++;
-    _walletActionsAdmitted = true;
+    _admitWalletActions();
     emit(
       state.copyWith(
         status: WalletStatus.success,
@@ -414,7 +426,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(const RefreshSpWallet());
 
     _backupStatusGeneration++;
-    _walletActionsAdmitted = true;
+    _admitWalletActions();
     emit(
       state.copyWith(
         status: WalletStatus.success,

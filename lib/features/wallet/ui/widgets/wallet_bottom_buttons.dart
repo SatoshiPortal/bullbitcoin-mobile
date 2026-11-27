@@ -10,6 +10,7 @@ import 'package:receive/routes.dart';
 import 'package:send/send.dart' show SendNavigation;
 import 'package:bull_ui/bull_ui.dart'
     show BuildContext, SizedBox, StatelessWidget, Widget;
+import 'package:material_ui/material_ui.dart' show StreamBuilder;
 import 'package:sync/sync.dart' show WalletKey;
 
 class WalletBottomButtons extends StatelessWidget {
@@ -49,24 +50,30 @@ class WalletBottomButtons extends StatelessWidget {
     final selected = wallet;
     if (selected == null) return const SizedBox.shrink();
     final bloc = context.watch<WalletBloc>();
-    final generation = bloc.walletActionsGeneration;
-    if (generation == null) return const SizedBox.shrink();
-
     final target = _receiveTarget(selected);
-    return OverviewWalletButtons.wallet(
-      target: target,
-      watchOnly: selected.isWatchOnly,
-      receiveLabel: receiveLabel,
-      sendLabel: sendLabel,
-      onReceive: openReceive,
-      onSend: openSend,
-      isCurrent: () =>
-          bloc.walletActionsGeneration == generation &&
-          bloc.state.wallets.any(
-            (wallet) =>
-                _receiveTarget(wallet) == target &&
-                wallet.isWatchOnly == selected.isWatchOnly,
-          ),
+    bool containsTarget() => bloc.state.wallets.any(
+      (wallet) =>
+          _receiveTarget(wallet) == target &&
+          wallet.isWatchOnly == selected.isWatchOnly,
+    );
+    return StreamBuilder<void>(
+      stream: bloc.walletActionChanges,
+      builder: (context, _) {
+        final generation = bloc.walletActionsGeneration;
+        if (generation == null || !containsTarget()) {
+          return const SizedBox.shrink();
+        }
+        return OverviewWalletButtons.wallet(
+          target: target,
+          watchOnly: selected.isWatchOnly,
+          receiveLabel: receiveLabel,
+          sendLabel: sendLabel,
+          onReceive: openReceive,
+          onSend: openSend,
+          isCurrent: () =>
+              bloc.walletActionsGeneration == generation && containsTarget(),
+        );
+      },
     );
   }
 
