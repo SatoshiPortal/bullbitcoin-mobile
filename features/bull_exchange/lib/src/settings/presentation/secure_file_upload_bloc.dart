@@ -7,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../domain/usecases/get_secure_file_upload_status_usecase.dart';
 import '../domain/usecases/pick_exchange_document_usecase.dart';
 import '../domain/usecases/upload_exchange_document_usecase.dart';
-import '../domain/secure_file_upload_machine.dart';
+import '../domain/secure_file_upload_state.dart';
+import '../domain/secure_file_upload_event.dart';
+import '../domain/secure_file_upload_effect.dart';
 
 /// Shell of [SecureUploadState.next]; results after close are dropped.
 class SecureUploadBloc extends Bloc<SecureUploadEvent, SecureUploadState> {

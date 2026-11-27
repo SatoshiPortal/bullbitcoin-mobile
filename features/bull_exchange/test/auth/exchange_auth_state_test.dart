@@ -1,4 +1,7 @@
-import 'package:bull_exchange/src/auth/exchange_auth_machine.dart';
+import 'package:bull_exchange/src/auth/exchange_auth_state.dart';
+import 'package:bull_exchange/src/auth/exchange_auth_event.dart';
+import 'package:bull_exchange/src/auth/exchange_kyc_state.dart';
+import 'package:bull_exchange/src/auth/exchange_kyc_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 

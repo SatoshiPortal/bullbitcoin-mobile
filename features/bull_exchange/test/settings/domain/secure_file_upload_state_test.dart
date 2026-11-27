@@ -1,6 +1,8 @@
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
 import 'package:bull_exchange/src/settings/domain/entities/exchange_document_to_upload.dart';
-import 'package:bull_exchange/src/settings/domain/secure_file_upload_machine.dart';
+import 'package:bull_exchange/src/settings/domain/secure_file_upload_state.dart';
+import 'package:bull_exchange/src/settings/domain/secure_file_upload_event.dart';
+import 'package:bull_exchange/src/settings/domain/secure_file_upload_effect.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';

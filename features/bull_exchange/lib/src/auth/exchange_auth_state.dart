@@ -1,6 +1,8 @@
 import 'package:exchange/exchange.dart';
 import 'package:meta/meta.dart';
 
+import 'exchange_auth_event.dart';
+
 /// What the sign-in WebView needs once the web settings are read.
 @immutable
 final class ExchangeAuthConfig {
@@ -180,82 +182,4 @@ final class AuthClosing extends ExchangeAuthState {
 
   @override
   int get hashCode => (AuthClosing).hashCode;
-}
-
-@immutable
-sealed class ExchangeAuthEvent {
-  const ExchangeAuthEvent();
-}
-
-final class AuthConfigLoaded extends ExchangeAuthEvent {
-  final ExchangeAuthConfig config;
-
-  const AuthConfigLoaded(this.config);
-}
-
-final class AuthConfigUnavailable extends ExchangeAuthEvent {
-  final ExchangeFailure failure;
-
-  const AuthConfigUnavailable(this.failure);
-}
-
-final class AuthRetryRequested extends ExchangeAuthEvent {
-  const AuthRetryRequested();
-}
-
-/// The WebView reached a page with a web session cookie.
-final class AuthWebSessionSeen extends ExchangeAuthEvent {
-  const AuthWebSessionSeen();
-}
-
-final class AuthKeyStored extends ExchangeAuthEvent {
-  const AuthKeyStored();
-}
-
-/// The web session is not ready for a key yet; keep browsing.
-final class AuthKeyDeferred extends ExchangeAuthEvent {
-  const AuthKeyDeferred();
-}
-
-final class AuthKeyNotStored extends ExchangeAuthEvent {
-  final ExchangeFailure failure;
-
-  const AuthKeyNotStored(this.failure);
-}
-
-final class AuthErrorAcknowledged extends ExchangeAuthEvent {
-  const AuthErrorAcknowledged();
-}
-
-/// Back, the close button or the site's "Back to App".
-final class AuthCloseRequested extends ExchangeAuthEvent {
-  const AuthCloseRequested();
-}
-
-/// KYC WebView: once it starts leaving, further redirects are a stay (B15).
-enum ExchangeKycState {
-  browsing,
-  leaving;
-
-  ExchangeKycState next(ExchangeKycEvent event) {
-    final state = this;
-    return switch ((state, event)) {
-      (ExchangeKycState.browsing, KycLeftFlow() || KycCloseRequested()) =>
-        ExchangeKycState.leaving,
-      (ExchangeKycState.leaving, KycLeftFlow() || KycCloseRequested()) => state,
-    };
-  }
-}
-
-sealed class ExchangeKycEvent {
-  const ExchangeKycEvent();
-}
-
-/// The WebView moved to a page outside the KYC flow.
-final class KycLeftFlow extends ExchangeKycEvent {
-  const KycLeftFlow();
-}
-
-final class KycCloseRequested extends ExchangeKycEvent {
-  const KycCloseRequested();
 }

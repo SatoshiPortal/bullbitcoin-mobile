@@ -5,7 +5,8 @@ import 'package:primitives/primitives.dart';
 
 import 'package:go_router/go_router.dart';
 
-import '../../domain/account_deletion_machine.dart';
+import '../../domain/account_deletion_state.dart';
+import '../../domain/account_deletion_event.dart';
 import '../../domain/usecases/delete_exchange_account_usecase.dart';
 import '../../domain/usecases/sign_out_of_exchange_usecase.dart';
 import '../exchange_access_settings_route.dart';

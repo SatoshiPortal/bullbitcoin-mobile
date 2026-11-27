@@ -1,5 +1,6 @@
 import '../exchange_l10n.dart';
-import 'exchange_auth_machine.dart';
+import 'exchange_auth_state.dart';
+import 'exchange_auth_event.dart';
 
 import 'package:bull_ui/bull_ui.dart' show BullButton, BullButtonSize;
 

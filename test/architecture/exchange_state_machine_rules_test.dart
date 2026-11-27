@@ -65,8 +65,6 @@ bool _isMachineFile(String path) {
     '_state.dart',
     '_event.dart',
     '_effect.dart',
-    '_flow.dart',
-    '_machine.dart',
   ].any(name.endsWith);
 }
 

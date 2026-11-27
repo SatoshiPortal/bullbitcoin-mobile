@@ -6,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/usecases/get_exchange_preferences_usecase.dart';
 import '../domain/usecases/update_exchange_preferences_usecase.dart';
-import '../domain/exchange_preferences_machine.dart';
+import '../domain/exchange_preferences_state.dart';
+import '../domain/exchange_preferences_event.dart';
+import '../domain/exchange_preferences_effect.dart';
 
 /// Shell of [PreferencesState.next]. The save is answered for the session
 /// the screen opened for.

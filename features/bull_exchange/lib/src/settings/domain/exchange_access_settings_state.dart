@@ -1,5 +1,7 @@
 import 'package:exchange/exchange.dart';
 
+import 'exchange_access_settings_event.dart';
+
 /// What the user asked the access screen to do.
 enum ExchangeAccessAttempt { enable, signOut, retry }
 
@@ -145,38 +147,6 @@ final class AccessSettingsFailed extends ExchangeAccessSettingsState {
   @override
   int get hashCode =>
       Object.hash(AccessSettingsFailed, access.runtimeType, attempt, failure);
-}
-
-sealed class ExchangeAccessSettingsEvent {
-  const ExchangeAccessSettingsEvent();
-}
-
-final class AccessSettingsAccessChanged extends ExchangeAccessSettingsEvent {
-  const AccessSettingsAccessChanged(this.access);
-  final ExchangeAccess access;
-}
-
-final class AccessSettingsEnableRequested extends ExchangeAccessSettingsEvent {
-  const AccessSettingsEnableRequested();
-}
-
-final class AccessSettingsSignOutRequested extends ExchangeAccessSettingsEvent {
-  const AccessSettingsSignOutRequested();
-}
-
-final class AccessSettingsRetryRequested extends ExchangeAccessSettingsEvent {
-  const AccessSettingsRetryRequested();
-}
-
-/// The running attempt ended well; [access] is the access read right after.
-final class AccessSettingsAttemptSucceeded extends ExchangeAccessSettingsEvent {
-  const AccessSettingsAttemptSucceeded(this.access);
-  final ExchangeAccess access;
-}
-
-final class AccessSettingsAttemptFailed extends ExchangeAccessSettingsEvent {
-  const AccessSettingsAttemptFailed(this.failure);
-  final ExchangeFailure failure;
 }
 
 /// Value equality for access states, including the ones without fields.

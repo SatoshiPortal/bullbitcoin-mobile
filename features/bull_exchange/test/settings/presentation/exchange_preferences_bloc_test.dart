@@ -1,5 +1,6 @@
 import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_preferences_machine.dart';
+import 'package:bull_exchange/src/settings/domain/exchange_preferences_state.dart';
+import 'package:bull_exchange/src/settings/domain/exchange_preferences_event.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_preferences_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';

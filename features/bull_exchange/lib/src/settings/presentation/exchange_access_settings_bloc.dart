@@ -5,7 +5,8 @@ import 'package:exchange/exchange.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:primitives/primitives.dart';
 
-import '../domain/exchange_access_settings_machine.dart';
+import '../domain/exchange_access_settings_state.dart';
+import '../domain/exchange_access_settings_event.dart';
 import '../domain/usecases/enable_exchange_access_usecase.dart';
 import '../domain/usecases/get_exchange_access_usecase.dart';
 import '../domain/usecases/resolve_exchange_access_usecase.dart';

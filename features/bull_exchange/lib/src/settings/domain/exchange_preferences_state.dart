@@ -4,6 +4,8 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import 'entities/exchange_preferences.dart';
+import 'exchange_preferences_effect.dart';
+import 'exchange_preferences_event.dart';
 
 /// [saved] is what the account has; [draft] what the screen shows.
 @immutable
@@ -240,86 +242,6 @@ final class PreferencesSaveFailed extends PreferencesState {
 
   @override
   int get hashCode => Object.hash(PreferencesSaveFailed, saved, draft, failure);
-}
-
-@immutable
-sealed class PreferencesEvent {
-  const PreferencesEvent();
-}
-
-final class PreferencesLoaded extends PreferencesEvent {
-  final int attempt;
-  final Result<ExchangePreferences, ExchangeFailure> result;
-
-  const PreferencesLoaded(this.attempt, this.result);
-}
-
-final class PreferencesRetryPressed extends PreferencesEvent {
-  const PreferencesRetryPressed();
-}
-
-final class PreferencesLanguageChosen extends PreferencesEvent {
-  final String language;
-
-  const PreferencesLanguageChosen(this.language);
-}
-
-final class PreferencesCurrencyChosen extends PreferencesEvent {
-  final String currency;
-
-  const PreferencesCurrencyChosen(this.currency);
-}
-
-final class PreferencesEmailToggled extends PreferencesEvent {
-  final bool enabled;
-
-  const PreferencesEmailToggled(this.enabled);
-}
-
-final class PreferencesSavePressed extends PreferencesEvent {
-  const PreferencesSavePressed();
-}
-
-/// The answer of the one write in flight (Saving is left only by it, so it
-/// needs no tag).
-final class PreferencesSaveAnswered extends PreferencesEvent {
-  final GatedWrite<Result<void, ExchangeFailure>> answer;
-
-  const PreferencesSaveAnswered(this.answer);
-}
-
-@immutable
-sealed class PreferencesEffect {
-  const PreferencesEffect();
-}
-
-final class FetchPreferences extends PreferencesEffect {
-  final int attempt;
-
-  const FetchPreferences(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is FetchPreferences && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(FetchPreferences, attempt);
-}
-
-final class SavePreferences extends PreferencesEffect {
-  final ExchangePreferences saved;
-  final ExchangePreferences edited;
-
-  const SavePreferences(this.saved, this.edited);
-
-  @override
-  bool operator ==(Object other) =>
-      other is SavePreferences &&
-      other.saved == saved &&
-      other.edited == edited;
-
-  @override
-  int get hashCode => Object.hash(SavePreferences, saved, edited);
 }
 
 typedef PreferencesNext = StepNext<PreferencesState, PreferencesEffect>;

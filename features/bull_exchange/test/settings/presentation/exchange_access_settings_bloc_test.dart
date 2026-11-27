@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:bull_exchange/src/settings/domain/exchange_access_settings_machine.dart';
+import 'package:bull_exchange/src/settings/domain/exchange_access_settings_state.dart';
+import 'package:bull_exchange/src/settings/domain/exchange_access_settings_event.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_access_settings_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';

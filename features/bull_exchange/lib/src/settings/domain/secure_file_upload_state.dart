@@ -3,8 +3,10 @@ import 'package:exchange/steps.dart' show StepNext;
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
-import 'entities/secure_file_upload.dart';
 import 'entities/exchange_document_to_upload.dart';
+import 'entities/secure_file_upload.dart';
+import 'secure_file_upload_effect.dart';
+import 'secure_file_upload_event.dart';
 
 /// Status for the secure file upload UI (matches BB-Exchange DocStatus).
 enum SecureUploadStatus {
@@ -273,91 +275,6 @@ final class UploadDone extends SecureUploadState {
 
   @override
   int get hashCode => Object.hash(UploadDone, attempt);
-}
-
-@immutable
-sealed class SecureUploadEvent {
-  const SecureUploadEvent();
-}
-
-final class UploadStatusLoaded extends SecureUploadEvent {
-  final int attempt;
-  final Result<SecureFileUpload, ExchangeFailure> result;
-
-  const UploadStatusLoaded(this.attempt, this.result);
-}
-
-final class UploadRetryPressed extends SecureUploadEvent {
-  const UploadRetryPressed();
-}
-
-final class UploadPressed extends SecureUploadEvent {
-  const UploadPressed();
-}
-
-/// `null` means the picker was dismissed.
-final class UploadPicked extends SecureUploadEvent {
-  final Result<ExchangeDocumentToUpload?, ExchangeFailure> result;
-
-  const UploadPicked(this.result);
-}
-
-final class UploadAnswered extends SecureUploadEvent {
-  final int attempt;
-  final Result<void, ExchangeFailure> result;
-
-  const UploadAnswered(this.attempt, this.result);
-}
-
-final class UploadProblemDismissed extends SecureUploadEvent {
-  const UploadProblemDismissed();
-}
-
-@immutable
-sealed class SecureUploadEffect {
-  const SecureUploadEffect();
-}
-
-final class FetchUploadStatus extends SecureUploadEffect {
-  final int attempt;
-
-  const FetchUploadStatus(this.attempt);
-
-  @override
-  bool operator ==(Object other) =>
-      other is FetchUploadStatus && other.attempt == attempt;
-
-  @override
-  int get hashCode => Object.hash(FetchUploadStatus, attempt);
-}
-
-final class PickUploadDocument extends SecureUploadEffect {
-  final String? userId;
-
-  const PickUploadDocument(this.userId);
-
-  @override
-  bool operator ==(Object other) =>
-      other is PickUploadDocument && other.userId == userId;
-
-  @override
-  int get hashCode => Object.hash(PickUploadDocument, userId);
-}
-
-final class SendUploadDocument extends SecureUploadEffect {
-  final int attempt;
-  final ExchangeDocumentToUpload document;
-
-  const SendUploadDocument(this.attempt, this.document);
-
-  @override
-  bool operator ==(Object other) =>
-      other is SendUploadDocument &&
-      other.attempt == attempt &&
-      identical(other.document, document);
-
-  @override
-  int get hashCode => Object.hash(SendUploadDocument, attempt, document);
 }
 
 typedef SecureUploadNext = StepNext<SecureUploadState, SecureUploadEffect>;

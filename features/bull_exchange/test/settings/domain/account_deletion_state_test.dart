@@ -1,4 +1,5 @@
-import 'package:bull_exchange/src/settings/domain/account_deletion_machine.dart';
+import 'package:bull_exchange/src/settings/domain/account_deletion_state.dart';
+import 'package:bull_exchange/src/settings/domain/account_deletion_event.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
 
