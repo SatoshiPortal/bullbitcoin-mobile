@@ -85,7 +85,7 @@ final class SecretsInventory implements WalletInventory, SeedReferencePort {
           await value.close();
           return Err(inventoryReadinessFailure(failure));
         }
-        final guard = BackupGuard(backupVerification);
+        final guard = BackupGuard(backupVerification, value.database);
         final access = AccessRepository(value.database, guard);
         switch (await access.protectionAtOpen()) {
           case Err(:final failure):

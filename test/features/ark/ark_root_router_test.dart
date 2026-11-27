@@ -324,6 +324,7 @@ void main() {
       final references = SeedReferences(
         _UnusedReferences(),
         admission: _UnusedCustodyAdmission(),
+        backupVerification: const FakeInventoryBackups(),
       );
       // The router resolves the settings details page at construction: every
       // owner it reads there must be present, even though this test never
