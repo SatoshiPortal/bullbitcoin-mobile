@@ -130,7 +130,6 @@ void main() {
       var applied = false;
       final result = await AppLocator.setup(
         locator,
-        database,
         openLabels: (sync, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
@@ -218,7 +217,6 @@ void main() {
       expect(
         await AppLocator.setup(
           locator,
-          database,
           openLabels: (sync, openWallet) async => Ok(
             createLabelsForTesting(
               database: database,
@@ -525,7 +523,6 @@ void main() {
 
       final result = await AppLocator.setup(
         locator,
-        database,
         openLabels: (sync, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
@@ -628,7 +625,6 @@ void main() {
     );
     final result = await AppLocator.setup(
       locator,
-      database,
       openLabels: (sync, openWallet) async => Ok(
         createLabelsForTesting(
           database: database,

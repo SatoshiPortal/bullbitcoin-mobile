@@ -144,7 +144,6 @@ void main() {
               (failure) =>
                   fail('Preferences open failed: ${failure.runtimeType}'),
             );
-        CoreLocator.register(services, database);
         services.registerSingleton<Secrets>(secrets);
         await SettingsLocator.registerRepositories(services, preferences);
         // Replace native initialization through the published host seam; keep

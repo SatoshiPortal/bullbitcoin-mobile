@@ -66,7 +66,6 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:settings/settings.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
@@ -201,8 +200,7 @@ class AppLocator {
 
   /// Call this in the `main` function **before** `runApp()`
   static Future<Result<void, Failure>> setup(
-    GetIt locator,
-    SqliteDatabase database, {
+    GetIt locator, {
     required Future<Result<Labels, LabelFailure>> Function(
       Future<Sync> Function() sync,
       Future<Wallet> Function(String) openWallet,
@@ -299,7 +297,6 @@ class AppLocator {
     }
 
     // Register core dependencies first
-    CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
     final electrum = await openElectrum(
       () => locator<ConnectionPreferencesReader>().readConnectionPreferences(),

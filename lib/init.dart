@@ -351,7 +351,6 @@ class Bull {
       }
       final setup = await AppLocator.setup(
         locator,
-        await legacy.open(admission),
         secrets: secrets,
         openLabels: (sync, openWallet) => Labels.open(
           file: labelsFile,

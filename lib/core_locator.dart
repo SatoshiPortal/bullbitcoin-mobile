@@ -7,7 +7,6 @@ import 'package:exchange/exchange.dart' show Exchange;
 import 'package:exchange/setup.dart' show ExchangeCredentialStorage;
 import 'package:preferences/preferences.dart' as settings;
 import 'package:settings/setup.dart';
-import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
@@ -16,10 +15,6 @@ import 'package:get_it/get_it.dart';
 import 'package:labels/setup.dart';
 
 class CoreLocator {
-  static void register(GetIt locator, SqliteDatabase database) {
-    locator.registerLazySingleton<SqliteDatabase>(() => database);
-  }
-
   static Future<void> registerDatasources(GetIt locator) async {
     await bull_tor.TorLocator.registerDatasources(
       locator,
