@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import 'entities/secure_file_upload.dart';
-import 'exchange_settings_failure.dart';
 import 'entities/exchange_document_to_upload.dart';
 
 /// Status for the secure file upload UI (matches BB-Exchange DocStatus).
@@ -51,7 +50,7 @@ final class UploadStatusLoading extends SecureUploadState {
 /// The status could not be read: no upload is offered (SET-1).
 final class UploadStatusFailed extends SecureUploadState {
   final int attempt;
-  final ExchangeSettingsFailure failure;
+  final ExchangeFailure failure;
 
   const UploadStatusFailed(this.attempt, this.failure);
 
@@ -70,7 +69,7 @@ final class UploadStatusFailed extends SecureUploadState {
 final class UploadReady extends SecureUploadState {
   final SecureFileUpload account;
   final int attempts;
-  final ExchangeSettingsFailure? problem;
+  final ExchangeFailure? problem;
 
   const UploadReady(this.account, this.attempts, {this.problem});
 
@@ -168,7 +167,7 @@ sealed class SecureUploadEvent {
 
 final class UploadStatusLoaded extends SecureUploadEvent {
   final int attempt;
-  final Result<SecureFileUpload, ExchangeSettingsFailure> result;
+  final Result<SecureFileUpload, ExchangeFailure> result;
 
   const UploadStatusLoaded(this.attempt, this.result);
 }
@@ -183,14 +182,14 @@ final class UploadPressed extends SecureUploadEvent {
 
 /// `null` means the picker was dismissed.
 final class UploadPicked extends SecureUploadEvent {
-  final Result<ExchangeDocumentToUpload?, ExchangeSettingsFailure> result;
+  final Result<ExchangeDocumentToUpload?, ExchangeFailure> result;
 
   const UploadPicked(this.result);
 }
 
 final class UploadAnswered extends SecureUploadEvent {
   final int attempt;
-  final Result<void, ExchangeSettingsFailure> result;
+  final Result<void, ExchangeFailure> result;
 
   const UploadAnswered(this.attempt, this.result);
 }

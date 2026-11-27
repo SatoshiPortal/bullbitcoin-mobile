@@ -1,5 +1,4 @@
 import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/exchange_preferences_machine.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,8 +24,8 @@ const _incomplete = ExchangePreferences(
   currency: 'CAD',
   emailNotificationsEnabled: true,
 );
-const _loadFailure = ExchangeSettingsAccountUnavailableFailure();
-const _saveFailure = ExchangeSettingsPreferencesSaveFailure();
+const _loadFailure = ExchangeAccountDetailsUnavailableFailure();
+const _saveFailure = ExchangePreferencesSaveFailure();
 
 final _states = <PreferencesState>[
   const PreferencesLoading(1), // 0
@@ -51,7 +50,7 @@ final _table = <String, (PreferencesEvent, Map<int, PreferencesState>)>{
     {0: const PreferencesLoadFailed(1, _loadFailure)},
   ),
   'load: signed out (SET-3)': (
-    const PreferencesLoaded(1, Err(ExchangeSettingsNotAuthenticatedFailure())),
+    const PreferencesLoaded(1, Err(ExchangeNotAuthenticatedFailure())),
     {0: const PreferencesSignedOut()},
   ),
   'loaded, stale attempt': (const PreferencesLoaded(2, Ok(_a)), {}),
@@ -133,7 +132,7 @@ final _table = <String, (PreferencesEvent, Map<int, PreferencesState>)>{
   ),
   'save: signed out (SET-3)': (
     const PreferencesSaveAnswered(
-      GateAdmitted(Err(ExchangeSettingsNotAuthenticatedFailure())),
+      GateAdmitted(Err(ExchangeNotAuthenticatedFailure())),
     ),
     {5: const PreferencesSignedOut(), 6: const PreferencesSignedOut()},
   ),
@@ -142,16 +141,8 @@ final _table = <String, (PreferencesEvent, Map<int, PreferencesState>)>{
       GateRefused(WriteGateBusy(FinancialWriteKind.orderConfirm)),
     ),
     {
-      5: const PreferencesSaveFailed(
-        _a,
-        _b,
-        ExchangeSettingsWriteBusyFailure(),
-      ),
-      6: const PreferencesSaveFailed(
-        _a,
-        _c,
-        ExchangeSettingsWriteBusyFailure(),
-      ),
+      5: const PreferencesSaveFailed(_a, _b, ExchangeWriteBusyFailure()),
+      6: const PreferencesSaveFailed(_a, _c, ExchangeWriteBusyFailure()),
     },
   ),
 };
@@ -212,7 +203,7 @@ void main() {
         PreferencesLoaded(attempt, const Err(_loadFailure)),
         PreferencesLoaded(
           attempt,
-          const Err(ExchangeSettingsNotAuthenticatedFailure()),
+          const Err(ExchangeNotAuthenticatedFailure()),
         ),
         const PreferencesRetryPressed(),
         const PreferencesLanguageChosen('FR'),

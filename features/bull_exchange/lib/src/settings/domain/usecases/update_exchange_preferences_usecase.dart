@@ -3,7 +3,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../entities/exchange_preferences.dart';
-import '../exchange_settings_failure.dart';
 
 /// Saves [patch] on [session]'s account (`Exchange.updatePreferences`).
 typedef SaveAccountPreferences = Future<Result<void, ExchangeFailure>> Function(
@@ -25,12 +24,12 @@ class UpdateExchangePreferencesUsecase {
   /// through the write gate ([FinancialWriteKind.preferenceWrite]) of the
   /// session the screen opened for; without a session nothing is sent.
   @useResult
-  Future<GatedWrite<Result<void, ExchangeSettingsFailure>>> execute(
+  Future<GatedWrite<Result<void, ExchangeFailure>>> execute(
     ExchangeSession? session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
   }) async => switch (session) {
-    null => const GateAdmitted(Err(ExchangeSettingsNotAuthenticatedFailure())),
+    null => const GateAdmitted(Err(ExchangeNotAuthenticatedFailure())),
     final session => await _writeGate.run(
       session,
       FinancialWriteKind.preferenceWrite,
@@ -38,7 +37,7 @@ class UpdateExchangePreferencesUsecase {
     ),
   };
 
-  Future<Result<void, ExchangeSettingsFailure>> _send(
+  Future<Result<void, ExchangeFailure>> _send(
     ExchangeSession session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
@@ -56,12 +55,10 @@ class UpdateExchangePreferencesUsecase {
     );
     return result.mapErr(
       (failure) => switch (failure) {
-        ExchangeNetworkFailure() => ExchangeSettingsNetworkFailure(
-          failure.logMessage,
-        ),
+        ExchangeNetworkFailure() => failure,
         ExchangeNotAuthenticatedFailure() || ExchangeSessionRejectedFailure() =>
-          ExchangeSettingsNotAuthenticatedFailure(failure.logMessage),
-        _ => ExchangeSettingsPreferencesSaveFailure(failure.logMessage),
+          ExchangeNotAuthenticatedFailure(failure.logMessage),
+        _ => ExchangePreferencesSaveFailure(failure.logMessage),
       },
     );
   }

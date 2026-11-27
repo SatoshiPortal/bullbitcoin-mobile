@@ -3,7 +3,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../entities/secure_file_upload.dart';
-import '../exchange_settings_failure.dart';
 
 class GetSecureFileUploadStatusUsecase {
   final Exchange _exchange;
@@ -13,14 +12,14 @@ class GetSecureFileUploadStatusUsecase {
   /// The upload status of [session]'s account; without a session, or for a
   /// session that is no longer current, the status is unavailable.
   @useResult
-  Future<Result<SecureFileUpload, ExchangeSettingsFailure>> execute(
+  Future<Result<SecureFileUpload, ExchangeFailure>> execute(
     ExchangeSession? session,
   ) async => switch (session) {
-    null => const Err(ExchangeSettingsUploadStatusUnavailableFailure()),
+    null => const Err(ExchangeUploadStatusUnavailableFailure()),
     final session => _read(session),
   };
 
-  Future<Result<SecureFileUpload, ExchangeSettingsFailure>> _read(
+  Future<Result<SecureFileUpload, ExchangeFailure>> _read(
     ExchangeSession session,
   ) async => (await _exchange.getSessionUserSummary(session))
       .map(
@@ -29,5 +28,5 @@ class GetSecureFileUploadStatusUsecase {
           status: summary.kycDocumentStatus?.secureFileUpload,
         ),
       )
-      .mapErr((_) => const ExchangeSettingsUploadStatusUnavailableFailure());
+      .mapErr((_) => const ExchangeUploadStatusUnavailableFailure());
 }

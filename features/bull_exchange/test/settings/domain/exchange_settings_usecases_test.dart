@@ -7,7 +7,6 @@ import 'package:exchange/testing.dart';
 import 'package:file_system/file_system.dart';
 import 'package:bull_exchange/src/settings/domain/entities/account_info.dart';
 import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_account_info_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_preferences_usecase.dart';
@@ -125,7 +124,7 @@ class _Document extends Fake implements PickedDocument {
 }
 
 /// Asserts a failure carries nothing that could identify the user or the API.
-void _expectSanitized(ExchangeSettingsFailure failure) {
+void _expectSanitized(ExchangeFailure failure) {
   final log = failure.logMessage ?? '';
   expect(log, isNot(contains('bc1qexamplerecipient')));
   expect(log, isNot(contains('ERR_KYC_403')));
@@ -147,8 +146,8 @@ void main() {
         ),
       ).execute();
 
-      final failure = (result as Err).failure as ExchangeSettingsFailure;
-      expect(failure, isA<ExchangeSettingsStatisticsUnavailableFailure>());
+      final failure = (result as Err).failure as ExchangeFailure;
+      expect(failure, isA<ExchangeStatisticsUnavailableFailure>());
       _expectSanitized(failure);
     });
   });
@@ -163,7 +162,7 @@ void main() {
       final result = await GetAccountInfoUsecase(exchange: _withSummary(core))
           .execute();
 
-      final info = (result as Ok<AccountInfo, ExchangeSettingsFailure>).value;
+      final info = (result as Ok<AccountInfo, ExchangeFailure>).value;
       expect(info.userNumber, 7);
       expect(info.email, 'sat@example.com');
       expect(info.firstName, 'Sat');
@@ -185,9 +184,7 @@ void main() {
           .execute();
 
       expect(
-        (result as Ok<AccountInfo, ExchangeSettingsFailure>)
-            .value
-            .verificationLevel,
+        (result as Ok<AccountInfo, ExchangeFailure>).value.verificationLevel,
         VerificationLevel.identityVerified,
       );
     });
@@ -200,9 +197,7 @@ void main() {
           .execute();
 
       expect(
-        (result as Ok<AccountInfo, ExchangeSettingsFailure>)
-            .value
-            .verificationLevel,
+        (result as Ok<AccountInfo, ExchangeFailure>).value.verificationLevel,
         VerificationLevel.notVerified,
       );
     });
@@ -216,8 +211,8 @@ void main() {
       final result = await GetAccountInfoUsecase(exchange: _withSummary(core))
           .execute();
 
-      final failure = (result as Err).failure as ExchangeSettingsFailure;
-      expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
+      final failure = (result as Err).failure as ExchangeFailure;
+      expect(failure, isA<ExchangeAccountDetailsUnavailableFailure>());
       _expectSanitized(failure);
     });
 
@@ -233,10 +228,7 @@ void main() {
         final result = await GetAccountInfoUsecase(exchange: _withSummary(core))
             .execute();
 
-        expect(
-          (result as Err).failure,
-          isA<ExchangeSettingsNotAuthenticatedFailure>(),
-        );
+        expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
       });
     }
   });
@@ -251,7 +243,7 @@ void main() {
       ).execute(_signedIn);
 
       final preferences =
-          (result as Ok<ExchangePreferences, ExchangeSettingsFailure>).value;
+          (result as Ok<ExchangePreferences, ExchangeFailure>).value;
       expect(preferences.language, 'FR');
       expect(preferences.currency, 'EUR');
       expect(preferences.emailNotificationsEnabled, isFalse);
@@ -269,8 +261,8 @@ void main() {
           exchange: _withSummary(core),
         ).execute(_signedIn);
 
-        final failure = (result as Err).failure as ExchangeSettingsFailure;
-        expect(failure, isA<ExchangeSettingsAccountUnavailableFailure>());
+        final failure = (result as Err).failure as ExchangeFailure;
+        expect(failure, isA<ExchangeAccountDetailsUnavailableFailure>());
         _expectSanitized(failure);
       },
     );
@@ -288,10 +280,7 @@ void main() {
           exchange: _withSummary(core),
         ).execute(_signedIn);
 
-        expect(
-          (result as Err).failure,
-          isA<ExchangeSettingsNotAuthenticatedFailure>(),
-        );
+        expect((result as Err).failure, isA<ExchangeNotAuthenticatedFailure>());
       });
     }
   });
@@ -303,13 +292,13 @@ void main() {
         (await GetExchangePreferencesUsecase(
           exchange: _withSummary(core),
         ).execute(null) as Err).failure,
-        isA<ExchangeSettingsNotAuthenticatedFailure>(),
+        isA<ExchangeNotAuthenticatedFailure>(),
       );
       expect(
         (await GetSecureFileUploadStatusUsecase(
           exchange: _withSummary(core),
         ).execute(null) as Err).failure,
-        isA<ExchangeSettingsUploadStatusUnavailableFailure>(),
+        isA<ExchangeUploadStatusUnavailableFailure>(),
       );
       verifyNever(core.execute);
     });
@@ -320,13 +309,13 @@ void main() {
         (await GetExchangePreferencesUsecase(
           exchange: _withSummary(core),
         ).execute(_earlier) as Err).failure,
-        isA<ExchangeSettingsAccountUnavailableFailure>(),
+        isA<ExchangeAccountDetailsUnavailableFailure>(),
       );
       expect(
         (await GetSecureFileUploadStatusUsecase(
           exchange: _withSummary(core),
         ).execute(_earlier) as Err).failure,
-        isA<ExchangeSettingsUploadStatusUnavailableFailure>(),
+        isA<ExchangeUploadStatusUnavailableFailure>(),
       );
       verifyNever(core.execute);
     });
@@ -361,7 +350,7 @@ void main() {
       sessionId: 'prefs',
     );
 
-    Future<Result<void, ExchangeSettingsFailure>> save(
+    Future<Result<void, ExchangeFailure>> save(
       _MockExchangeFacade facade,
       ExchangePreferences edited,
     ) async => switch (await UpdateExchangePreferencesUsecase(
@@ -395,7 +384,7 @@ void main() {
 
       expect(
         write,
-        isA<GateRefused<Result<void, ExchangeSettingsFailure>>>().having(
+        isA<GateRefused<Result<void, ExchangeFailure>>>().having(
           (w) => w.refusal,
           'refusal',
           isA<WriteGateBusy>(),
@@ -419,11 +408,11 @@ void main() {
           );
 
       expect(
-        (write as GateAdmitted<Result<void, ExchangeSettingsFailure>>).result,
-        isA<Err<void, ExchangeSettingsFailure>>().having(
+        (write as GateAdmitted<Result<void, ExchangeFailure>>).result,
+        isA<Err<void, ExchangeFailure>>().having(
           (r) => r.failure,
           'failure',
-          isA<ExchangeSettingsNotAuthenticatedFailure>(),
+          isA<ExchangeNotAuthenticatedFailure>(),
         ),
       );
       verifyNever(() => facade.savePreferences(any(), any()));
@@ -464,23 +453,20 @@ void main() {
         final facade = _MockExchangeFacade();
         stubSave(facade, const Ok(null));
 
-        expect(
-          await save(facade, edited),
-          isA<Ok<void, ExchangeSettingsFailure>>(),
-        );
+        expect(await save(facade, edited), isA<Ok<void, ExchangeFailure>>());
         verify(() => facade.savePreferences(session, patch)).called(1);
       });
     }
 
     for (final (failure, expected) in [
-      (const ExchangeNetworkFailure('offline'), ExchangeSettingsNetworkFailure),
+      (const ExchangeNetworkFailure('offline'), ExchangeNetworkFailure),
       (
         const ExchangeNotAuthenticatedFailure('expired'),
-        ExchangeSettingsNotAuthenticatedFailure,
+        ExchangeNotAuthenticatedFailure,
       ),
       (
         const ExchangePreferencesSaveFailure('rejected'),
-        ExchangeSettingsPreferencesSaveFailure,
+        ExchangePreferencesSaveFailure,
       ),
     ]) {
       test('${failure.runtimeType} becomes $expected', () async {
@@ -527,8 +513,7 @@ void main() {
         exchange: _withSummary(core),
       ).execute(_signedIn);
 
-      final upload =
-          (result as Ok<SecureFileUpload, ExchangeSettingsFailure>).value;
+      final upload = (result as Ok<SecureFileUpload, ExchangeFailure>).value;
       expect(upload.userId, 'u-42');
       expect(upload.status, KycDocumentStatus.underReview);
     });
@@ -545,8 +530,8 @@ void main() {
           exchange: _withSummary(core),
         ).execute(_signedIn);
 
-        final failure = (result as Err).failure as ExchangeSettingsFailure;
-        expect(failure, isA<ExchangeSettingsUploadStatusUnavailableFailure>());
+        final failure = (result as Err).failure as ExchangeFailure;
+        expect(failure, isA<ExchangeUploadStatusUnavailableFailure>());
         _expectSanitized(failure);
       },
     );
@@ -566,10 +551,7 @@ void main() {
       final result = await build(_StubPicker(Ok(_Document(bytes: const []))))
           .execute();
 
-      expect(
-        (result as Err).failure,
-        isA<ExchangeSettingsDocumentEmptyFailure>(),
-      );
+      expect((result as Err).failure, isA<ExchangeDocumentEmptyFailure>());
     });
 
     test('a file the picker could not read is unreadable, not empty', () async {
@@ -578,7 +560,7 @@ void main() {
 
       expect(
         (result as Err).failure,
-        isA<ExchangeSettingsDocumentUnreadableFailure>(),
+        isA<ExchangeDocumentUnreadableFailure>(),
         reason: 'no bytes means unreadable; an empty list means empty',
       );
     });
@@ -602,10 +584,7 @@ void main() {
         ),
       ).execute();
 
-      expect(
-        (result as Err).failure,
-        isA<ExchangeSettingsDocumentTooLargeFailure>(),
-      );
+      expect((result as Err).failure, isA<ExchangeDocumentTooLargeFailure>());
     });
 
     test('a disallowed extension is rejected', () async {
@@ -615,7 +594,7 @@ void main() {
 
       expect(
         (result as Err).failure,
-        isA<ExchangeSettingsDocumentTypeNotAllowedFailure>(),
+        isA<ExchangeDocumentTypeNotAllowedFailure>(),
       );
     });
 
@@ -624,7 +603,7 @@ void main() {
         _StubPicker(const Err(FileSystemPickFailure('PlatformException'))),
       ).execute();
 
-      expect((result as Err).failure, isA<ExchangeSettingsUnexpectedFailure>());
+      expect((result as Err).failure, isA<ExchangeUnexpectedFailure>());
     });
 
     test('the standardized filename is used when a userId is known', () async {
@@ -660,7 +639,7 @@ void main() {
 
       final result = await build(upload).execute(document);
 
-      expect(result, isA<Ok<void, ExchangeSettingsFailure>>());
+      expect(result, isA<Ok<void, ExchangeFailure>>());
       verify(() => upload.execute(fileBytes: [1, 2], fileName: 'doc-u-42-ID'))
           .called(1);
     });
@@ -678,8 +657,8 @@ void main() {
 
       final result = await build(upload).execute(document);
 
-      final failure = (result as Err).failure as ExchangeSettingsFailure;
-      expect(failure, isA<ExchangeSettingsDocumentUploadFailure>());
+      final failure = (result as Err).failure as ExchangeFailure;
+      expect(failure, isA<ExchangeDocumentUploadFailure>());
       _expectSanitized(failure);
     });
 
@@ -696,8 +675,8 @@ void main() {
 
         final result = await build(upload).execute(document);
 
-        final failure = (result as Err).failure as ExchangeSettingsFailure;
-        expect(failure, isA<ExchangeSettingsDocumentUploadFailure>());
+        final failure = (result as Err).failure as ExchangeFailure;
+        expect(failure, isA<ExchangeDocumentUploadFailure>());
         _expectSanitized(failure);
       },
     );

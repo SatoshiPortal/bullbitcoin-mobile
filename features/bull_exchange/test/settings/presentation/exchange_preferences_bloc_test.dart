@@ -1,6 +1,5 @@
 import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
 import 'package:bull_exchange/src/settings/domain/exchange_preferences_machine.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/presentation/exchange_preferences_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,7 +32,7 @@ Future<void> _settle() async {
 ExchangePreferencesBloc _bloc(
   List<String> calls, {
   ExchangeSession? session = _session,
-  GatedWrite<Result<void, ExchangeSettingsFailure>>? saved,
+  GatedWrite<Result<void, ExchangeFailure>>? saved,
 }) {
   final bloc = ExchangePreferencesBloc(
     session: session,
@@ -83,7 +82,7 @@ void main() {
     await _settle();
     expect(
       bloc.state,
-      const PreferencesSaveFailed(_a, _b, ExchangeSettingsWriteBusyFailure()),
+      const PreferencesSaveFailed(_a, _b, ExchangeWriteBusyFailure()),
     );
   });
 

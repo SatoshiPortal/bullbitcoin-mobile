@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import 'entities/exchange_preferences.dart';
-import 'exchange_settings_failure.dart';
 
 /// [saved] is what the account has; [draft] what the screen shows.
 @immutable
@@ -27,7 +26,7 @@ final class PreferencesLoading extends PreferencesState {
 
 final class PreferencesLoadFailed extends PreferencesState {
   final int attempt;
-  final ExchangeSettingsFailure failure;
+  final ExchangeFailure failure;
 
   const PreferencesLoadFailed(this.attempt, this.failure);
 
@@ -106,7 +105,7 @@ final class PreferencesSaved extends PreferencesState {
 final class PreferencesSaveFailed extends PreferencesState {
   final ExchangePreferences saved;
   final ExchangePreferences draft;
-  final ExchangeSettingsFailure failure;
+  final ExchangeFailure failure;
 
   const PreferencesSaveFailed(this.saved, this.draft, this.failure);
 
@@ -128,7 +127,7 @@ sealed class PreferencesEvent {
 
 final class PreferencesLoaded extends PreferencesEvent {
   final int attempt;
-  final Result<ExchangePreferences, ExchangeSettingsFailure> result;
+  final Result<ExchangePreferences, ExchangeFailure> result;
 
   const PreferencesLoaded(this.attempt, this.result);
 }
@@ -162,7 +161,7 @@ final class PreferencesSavePressed extends PreferencesEvent {
 /// The answer of the one write in flight (Saving is left only by it, so it
 /// needs no tag).
 final class PreferencesSaveAnswered extends PreferencesEvent {
-  final GatedWrite<Result<void, ExchangeSettingsFailure>> answer;
+  final GatedWrite<Result<void, ExchangeFailure>> answer;
 
   const PreferencesSaveAnswered(this.answer);
 }
@@ -237,7 +236,7 @@ PreferencesNext transitionPreferences(
       when loaded.attempt == attempt =>
     StepNext(switch (loaded.result) {
       Ok(:final value) => PreferencesEditing(value, value),
-      Err(failure: ExchangeSettingsNotAuthenticatedFailure()) =>
+      Err(failure: ExchangeNotAuthenticatedFailure()) =>
         const PreferencesSignedOut(),
       Err(:final failure) => PreferencesLoadFailed(attempt, failure),
     }),
@@ -320,9 +319,7 @@ PreferencesNext transitionPreferences(
         draft == inFlight
             ? PreferencesSaved(inFlight)
             : PreferencesEditing(inFlight, draft),
-      GateAdmitted(
-        result: Err(failure: ExchangeSettingsNotAuthenticatedFailure()),
-      ) =>
+      GateAdmitted(result: Err(failure: ExchangeNotAuthenticatedFailure())) =>
         const PreferencesSignedOut(),
       GateAdmitted(result: Err(:final failure)) => PreferencesSaveFailed(
         saved,
@@ -332,7 +329,7 @@ PreferencesNext transitionPreferences(
       GateRefused() => PreferencesSaveFailed(
         saved,
         draft,
-        const ExchangeSettingsWriteBusyFailure(),
+        const ExchangeWriteBusyFailure(),
       ),
     }),
   (

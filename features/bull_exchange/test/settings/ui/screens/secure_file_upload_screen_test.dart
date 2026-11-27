@@ -1,6 +1,5 @@
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
 import 'package:bull_exchange/src/settings/domain/entities/exchange_document_to_upload.dart';
 import 'package:bull_exchange/src/settings/presentation/secure_file_upload_bloc.dart';
@@ -27,8 +26,8 @@ const _document = ExchangeDocumentToUpload(bytes: [1], fileName: 'doc-u-42-ID');
 
 Future<SecureUploadBloc> _pump(
   WidgetTester tester, {
-  required Result<SecureFileUpload, ExchangeSettingsFailure> uploadStatus,
-  Result<void, ExchangeSettingsFailure>? upload,
+  required Result<SecureFileUpload, ExchangeFailure> uploadStatus,
+  Result<void, ExchangeFailure>? upload,
 }) async {
   final cubit = SecureUploadBloc(
     session: const ExchangeSession(
@@ -94,7 +93,7 @@ void main() {
     await _pump(
       tester,
       uploadStatus: const Err(
-        ExchangeSettingsUploadStatusUnavailableFailure(_rawReason),
+        ExchangeUploadStatusUnavailableFailure(_rawReason),
       ),
     );
 
@@ -108,7 +107,7 @@ void main() {
     await _pump(
       tester,
       uploadStatus: const Err(
-        ExchangeSettingsUploadStatusUnavailableFailure(_rawReason),
+        ExchangeUploadStatusUnavailableFailure(_rawReason),
       ),
     );
 
@@ -127,7 +126,7 @@ void main() {
       uploadStatus: const Ok(_secureFileUpload),
       upload: const Err(
         // The exchange's own sentence, as the use-case would carry it.
-        ExchangeSettingsDocumentUploadFailure(_rawReason),
+        ExchangeDocumentUploadFailure(_rawReason),
       ),
     );
 
@@ -146,7 +145,7 @@ void main() {
     final bloc = await _pump(
       tester,
       uploadStatus: const Err(
-        ExchangeSettingsUploadStatusUnavailableFailure('no upload status yet'),
+        ExchangeUploadStatusUnavailableFailure('no upload status yet'),
       ),
     );
 

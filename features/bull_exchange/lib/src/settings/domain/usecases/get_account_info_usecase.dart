@@ -3,7 +3,6 @@ import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
 import '../entities/account_info.dart';
-import '../exchange_settings_failure.dart';
 
 class GetAccountInfoUsecase {
   final Exchange _exchange;
@@ -11,7 +10,7 @@ class GetAccountInfoUsecase {
   const GetAccountInfoUsecase({required this._exchange});
 
   @useResult
-  Future<Result<AccountInfo, ExchangeSettingsFailure>> execute() async =>
+  Future<Result<AccountInfo, ExchangeFailure>> execute() async =>
       (await _exchange.getUserSummary())
           .map(
             (summary) => AccountInfo(
@@ -26,8 +25,8 @@ class GetAccountInfoUsecase {
             (failure) => switch (failure) {
               ExchangeNotAuthenticatedFailure() ||
               ExchangeSessionRejectedFailure() =>
-                const ExchangeSettingsNotAuthenticatedFailure(),
-              _ => const ExchangeSettingsAccountUnavailableFailure(),
+                const ExchangeNotAuthenticatedFailure(),
+              _ => const ExchangeAccountDetailsUnavailableFailure(),
             },
           );
 

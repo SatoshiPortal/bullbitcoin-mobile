@@ -1,5 +1,5 @@
+import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/src/settings/domain/entities/account_info.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_account_info_usecase.dart';
 import 'package:bull_exchange/src/settings/presentation/account_info_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -36,7 +36,7 @@ void main() {
 
   test('a failed load holds the failure', () async {
     when(getAccountInfo.execute).thenAnswer(
-      (_) async => const Err(ExchangeSettingsAccountUnavailableFailure()),
+      (_) async => const Err(ExchangeAccountDetailsUnavailableFailure()),
     );
     final cubit = AccountInfoCubit(getAccountInfoUsecase: getAccountInfo);
     addTearDown(cubit.close);
@@ -47,13 +47,13 @@ void main() {
     expect(cubit.state.isLoading, isFalse);
     expect(
       cubit.state.failure,
-      isA<ExchangeSettingsAccountUnavailableFailure>(),
+      isA<ExchangeAccountDetailsUnavailableFailure>(),
     );
   });
 
   test('a retry clears the previous failure', () async {
     when(getAccountInfo.execute).thenAnswer(
-      (_) async => const Err(ExchangeSettingsAccountUnavailableFailure()),
+      (_) async => const Err(ExchangeAccountDetailsUnavailableFailure()),
     );
     final cubit = AccountInfoCubit(getAccountInfoUsecase: getAccountInfo);
     addTearDown(cubit.close);

@@ -1,5 +1,4 @@
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/entities/exchange_document_to_upload.dart';
 import 'package:bull_exchange/src/settings/domain/secure_file_upload_machine.dart';
 import 'package:exchange/exchange.dart';
@@ -15,8 +14,8 @@ const _inReview = SecureFileUpload(
   status: KycDocumentStatus.underReview,
 );
 const _doc = ExchangeDocumentToUpload(bytes: [1], fileName: 'doc-u-ID');
-const _statusFailure = ExchangeSettingsUploadStatusUnavailableFailure();
-const _uploadFailure = ExchangeSettingsDocumentUploadFailure();
+const _statusFailure = ExchangeUploadStatusUnavailableFailure();
+const _uploadFailure = ExchangeDocumentUploadFailure();
 
 final _states = <SecureUploadState>[
   const UploadStatusLoading(1), // 0
@@ -61,12 +60,12 @@ final _table = <String, (SecureUploadEvent, Map<int, SecureUploadState>)>{
     {5: const UploadSending(_account, 2)},
   ),
   'pick failed': (
-    const UploadPicked(Err(ExchangeSettingsDocumentTooLargeFailure())),
+    const UploadPicked(Err(ExchangeDocumentTooLargeFailure())),
     {
       5: const UploadReady(
         _account,
         1,
-        problem: ExchangeSettingsDocumentTooLargeFailure(),
+        problem: ExchangeDocumentTooLargeFailure(),
       ),
     },
   ),

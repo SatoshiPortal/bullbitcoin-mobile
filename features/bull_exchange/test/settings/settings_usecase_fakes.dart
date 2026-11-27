@@ -1,7 +1,6 @@
 import 'package:bull_exchange/src/settings/domain/entities/exchange_document_to_upload.dart';
 import 'package:bull_exchange/src/settings/domain/entities/exchange_preferences.dart';
 import 'package:bull_exchange/src/settings/domain/entities/secure_file_upload.dart';
-import 'package:bull_exchange/src/settings/domain/exchange_settings_failure.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/enable_exchange_access_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_exchange_preferences_usecase.dart';
 import 'package:bull_exchange/src/settings/domain/usecases/get_secure_file_upload_status_usecase.dart';
@@ -93,20 +92,19 @@ ExchangeAccessSettingsBloc accessSettingsBloc({
 
 final class FakeGetExchangePreferencesUsecase
     implements GetExchangePreferencesUsecase {
-  final Future<Result<ExchangePreferences, ExchangeSettingsFailure>> Function()
-  answer;
+  final Future<Result<ExchangePreferences, ExchangeFailure>> Function() answer;
 
   FakeGetExchangePreferencesUsecase(this.answer);
 
   @override
-  Future<Result<ExchangePreferences, ExchangeSettingsFailure>> execute(
+  Future<Result<ExchangePreferences, ExchangeFailure>> execute(
     ExchangeSession? session,
   ) => answer();
 }
 
 final class FakeUpdateExchangePreferencesUsecase
     implements UpdateExchangePreferencesUsecase {
-  final Future<GatedWrite<Result<void, ExchangeSettingsFailure>>> Function(
+  final Future<GatedWrite<Result<void, ExchangeFailure>>> Function(
     ExchangeSession? session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
@@ -116,7 +114,7 @@ final class FakeUpdateExchangePreferencesUsecase
   FakeUpdateExchangePreferencesUsecase(this.answer);
 
   @override
-  Future<GatedWrite<Result<void, ExchangeSettingsFailure>>> execute(
+  Future<GatedWrite<Result<void, ExchangeFailure>>> execute(
     ExchangeSession? session, {
     required ExchangePreferences loaded,
     required ExchangePreferences edited,
@@ -125,34 +123,34 @@ final class FakeUpdateExchangePreferencesUsecase
 
 final class FakeGetSecureFileUploadStatusUsecase
     implements GetSecureFileUploadStatusUsecase {
-  final Future<Result<SecureFileUpload, ExchangeSettingsFailure>> Function()
-  answer;
+  final Future<Result<SecureFileUpload, ExchangeFailure>> Function() answer;
 
   FakeGetSecureFileUploadStatusUsecase(this.answer);
 
   @override
-  Future<Result<SecureFileUpload, ExchangeSettingsFailure>> execute(
+  Future<Result<SecureFileUpload, ExchangeFailure>> execute(
     ExchangeSession? session,
   ) => answer();
 }
 
 final class FakePickExchangeDocumentUsecase
     implements PickExchangeDocumentUsecase {
-  final Future<Result<ExchangeDocumentToUpload?, ExchangeSettingsFailure>>
-  Function({String? userId})
+  final Future<Result<ExchangeDocumentToUpload?, ExchangeFailure>> Function({
+    String? userId,
+  })
   answer;
 
   FakePickExchangeDocumentUsecase(this.answer);
 
   @override
-  Future<Result<ExchangeDocumentToUpload?, ExchangeSettingsFailure>> execute({
+  Future<Result<ExchangeDocumentToUpload?, ExchangeFailure>> execute({
     String? userId,
   }) => answer(userId: userId);
 }
 
 final class FakeUploadExchangeDocumentUsecase
     implements UploadExchangeDocumentUsecase {
-  final Future<Result<void, ExchangeSettingsFailure>> Function(
+  final Future<Result<void, ExchangeFailure>> Function(
     ExchangeDocumentToUpload document,
   )
   answer;
@@ -160,7 +158,7 @@ final class FakeUploadExchangeDocumentUsecase
   FakeUploadExchangeDocumentUsecase(this.answer);
 
   @override
-  Future<Result<void, ExchangeSettingsFailure>> execute(
+  Future<Result<void, ExchangeFailure>> execute(
     ExchangeDocumentToUpload document,
   ) => answer(document);
 }

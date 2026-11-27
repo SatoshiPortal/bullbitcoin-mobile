@@ -1,7 +1,8 @@
 import '../../../exchange_l10n.dart';
 import '../../presentation/secure_file_upload_bloc.dart';
 import '../../domain/secure_file_upload_machine.dart';
-import '../../presentation/exchange_settings_failure_l10n.dart';
+
+import 'package:bull_exchange/src/presentation/exchange_failure_l10n.dart';
 
 import 'package:bull_ui/bull_ui.dart';
 import 'package:material_ui/material_ui.dart';
