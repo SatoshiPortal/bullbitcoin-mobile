@@ -47,11 +47,9 @@ class RecipientFormContinueButton extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: Text(
-              switch (failedToAddRecipient) {
-                final ExchangeRecipientsInvalidFieldsFailure refused =>
-                  refused.summary(context, shownFields),
-                final failure => failure.toTranslated(context),
-              },
+              failedToAddRecipient is ExchangeRecipientsInvalidFieldsFailure
+                  ? failedToAddRecipient.summary(context, shownFields)
+                  : failedToAddRecipient.toTranslated(context),
               style: context.bullType.body.copyWith(
                 color: context.appColors.error,
               ),

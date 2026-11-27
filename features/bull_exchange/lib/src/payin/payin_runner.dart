@@ -149,20 +149,18 @@ final class PayinRunner {
     int attempt,
     String? txid,
   ) async {
-    final seen = switch (txid) {
+    // The look-up runs alongside the order read; null when no txid is known.
+    final transaction = switch (txid) {
       null => null,
-      final String txid => _usecases.transactionSeen.execute(txid),
+      final String txid =>
+        _usecases.transactionSeen
+            .execute(txid)
+            .then((seen) => (txid: txid, seen: seen)),
     };
     final order = await _usecases.getOrder.execute(_session, orderId);
     return PayinVerified(
       attempt,
-      payinCheckFrom(
-        transaction: switch ((txid, seen)) {
-          (final String txid, final seen?) => (txid: txid, seen: await seen),
-          (_, _) => null,
-        },
-        order: order,
-      ),
+      payinCheckFrom(transaction: await transaction, order: order),
     );
   }
 
