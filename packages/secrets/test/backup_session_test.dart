@@ -49,7 +49,7 @@ void main() {
       isA<Ok>(),
     );
 
-    inventory.lock();
+    await inventory.lock();
     valueOf(await inventory.resumeUnprotected());
     final second = valueOf(await inventory.backupSession());
     expect(second.view, first.view, reason: 'same durable view');
@@ -87,7 +87,7 @@ void main() {
       final parent = Fingerprint('01234567');
       valueOf(await inventory.registerWallet(localWallet('one', parent.hex)));
       final session = valueOf(await inventory.backupSession());
-      inventory.lock();
+      await inventory.lock();
       valueOf(await inventory.resumeUnprotected());
       final merged = await inventory.mergeDerivationArchive(
         session: session,
@@ -124,8 +124,9 @@ void main() {
         ),
       ],
     );
-    inventory.lock();
+    final locking = inventory.lock();
     final result = await merge;
+    await locking;
     valueOf(await inventory.resumeUnprotected());
     if (result is Ok) {
       // The merge committed before the lock: its result is the true one.
