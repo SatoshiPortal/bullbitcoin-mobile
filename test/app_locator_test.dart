@@ -101,6 +101,11 @@ class _NativeTor implements TorNativeInitializer {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('foreground bootstrap does not open an unused legacy connection', () {
+    final bootstrap = File('lib/init.dart').readAsStringSync();
+    expect(bootstrap, isNot(matches(r'\blegacy\s*\.\s*open\s*\(')));
+  });
+
   test(
     'initial network is applied before network services are mounted',
     () async {
@@ -176,6 +181,7 @@ void main() {
         (settings as Ok<SettingsEntity, PreferencesFailure>).value.environment,
         Environment.testnet,
       );
+      expect(locator.isRegistered<SqliteDatabase>(), isFalse);
     },
   );
 
