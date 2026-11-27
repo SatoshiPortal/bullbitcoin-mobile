@@ -9,21 +9,28 @@ import 'default_wallets_usecase_test_support.dart';
 void main() {
   test('reconciles the journal, then reads the wallets', () async {
     final calls = <String>[];
+    final journal = InMemoryUnknownWriteJournal();
+    final _ = await journal.record(
+      UnknownWriteDraft(
+        kind: UnknownWriteKind.defaultWalletSave,
+        environment: dwSession.environment,
+        request: const {'walletType': 'bitcoin', 'address': 'bc1q'},
+      ),
+    );
     final read = await VerifyDefaultWalletsUsecase(
       exchangeForTesting(
         access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
-        unknownWrites: InMemoryUnknownWriteJournal(),
-        readSessionPoint: () async {
-          calls.add('session point');
-          return const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1));
-        },
+        unknownWrites: journal,
+        readSessionPoint: () async =>
+            const Ok((environment: ExchangeEnvironment.mainnet, epoch: 1)),
         getDefaultWallets: () async {
           calls.add('read');
           return const Ok(dwSaved);
         },
       ),
     ).execute(dwSession);
-    expect(calls, ['session point', 'read']);
+    // The reconcile's re-read of the saved wallet, then the read.
+    expect(calls, ['read', 'read']);
     expect((read as ReadGot<DefaultWallets>).value, dwSaved);
   });
 
@@ -31,9 +38,7 @@ void main() {
     final read = await VerifyDefaultWalletsUsecase(
       exchangeForTesting(
         access: fixedAccessForTesting(const ExchangeAccessSignedIn(dwSession)),
-        unknownWrites: InMemoryUnknownWriteJournal(),
-        readSessionPoint: () async =>
-            const Err(ExchangeNetworkFailure('offline')),
+        unknownWrites: _UnreadableJournal(),
         getDefaultWallets: () async => const Ok(dwSaved),
       ),
     ).execute(dwSession);
@@ -54,4 +59,22 @@ void main() {
     expect(read, isA<ReadSessionRejected<DefaultWallets>>());
     expect(reads, 0);
   });
+}
+
+final class _UnreadableJournal implements UnknownWriteJournal {
+  @override
+  Future<Result<UnknownWrite, UnknownWriteJournalFailure>> record(
+    UnknownWriteDraft draft,
+  ) async => const Err(UnknownWriteJournalFailure('unreadable'));
+
+  @override
+  Future<Result<List<UnknownWrite>, UnknownWriteJournalFailure>> open(
+    ExchangeEnvironment environment,
+  ) async => const Err(UnknownWriteJournalFailure('unreadable'));
+
+  @override
+  Future<Result<void, UnknownWriteJournalFailure>> settle(
+    String id,
+    UnknownWriteSettlement settlement,
+  ) async => const Err(UnknownWriteJournalFailure('unreadable'));
 }

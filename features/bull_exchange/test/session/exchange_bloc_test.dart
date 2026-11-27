@@ -64,7 +64,7 @@ void main() {
     getAccount: FakeGetAccountUsecase(server.account),
     getAnnouncements: FakeGetAnnouncementsUsecase((_) async => const Ok([])),
     stopDca: FakeStopDcaUsecase(server.stop),
-    reconcileUnknownWrites: FakeReconcileUnknownWritesUsecase(() async {
+    reconcileUnknownWrites: FakeReconcileUnknownWritesUsecase((_) async {
       server.reconciliations++;
       return const Ok(UnknownWriteReconciliation(settled: 0, open: 0));
     }),

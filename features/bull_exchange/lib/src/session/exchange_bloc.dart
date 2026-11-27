@@ -57,7 +57,7 @@ class ExchangeBloc extends Bloc<ExchangeEvent, ExchangeState> {
         if (previous.session != session) {
           // Settles writes whose outcome was unknown by re-reading them;
           // never sends them again.
-          unawaited(_reconcileUnknownWrites.execute());
+          unawaited(_reconcileUnknownWrites.execute(session));
         }
         unawaited(_loadSummary(session));
       case ExchangeLoaded(

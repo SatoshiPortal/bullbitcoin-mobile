@@ -4,24 +4,37 @@ import 'package:exchange/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 
+const _session = ExchangeSession(
+  environment: ExchangeEnvironment.mainnet,
+  epoch: 1,
+  sessionId: 's',
+);
+
 void main() {
   test('without a journal there is nothing to settle', () async {
     final result = await ReconcileUnknownWritesUsecase(exchangeForTesting())
-        .execute();
+        .execute(_session);
     expect(
       (result as Ok<UnknownWriteReconciliation, Failure>).value,
       const UnknownWriteReconciliation(settled: 0, open: 0),
     );
   });
 
-  test('an unreadable session point settles nothing', () async {
+  test('a session that is no longer current settles nothing', () async {
     final result = await ReconcileUnknownWritesUsecase(
       exchangeForTesting(
+        access: fixedAccessForTesting(
+          const ExchangeAccessSignedIn(
+            ExchangeSession(
+              environment: ExchangeEnvironment.mainnet,
+              epoch: 2,
+              sessionId: 'later',
+            ),
+          ),
+        ),
         unknownWrites: InMemoryUnknownWriteJournal(),
-        readSessionPoint: () async =>
-            const Err(ExchangeNotAuthenticatedFailure()),
       ),
-    ).execute();
+    ).execute(_session);
     expect(result, isA<Err<UnknownWriteReconciliation, Failure>>());
   });
 }

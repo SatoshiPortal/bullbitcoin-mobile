@@ -1027,7 +1027,13 @@ void main() {
   group('Exchange.reconcileUnknownWrites', () {
     test('without a journal there is nothing to do', () async {
       expect(
-        await exchangeForTesting().reconcileUnknownWrites(),
+        await exchangeForTesting().reconcileUnknownWrites(
+          const ExchangeSession(
+            environment: ExchangeEnvironment.mainnet,
+            epoch: 1,
+            sessionId: 's',
+          ),
+        ),
         isA<Ok<UnknownWriteReconciliation, Failure>>().having(
           (r) => r.value,
           'value',
@@ -1061,7 +1067,7 @@ void main() {
       );
 
       final open = await exchange.openUnknownWrites(session);
-      final result = await exchange.reconcileUnknownWrites();
+      final result = await exchange.reconcileUnknownWrites(session);
 
       expect(
         open,

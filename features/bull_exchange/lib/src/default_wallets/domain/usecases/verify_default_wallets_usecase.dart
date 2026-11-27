@@ -11,7 +11,9 @@ class VerifyDefaultWalletsUsecase {
   const VerifyDefaultWalletsUsecase(this._exchange);
 
   Future<ExchangeRead<DefaultWallets>> execute(ExchangeSession session) async {
-    if (await _exchange.reconcileUnknownWrites() case Err(:final failure)) {
+    if (await _exchange.reconcileUnknownWrites(session) case Err(
+      :final failure,
+    )) {
       log.warning('Default wallets: journal not reconciled ($failure)');
     }
     return _exchange.readDefaultWallets(session);

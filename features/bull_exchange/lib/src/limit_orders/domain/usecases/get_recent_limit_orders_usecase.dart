@@ -13,7 +13,7 @@ class GetRecentLimitOrdersUsecase {
   Future<ExchangeRead<List<LimitOrder>>> execute(
     ExchangeSession session,
   ) async {
-    final _ = await _exchange.reconcileUnknownWrites();
+    final _ = await _exchange.reconcileUnknownWrites(session);
     return readOfResult(await _exchange.limitOrders.listRecent(session));
   }
 }

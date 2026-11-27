@@ -1042,32 +1042,30 @@ final class Exchange {
     return journal.open(session.environment);
   }
 
-  /// Re-reads what each open journal entry of the current environment would
+  /// Re-reads what each open journal entry of [session]'s environment would
   /// have changed and settles the entries the re-read decides. Never sends a
-  /// write again. Nothing to do without a journal.
+  /// write again. Nothing to do without a journal. A session that is no
+  /// longer the current one reconciles nothing
+  /// ([ExchangeOperationStaleFailure]).
   @useResult
-  Future<Result<UnknownWriteReconciliation, Failure>>
-  reconcileUnknownWrites() async {
+  Future<Result<UnknownWriteReconciliation, Failure>> reconcileUnknownWrites(
+    ExchangeSession session,
+  ) async {
     final journal = _unknownWrites;
     if (journal == null) {
       return const Ok(UnknownWriteReconciliation(settled: 0, open: 0));
     }
-    switch (await _readSessionPoint()) {
-      case Err(:final failure):
-        return Err(failure);
-      case Ok(:final value):
-        return ReconcileUnknownWritesUsecase(
-          journal: journal,
-          orders: _orders,
-          getUserSummary: (environment) => _getUserSummary(environment),
-          listRecentLimitOrders: () async => switch (_access?.session) {
-            null => const Err(ExchangeNotAuthenticatedFailure()),
-            final session => await limitOrders.listRecent(session),
-          },
-          getDefaultWallets: _defaultWallets.get,
-          recipients: recipients,
-        ).execute(value.environment);
+    if (_access?.session != session) {
+      return const Err(ExchangeOperationStaleFailure());
     }
+    return ReconcileUnknownWritesUsecase(
+      journal: journal,
+      orders: _orders,
+      getUserSummary: (environment) => _getUserSummary(environment),
+      listRecentLimitOrders: () => limitOrders.listRecent(session),
+      getDefaultWallets: _defaultWallets.get,
+      recipients: recipients,
+    ).execute(session.environment);
   }
 
   /// [WriteOutcomeUnknown] means the default wallet may be saved: re-read the

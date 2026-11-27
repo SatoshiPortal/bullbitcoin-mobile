@@ -161,4 +161,31 @@ void main() {
       expect(opened, isEmpty);
     });
   });
+
+  group('reconcileUnknownWrites', () {
+    test('an old session reconciles nothing', () async {
+      final journal = InMemoryUnknownWriteJournal();
+      final _ = await journal.record(
+        const UnknownWriteDraft(
+          kind: UnknownWriteKind.buyConfirm,
+          environment: ExchangeEnvironment.mainnet,
+          orderId: 'o-1',
+          request: {'orderId': 'o-1'},
+        ),
+      );
+      final exchange = exchangeForTesting(
+        access: _signedIn(),
+        unknownWrites: journal,
+      );
+      expect(
+        await exchange.reconcileUnknownWrites(_old),
+        isA<Err<UnknownWriteReconciliation, Failure>>().having(
+          (r) => r.failure,
+          'failure',
+          isA<ExchangeOperationStaleFailure>(),
+        ),
+      );
+      expect(journal.entries, hasLength(1));
+    });
+  });
 }
