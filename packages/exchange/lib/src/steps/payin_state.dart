@@ -1,3 +1,5 @@
+import 'lists_equal.dart';
+
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart' show Err, Ok, Outpoint, Result;
 
@@ -17,14 +19,6 @@ import 'pick_state.dart';
 import 'server_confirm_state.dart';
 import 'step_next.dart';
 
-bool _sameProps(List<Object?> a, List<Object?> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
-}
-
 /// Value equality over [props] and the exact runtime type. Shared by the
 /// payin's states, values and effects; not part of the steps API.
 @internal
@@ -38,7 +32,7 @@ abstract base class PayinValue {
   bool operator ==(Object other) =>
       other is PayinValue &&
       other.runtimeType == runtimeType &&
-      _sameProps(other.props, props);
+      listsEqual(other.props, props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(props));

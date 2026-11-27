@@ -1,3 +1,5 @@
+import 'lists_equal.dart';
+
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -122,7 +124,7 @@ final class PickChoosing<O, V> extends PickState<O, V> {
   @override
   bool operator ==(Object other) =>
       other is PickChoosing &&
-      _sameList(other.options, options) &&
+      listsEqual(other.options, options) &&
       other.problem == problem;
 
   @override
@@ -145,7 +147,7 @@ final class PickResolving<O, V> extends PickState<O, V> {
   @override
   bool operator ==(Object other) =>
       other is PickResolving &&
-      _sameList(other.options, options) &&
+      listsEqual(other.options, options) &&
       other.option == option;
 
   @override
@@ -167,7 +169,7 @@ final class PickValidating<O, V> extends PickState<O, V> {
   @override
   bool operator ==(Object other) =>
       other is PickValidating &&
-      _sameList(other.options, options) &&
+      listsEqual(other.options, options) &&
       other.text == text;
 
   @override
@@ -189,7 +191,7 @@ final class PickChosen<O, V> extends PickState<O, V> {
   @override
   bool operator ==(Object other) =>
       other is PickChosen &&
-      _sameList(other.options, options) &&
+      listsEqual(other.options, options) &&
       other.value == value;
 
   @override
@@ -197,14 +199,6 @@ final class PickChosen<O, V> extends PickState<O, V> {
 
   @override
   String toString() => 'PickChosen($value)';
-}
-
-bool _sameList(List<Object?> a, List<Object?> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 @immutable

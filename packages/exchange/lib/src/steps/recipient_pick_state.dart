@@ -1,3 +1,5 @@
+import 'lists_equal.dart';
+
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
 
@@ -25,21 +27,13 @@ final class RecipientQuery {
   bool operator ==(Object other) =>
       other is RecipientQuery &&
       other.search == search &&
-      _same(other.rails, rails);
+      listsEqual(other.rails, rails);
 
   @override
   int get hashCode => Object.hash(Object.hashAll(rails), search);
 
   @override
   String toString() => 'RecipientQuery(${rails.length} rails, "$search")';
-}
-
-bool _same<T>(List<T> a, List<T> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (!identical(a[i], b[i]) && a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 /// Why the new-recipient form is shown again.
@@ -159,7 +153,7 @@ final class RecipientPickBrowsing extends RecipientPickState {
       other.query == query &&
       other.attempt == attempt &&
       other.nextPage == nextPage &&
-      _same(other.items, items);
+      listsEqual(other.items, items);
 
   @override
   int get hashCode => Object.hash(
@@ -192,7 +186,7 @@ final class RecipientPickLoadingMore extends RecipientPickState {
       other.query == query &&
       other.attempt == attempt &&
       other.page == page &&
-      _same(other.items, items);
+      listsEqual(other.items, items);
 
   @override
   int get hashCode => Object.hash(
@@ -228,7 +222,7 @@ final class RecipientPickMoreFailed extends RecipientPickState {
       other.attempt == attempt &&
       other.page == page &&
       other.problem == problem &&
-      _same(other.items, items);
+      listsEqual(other.items, items);
 
   @override
   int get hashCode => Object.hash(

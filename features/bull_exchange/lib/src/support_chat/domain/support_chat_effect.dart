@@ -1,7 +1,6 @@
 import 'package:exchange/exchange.dart';
+import 'package:exchange/steps.dart' show listsEqual;
 import 'package:meta/meta.dart';
-
-import 'support_chat_state.dart';
 
 @immutable
 sealed class SupportChatEffect {
@@ -65,7 +64,7 @@ final class ChatSend extends SupportChatEffect {
       other is ChatSend &&
       other.localId == localId &&
       other.text == text &&
-      chatListEquals(other.attachments, attachments);
+      listsEqual(other.attachments, attachments);
 
   @override
   int get hashCode =>

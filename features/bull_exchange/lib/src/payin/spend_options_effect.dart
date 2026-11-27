@@ -1,3 +1,4 @@
+import 'package:exchange/steps.dart' show listsEqual;
 import 'package:fees/fees.dart';
 import 'package:meta/meta.dart';
 
@@ -14,7 +15,7 @@ sealed class SpendOptionsEffect {
   bool operator ==(Object other) =>
       other is SpendOptionsEffect &&
       other.runtimeType == runtimeType &&
-      spendPropsEqual(other._props, _props);
+      listsEqual(other._props, _props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));

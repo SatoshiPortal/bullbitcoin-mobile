@@ -24,7 +24,7 @@ sealed class SpendOptionsState {
   bool operator ==(Object other) =>
       other is SpendOptionsState &&
       other.runtimeType == runtimeType &&
-      spendPropsEqual(other._props, _props);
+      listsEqual(other._props, _props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));
@@ -41,15 +41,6 @@ sealed class SpendOptionsState {
       SpendOptionsReady() => _ready(state, event),
     };
   }
-}
-
-/// Element-wise equality of the props of spend states and effects.
-bool spendPropsEqual(List<Object?> a, List<Object?> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 String _outpoints(Iterable<Coin> coins) => ([

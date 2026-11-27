@@ -1,3 +1,4 @@
+import 'package:exchange/steps.dart' show listsEqual;
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart' show StepNext;
 import 'package:meta/meta.dart';
@@ -9,16 +10,6 @@ import 'support_chat_event.dart';
 /// Messages per page the thread asks for. A shorter page is the start of
 /// the thread.
 const supportChatPageSize = 10;
-
-/// Element-wise list equality for the chat's states and effects.
-bool chatListEquals<T>(List<T> a, List<T> b) {
-  if (identical(a, b)) return true;
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
-}
 
 bool _setEquals<T>(Set<T> a, Set<T> b) =>
     a.length == b.length && a.containsAll(b);
@@ -154,7 +145,7 @@ final class ChatThreadLoaded extends ChatThread {
   @override
   bool operator ==(Object other) =>
       other is ChatThreadLoaded &&
-      chatListEquals(other.messages, messages) &&
+      listsEqual(other.messages, messages) &&
       other.nextPage == nextPage &&
       other.refresh == refresh &&
       other.older == older;
@@ -235,7 +226,7 @@ final class ChatComposer {
   bool operator ==(Object other) =>
       other is ChatComposer &&
       other.text == text &&
-      chatListEquals(other.attachments, attachments) &&
+      listsEqual(other.attachments, attachments) &&
       other.attaching == attaching &&
       other.problem == problem;
 
@@ -260,7 +251,7 @@ sealed class ChatOutgoing {
       other.runtimeType == runtimeType &&
       other.localId == localId &&
       other.text == text &&
-      chatListEquals(other.attachments, attachments);
+      listsEqual(other.attachments, attachments);
 
   @override
   int get hashCode =>
@@ -333,7 +324,7 @@ final class SupportChatState {
       other is SupportChatState &&
       other.thread == thread &&
       other.composer == composer &&
-      chatListEquals(other.outgoing, outgoing) &&
+      listsEqual(other.outgoing, outgoing) &&
       _setEquals(other.opening, opening) &&
       other.notice == notice &&
       other.tickets == tickets;

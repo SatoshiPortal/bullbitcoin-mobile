@@ -21,7 +21,7 @@ sealed class WithdrawFlowState {
   bool operator ==(Object other) =>
       other is WithdrawFlowState &&
       other.runtimeType == runtimeType &&
-      _listEquals(other._props, _props);
+      listsEqual(other._props, _props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));
@@ -50,14 +50,6 @@ sealed class WithdrawFlowState {
       WithdrawClosed() => WithdrawFlowNext.stay(state),
     };
   }
-}
-
-bool _listEquals(List<Object?> a, List<Object?> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 /// What the flow loads before the amount: the account (balances, currency)

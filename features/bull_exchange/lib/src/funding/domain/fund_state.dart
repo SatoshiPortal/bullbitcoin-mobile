@@ -21,7 +21,7 @@ sealed class FundFlowState {
   bool operator ==(Object other) =>
       other is FundFlowState &&
       other.runtimeType == runtimeType &&
-      _listEquals(other._props, _props);
+      listsEqual(other._props, _props, nested: true);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));
@@ -68,19 +68,6 @@ sealed class FundFlowState {
       FundClosed() => FundFlowNext.stay(state),
     };
   }
-}
-
-bool _listEquals(List<Object?> a, List<Object?> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    final (x, y) = (a[i], b[i]);
-    if (x is List<Object?> && y is List<Object?>) {
-      if (!_listEquals(x, y)) return false;
-    } else if (x != y) {
-      return false;
-    }
-  }
-  return true;
 }
 
 /// What every state after the account load and the restriction gate holds.
@@ -224,7 +211,7 @@ final class FundFromCopInput extends FundOrigin {
   @override
   bool operator ==(Object other) =>
       other is FundFromCopInput &&
-      _listEquals(other.institutions, institutions);
+      listsEqual(other.institutions, institutions, nested: true);
 
   @override
   int get hashCode => Object.hashAll(institutions);

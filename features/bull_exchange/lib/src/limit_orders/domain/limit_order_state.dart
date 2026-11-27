@@ -22,7 +22,7 @@ sealed class LimitFlowState {
   bool operator ==(Object other) =>
       other is LimitFlowState &&
       other.runtimeType == runtimeType &&
-      _listEquals(other._props, _props);
+      listsEqual(other._props, _props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));
@@ -52,14 +52,6 @@ sealed class LimitFlowState {
       LimitClosed() => LimitFlowNext.stay(state),
     };
   }
-}
-
-bool _listEquals(List<Object?> a, List<Object?> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 /// An app wallet the bitcoin may go to; its receive address is read when

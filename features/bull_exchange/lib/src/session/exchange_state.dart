@@ -1,4 +1,5 @@
 import 'package:exchange/exchange.dart';
+import 'package:exchange/steps.dart' show listsEqual;
 import 'package:meta/meta.dart';
 
 import 'exchange_event.dart';
@@ -293,7 +294,7 @@ final class AnnouncementsShown extends ExchangeAnnouncements {
 
   @override
   bool operator ==(Object other) =>
-      other is AnnouncementsShown && _sameList(other.items, items);
+      other is AnnouncementsShown && listsEqual(other.items, items);
 
   @override
   int get hashCode => Object.hashAll(items);
@@ -390,15 +391,6 @@ final class DcaStopFailed extends ExchangeDcaStop {
 
   @override
   int get hashCode => Object.hash(DcaStopFailed, failure);
-}
-
-bool _sameList<T>(List<T> a, List<T> b) {
-  if (identical(a, b)) return true;
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 extension ExchangeStateSession on ExchangeState {

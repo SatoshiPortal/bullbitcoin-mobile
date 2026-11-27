@@ -1,3 +1,5 @@
+import '../steps/lists_equal.dart';
+
 import 'package:meta/meta.dart';
 
 import '../recipients/domain/entities/recipient.dart';
@@ -33,18 +35,10 @@ final class RecipientFilter {
   bool operator ==(Object other) =>
       other is RecipientFilter &&
       other.owner == owner &&
-      _sameRails(other.rails, rails);
+      listsEqual(other.rails, rails);
 
   @override
   int get hashCode => Object.hash(owner, Object.hashAll(rails));
-}
-
-bool _sameRails(List<PayoutRail> a, List<PayoutRail> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 /// The output of the recipient pick step: a recipient a flow's filter

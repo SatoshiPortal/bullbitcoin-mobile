@@ -1,3 +1,5 @@
+import 'lists_equal.dart';
+
 import 'package:meta/meta.dart';
 
 import '../domain/entities/virtual_iban.dart';
@@ -237,8 +239,8 @@ final class RequirementsRunning extends RequirementsState {
       other is RequirementsRunning &&
       other.chosen == chosen &&
       other.purpose == purpose &&
-      _sameList(other.queue, queue) &&
-      _sameList(other.met, met) &&
+      listsEqual(other.queue, queue) &&
+      listsEqual(other.met, met) &&
       other.current == current;
 
   @override
@@ -280,14 +282,6 @@ final class RequirementsCancelled extends RequirementsState {
 /// A call got HTTP 401. Terminal; the flow ends its session.
 final class RequirementsSessionEnded extends RequirementsState {
   const RequirementsSessionEnded();
-}
-
-bool _sameList<T>(List<T> a, List<T> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 typedef RequirementsNext = StepNext<RequirementsState, RequirementsEffect>;

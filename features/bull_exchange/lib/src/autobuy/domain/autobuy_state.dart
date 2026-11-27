@@ -20,7 +20,7 @@ sealed class AutoBuyFlowState {
   bool operator ==(Object other) =>
       other is AutoBuyFlowState &&
       other.runtimeType == runtimeType &&
-      _listEquals(other._props, _props);
+      listsEqual(other._props, _props);
 
   @override
   int get hashCode => Object.hash(runtimeType, Object.hashAll(_props));
@@ -47,14 +47,6 @@ sealed class AutoBuyFlowState {
       AutoBuyClosed() => AutoBuyFlowNext.stay(state),
     };
   }
-}
-
-bool _listEquals(List<Object?> a, List<Object?> b) {
-  if (a.length != b.length) return false;
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return true;
 }
 
 /// The account and the open journal entries of AutoBuy writes.

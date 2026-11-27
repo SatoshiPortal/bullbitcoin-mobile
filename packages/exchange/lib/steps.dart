@@ -16,6 +16,7 @@ export 'src/steps/interac_security_state.dart';
 export 'src/steps/interac_security_event.dart';
 export 'src/steps/interac_security_effect.dart';
 export 'src/steps/kyc_gate_state.dart';
+export 'src/steps/lists_equal.dart';
 export 'src/steps/kyc_gate_event.dart';
 export 'src/steps/kyc_gate_effect.dart';
 export 'src/steps/order_quote_state.dart';
