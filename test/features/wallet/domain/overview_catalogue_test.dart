@@ -1,269 +1,545 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:overview/catalogue.dart';
-import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, LiquidNetwork, NetworkEnv;
+import 'package:preferences/preferences.dart';
+import 'package:preferences/testing.dart';
+import 'package:primitives/primitives.dart';
+import 'package:rust_bindings/bdk.dart' as bdk;
+import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
+import 'package:secrets/storage.dart';
+import 'package:secrets/secrets.dart'
+    show SecretFailure, WalletInventory, WalletSelection;
+import 'package:sqlite3/sqlite3.dart';
+import 'package:startup/startup.dart';
+import 'package:sync/inventory.dart';
+import 'package:sync/src/data/native_store_paths.dart';
+import 'package:sync/src/data/write/datasources/bdk_wallet_store_datasource.dart';
 import 'package:sync/sync.dart';
+import 'package:sync/testing.dart';
+import 'package:sync/write.dart';
 
-final class _Reader implements OverviewFinancialReader {
-  final reads = <OverviewFinancialRequest>[];
-  final replies = <Completer<OverviewFinancialRead>>[];
+import '../../../../packages/secrets/test/support/open_inventory.dart';
+import '../../../../packages/sync/test/support/connections.dart';
+import '../../../../packages/sync/test/support/regtest_wallet.dart'
+    show regtestDescriptor;
+import '../../../../packages/sync/test/support/second_revision_connection.dart';
+import '../../../support/preferences_database.dart';
+
+final class _Membership extends Fake implements WalletInventory {
+  final SecretsInventory inventory;
+  Future<void> Function()? afterRead;
+
+  _Membership(this.inventory);
 
   @override
-  Future<OverviewFinancialRead> read(OverviewFinancialRequest request) {
-    reads.add(request);
-    final reply = Completer<OverviewFinancialRead>();
-    replies.add(reply);
-    return reply.future;
+  Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
+    Network network,
+  ) async {
+    final result = await inventory.walletsForNetwork(network);
+    await afterRead?.call();
+    return result;
   }
-
-  void reply(int n, int? amount, {OverviewFinancialRequest? as}) =>
-      replies[n].complete((request: as ?? reads[n], balanceSat: amount));
 }
 
-final _btc = WalletKey(id: 'same', network: BitcoinNetwork.regtest);
-final _liquid = WalletKey(id: 'same', network: LiquidNetwork.regtest);
-final _main = WalletKey(id: 'same', network: BitcoinNetwork.mainnet);
-
-WalletRevision _stamp(WalletKey key, {int generation = 4, int revision = 1}) =>
-    WalletRevision(key: key, generation: generation, revision: revision);
-
-OverviewCatalogueEntry _entry(
-  WalletKey key, {
-  String? label,
-  bool local = true,
-  bool isDefault = false,
-}) => (
-  revision: _stamp(key),
-  label: label,
-  isDefault: isDefault,
-  signsLocally: local,
-);
-
 void main() {
-  late _Reader reader;
-  late OverviewCatalogue catalogue;
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(BullSdk.init);
+  late Directory temp;
+  late String directory;
+  late SecretsInventory inventory;
+  late Preferences preferences;
+  late WalletNativeRuntime native;
+  late ForegroundWalletStartup startup;
+  late OverviewCatalogue overview;
+  late BitcoinWalletDescriptor bitcoin;
+  late WalletKey liquid;
+  late Map<String, dynamic> fixture;
+  late Future<void> Function()? beforeHydration;
+  late int opens;
+  late int hydrations;
+  late bool refuseInitialization;
+  late _Membership membership;
 
-  setUp(() {
-    reader = _Reader();
-    catalogue = OverviewCatalogue(reader);
-    addTearDown(catalogue.close);
+  setUp(() async {
+    temp = await Directory.systemTemp.createTemp('overview-receipts-');
+    directory = '${temp.path}/native';
+    final storage = await openFreshInventory(temp);
+    inventory = storage.inventory;
+    membership = _Membership(inventory);
+    final database = await createPreferencesDatabase();
+    preferences = PreferencesTesting.fromDao(PreferencesDao(database));
+    valueOf(await preferences.setIsSuperuser(true));
+    valueOf(await preferences.setIsDevMode(true));
+    valueOf(await preferences.setEnvironment(Environment.regtest));
+    beforeHydration = null;
+    opens = 0;
+    hydrations = 0;
+    refuseInitialization = false;
+    final connections = FixtureConnections([]);
+    native = WalletNativeRuntime.open(
+      catalog: SecretsWalletCatalog.foreground(inventory),
+      reserved: const NoReservedAddresses(),
+      inputReservations: NoInputReservations(),
+      deleteCatalogEntry: SecretsWalletCatalog.removal(inventory),
+      sync: ElectrumSync(
+        connections: connections,
+        documentsDirectory: () => throw StateError('Unexpected sync'),
+        readRevision: (_) => throw StateError('Unexpected sync'),
+      ),
+      documentsDirectory: () async => directory,
+      freezes: MemoryFreezeStore(),
+      connections: connections,
+      onStoresOpened: (_) => opens++,
+      beforeBalanceHydration: () async {
+        hydrations++;
+        await beforeHydration?.call();
+      },
+    );
+    final balances = ForegroundBalanceStartup.mount(
+      runtime: () => native,
+      inventory: inventory,
+      preferences: preferences,
+    );
+    startup = ForegroundWalletStartup(
+      initialize: () async => refuseInitialization
+          ? const Err(SyncStorageFailure())
+          : await native.initialize(),
+      startWatchers: () {},
+      balances: balances,
+    );
+    overview = OverviewCatalogue.mount(
+      balances: balances.observation,
+      inventory: membership,
+    );
+    addTearDown(() async {
+      await overview.close();
+      await startup.dispose();
+      valueOf(await native.close());
+      await preferences.close();
+      await database.close();
+      await inventory.close();
+      await storage.admission.close();
+      await temp.delete(recursive: true);
+      expect(connections.attempts, 0);
+    });
+    final vector = regtestDescriptor();
+    bitcoin = BitcoinWalletDescriptor(
+      key: WalletKey(
+        id: '${vector.origin}:regtest',
+        network: BitcoinNetwork.regtest,
+      ),
+      scriptType: vector.scriptType,
+      origin: vector.origin,
+      externalDescriptor: vector.externalDescriptor,
+      internalDescriptor: vector.internalDescriptor,
+    );
+    liquid = WalletKey(
+      id: 'elwpkh([73c5da0a/84h/1h/0h]):regtest',
+      network: LiquidNetwork.regtest,
+    );
+    fixture = jsonDecode(
+      await File('packages/sync/test/fixtures/retained_liquid_deposit.json')
+          .readAsString(),
+    ) as Map<String, dynamic>;
   });
 
-  OverviewCatalogueGrant replace({NetworkEnv? env, int generation = 7}) {
-    final grant = catalogue.replacing(env ?? _btc.network.env, generation);
-    if (grant == null) throw StateError('Projection is closed');
-    return grant;
+  Future<void> registerBoth() async {
+    valueOf(
+      await inventory.registerWallet(
+        RegisteredWallet(
+          id: bitcoin.key.id,
+          secretFingerprint: '73c5da0a',
+          masterFingerprint: '73c5da0a',
+          signer: 'local',
+          network: 'bitcoinRegtest',
+          xpub: 'fixture',
+          externalDescriptor: bitcoin.externalDescriptor,
+          internalDescriptor: bitcoin.internalDescriptor,
+          label: null,
+          birthday: null,
+          isDefault: true,
+        ),
+      ),
+    );
+    valueOf(
+      await inventory.registerWallet(
+        watchOnlyWallet(
+          liquid.id,
+          network: 'liquidRegtest',
+          external: fixture['descriptor'] as String,
+          label: '  raw liquid  ',
+          isDefault: true,
+        ),
+      ),
+    );
   }
 
-  void publish(
-    OverviewCatalogueGrant grant,
-    List<OverviewCatalogueEntry> rows,
-  ) => catalogue.publish(grant, OverviewCatalogueCompleteness.complete, rows);
+  OverviewCatalogueRow row(WalletKey key) =>
+      overview.snapshot.rows.singleWhere((row) => row.entry.key == key);
 
-  test(
-    'revocation clears synchronously and an A1 read or tap cannot return in A2',
-    () async {
-      final first = replace();
-      publish(first, [_entry(_btc, isDefault: true)]);
-      final obsolete = catalogue.snapshot.rows.single;
-      expect(catalogue.selectLocal(obsolete)?.isDefault, isTrue);
+  Future<void> until(bool Function() ready) async {
+    for (var i = 0; i < 300 && !ready(); i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    expect(ready(), isTrue);
+  }
 
-      catalogue.revoke(first);
-      expect(catalogue.snapshot.status, OverviewCatalogueStatus.revoked);
-      expect(catalogue.snapshot.rows, isEmpty);
-      expect(catalogue.selectLocal(obsolete), isNull);
+  Future<void> funded(SecondRevisionConnection store) async {
+    store.begin(bitcoin.key, WriteIntent.sync);
+    final bdkStore = BdkWalletStoreDatasource.load(
+      nativeWalletStoragePath(directory, bitcoin.key),
+      bitcoin,
+    );
+    try {
+      final address = bdkStore.wallet
+          .peekAddress(keychain: bdk.KeychainKind.external_, index: 0)
+          .address;
+      final script = address.scriptPubkey().toBytes();
+      address.dispose();
+      final amount = ByteData(8)..setUint64(0, 54321, Endian.little);
+      final raw = BytesBuilder()
+        ..add([2, 0, 0, 0, 1])
+        ..add(List.filled(32, 0x11))
+        ..add([0, 0, 0, 0, 0, 255, 255, 255, 255, 1])
+        ..add(amount.buffer.asUint8List())
+        ..add([script.length])
+        ..add(script)
+        ..add([0, 0, 0, 0]);
+      final tx = bdk.Transaction(transactionBytes: raw.toBytes());
+      try {
+        bdkStore.wallet.applyUnconfirmedTxs(
+          unconfirmedTxs: [bdk.UnconfirmedTx(tx: tx, lastSeen: 1)],
+        );
+        bdkStore.persist();
+      } finally {
+        tx.dispose();
+      }
+    } finally {
+      bdkStore.close();
+    }
+    store.finish(bitcoin.key);
+    store.begin(liquid, WriteIntent.sync);
+    final update = File(
+      '${nativeWalletStoragePath(directory, liquid)}/${fixture['path']}',
+    );
+    await update.parent.create(recursive: true);
+    await update.writeAsBytes(base64Decode(fixture['update'] as String));
+    store.finish(liquid);
+  }
 
-      final second = replace(generation: 8);
-      publish(second, [_entry(_liquid, label: 'B')]);
-      final third = replace();
-      publish(third, [_entry(_btc, label: 'A2')]);
-      expect(third.generation, first.generation);
-      expect(third.environment, first.environment);
-      expect(third, isNot(same(first)));
-      reader.reply(2, 7);
-      reader.reply(1, 80);
-      reader.reply(0, 90);
-      await pumpEventQueue();
-      expect(catalogue.snapshot.rows.single.balanceSat, 7);
-      expect(catalogue.selectLocal(obsolete), isNull);
-      expect(catalogue.selectLocal(catalogue.snapshot.rows.single), (
-        key: _btc,
-        label: 'A2',
-        isDefault: false,
-      ));
-    },
-  );
+  for (final preload in [false, true]) {
+    test(
+      'membership precedes first ${preload ? 'funded' : 'zero'} receipts on both chains',
+      () async {
+        await registerBoth();
+        if (preload) {
+          valueOf(await native.initialize());
+          final store = SecondRevisionConnection(revisionStorePath(directory));
+          try {
+            await funded(store);
+          } finally {
+            store.close();
+          }
+        }
+        final entered = Completer<void>();
+        final release = Completer<void>();
+        beforeHydration = () async {
+          if (!entered.isCompleted) entered.complete();
+          await release.future;
+        };
+        expect(overview.snapshot.status, OverviewCatalogueStatus.revoked);
+        try {
+          await startup.start();
+          await entered.future.timeout(const Duration(seconds: 5));
+          await until(
+            () => overview.snapshot.status == OverviewCatalogueStatus.ready,
+          );
+          expect(overview.snapshot.rows.map((row) => row.entry.key), [
+            bitcoin.key,
+            liquid,
+          ]);
+          expect(row(bitcoin.key).entry.label, isNull);
+          expect(row(liquid).entry.label, '  raw liquid  ');
+          expect(row(bitcoin.key).revision, isNull);
+          expect(row(liquid).balanceSat, isNull);
+          expect(overview.selectLocal(row(bitcoin.key)), isNull);
+        } finally {
+          release.complete();
+        }
+        await until(
+          () => overview.snapshot.rows.every((row) => row.balanceSat != null),
+        );
+        expect(row(bitcoin.key).balanceSat, BigInt.from(preload ? 54321 : 0));
+        expect(row(liquid).balanceSat, BigInt.from(preload ? 12345 : 0));
+        expect(overview.selectLocal(row(bitcoin.key)), (
+          key: bitcoin.key,
+          label: null,
+          isDefault: true,
+        ));
+        expect(overview.selectLocal(row(liquid)), isNull);
+        expect(opens, 1);
+        expect(hydrations, 2);
+      },
+    );
+  }
 
-  test(
-    'environment replacement and close reject queued values and former taps',
-    () async {
-      final a = replace();
-      publish(a, [_entry(_btc)]);
-      final old = catalogue.snapshot.rows.single;
-      final seen = <OverviewCatalogueStatus>[];
-      final subscription = catalogue.changes.listen((_) {
-        seen.add(catalogue.snapshot.status);
-      });
-      addTearDown(subscription.cancel);
-      final b = replace(env: _main.network.env);
-      expect(catalogue.snapshot.rows, isEmpty);
-      publish(a, [_entry(_btc)]);
-      publish(b, [_entry(_btc), _entry(_main)]);
-      expect(catalogue.snapshot.status, OverviewCatalogueStatus.partial);
-      final row = catalogue.snapshot.rows.single;
-      expect(row.entry.revision.key, _main);
-      expect(catalogue.selectLocal(old), isNull);
-      expect(reader.reads.map((request) => request.revision.key), [
-        _btc,
-        _main,
-      ]);
-      final closing = catalogue.close();
-      expect(catalogue.snapshot.status, OverviewCatalogueStatus.closed);
-      expect(catalogue.snapshot.rows, isEmpty);
-      expect(catalogue.selectLocal(row), isNull);
-      reader.reply(0, 10);
-      reader.reply(1, 20);
-      await closing;
-      await pumpEventQueue();
-      expect(seen, isNotEmpty);
-      expect(seen, everyElement(OverviewCatalogueStatus.closed));
-      expect(catalogue.replacing(_main.network.env, 9), isNull);
-    },
-  );
+  test('same-stamp pending on another connection refuses old money and tap before wakeup', () async {
+    await registerBoth();
+    await startup.start();
+    await until(
+      () =>
+          overview.snapshot.rows.length == 2 &&
+          row(bitcoin.key).revision != null,
+    );
+    final old = row(bitcoin.key);
+    final witness = old.revision;
+    final path = revisionStorePath(directory);
+    final second = SecondRevisionConnection(path);
+    addTearDown(second.close);
+    final raw = sqlite3.open(path, mode: OpenMode.readWrite);
+    addTearDown(raw.close);
+    second.begin(bitcoin.key, WriteIntent.sync);
+    expect(second.stamp(bitcoin.key), witness);
+    expect(old.balanceSat, isNull);
+    expect(overview.selectLocal(old), isNull);
+    expect(overview.snapshot.rows, hasLength(2));
+    valueOf(await native.refresh(bitcoin.key));
+    await pumpEventQueue();
+    // Undo only the simulated pending intent, retaining the entire stamp.
+    raw.execute(
+      "UPDATE revisions SET lifecycle='active', intent=NULL, candidate=NULL WHERE wallet=?",
+      [bitcoin.key.id],
+    );
+    expect(second.stamp(bitcoin.key), witness);
+    valueOf(await native.refresh(bitcoin.key));
+    await until(() => row(bitcoin.key).revision != null);
+    expect(overview.selectLocal(old), isNull);
+    expect(overview.selectLocal(row(bitcoin.key)), isNotNull);
+    final beforeDelete = row(bitcoin.key);
+    second.begin(bitcoin.key, WriteIntent.delete);
+    second.finish(bitcoin.key);
+    expect(beforeDelete.balanceSat, isNull);
+    expect(overview.selectLocal(beforeDelete), isNull);
+    valueOf(await native.refresh(bitcoin.key));
+    second.begin(bitcoin.key, WriteIntent.create);
+    final recreated = second.finish(bitcoin.key, descriptor: bitcoin);
+    expect(recreated.generation, isNot(witness?.generation));
+    valueOf(await native.refresh(bitcoin.key));
+    await until(() => row(bitcoin.key).revision == recreated);
+    expect(overview.selectLocal(beforeDelete), isNull);
+    expect(overview.snapshot.rows, hasLength(2));
 
-  test(
-    'preserves interleaved catalogue order, locality and null versus zero',
-    () async {
-      final third = WalletKey(id: 'other', network: BitcoinNetwork.regtest);
-      final grant = replace();
-      publish(grant, [
-        _entry(_liquid, local: false),
-        _entry(_btc, isDefault: true),
-        _entry(third, label: ''),
-      ]);
-      reader.reply(2, 20);
-      reader.reply(0, null);
-      reader.reply(1, 0);
-      await pumpEventQueue();
-      final rows = catalogue.snapshot.rows;
-      expect(rows.map((row) => row.entry.revision.key), [_liquid, _btc, third]);
-      expect(rows.map((row) => row.balanceSat), [null, 0, 20]);
-      expect(rows.first.financialStatus, OverviewFinancialStatus.unreadable);
-      expect(rows[1].financialStatus, OverviewFinancialStatus.available);
-      expect(catalogue.selectLocal(rows.first), isNull);
-      expect(catalogue.selectLocal(rows[1]), (
-        key: _btc,
-        label: null,
-        isDefault: true,
-      ));
-      expect(catalogue.selectLocal(rows[2])?.label, '');
-    },
-  );
-
-  test('partial, unreadable, and authoritatively empty catalogues differ', () {
-    final partial = replace();
-    catalogue.publish(partial, OverviewCatalogueCompleteness.partial, []);
-    expect(catalogue.snapshot.status, OverviewCatalogueStatus.partial);
-    final unreadable = replace();
-    catalogue.publish(unreadable, OverviewCatalogueCompleteness.unreadable, [
-      _entry(_btc),
+    final homonym = WalletKey(
+      id: bitcoin.key.id,
+      network: LiquidNetwork.regtest,
+    );
+    second.begin(homonym, WriteIntent.create);
+    second.finish(homonym);
+    final beforeHomonym = row(bitcoin.key);
+    final count = hydrations;
+    valueOf(await native.refresh(homonym));
+    await pumpEventQueue();
+    expect(overview.snapshot.rows.map((row) => row.entry.key), [
+      bitcoin.key,
+      liquid,
     ]);
-    expect(catalogue.snapshot.status, OverviewCatalogueStatus.unreadable);
-    expect(catalogue.snapshot.rows, isEmpty);
-    final empty = replace();
-    publish(empty, []);
-    expect(catalogue.snapshot.status, OverviewCatalogueStatus.empty);
-    publish(empty, [_entry(_btc)]);
-    expect(catalogue.snapshot.rows, isEmpty);
-    expect(reader.reads, isEmpty);
+    expect(beforeHomonym.revision, recreated);
+    expect(hydrations, count);
   });
 
   test(
-    'checks exact scope and stamp and never resurrects a removed key',
+    'catalogue commit, environment A-B-A and grant changes retire old rows',
     () async {
-      final expired = replace();
-      final grant = replace();
-      publish(grant, [_entry(_btc), _entry(_liquid)]);
-      final old = catalogue.snapshot.rows.first;
-      void change(
-        OverviewCatalogueGrant owner,
-        WalletRevision stamp, [
-        WalletLifecycle life = WalletLifecycle.active,
-      ]) {
-        catalogue.revised(
-          owner,
-          WalletRevisionState(stamp: stamp, lifecycle: life),
-        );
-      }
-
-      change(expired, _stamp(_btc, revision: 2));
-      change(grant, _stamp(_main, revision: 2));
-      change(grant, _stamp(_btc, generation: 3, revision: 2));
-      change(grant, _stamp(_btc));
-      expect(reader.reads, hasLength(2));
-      final current = _stamp(_btc, revision: 2);
-      change(grant, current);
-      expect(reader.reads.last, (grant: grant, revision: current));
-      expect(catalogue.selectLocal(old), isNull);
-
-      reader.reply(
-        2,
-        700,
-        as: (grant: grant, revision: _stamp(_liquid, revision: 2)),
+      await registerBoth();
+      await startup.start();
+      await until(
+        () =>
+            overview.snapshot.rows.length == 2 &&
+            row(bitcoin.key).revision != null,
       );
-      reader.reply(0, 900);
-      reader.reply(1, 0);
-      await pumpEventQueue();
-      expect(catalogue.snapshot.rows.first.balanceSat, isNull);
-      expect(catalogue.snapshot.rows.last.balanceSat, 0);
+      final old = row(bitcoin.key);
+      final revision = old.revision;
+      valueOf(
+        await inventory.setWalletProperties(
+          id: bitcoin.key.id,
+          label: '  raw rename  ',
+          birthday: null,
+          isDefault: true,
+        ),
+      );
+      expect(old.balanceSat, isNull);
+      expect(overview.selectLocal(old), isNull);
+      await until(
+        () =>
+            overview.snapshot.rows.isNotEmpty &&
+            row(bitcoin.key).revision != null,
+      );
+      final renamed = row(bitcoin.key);
+      expect(renamed.revision, revision);
+      expect(renamed.entry.label, '  raw rename  ');
 
-      change(grant, _stamp(_btc, revision: 3), WalletLifecycle.deleted);
-      change(grant, _stamp(_btc, revision: 4));
-      expect(catalogue.snapshot.rows.single.entry.revision.key, _liquid);
-      expect(reader.reads, hasLength(3));
-      catalogue.revoke(grant);
-      change(grant, _stamp(_liquid, revision: 3));
-      expect(catalogue.snapshot.rows, isEmpty);
-      expect(reader.reads, hasLength(3));
+      final leave = preferences.setEnvironment(Environment.testnet);
+      expect(renamed.balanceSat, isNull);
+      expect(overview.selectLocal(renamed), isNull);
+      valueOf(await leave);
+      await until(
+        () => overview.snapshot.status == OverviewCatalogueStatus.empty,
+      );
+      valueOf(await preferences.setEnvironment(Environment.regtest));
+      await until(
+        () =>
+            overview.snapshot.rows.isNotEmpty &&
+            row(bitcoin.key).revision != null,
+      );
+      final returned = row(bitcoin.key);
+      expect(returned.revision, revision);
+      expect(renamed.balanceSat, isNull);
+      final locking = inventory.lock();
+      expect(overview.snapshot.rows, isEmpty);
+      expect(returned.balanceSat, isNull);
+      expect(overview.selectLocal(returned), isNull);
+      expect(await locking, isTrue);
+      valueOf(await inventory.resumeUnprotected());
+      startup.confirmUnlock();
+      await until(
+        () =>
+            overview.snapshot.rows.isNotEmpty &&
+            row(bitcoin.key).revision != null,
+      );
+      expect(overview.selectLocal(returned), isNull);
+      expect(overview.selectLocal(row(bitcoin.key)), isNotNull);
     },
   );
 
-  test('pending and next-generation deletion retire rows before native reads settle', () async {
-    final grant = replace();
-    publish(grant, [_entry(_btc), _entry(_liquid)]);
-    final before = catalogue.snapshot.rows;
-    catalogue.revised(
-      grant,
-      WalletRevisionState(
-        stamp: _stamp(_btc),
-        lifecycle: WalletLifecycle.pendingWrite,
-      ),
+  test('grant replacement discards a suspended membership read', () async {
+    await registerBoth();
+    final entered = Completer<void>();
+    final release = Completer<void>();
+    membership.afterRead = () async {
+      if (!entered.isCompleted) entered.complete();
+      await release.future;
+    };
+    try {
+      await startup.start();
+      await entered.future.timeout(const Duration(seconds: 5));
+      final locking = inventory.lock();
+      expect(overview.snapshot.status, OverviewCatalogueStatus.revoked);
+      expect(overview.snapshot.rows, isEmpty);
+      expect(await locking, isTrue);
+      valueOf(await inventory.resumeUnprotected());
+      startup.confirmUnlock();
+      valueOf(
+        await inventory.setWalletProperties(
+          id: bitcoin.key.id,
+          label: 'replacement',
+          birthday: null,
+          isDefault: true,
+        ),
+      );
+    } finally {
+      membership.afterRead = null;
+      release.complete();
+    }
+    await until(
+      () => overview.snapshot.status == OverviewCatalogueStatus.ready,
     );
-    catalogue.revised(
-      grant,
-      WalletRevisionState(
-        stamp: _stamp(_liquid, generation: 5),
-        lifecycle: WalletLifecycle.deleted,
-      ),
+    expect(row(bitcoin.key).entry.label, 'replacement');
+  });
+
+  test(
+    'native initialization failure does not remove Secrets membership',
+    () async {
+      await registerBoth();
+      refuseInitialization = true;
+      await startup.start();
+      await until(
+        () => overview.snapshot.status == OverviewCatalogueStatus.ready,
+      );
+      expect(overview.snapshot.rows.map((row) => row.entry.key), [
+        bitcoin.key,
+        liquid,
+      ]);
+      expect(
+        overview.snapshot.rows.every((row) => row.revision == null),
+        isTrue,
+      );
+      expect(opens, 0);
+      expect(hydrations, 0);
+    },
+  );
+
+  test('stable default ranks and globally interleaved imports', () async {
+    await startup.start();
+    await until(
+      () => overview.snapshot.status == OverviewCatalogueStatus.empty,
     );
-    expect(catalogue.snapshot.rows, isEmpty);
-    for (final row in before) {
-      expect(catalogue.selectLocal(row), isNull);
-      catalogue.revised(
-        grant,
-        WalletRevisionState(
-          stamp: _stamp(row.entry.revision.key, generation: 5, revision: 2),
-          lifecycle: WalletLifecycle.active,
+    final ids = <String>[];
+    for (final (prefix, isLiquid, isDefault) in [
+      ('q', true, true),
+      ('z', false, false),
+      ('m', true, false),
+      ('p', false, true),
+      ('b', false, false),
+      ('a', false, true),
+    ]) {
+      final id = '${isLiquid ? "el" : ""}$prefix([73c5da0a/84h/1h/0h]):regtest';
+      ids.add(id);
+      valueOf(
+        await inventory.registerWallet(
+          watchOnlyWallet(
+            id,
+            network: isLiquid ? 'liquidRegtest' : 'bitcoinRegtest',
+            external: isLiquid
+                ? fixture['descriptor'] as String
+                : bitcoin.externalDescriptor,
+            internal: bitcoin.internalDescriptor,
+            isDefault: isDefault,
+          ),
         ),
       );
     }
-    reader.reply(0, 1);
-    reader.reply(1, 2);
-    await pumpEventQueue();
-    expect(reader.reads, hasLength(2));
-    expect(catalogue.snapshot.rows, isEmpty);
-    expect(catalogue.snapshot.status, OverviewCatalogueStatus.partial);
+    await until(() => overview.snapshot.rows.length == ids.length);
+    expect(overview.snapshot.rows.map((row) => row.entry.key.id), [
+      ids[5],
+      ids[3],
+      ids[0],
+      ids[4],
+      ids[2],
+      ids[1],
+    ]);
+    expect(overview.snapshot.rows.every((row) => row.revision == null), isTrue);
   });
+
+  test(
+    'complete empty, partial with no rows, and unreadable are distinct',
+    () async {
+      await startup.start();
+      await until(
+        () => overview.snapshot.status == OverviewCatalogueStatus.empty,
+      );
+      valueOf(
+        await inventory.registerWallet(
+          watchOnlyWallet('bad:regtest', network: 'bitcoinRegtest'),
+        ),
+      );
+      await until(
+        () => overview.snapshot.status == OverviewCatalogueStatus.partial,
+      );
+      expect(overview.snapshot.rows, isEmpty);
+      valueOf(
+        await inventory.registerWallet(
+          watchOnlyWallet('el-bad:regtest', network: 'liquidRegtest'),
+        ),
+      );
+      await until(
+        () => overview.snapshot.status == OverviewCatalogueStatus.unreadable,
+      );
+      expect(overview.snapshot.rows, isEmpty);
+      expect(hydrations, 0);
+    },
+  );
 }

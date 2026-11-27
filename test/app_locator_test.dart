@@ -35,6 +35,7 @@ import 'dart:io';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/app_database_testing.dart';
 import 'package:overview/setup.dart';
+import 'package:overview/catalogue.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
@@ -175,6 +176,9 @@ void main() {
         },
       );
       expect(result, isA<Ok>());
+      final projection = locator<OverviewCatalogue>();
+      expect(locator<OverviewCatalogue>(), same(projection));
+      expect(projection.snapshot.status, OverviewCatalogueStatus.revoked);
       expect(applied, isTrue);
       expect(locator.isRegistered<PayjoinLifecycle>(), isTrue);
       final settings = await locator<Preferences>().fetch();

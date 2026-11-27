@@ -37,7 +37,7 @@ const _allowedTargets = <String, String>{
   'coins': 'address_view bitcoin_price',
   'network': 'recoverbull silent',
   'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
-  'overview': 'bitcoin_price quick_actions silent swap',
+  'overview': 'bitcoin_price quick_actions silent startup swap',
   'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
   'send': 'address_view ark coins fees label_editor receive scanning signers silent transactions',
