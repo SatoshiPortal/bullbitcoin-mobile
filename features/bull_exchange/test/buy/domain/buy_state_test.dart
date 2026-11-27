@@ -636,7 +636,7 @@ void main() {
       );
       expect((paused.state as BuyDone).watch, isA<WatchPaused<BuyOrder>>());
       final closed = buyDoneState.next(const BuyDonePressed());
-      expect(closed.state, const BuyClosed(bought: true));
+      expect(closed.state, const BuyClosed());
       expect(closed.effects, [const BuyWatchEffect(WatchStop('b-1'))]);
     });
 

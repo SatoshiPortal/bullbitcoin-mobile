@@ -564,14 +564,13 @@ final class BuySessionEnded extends BuyFlowState {
   List<Object?> get _props => const [];
 }
 
-/// The user left the flow; [bought] after a confirmed order.
+/// The user left the flow. Whether an order was confirmed first is not
+/// carried: nothing reads it (the session is refreshed on [BuyDone]).
 final class BuyClosed extends BuyFlowState {
-  final bool bought;
-
-  const BuyClosed({this.bought = false});
+  const BuyClosed();
 
   @override
-  List<Object?> get _props => [bought];
+  List<Object?> get _props => const [];
 }
 
 typedef BuyFlowNext = StepNext<BuyFlowState, BuyFlowEffect>;
@@ -1261,7 +1260,7 @@ BuyFlowNext _watchNext(
   final effects = [for (final effect in next.effects) BuyWatchEffect(effect)];
   return switch (next.state) {
     WatchSessionEnded() => BuyFlowNext(const BuySessionEnded(), effects),
-    WatchLeft() => BuyFlowNext(const BuyClosed(bought: true), effects),
+    WatchLeft() => BuyFlowNext(const BuyClosed(), effects),
     WatchDone(:final order) || WatchReceipt(:final order) => BuyFlowNext(
       BuyDone(open, request, next.state),
       [
@@ -1287,7 +1286,7 @@ BuyFlowNext _done(BuyDone state, BuyFlowEvent event) {
     case BuyVisibilityChanged(:final visible):
       watchEvent = WatchVisibilityChanged(visible: visible);
     case BuyDonePressed() || BuyBackPressed():
-      return BuyFlowNext(const BuyClosed(bought: true), [
+      return BuyFlowNext(const BuyClosed(), [
         BuyWatchEffect(WatchStop(state.order.orderId)),
       ]);
     case BuyContextLoaded() ||
