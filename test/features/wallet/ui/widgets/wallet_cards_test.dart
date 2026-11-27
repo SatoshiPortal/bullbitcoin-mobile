@@ -202,6 +202,15 @@ void main() {
     final homeRows = tester
         .widget<WalletCardList>(find.byType(WalletCardList))
         .rows;
+    final homeLabels = AppLocalizations.of(
+      tester.element(find.byType(WalletCards)),
+    );
+    expect(homeRows.map((row) => row.description), [
+      homeLabels.walletTypeWatchSigner,
+      homeLabels.walletTypeBitcoinNetwork,
+      homeLabels.walletTypeWatchOnly,
+      homeLabels.walletTypeLiquidAndLightning,
+    ]);
     expect(homeRows.map((row) => row.title), [
       'Remote',
       AppLocalizations.of(tester.element(find.byType(WalletCards)))

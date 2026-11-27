@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:overview/overview.dart';
 import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/presentation/wallet_type_l10n.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sync/sync.dart' show WalletKey;
@@ -85,7 +84,18 @@ class WalletCards extends StatelessWidget {
           (
             tagColor: cardDetails(context, wallet),
             title: wallet.displayLabel(context),
-            description: wallet.typeLabel(context),
+            description: switch (WalletCardSubtitle.of(
+              wallet.network.shared,
+              wallet.signer,
+            )) {
+              WalletCardSubtitle.externalSigner =>
+                context.loc.walletTypeWatchSigner,
+              WalletCardSubtitle.watchOnly => context.loc.walletTypeWatchOnly,
+              WalletCardSubtitle.bitcoin =>
+                context.loc.walletTypeBitcoinNetwork,
+              WalletCardSubtitle.liquidAndLightning =>
+                context.loc.walletTypeLiquidAndLightning,
+            },
             balanceSat: wallet.balanceSat?.toInt(),
             // The existing producer reports progress by ID, not WalletKey.
             isSyncing: syncStatus[wallet.id] ?? false,
