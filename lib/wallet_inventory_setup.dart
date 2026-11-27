@@ -31,7 +31,8 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
 }) async {
   // RecoverBull opens first: the inventory takes its backup verifier at open,
   // so the verifier exists before the capability does and nothing can bind or
-  // replace it afterwards.
+  // replace it afterwards. That one instance is registered as the foreground's
+  // only proof of a backup, for protection and for deletion alike.
   final backups = await RecoverBullWalletBackups.open(
     cutover: recoverBull,
     admission: admission,
@@ -55,14 +56,19 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
     instanceName: 'regtest',
     dispose: (value) => value.close(),
   );
+  // One reading of "is this secret backed up" for the whole foreground: the
+  // inventory's protection gate and seed deletion judge the same evidence, so
+  // a seed can never be deletable while unprotectable, or the reverse.
+  final backupVerification = RecoverBullBackupVerification(
+    backups: mainBackups,
+    regtestBackups: regtestBackups,
+  );
+  services.registerSingleton(backupVerification);
   final openedInventory = await SecretsInventory.open(
     file: inventoryFile,
     admission: admission,
     authority: authority,
-    backupVerification: RecoverBullBackupVerification(
-      backups: mainBackups,
-      regtestBackups: regtestBackups,
-    ),
+    backupVerification: backupVerification,
   );
   if (openedInventory case Err(:final failure)) return Err(failure);
   final inventory =

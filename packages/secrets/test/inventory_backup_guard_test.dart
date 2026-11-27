@@ -62,6 +62,7 @@ void main() {
   late File file;
   late _Proofs proofs;
   late SecretsInventory inventory;
+  late FakeSecureStoragePlatform storage;
 
   Future<SecretsInventory> open({
     InventoryBackupVerification? verifier,
@@ -76,7 +77,7 @@ void main() {
 
   setUp(() async {
     directory = await Directory.systemTemp.createTemp('inventory-guard-');
-    FakeSecureStoragePlatform().install();
+    storage = FakeSecureStoragePlatform()..install();
     file = File('${directory.path}/secrets.sqlite');
     final gate = NativeFileGate(File('${directory.path}/gate'));
     final participant = SecretsImport(file: file);
@@ -196,6 +197,214 @@ void main() {
         expect(_value(await unbound.isProtected()), isFalse);
       },
     );
+
+    test(
+      'without a verifier, an unknown state reads as unknown, not unbound',
+      () async {
+        // Nothing owes a proof here, so binding one would decide nothing; the
+        // keystore that cannot be read is the only answer, and it is unknown.
+        final unbound = await open();
+        await add(unbound, 'wallet-a', _a);
+        _value(await unbound.removeWallet('wallet-a'));
+        final secrets = Secrets(scratchDirectory: () async => directory.path);
+        _value(await secrets.trash(Fingerprint(_a)));
+        storage.locked = true;
+
+        expect(
+          _failure(await unbound.unbackedSecrets()),
+          isA<BackupStateUnavailableFailure>(),
+        );
+        storage.locked = false;
+      },
+    );
+  });
+
+  group('a membership a removed wallet left behind', () {
+    const words = [
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'abandon',
+      'about',
+    ];
+
+    late Secrets secrets;
+
+    setUp(() {
+      secrets = Secrets(scratchDirectory: () async => directory.path);
+    });
+
+    /// Stores a real secret and registers a wallet for it, the way import
+    /// publishes its membership.
+    Future<Fingerprint> publish() async {
+      final secret = _value(
+        await secrets.import(words: words, language: Language.english),
+      );
+      final fingerprint = secret.info.id;
+      await add(inventory, 'wallet-a', fingerprint.hex);
+      return fingerprint;
+    }
+
+    /// Removes the last wallet and the seed, as deletion does: the view keeps
+    /// its `secret:` membership, so this is the state that used to block a PIN.
+    Future<Fingerprint> retire() async {
+      final fingerprint = await publish();
+      _value(await inventory.removeWallet('wallet-a'));
+      _value(await secrets.trash(fingerprint));
+      return fingerprint;
+    }
+
+    test('a seed left by a removed wallet no longer needs a proof', () async {
+      await retire();
+
+      expect(_value(await inventory.unbackedSecrets()), isEmpty);
+      _value(await inventory.setCredential('1234'));
+      expect(_value(await inventory.isProtected()), isTrue);
+    });
+
+    test('a stored seed with no wallet still needs one', () async {
+      final fingerprint = await publish();
+      _value(await inventory.removeWallet('wallet-a'));
+
+      expect(
+        _value(await inventory.unbackedSecrets()).map((value) => value.hex),
+        [fingerprint.hex],
+      );
+      expect(
+        _failure(await inventory.setCredential('1234')),
+        isA<BackupRequiredFailure>(),
+      );
+      expect(_value(await inventory.isProtected()), isFalse);
+    });
+
+    test('a keystore that cannot be read is unknown, never absent', () async {
+      await retire();
+      storage.locked = true;
+
+      expect(
+        _failure(await inventory.unbackedSecrets()),
+        isA<BackupStateUnavailableFailure>(),
+      );
+      expect(
+        _failure(await inventory.setCredential('1234')),
+        isA<BackupStateUnavailableFailure>(),
+      );
+      storage.locked = false;
+      expect(_value(await inventory.isProtected()), isFalse);
+    });
+
+    test('an unrelated unreadable entry cannot decide a membership', () async {
+      await retire();
+      // One entry the plugin cannot hand back says nothing about another:
+      // absence is concluded from this fingerprint's own settled read.
+      storage.entries['seed_00000000'] = 'not a stored secret';
+
+      expect(_value(await inventory.unbackedSecrets()), isEmpty);
+      _value(await inventory.setCredential('1234'));
+      expect(_value(await inventory.isProtected()), isTrue);
+    });
+
+    test('a new secret in a protected view still needs a proof', () async {
+      // A view protected while it held only a leftover membership: adding a
+      // seed now is judged on the seed, never on the membership it inherits.
+      await retire();
+      _value(await inventory.setCredential('1234'));
+      expect(_value(await inventory.unbackedSecrets()), isEmpty);
+
+      expect(
+        _failure(await inventory.registerWallet(_local('wallet-c', _c))),
+        isA<BackupRequiredFailure>().having(
+          (failure) => failure.missing.map((value) => value.hex),
+          'missing',
+          [_c],
+        ),
+      );
+      expect(_value(await inventory.findWallet('wallet-c')), isNull);
+    });
+
+    test('reimporting the leftover words still needs a proof', () async {
+      // The view keeps the leftover's `secret:` membership, so the new seed
+      // looks like an existing member. It is not: no wallet holds it, and
+      // those words exist nowhere but the keystore. Importing them again must
+      // prove a backup before a wallet publishes them into the view.
+      final fingerprint = await retire();
+      _value(await inventory.setCredential('1234'));
+      final restored = _value(
+        await secrets.import(words: words, language: Language.english),
+      );
+      expect(restored.info.id, fingerprint);
+
+      expect(
+        _failure(
+          await inventory.registerWallet(_local('wallet-b', fingerprint.hex)),
+        ),
+        isA<BackupRequiredFailure>().having(
+          (failure) => failure.missing.map((value) => value.hex),
+          'missing',
+          [fingerprint.hex],
+        ),
+      );
+      expect(_value(await inventory.findWallet('wallet-b')), isNull);
+
+      proofs.proofs[fingerprint.hex] = BackupProof.verified;
+      _value(
+        await inventory.registerWallet(_local('wallet-b', fingerprint.hex)),
+      );
+      expect(_value(await inventory.findWallet('wallet-b')), isNotNull);
+    });
+
+    test('a leftover membership is no proof for a seed it lost', () async {
+      // Same shape with an empty keystore: the membership outlives the words,
+      // and a wallet of a seed nobody holds is unproven either way.
+      final fingerprint = await retire();
+      _value(await inventory.setCredential('1234'));
+
+      expect(
+        _failure(
+          await inventory.registerWallet(_local('wallet-b', fingerprint.hex)),
+        ),
+        isA<BackupRequiredFailure>().having(
+          (failure) => failure.missing.map((value) => value.hex),
+          'missing',
+          [fingerprint.hex],
+        ),
+      );
+      expect(_value(await inventory.findWallet('wallet-b')), isNull);
+    });
+
+    test('preparing properties cannot launder a leftover membership', () async {
+      // Provisioning passes its callback: the proof is judged first, so the
+      // properties are never prepared for a wallet that is not published.
+      final fingerprint = await retire();
+      _value(await inventory.setCredential('1234'));
+      var prepared = false;
+
+      final result = await inventory.registerWallet(
+        _local('wallet-b', fingerprint.hex),
+        prepareProperties: (_) async {
+          prepared = true;
+          return const Ok(null);
+        },
+      );
+
+      expect(
+        _failure(result),
+        isA<BackupRequiredFailure>().having(
+          (failure) => failure.missing.map((value) => value.hex),
+          'missing',
+          [fingerprint.hex],
+        ),
+      );
+      expect(prepared, isFalse);
+      expect(_value(await inventory.findWallet('wallet-b')), isNull);
+    });
   });
 
   group('changing a PIN', () {

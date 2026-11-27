@@ -165,7 +165,11 @@ void main() {
       properties: const [],
     );
     settings = _Settings();
-    references = SeedReferences(fixture.inventory, admission: admission);
+    references = SeedReferences(
+      fixture.inventory,
+      admission: admission,
+      backupVerification: FakeInventoryBackups(verified: {parent}),
+    );
     importer = importingWith(admission);
   });
 

@@ -262,12 +262,13 @@ final class InventoryRepository {
     );
   }, orElse: FetchSecretFailure.new);
 
-  /// Publishes a wallet and its membership. A secret that is not yet a member
-  /// of a protected view needs a tested backup first (D66, D97): no seed
-  /// without a backup is attached to a protected view. A wallet of a seed that
-  /// is already a member adds no seed. The decision and the insert run under
-  /// the same write lock as a credential change, so a concurrent PIN cannot
-  /// slip between them.
+  /// Publishes a wallet and its membership. A secret no other locally signing
+  /// wallet holds needs a tested backup first (D66, D97): no seed without a
+  /// backup is attached to a protected view, whether or not the view already
+  /// lists its `secret:` membership. A second wallet of a seed another local
+  /// wallet holds adds no seed, so it keeps the legacy path. The decision and
+  /// the insert run under the same write lock as a credential change, so a
+  /// concurrent PIN cannot slip between them.
   Future<Result<void, SecretFailure>> register(
     RegisteredWallet wallet, {
     required String view,
@@ -306,8 +307,24 @@ final class InventoryRepository {
           if (secret != null && known == null && newSecret == null) {
             throw const _InvalidRegistration();
           }
-          if ((known == null && newSecret != null) ||
-              prepareProperties != null) {
+          // A membership that still exists proves nothing: after the last
+          // wallet and its seed are gone the view keeps its `secret:` entry,
+          // so importing the same words again must still earn a backup. Only a
+          // seed another locally signing wallet holds is already protected,
+          // and a second wallet of it adds no seed.
+          var heldElsewhere = false;
+          if (newSecret != null && known != null) {
+            switch (await custodyFingerprints()) {
+              case Err(:final failure):
+                // Unreadable references are never an absence.
+                refused = failure;
+                return false;
+              case Ok(:final value):
+                heldElsewhere = value.contains(newSecret);
+            }
+          }
+          final addsSeed = newSecret != null && !heldElsewhere;
+          if (addsSeed || prepareProperties != null) {
             final regtest = switch (wallet.network) {
               'bitcoinRegtest' || 'liquidRegtest' => true,
               'bitcoinMainnet' ||
@@ -317,10 +334,13 @@ final class InventoryRepository {
               _ => throw const _InvalidRegistration(),
             };
             final replacement = (walletId: wallet.id, regtest: regtest);
-            if (known == null && newSecret != null) {
+            if (addsSeed) {
               refused = await guard.require(
                 [...members, newSecret],
                 replacingWallet: prepareProperties == null ? null : replacement,
+                // Unconditional: this seed owes a proof whether or not its
+                // words are stored, so presence cannot decide it.
+                newSecrets: {newSecret},
               );
             } else if (prepareProperties != null) {
               refused = await guard.requirePreserved(

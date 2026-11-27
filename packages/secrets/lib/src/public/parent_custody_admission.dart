@@ -76,3 +76,14 @@ final class ParentCustodyInventoryFailure extends ParentCustodyFailure {
 final class ParentCustodyDeletionFailure extends ParentCustodyFailure {
   const ParentCustodyDeletionFailure();
 }
+
+/// The seed has no tested backup, so deleting it would destroy the only copy.
+final class ParentCustodyBackupRequiredFailure extends ParentCustodyFailure {
+  const ParentCustodyBackupRequiredFailure();
+}
+
+/// The backup owner could not prove a backup either way. The state is unknown,
+/// never absent: deletion is refused.
+final class ParentCustodyBackupUnavailableFailure extends ParentCustodyFailure {
+  const ParentCustodyBackupUnavailableFailure();
+}
