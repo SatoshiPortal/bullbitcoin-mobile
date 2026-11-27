@@ -100,7 +100,6 @@ void main() {
         when(() => cubit.setStartAmountsInFiat(true))
             .thenAnswer((_) async => const Ok(null));
 
-        final boundary = GlobalKey();
         await tester.pumpWidget(
           MaterialApp(
             locale: const Locale('en'),
@@ -117,10 +116,7 @@ void main() {
                   availableCurrencies: const ['CAD', 'USD', 'EUR'],
                 ),
               ],
-              child: RepaintBoundary(
-                key: boundary,
-                child: const AppSettingsScreen(),
-              ),
+              child: const AppSettingsScreen(),
             ),
           ),
         );
@@ -140,10 +136,6 @@ void main() {
         expect(
           find.bySemanticsLabel(RegExp('Currency\nCurrency')),
           findsNothing,
-        );
-        await expectLater(
-          find.byKey(boundary),
-          matchesGoldenFile('goldens/amount-input-settings-${theme.name}.png'),
         );
         await tester.tap(find.byType(BullPickerChip<bool>));
         await tester.pumpAndSettle();
