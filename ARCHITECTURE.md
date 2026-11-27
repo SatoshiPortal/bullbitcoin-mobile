@@ -47,6 +47,8 @@ New to the code? Start at these files — together they are the app's **composit
 - **`lib/locator.dart`** — dependency injection (`get_it`). `AppLocator.setup()` opens capabilities and mounts features alongside legacy core and feature registrations.
 - **`lib/router.dart`** — navigation (`GoRouter`). `AppRouter.router` starts at `WalletRoute.walletHome`, wraps the app in a root `ShellRoute`, and assembles route contributions from mounted features and legacy routers.
 
+For the Settings subtree, the shell combines the Settings hub and its child routes with typed destinations from the route owners, including Fees, Swap, Address View, All Seed View and BIP85. Bull Exchange contributes its account and access routes, Backups its backup flows, and Network its diagnostics routes and service status. The shell binds Settings wallet discovery to `OverviewSynchronization`, rather than to the legacy Wallet projection, and supplies Electrum's foreground barrier to Settings before network changes.
+
 Open a package through its published capability and mount a feature through its composition library. To understand a feature, trace it top-down: **route → screen (`ui/`) → bloc (`presentation/`) → use case (`domain/usecases/`) → repository → datasource.** The vertical slice below walks one real example end to end.
 
 Shared infrastructure and shared domain live in `lib/core/<domain>/` (see "Special Note on Core Module"); per-flow UI lives in `lib/features/<feature>/`.
