@@ -50,8 +50,14 @@ void main() {
     } finally {
       legacy.close();
     }
-    await LegacyExchangeKeychainFixture().write(_mainnetRecord, isTestnet: false);
-    await LegacyExchangeKeychainFixture().write(_testnetRecord, isTestnet: true);
+    await LegacyExchangeKeychainFixture().write(
+      _mainnetRecord,
+      isTestnet: false,
+    );
+    await LegacyExchangeKeychainFixture().write(
+      _testnetRecord,
+      isTestnet: true,
+    );
     keystore.exchangeOps.clear();
   });
 
@@ -383,7 +389,9 @@ void main() {
       expect(keystore.exchangeOps, isEmpty, reason: 'resume $launch');
     }
     expect(
-      (await LegacyExchangeKeychainFixture().read(isTestnet: false) as Ok).value,
+      (await LegacyExchangeKeychainFixture().read(
+        isTestnet: false,
+      ) as Ok).value,
       _mainnetRecord,
     );
     expect(
