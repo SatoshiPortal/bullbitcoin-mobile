@@ -9,3 +9,4 @@ The foreground creates the ledger and the headless worker opens only an existing
 ## Dependencies
 
 - `sync` supplies funding, wallet display data and the native runtime used by Ark journeys.
+- `address_view` renders the admitted funding address, and `spend` prepares, signs and broadcasts reserve top-ups from the account's bound wallet.

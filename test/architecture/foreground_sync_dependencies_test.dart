@@ -30,7 +30,7 @@ import 'package:path/path.dart' as p;
 // Wallet Import owns mnemonic input and scanning.
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
-  'ark': 'scanning',
+  'ark': 'address_view scanning',
   'all_seed_view': 'access',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'address_view bitcoin_price coins fees transactions',
@@ -45,7 +45,7 @@ const _allowedTargets = <String, String>{
   'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions',
+  'wallet': 'ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions',
   'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };

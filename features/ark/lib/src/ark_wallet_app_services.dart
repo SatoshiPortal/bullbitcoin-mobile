@@ -1,15 +1,7 @@
-import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/wallet/data/ark_reserve_top_up.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bull_ark/ark_foreground_setup.dart' show ArkAppServices;
-import 'package:bull_ark/ark_setup.dart' show ArkServiceUnavailableFailure;
-import 'package:bull_ark/ark_ui_setup.dart'
-    show ArkDefaultSourceWallet, ArkNamedSourceWallet;
+import 'package:address_view/address_view.dart' show AddressView;
+import 'package:bull_ui/bull_ui.dart' show BuildContext, Widget;
 import 'package:fees/fees.dart' show Fees;
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
-import 'package:material_ui/material_ui.dart' show BoxFit, Image;
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart'
     show WalletInventory, WalletRegistration, WalletRegistrationNotFoundFailure;
@@ -23,10 +15,19 @@ import 'package:sync/sync.dart'
         WalletSnapshotException;
 import 'package:sync/write.dart' show ForegroundWalletSynchronization;
 
-/// What the wallet gives Ark: its Secure Bitcoin operations (fresh receive
-/// addresses, sends for exit fees, wallet names), its card artwork, the
-/// confirmation arrow and the way home.
-ArkAppServices walletArkAppServices(GetIt locator) => ArkAppServices(
+import 'ark_app_services.dart';
+import 'data/ark_reserve_top_up.dart';
+import 'domain/ark_display_data_port.dart';
+import 'domain/ark_failure.dart';
+
+/// Binds Ark to the app's wallet capabilities. Service lookups happen only
+/// when a callback needs them. The host supplies artwork and navigation.
+ArkAppServices arkWalletAppServices(
+  GetIt locator, {
+  Widget? walletBackground,
+  Widget? confirmIcon,
+  void Function(BuildContext context)? onHome,
+}) => ArkAppServices(
   nextReceiveAddress: (walletId) async => switch (await locator<AddressView>()
       .receiveAddress(walletId: walletId, advance: true)) {
     Ok(:final value) => Ok(value.address),
@@ -60,12 +61,9 @@ ArkAppServices walletArkAppServices(GetIt locator) => ArkAppServices(
         Err(failure: WalletRegistrationNotFoundFailure()) => null,
         Err() => throw const WalletSnapshotException(SyncStorageFailure()),
       },
-  walletBackground: Image.asset(
-    Assets.backgrounds.bgSecureWallet.path,
-    fit: BoxFit.cover,
-  ),
-  confirmIcon: Image.asset(Assets.icons.rightArrow.path, height: 24, width: 24),
-  onHome: (context) => context.goNamed(WalletRoute.walletHome.name),
+  walletBackground: walletBackground,
+  confirmIcon: confirmIcon,
+  onHome: onHome,
 );
 
 String _sourceOrigin(String id) {

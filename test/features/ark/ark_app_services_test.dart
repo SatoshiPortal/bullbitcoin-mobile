@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/wallet_ark_services.dart';
+import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_setup.dart';
 import 'package:bull_ark/ark_ui_setup.dart'
     show ArkDefaultSourceWallet, ArkNamedSourceWallet, ArkSourceWalletName;
@@ -15,9 +14,6 @@ import 'package:spend/testing.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/write.dart';
 
-import '../../../support/wallet_registrations.dart';
-import 'ark_funding_test_fixture.dart';
-
 class _Inventory extends Mock implements WalletInventory {}
 
 class _Fees extends Mock implements Fees {}
@@ -27,6 +23,11 @@ class _Connections extends Mock implements WalletConnectionPort {}
 class _Catalog extends Mock implements WalletCatalogPort {}
 
 const _fastest = RelativeFee(350);
+const fundingWalletId = '[00112233/84h/1h/0h]:regtest';
+final fundingKey = WalletKey(
+  id: fundingWalletId,
+  network: BitcoinNetwork.regtest,
+);
 const _address = 'reserve-address';
 final _amount = Sats.fromInt(42);
 
@@ -35,7 +36,7 @@ enum _Refusal { prepare, sign }
 final class _Spend extends FakeSpend {
   final List<String> calls;
   final prepared = SpendFixtures.preparedBitcoin(
-    unsignedPsbt: publicFundingPsbt,
+    unsignedPsbt: 'unsigned-fixture',
     fee: Sats.fromInt(1),
   );
   final signed = SpendFixtures.signedBitcoin('signed-fixture');
@@ -87,7 +88,9 @@ final class _Spend extends FakeSpend {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   registerFallbackValue(fundingKey);
+  late GetIt locator;
   late _Inventory inventory;
+  late _Fees fees;
   late _Catalog catalog;
   late List<String> calls;
   late List<WalletKey> synced;
@@ -96,6 +99,8 @@ void main() {
   late Future<Result<String, ArkFailure>> Function(String, String, Sats) send;
   late Result<WalletRegistration, SecretFailure> selection;
   late bool throwDuringSync;
+  late ElectrumSync electrum;
+  late _Connections connections;
 
   void showRow({
     String id = fundingWalletId,
@@ -113,7 +118,7 @@ void main() {
   }
 
   setUp(() {
-    final locator = GetIt.asNewInstance();
+    locator = GetIt.asNewInstance();
     addTearDown(locator.reset);
     inventory = _Inventory();
     catalog = _Catalog();
@@ -122,23 +127,17 @@ void main() {
     spend = _Spend(calls);
     throwDuringSync = false;
     selection = const Err(WalletRegistrationNotFoundFailure());
-    final legacy = MemoryWalletRegistrations();
-    legacy.rows[fundingWalletId] = fundingMetadata.copyWith(
-      networkCode: 'bitcoinMainnet',
-    );
-    final fees = _Fees();
-    final synchronization = ForegroundWalletSynchronization(
-      ElectrumSync(
-        connections: _Connections(),
-        documentsDirectory: () => throw StateError('No native store expected'),
-        readRevision: (_) => throw StateError('No native revision expected'),
-      ),
+    fees = _Fees();
+    connections = _Connections();
+    electrum = ElectrumSync(
+      connections: connections,
+      documentsDirectory: () => throw StateError('No native store expected'),
+      readRevision: (_) => throw StateError('No native revision expected'),
     );
     locator
       ..registerSingleton<WalletInventory>(inventory)
-      ..registerSingleton<WalletRegistrations>(legacy)
       ..registerSingleton<WalletCatalogPort>(catalog)
-      ..registerSingleton(synchronization)
+      ..registerSingleton(ForegroundWalletSynchronization(electrum))
       ..registerSingleton<Fees>(fees)
       ..registerSingleton<Spend>(spend);
     when(() => inventory.readWallet(fundingWalletId)).thenAnswer((_) async {
@@ -162,13 +161,13 @@ void main() {
         ),
       );
     });
-    final services = walletArkAppServices(locator);
+    final services = arkWalletAppServices(locator);
     walletName =
         services.walletName ?? fail('Missing Ark wallet-name callback');
     send = services.send ?? fail('Missing Ark reserve-send callback');
   });
 
-  test('an invisible row ignores the legacy name', () async {
+  test('an invisible row has no name', () async {
     expect(await walletName(fundingWalletId), isNull);
   });
 
