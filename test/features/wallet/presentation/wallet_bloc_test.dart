@@ -27,7 +27,14 @@ import 'package:silent/silent.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/watch_wallet_sync_events_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/sync_wallets_usecase.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinUnit, Err, Ok, Result, ScriptType;
+    show
+        BitcoinNetwork,
+        BitcoinUnit,
+        Err,
+        LiquidNetwork,
+        Ok,
+        Result,
+        ScriptType;
 import 'package:swaps/swaps.dart'
     show Swap, SwapEnvironment, SwapStatus, SwapType;
 import 'package:primitives/primitives.dart' show SignerEntity;
@@ -771,8 +778,13 @@ void main() {
       addTearDown(bloc.close);
 
       bloc.add(
-        const ElectrumSyncResultChanged(
-          ElectrumSyncResult(isLiquid: false, success: false),
+        ElectrumSyncResultChanged(
+          ElectrumSyncResult(
+            key: WalletKey(id: 'btc', network: BitcoinNetwork.regtest),
+            runId: 1,
+            isLiquid: false,
+            success: false,
+          ),
         ),
       );
       final state = await bloc.stream.firstWhere(
@@ -791,8 +803,13 @@ void main() {
       addTearDown(bloc.close);
 
       bloc.add(
-        const ElectrumSyncResultChanged(
-          ElectrumSyncResult(isLiquid: true, success: false),
+        ElectrumSyncResultChanged(
+          ElectrumSyncResult(
+            key: WalletKey(id: 'liquid', network: LiquidNetwork.regtest),
+            runId: 1,
+            isLiquid: true,
+            success: false,
+          ),
         ),
       );
       final state = await bloc.stream.firstWhere(
@@ -821,8 +838,13 @@ void main() {
       addTearDown(bloc.close);
 
       bloc.add(
-        const ElectrumSyncResultChanged(
-          ElectrumSyncResult(isLiquid: false, success: false),
+        ElectrumSyncResultChanged(
+          ElectrumSyncResult(
+            key: WalletKey(id: 'btc', network: BitcoinNetwork.regtest),
+            runId: 1,
+            isLiquid: false,
+            success: false,
+          ),
         ),
       );
       await started.future;
@@ -835,8 +857,13 @@ void main() {
         }
       });
       bloc.add(
-        const ElectrumSyncResultChanged(
-          ElectrumSyncResult(isLiquid: false, success: true),
+        ElectrumSyncResultChanged(
+          ElectrumSyncResult(
+            key: WalletKey(id: 'btc', network: BitcoinNetwork.regtest),
+            runId: 1,
+            isLiquid: false,
+            success: true,
+          ),
         ),
       );
       await Future.any<void>([

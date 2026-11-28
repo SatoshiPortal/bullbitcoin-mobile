@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bb_mobile/features/wallet/data/wallet_repository.dart'
+    show walletDisplayOrder;
+import 'package:bb_mobile/features/wallet/domain/wallet.dart' as legacy;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullReceiveSendButtons;
@@ -202,6 +205,129 @@ void main() {
     await update.writeAsBytes(base64Decode(fixture['update'] as String));
     store.finish(liquid);
   }
+
+  test('mixed-chain imports retain real inventory combined order', () async {
+    for (final (id, network, descriptor) in [
+      (
+        'a[01234567/84h/1h/0h]:regtest',
+        'bitcoinRegtest',
+        bitcoin.externalDescriptor,
+      ),
+      (
+        'el-a[01234567/84h/1h/0h]:regtest',
+        'liquidRegtest',
+        fixture['descriptor'] as String,
+      ),
+      (
+        'el-b[01234567/84h/1h/0h]:regtest',
+        'liquidRegtest',
+        fixture['descriptor'] as String,
+      ),
+      (
+        'z[01234567/84h/1h/0h]:regtest',
+        'bitcoinRegtest',
+        bitcoin.externalDescriptor,
+      ),
+    ]) {
+      valueOf(
+        await inventory.registerWallet(
+          watchOnlyWallet(
+            id,
+            network: network,
+            external: descriptor,
+            internal: bitcoin.internalDescriptor,
+          ),
+        ),
+      );
+    }
+    final legacyOrder = valueOf(await inventory.listWallets())
+        .map((wallet) => wallet.id)
+        .toList();
+    expect(legacyOrder.length, 4);
+    await startup.start();
+    await until(() => overview.snapshot.rows.length == 4);
+    expect(overview.snapshot.rows.map((row) => row.entry.key.id), legacyOrder);
+  });
+
+  test(
+    'real combined inventory order is ranked by the legacy display policy',
+    () async {
+      const bitcoinDefault = 'z[01234567/84h/1h/0h]:regtest';
+      const liquidDefault = 'el-b[01234567/84h/1h/0h]:regtest';
+      const bitcoinImport = 'a[01234567/84h/1h/0h]:regtest';
+      const liquidImport = 'el-a[01234567/84h/1h/0h]:regtest';
+      for (final (id, isLiquid, isDefault) in [
+        (bitcoinDefault, false, true),
+        (liquidImport, true, false),
+        (liquidDefault, true, true),
+        (bitcoinImport, false, false),
+      ]) {
+        valueOf(
+          await inventory.registerWallet(
+            watchOnlyWallet(
+              id,
+              network: isLiquid ? 'liquidRegtest' : 'bitcoinRegtest',
+              external: isLiquid
+                  ? fixture['descriptor'] as String
+                  : bitcoin.externalDescriptor,
+              internal: bitcoin.internalDescriptor,
+              isDefault: isDefault,
+            ),
+          ),
+        );
+      }
+      final rows = valueOf(await inventory.listWallets());
+      expect(rows.map((row) => row.id), [
+        bitcoinImport,
+        liquidImport,
+        liquidDefault,
+        bitcoinDefault,
+      ]);
+      final legacyWallets = [
+        for (final row in rows)
+          legacy.Wallet(
+            origin: row.id,
+            network: row.network == 'bitcoinRegtest'
+                ? legacy.Network.bitcoinRegtest
+                : legacy.Network.liquidRegtest,
+            isDefault: row.isDefault,
+            xpubFingerprint: '',
+            scriptType: ScriptType.bip84,
+            xpub: '',
+            externalPublicDescriptor: '',
+            internalPublicDescriptor: '',
+            signer: SignerEntity.none,
+            signerDevice: null,
+            balanceSat: null,
+          ),
+      ];
+      final expected = walletDisplayOrder(legacyWallets)
+          .map((wallet) => wallet.origin)
+          .toList();
+      expect(expected, [
+        bitcoinDefault,
+        liquidDefault,
+        bitcoinImport,
+        liquidImport,
+      ]);
+      await startup.start();
+      await until(() => overview.snapshot.rows.length == 4);
+      expect(overview.snapshot.rows.map((row) => row.entry.key.id), expected);
+    },
+  );
+
+  test('detail route identity waits for its unique admitted wallet', () async {
+    await registerBoth();
+    final detail = OverviewDetailController.byId(
+      catalogue: overview,
+      walletId: bitcoin.key.id,
+    );
+    addTearDown(detail.dispose);
+    expect(detail.value, isNull);
+    await startup.start();
+    await until(() => detail.value?.key == bitcoin.key);
+    expect(detail.value?.key.network, bitcoin.key.network);
+  });
 
   test(
     'detail selection follows membership before and after receipts',
