@@ -3,9 +3,6 @@ import 'package:transactions/testing.dart';
 import 'dart:async';
 
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bull_payjoin/bull_payjoin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,21 +11,14 @@ class Read extends Mock implements GetTransactionsUsecase {}
 
 class Labels extends Mock implements RefreshTransactionLabelsUsecase {}
 
-class Started extends Mock implements WatchStartedWalletSyncsUsecase {}
-
-class Finished extends Mock implements WatchFinishedWalletSyncsUsecase {}
-
-class WalletStub extends Mock implements Wallet {}
-
+// Direct synchronization finishes are current public wallet IDs.
 void main() {
   testWidgets('direct failed sync invalidates aborted standalone payjoin', (
     tester,
   ) async {
     final read = Read();
     final labels = Labels();
-    final started = Started();
-    final finished = Finished();
-    final finishes = StreamController<Wallet>.broadcast();
+    final finishes = StreamController<String>.broadcast();
     final created = DateTime(2026, 11, 8);
     final pending = Transaction(
       payjoin: PayjoinReceiverSession(
@@ -51,20 +41,15 @@ void main() {
         ),
       ),
     );
-    when(() => started.execute(walletId: null))
-        .thenAnswer((_) => const Stream.empty());
-    when(() => finished.execute(walletId: null))
-        .thenAnswer((_) => finishes.stream);
+    final started = const Stream<String>.empty();
     when(() => labels.execute(any())).thenAnswer(
       (call) async => call.positionalArguments.first as List<Transaction>,
     );
     final cubit = TransactionsCubit(
       getTransactionsUsecase: read,
       refreshTransactionLabelsUsecase: labels,
-      watchStartedWalletSyncsUsecase: started.execute(walletId: null),
-      watchFinishedWalletSyncsUsecase: finished
-          .execute(walletId: null)
-          .map((wallet) => wallet.id),
+      watchStartedWalletSyncsUsecase: started,
+      watchFinishedWalletSyncsUsecase: finishes.stream,
       watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(
         walletHistoryEvents(
           const Stream.empty(),
@@ -81,7 +66,7 @@ void main() {
     // Fallback persisted aborted; the existing join excludes that standalone row.
     // Failed direct Electrum sync emits finished, with no native revision/pass.
     localTransactions = [];
-    finishes.add(WalletStub());
+    finishes.add('wallet-a');
     await tester.pump();
     await tester.pump(const Duration(seconds: 4));
     // Returning from details invokes only this metadata refresh.

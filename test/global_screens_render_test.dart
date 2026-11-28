@@ -1,20 +1,17 @@
-import 'package:coins/coins.dart';
 import 'package:preferences/preferences.dart' show Environment, SettingsEntity;
 import 'package:settings/settings.dart';
 
 import 'dart:async';
 
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:settings/testing.dart';
 import 'package:transactions/testing.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart'
     show QuickActionsLocalizations;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/screens/wallet_detail_screen.dart';
+import 'package:overview/overview.dart' show OverviewWalletDetail;
 import 'package:bb_mobile/localizations.dart';
+import 'package:bb_mobile/localization/app_localizations_context.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,10 +19,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Err, ScriptType;
+import 'package:primitives/primitives.dart' show BitcoinUnit;
 
-class _Wallet extends Mock implements WalletBloc {}
-
+// Screen fixtures use public owner widgets rather than the retired aggregate bloc.
 class _Settings extends Mock implements SettingsCubit {}
 
 class _Transactions extends Mock implements TransactionsCubit {}
@@ -45,37 +41,11 @@ void main() {
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
-        final wallet = Wallet(
-          origin: 'public-preview',
-          label: 'Savings',
-          network: Network.bitcoinMainnet,
-          isDefault: true,
-          xpubFingerprint: '00000000',
-          scriptType: ScriptType.bip84,
-          xpub: '',
-          externalPublicDescriptor: '',
-          internalPublicDescriptor: '',
-          signer: SignerEntity.local,
-          signerDevice: null,
-          balanceSat: BigInt.from(1000000),
-        );
         const amountDisplay = (
           bitcoinUnit: BitcoinUnit.sats,
           currencyCode: 'CAD',
           hideAmounts: false,
         );
-        final wallets = _Wallet();
-        when(() => wallets.state).thenReturn(
-          WalletState(
-            amountDisplay: amountDisplay,
-            status: WalletStatus.success,
-            wallets: [wallet],
-            backupNeeded: false,
-          ),
-        );
-        when(() => wallets.stream).thenAnswer((_) => const Stream.empty());
-        when(() => wallets.walletActionChanges)
-            .thenAnswer((_) => const Stream.empty());
         final settings = _Settings();
         when(() => settings.state).thenReturn(
           const SettingsState(
@@ -108,15 +78,27 @@ void main() {
                 Device.init(context);
                 return switch (scene) {
                   'settings' => const AppSettingsScreen(),
-                  'wallet' => WalletDetailScreen(
-                    walletId: wallet.id,
+                  'wallet' => OverviewWalletDetail(
+                    walletId: 'public-preview',
+                    walletName: 'Savings',
+                    settings: const SizedBox.shrink(),
+                    isLoading: false,
+                    unavailableMessage: context.loc.walletLoadFailed,
+                    hasBalance: true,
+                    isLiquid: false,
                     scopeWalletHistory: (_, child) =>
                         BlocProvider<TransactionsCubit>.value(
                           value: transactions,
                           child: child,
                         ),
-                    onOpenCoins: (_, _) async {},
-                    loadCoinSummary: (_) async => const Err(CoinsLoadFailure()),
+                    refreshPrice: (_) async {},
+                    refreshWalletHistory: (_) async {},
+                    balanceCard: (_) => const SizedBox.shrink(),
+                    consolidation: (_) => const SizedBox.shrink(),
+                    coinsEntry: (_) => const SizedBox.shrink(),
+                    liquidDisclosure: (_) => const SizedBox.shrink(),
+                    history: (_) => const SliverToBoxAdapter(),
+                    bottomActions: const SizedBox.shrink(),
                   ),
                   _ => Scaffold(
                     appBar: AppBar(title: const Text('Shared bottom sheet')),
@@ -146,7 +128,6 @@ void main() {
         await tester.pumpWidget(
           MultiBlocProvider(
             providers: [
-              BlocProvider<WalletBloc>.value(value: wallets),
               BlocProvider<SettingsCubit>.value(value: settings),
               BitcoinPriceFixture.prices(
                 amountDisplay: amountDisplay,
