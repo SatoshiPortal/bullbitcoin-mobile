@@ -31,8 +31,9 @@ import '../../../support/preferences_database.dart';
 
 final class _Membership extends Fake implements WalletInventory {
   final SecretsInventory inventory;
-  Future<void> Function()? afterRead;
+  Future<void> Function(Network)? afterRead;
   bool failLiquid = true;
+  bool failLiquidOnce = false;
   bool failBitcoin = false;
   int reads = 0;
 
@@ -45,10 +46,11 @@ final class _Membership extends Fake implements WalletInventory {
     reads++;
     if ((failLiquid && network is LiquidNetwork) ||
         (failBitcoin && network is BitcoinNetwork)) {
+      if (network is LiquidNetwork && failLiquidOnce) failLiquid = false;
       return const Err(SecretNotFoundFailure());
     }
     final result = await inventory.walletsForNetwork(network);
-    await afterRead?.call();
+    await afterRead?.call(network);
     return result;
   }
 }
@@ -179,6 +181,101 @@ void main() {
     expect(ready(), isTrue);
   }
 
+  test('refresh during initial load retries one incomplete result', () async {
+    await registerBoth();
+    final entered = Completer<void>();
+    final release = Completer<void>();
+    membership.failLiquidOnce = true;
+    membership.afterRead = (_) async {
+      if (!entered.isCompleted) {
+        entered.complete();
+        await release.future;
+      }
+    };
+    await startup.start();
+    await until(() => entered.isCompleted);
+    expect(overview.snapshot.status, OverviewCatalogueStatus.replacing);
+    final h = OverviewHomeHarness();
+    final home = OverviewHomeController(
+      catalogue: CatalogueHomeSource(overview),
+      sync: h.sync,
+      amountDisplay: OverviewAmountDisplay(h.amountPreferences),
+      ongoingSwaps: h.swaps,
+      swapServerCheck: h.swapServer,
+      readBackupWarning: () async => true,
+      readPhysicalBackup: (_) async => true,
+      proxyNeedsAttention: () async => false,
+      silentHome: SilentHomeObservation(h.silent),
+      syncStarted: h.started.stream,
+      syncFinished: h.finished.stream,
+      electrumResults: h.electrum.stream,
+      swapActivity: h.swapActivity,
+    );
+    addTearDown(() async {
+      if (!release.isCompleted) release.complete();
+      await home.close();
+      await h.close();
+    });
+    await home.refresh();
+    release.complete();
+    for (var i = 0; i < 300 && membership.reads < 4; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    expect(
+      membership.reads,
+      4,
+      reason: 'the partial initial read must be retried once',
+    );
+    await until(
+      () => overview.snapshot.status == OverviewCatalogueStatus.ready,
+    );
+    expect(overview.snapshot.rows, hasLength(2));
+  });
+
+  test('a complete initial read discards the queued retry', () async {
+    await registerBoth();
+    membership.failLiquid = false;
+    final entered = Completer<void>();
+    final release = Completer<void>();
+    membership.afterRead = (_) async {
+      if (!entered.isCompleted) {
+        entered.complete();
+        await release.future;
+      }
+    };
+    await startup.start();
+    await until(() => entered.isCompleted);
+    final h = OverviewHomeHarness();
+    final home = OverviewHomeController(
+      catalogue: CatalogueHomeSource(overview),
+      sync: h.sync,
+      amountDisplay: OverviewAmountDisplay(h.amountPreferences),
+      ongoingSwaps: h.swaps,
+      swapServerCheck: h.swapServer,
+      readBackupWarning: () async => true,
+      readPhysicalBackup: (_) async => true,
+      proxyNeedsAttention: () async => false,
+      silentHome: SilentHomeObservation(h.silent),
+      syncStarted: h.started.stream,
+      syncFinished: h.finished.stream,
+      electrumResults: h.electrum.stream,
+      swapActivity: h.swapActivity,
+    );
+    addTearDown(() async {
+      if (!release.isCompleted) release.complete();
+      await home.close();
+      await h.close();
+    });
+    expect(membership.reads, 1);
+    await home.refresh();
+    release.complete();
+    await until(() => home.current.status == OverviewCatalogueStatus.ready);
+    expect(membership.reads, 2, reason: 'a complete read must not retry');
+    await home.refresh();
+    await Future<void>.delayed(Duration.zero);
+    expect(membership.reads, 2, reason: 'the queued request must be cleared');
+  });
+
   test(
     'pull refresh retries failed membership and restores omitted rows',
     () async {
@@ -208,18 +305,23 @@ void main() {
         await home.close();
         await h.close();
       });
-      await flushEvents();
       final reads = membership.reads;
       membership.failLiquid = false;
       await home.refresh();
-      await flushEvents();
+      await until(
+        () =>
+            overview.snapshot.status == OverviewCatalogueStatus.ready &&
+            home.current.rows.length == 2,
+      );
       expect(
         membership.reads,
-        greaterThan(reads),
+        reads + 2,
         reason: 'refresh must retry membership',
       );
       expect(overview.snapshot.status, OverviewCatalogueStatus.ready);
       expect(overview.snapshot.rows, hasLength(2));
+      await until(() => home.current.totalSat != null);
+      expect(home.current.totalSat, 0);
     },
   );
   test('a permanent failure does not cause an automatic retry loop', () async {
@@ -248,15 +350,18 @@ void main() {
       await home.close();
       await h.close();
     });
-    await flushEvents();
     final reads = membership.reads;
     await home.refresh();
-    await flushEvents(30);
+    await until(
+      () =>
+          membership.reads == reads + 2 &&
+          home.current.status == OverviewCatalogueStatus.partial,
+    );
     expect(membership.reads, reads + 2);
     expect(overview.snapshot.status, OverviewCatalogueStatus.partial);
   });
 
-  test('revocation retires an in-flight retry and its late response', () async {
+  test('revocation empties Home and prevents further network reads', () async {
     await registerBoth();
     await startup.start();
     await until(
@@ -284,23 +389,30 @@ void main() {
     });
     final entered = Completer<void>();
     final release = Completer<void>();
+    final returned = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
     membership.failLiquid = false;
-    membership.afterRead = () async {
+    membership.afterRead = (_) async {
       if (!entered.isCompleted) entered.complete();
       await release.future;
+      if (!returned.isCompleted) returned.complete();
     };
     await home.refresh();
-    await flushEvents();
-    expect(
-      entered.isCompleted,
-      isTrue,
-      reason: 'refresh must retry membership',
-    );
+    await until(() => entered.isCompleted);
+    final reads = membership.reads;
     balances.revokeUnlock();
+    await until(() => home.current.status == OverviewCatalogueStatus.revoked);
     release.complete();
-    await flushEvents();
-    expect(overview.snapshot.status, OverviewCatalogueStatus.revoked);
+    await returned.future;
+    await Future<void>.delayed(Duration.zero);
+    await until(
+      () => overview.snapshot.status == OverviewCatalogueStatus.revoked,
+    );
+    expect(membership.reads, reads);
     expect(overview.snapshot.rows, isEmpty);
+    expect(home.current.rows, isEmpty);
   });
   test('late retry cannot publish into a newly admitted context', () async {
     await registerBoth();
@@ -330,27 +442,79 @@ void main() {
     });
     final entered = Completer<void>();
     final release = Completer<void>();
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    final freshEntered = Completer<void>();
+    final freshRelease = Completer<void>();
+    addTearDown(() {
+      if (!freshRelease.isCompleted) freshRelease.complete();
+    });
     membership.failLiquid = false;
-    membership.afterRead = () async {
-      if (!entered.isCompleted) entered.complete();
-      await release.future;
+    var bitcoinReads = 0;
+    membership.afterRead = (network) async {
+      if (network is! BitcoinNetwork) return;
+      bitcoinReads++;
+      if (bitcoinReads == 1) {
+        entered.complete();
+        await release.future;
+      } else if (bitcoinReads == 2) {
+        freshEntered.complete();
+        await freshRelease.future;
+      }
     };
+    final reads = membership.reads;
     await home.refresh();
-    await flushEvents();
-    expect(
-      entered.isCompleted,
-      isTrue,
-      reason: 'refresh must retry membership',
-    );
+    await until(() => entered.isCompleted);
+    await home.refresh();
     balances.revokeUnlock();
+    await until(() => home.current.status == OverviewCatalogueStatus.revoked);
+    const freshId = 'fresh[01234567/84h/1h/0h]:regtest';
+    valueOf(
+      await inventory.registerWallet(
+        watchOnlyWallet(
+          freshId,
+          network: 'bitcoinRegtest',
+          external: bitcoin.externalDescriptor,
+          internal: bitcoin.internalDescriptor,
+        ),
+      ),
+    );
     balances.admitUnlock();
-    await flushEvents();
+    await until(() => balances.observation.current != null);
+    final published = <List<String>>[];
+    final subscription = overview.changes.listen((_) {
+      final snapshot = overview.snapshot;
+      if (snapshot.status == OverviewCatalogueStatus.ready ||
+          snapshot.status == OverviewCatalogueStatus.partial) {
+        published.add(snapshot.rows.map((row) => row.entry.key.id).toList());
+      }
+    });
+    addTearDown(subscription.cancel);
     expect(overview.snapshot.rows, isEmpty);
     release.complete();
+    await until(() => freshEntered.isCompleted || published.isNotEmpty);
+    expect(freshEntered.isCompleted, isTrue);
+    expect(overview.snapshot.status, OverviewCatalogueStatus.replacing);
+    expect(overview.snapshot.rows, isEmpty);
+    expect(home.current.rows, isEmpty);
+    freshRelease.complete();
     await until(
-      () => overview.snapshot.status == OverviewCatalogueStatus.ready,
+      () =>
+          overview.snapshot.status == OverviewCatalogueStatus.ready &&
+          home.current.rows.length == 3,
     );
-    expect(overview.snapshot.rows, hasLength(2));
+    expect(overview.snapshot.rows.map((row) => row.entry.key.id).toSet(), {
+      bitcoin.key.id,
+      liquid.id,
+      freshId,
+    });
+    expect(membership.reads, reads + 3);
+    expect(published, isNotEmpty);
+    expect(
+      published.every((ids) => ids.length == 3 && ids.contains(freshId)),
+      isTrue,
+    );
   });
   test('pull refresh recovers an unreadable membership', () async {
     membership.failBitcoin = true;
@@ -389,5 +553,103 @@ void main() {
     );
     expect(membership.reads, reads + 2);
     expect(overview.snapshot.rows, hasLength(2));
+    await until(() => home.current.rows.length == 2);
+    expect(home.current.rows, hasLength(2));
   });
+  test('refreshes during a retry coalesce into one follow-up', () async {
+    await registerBoth();
+    await startup.start();
+    await until(
+      () => overview.snapshot.status == OverviewCatalogueStatus.partial,
+    );
+    final h = OverviewHomeHarness();
+    final home = OverviewHomeController(
+      catalogue: CatalogueHomeSource(overview),
+      sync: h.sync,
+      amountDisplay: OverviewAmountDisplay(h.amountPreferences),
+      ongoingSwaps: h.swaps,
+      swapServerCheck: h.swapServer,
+      readBackupWarning: () async => true,
+      readPhysicalBackup: (_) async => true,
+      proxyNeedsAttention: () async => false,
+      silentHome: SilentHomeObservation(h.silent),
+      syncStarted: h.started.stream,
+      syncFinished: h.finished.stream,
+      electrumResults: h.electrum.stream,
+      swapActivity: h.swapActivity,
+    );
+    addTearDown(() async {
+      await home.close();
+      await h.close();
+    });
+    final reads = membership.reads;
+    final entered = Completer<void>();
+    final release = Completer<void>();
+    membership.afterRead = (_) async {
+      if (!entered.isCompleted) {
+        entered.complete();
+        await release.future;
+      }
+    };
+    addTearDown(() {
+      if (!release.isCompleted) release.complete();
+    });
+    await home.refresh();
+    await until(() => entered.isCompleted);
+    expect(membership.reads, reads + 1);
+    await home.refresh();
+    await home.refresh();
+    expect(membership.reads, reads + 1);
+    release.complete();
+    await until(() => membership.reads == reads + 4);
+    await until(
+      () =>
+          overview.snapshot.status == OverviewCatalogueStatus.partial &&
+          home.current.status == OverviewCatalogueStatus.partial,
+    );
+    expect(membership.reads, reads + 4);
+  });
+
+  test(
+    'total retry failure replaces rows with unreadable, not onboarding',
+    () async {
+      await registerBoth();
+      await startup.start();
+      await until(
+        () => overview.snapshot.status == OverviewCatalogueStatus.partial,
+      );
+      final h = OverviewHomeHarness();
+      final home = OverviewHomeController(
+        catalogue: CatalogueHomeSource(overview),
+        sync: h.sync,
+        amountDisplay: OverviewAmountDisplay(h.amountPreferences),
+        ongoingSwaps: h.swaps,
+        swapServerCheck: h.swapServer,
+        readBackupWarning: () async => true,
+        readPhysicalBackup: (_) async => true,
+        proxyNeedsAttention: () async => false,
+        silentHome: SilentHomeObservation(h.silent),
+        syncStarted: h.started.stream,
+        syncFinished: h.finished.stream,
+        electrumResults: h.electrum.stream,
+        swapActivity: h.swapActivity,
+      );
+      addTearDown(() async {
+        await home.close();
+        await h.close();
+      });
+      await until(() => home.current.rows.length == 1);
+      final reads = membership.reads;
+      membership.failBitcoin = true;
+      await home.refresh();
+      await until(
+        () => home.current.status == OverviewCatalogueStatus.unreadable,
+      );
+      expect(membership.reads, reads + 2);
+      expect(overview.snapshot.rows, isEmpty);
+      expect(home.current.rows, isEmpty);
+      expect(home.current.isEmpty, isFalse);
+      expect(home.current.totalSat, isNull);
+    },
+  );
 }
