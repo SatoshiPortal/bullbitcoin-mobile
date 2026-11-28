@@ -83,6 +83,11 @@ final class _NeedsPassphrase extends VaultKeyOutcome {
   const _NeedsPassphrase(this.key, this.settings, this.network);
 }
 
+final class _NeedsPasskeyPassphrase extends VaultKeyOutcome {
+  final BitcoinNetwork? network;
+  const _NeedsPasskeyPassphrase(this.network);
+}
+
 final class _Completed extends VaultKeyOutcome {
   final VaultCompletion completion;
   const _Completed(this.completion);
@@ -140,6 +145,26 @@ Future<VaultKeyOutcome> startVaultKeyFetch(
   return const _Nothing();
 }
 
+Future<VaultKeyOutcome> startPasskeyVaultKeyFetch(BuildContext context) async {
+  final cubit = context.read<VaultFlowCubit>();
+  final BitcoinNetwork? network;
+  switch (_network(context)) {
+    case Err(:final failure):
+      return _Failed(failure);
+    case Ok(:final value):
+      network = value;
+  }
+  await cubit.verifyPasskey(network);
+  final state = cubit.state;
+  if (state.failure is VaultPassphraseRequiredFailure) {
+    cubit.clearFailure();
+    return _NeedsPasskeyPassphrase(network);
+  }
+  if (state.failure case final failure?) return _Failed(failure);
+  if (state.completion case final completion?) return _Completed(completion);
+  return const _Nothing();
+}
+
 /// Shows progress while the vault key is fetched, then leads to the outcome.
 class FetchVaultKeyPage extends StatefulWidget {
   final Future<VaultKeyOutcome> outcome;
@@ -189,6 +214,13 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             ),
           ),
         );
+      case _NeedsPasskeyPassphrase(:final network):
+        await navigator.pushReplacement(
+          MaterialPageRoute<void>(
+            builder: (_) =>
+                PassphrasePage(passkey: true, settings: null, network: network),
+          ),
+        );
       case _Completed(:final completion):
         await _showCompletion(context, completion);
       case _Nothing():
@@ -220,16 +252,18 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
 
 /// Asks for the BIP39 passphrase the vault does not contain.
 class PassphrasePage extends StatefulWidget {
-  final VaultKey vaultKey;
+  final VaultKey? vaultKey;
+  final bool passkey;
   final BackupSettings? settings;
   final BitcoinNetwork? network;
 
   const PassphrasePage({
     super.key,
-    required this.vaultKey,
+    this.vaultKey,
+    this.passkey = false,
     required this.settings,
     required this.network,
-  });
+  }) : assert((vaultKey != null) != passkey);
 
   @override
   State<PassphrasePage> createState() => _PassphrasePageState();
@@ -289,13 +323,21 @@ class _PassphrasePageState extends State<PassphrasePage> with PrivacyScreen {
       _error = null;
       _confirmWithout = false;
     });
-    await cubit.manual(
-      widget.vaultKey,
-      widget.network,
-      passphrase: candidate,
-      allowUnverified: without,
-      capturedSettings: widget.settings,
-    );
+    if (widget.passkey) {
+      await cubit.verifyPasskey(
+        widget.network,
+        passphrase: candidate,
+        allowUnverified: without,
+      );
+    } else if (widget.vaultKey case final vaultKey?) {
+      await cubit.manual(
+        vaultKey,
+        widget.network,
+        passphrase: candidate,
+        allowUnverified: without,
+        capturedSettings: widget.settings,
+      );
+    }
     if (!mounted) return;
     final state = cubit.state;
     if (state.failure is VaultPassphraseRequiredFailure) {

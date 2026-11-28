@@ -52,6 +52,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
   bool _passphraseAccepted = false;
   final _inputController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _passphraseAcknowledgementKey = GlobalKey();
   Future<bool> _protection = Completer<bool>().future;
   bool _visible = false;
   late final AppLifecycleListener _lifecycle;
@@ -122,6 +123,16 @@ class _PasswordInputPageState extends State<PasswordInputPage>
   }
 
   Future<void> _continue(RecoverBullFlow flow, bool needsPassphraseAck) async {
+    final vault = context.read<VaultFlowCubit>().state.vault;
+    if (flow != RecoverBullFlow.secureVault &&
+        vault?.passkey != null &&
+        _inputType != InputType.vaultKey) {
+      BullSnackBar.show(
+        context,
+        message: context.loc.recoverbullUnexpectedError,
+      );
+      return;
+    }
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (flow == RecoverBullFlow.secureVault) {
       if (_validatedPassword.isEmpty) {
@@ -159,6 +170,53 @@ class _PasswordInputPageState extends State<PasswordInputPage>
     );
   }
 
+  Future<void> _usePasskey(
+    RecoverBullFlow flow,
+    bool needsPassphraseAck,
+  ) async {
+    final cubit = context.read<VaultFlowCubit>();
+    if (cubit.state.busy) return;
+    _inputController.clear();
+    setState(() => _validatedPassword = '');
+    if (flow == RecoverBullFlow.secureVault) {
+      if (needsPassphraseAck && !_passphraseAccepted) {
+        final acknowledgement = _passphraseAcknowledgementKey.currentContext;
+        if (acknowledgement != null) {
+          await Scrollable.ensureVisible(
+            acknowledgement,
+            duration: const Duration(milliseconds: 250),
+          );
+        }
+        return;
+      }
+      final passkey = await cubit.createPasskey();
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      if (passkey == null) {
+        BullSnackBar.show(
+          context,
+          message: context.loc.recoverbullPasskeyUnavailable,
+        );
+        cubit.clearFailure();
+        return;
+      }
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => VaultProviderSelectionPage(
+            passkey: passkey,
+            passphraseWarningAccepted: _passphraseAccepted,
+          ),
+        ),
+      );
+      return;
+    }
+    final outcome = startPasskeyVaultKeyFetch(context);
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => FetchVaultKeyPage(outcome: outcome),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final scope = RecoverBullFlowScope.of(context);
@@ -173,6 +231,14 @@ class _PasswordInputPageState extends State<PasswordInputPage>
       RecoverBullFlow.recoverVault,
     ].contains(flow);
     final inputTypeString = _inputTypeString(context, _inputType);
+    final cubit = context.read<VaultFlowCubit>();
+    final passkeyAvailable =
+        !widget.vaultKeyOnly &&
+        cubit.passkeysAvailable &&
+        (flow == RecoverBullFlow.secureVault ||
+            ((flow == RecoverBullFlow.recoverVault ||
+                    flow == RecoverBullFlow.testVault) &&
+                cubit.state.vault?.passkey != null));
 
     final title = switch (flow) {
       RecoverBullFlow.secureVault => context.loc.recoverbullSecureBackup,
@@ -349,6 +415,18 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                             : InputType.pin,
                                       ),
                                     ),
+                                    if (passkeyAvailable) ...[
+                                      const Gap(8),
+                                      BullButton.secondary(
+                                        label: context
+                                            .loc
+                                            .recoverbullUsePasskeyInstead,
+                                        onPressed: () => _usePasskey(
+                                          flow,
+                                          needsPassphraseAck,
+                                        ),
+                                      ),
+                                    ],
                                     if (_inputType != InputType.vaultKey &&
                                         hasVaultKeyInput) ...[
                                       const Gap(8),
@@ -374,6 +452,7 @@ class _PasswordInputPageState extends State<PasswordInputPage>
                                   maxLines: 4,
                                 ),
                                 Row(
+                                  key: _passphraseAcknowledgementKey,
                                   children: [
                                     BullCheckbox(
                                       checked: _passphraseAccepted,

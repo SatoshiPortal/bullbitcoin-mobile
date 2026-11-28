@@ -10,6 +10,7 @@ import 'package:primitives/primitives.dart';
 import '../../domain/entities/recoverbull_flow.dart';
 import '../../domain/entities/encrypted_vault.dart';
 import '../../domain/entities/vault_provider.dart';
+import '../../domain/entities/vault_passkey.dart';
 import '../../domain/recoverbull_failure.dart';
 import '../../l10n/context_localizations.dart';
 import '../../presentation/recoverbull_failure_l10n.dart';
@@ -38,6 +39,7 @@ final class SealingPassword {
 class VaultProviderSelectionPage extends StatefulWidget {
   /// Set only when creating a vault.
   final SealingPassword? password;
+  final VaultPasskey? passkey;
   final bool passphraseWarningAccepted;
 
   /// The user skipped the key server and will open the vault with its key.
@@ -46,6 +48,7 @@ class VaultProviderSelectionPage extends StatefulWidget {
   const VaultProviderSelectionPage({
     super.key,
     this.password,
+    this.passkey,
     this.passphraseWarningAccepted = false,
     this.vaultKeyOnly = false,
   });
@@ -104,6 +107,17 @@ class _VaultProviderSelectionPageState
     final flow = RecoverBullFlowScope.of(context).flow;
     if (flow == RecoverBullFlow.secureVault) {
       setState(() => _provider = provider);
+      final passkey = widget.passkey;
+      if (passkey != null) {
+        setState(() => _creating = true);
+        await cubit.createWithPasskey(
+          provider,
+          passkey,
+          passphraseWarningAccepted: widget.passphraseWarningAccepted,
+        );
+        if (mounted) setState(() => _creating = false);
+        return;
+      }
       final password = widget.password?.value;
       if (password == null) return;
       setState(() => _creating = true);

@@ -4,4 +4,24 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <application>
+        <meta-data
+            android:name="asset_statements"
+            android:resource="@string/recoverbull_passkey_asset_statements" />
+        <!-- Debug-only RecoverBull userHandle/PRF fixture. Never the launcher,
+             no intent filter, reachable only by an explicit intent
+             (adb shell am start -n ...). Not wired to the product UI.
+             Exported so `adb shell` (uid 2000) may start it: Android 12 refuses
+             a non-exported activity even from shell, and `android.permission.DUMP`
+             keeps third-party apps out. -->
+        <activity
+            android:name="com.bullbitcoin.mobile.RecoverBullHandleSpikeActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="RecoverBull handle spike (debug)"
+            android:launchMode="singleTop"
+            android:permission="android.permission.DUMP"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.DeviceDefault.Light" />
+    </application>
 </manifest>

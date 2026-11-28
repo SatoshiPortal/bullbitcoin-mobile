@@ -1,3 +1,5 @@
+import 'vault_passkey.dart';
+
 /// A validated encrypted vault. Wire encoding belongs to the data layer.
 class EncryptedVault {
   static const maxCiphertextBytes = 1024 * 1024;
@@ -6,6 +8,7 @@ class EncryptedVault {
   final List<int> ciphertext;
   final DateTime createdAt;
   final String? derivationPath;
+  final VaultPasskey? passkey;
 
   EncryptedVault({
     required String id,
@@ -13,6 +16,7 @@ class EncryptedVault {
     required List<int> ciphertext,
     required this.createdAt,
     this.derivationPath,
+    this.passkey,
   }) : id = id.toLowerCase(),
        salt = salt.toLowerCase(),
        ciphertext = List.unmodifiable(ciphertext) {

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
 
@@ -6,6 +8,9 @@ import '../entities/encrypted_vault.dart';
 import '../entities/vault_completion.dart';
 import '../entities/vault_context.dart';
 import '../entities/vault_provider.dart';
+import '../entities/vault_passkey.dart';
+import '../passkey_password_port.dart';
+import '../passkey_secret_port.dart';
 import '../recoverbull_failure.dart';
 import '../repositories/attempt_monitoring_repository.dart';
 import '../repositories/backup_metadata_repository.dart';
@@ -43,6 +48,117 @@ final class CreateAndStoreVaultUsecase {
   );
 
   bool get hasPendingProviderSave => _pending != null;
+
+  /// The credential is acquired before sealing. Only public metadata survives
+  /// into the existing provider-save retry.
+  Future<Result<VaultCompletion, RecoverBullFailure>> executePasskey({
+    required BackupSettings settings,
+    required KeyServerRepository server,
+    required VaultProvider provider,
+    required VaultPasskey passkey,
+    required PasskeySecretPort secrets,
+    required PasskeyPasswordPort passwords,
+    bool passphraseWarningAccepted = false,
+  }) async {
+    if (_closed) return const Err(VaultCancelledFailure());
+    if (_busy || hasPendingProviderSave) {
+      return const Err(VaultContextChangedFailure());
+    }
+    _busy = true;
+    Uint8List? prf;
+    try {
+      switch (await secrets.get(passkey)) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          prf = value;
+      }
+      if (_closed) return const Err(VaultCancelledFailure());
+      if (prf.length != 32) return const Err(VaultPasskeyUnavailableFailure());
+      final created = await _create.execute(
+        passphraseWarningAccepted: passphraseWarningAccepted,
+      );
+      if (_closed) return const Err(VaultCancelledFailure());
+      switch (created) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(:final value):
+          final original = value.vault;
+          final vault = EncryptedVault(
+            id: original.id,
+            salt: original.salt,
+            ciphertext: original.ciphertext,
+            createdAt: original.createdAt,
+            derivationPath: original.derivationPath,
+            passkey: passkey,
+          );
+          final password = passwords.derive(prf, vault);
+          prf.fillRange(0, prf.length, 0);
+          prf = null;
+          switch (await _monitoring.register(settings, vault)) {
+            case Err(:final failure):
+              return Err(failure);
+            case Ok():
+              break;
+          }
+          if (_closed) return const Err(VaultCancelledFailure());
+          if (!await _settingsMatch(settings)) {
+            return const Err(VaultContextChangedFailure());
+          }
+          if (_closed) return const Err(VaultCancelledFailure());
+          switch (await server.store(vault, password, value.key)) {
+            case Err(:final failure):
+              return Err(failure);
+            case Ok():
+              break;
+          }
+          if (_closed) return const Err(VaultCancelledFailure());
+          if (!await _settingsMatch(settings)) {
+            return const Err(VaultContextChangedFailure());
+          }
+          if (_closed) return const Err(VaultCancelledFailure());
+          final confirmed = await _fetch.execute(
+            settings: settings,
+            server: server,
+            vault: vault,
+            password: password,
+          );
+          switch (confirmed) {
+            case Err(:final failure):
+              return Err(failure);
+            case Ok(value: final fetched):
+              if (fetched.key.hex != value.key.hex) {
+                return const Err(VaultDecryptionFailure());
+              }
+          }
+          if (_closed) return const Err(VaultCancelledFailure());
+          if (!await _settingsMatch(settings)) {
+            return const Err(VaultContextChangedFailure());
+          }
+          if (_closed) return const Err(VaultCancelledFailure());
+          final pending = (
+            vault: vault,
+            context: value.context,
+            server: settings.server,
+            provider: provider,
+          );
+          _pending = pending;
+          return await _savePending(pending, provider);
+      }
+    } finally {
+      prf?.fillRange(0, prf.length, 0);
+      _busy = false;
+    }
+  }
+
+  Future<bool> _settingsMatch(BackupSettings expected) async =>
+      switch (await _metadata.settings()) {
+        Ok(value: final current) =>
+          current.permissionGranted &&
+              current.server == expected.server &&
+              current.sameGeneration(expected),
+        Err() => false,
+      };
 
   void close() {
     _closed = true;

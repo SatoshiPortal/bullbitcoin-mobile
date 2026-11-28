@@ -357,5 +357,9 @@
   "recoverbullRecoveryIncompleteTitle": "Portefeuilles pas encore créés",
   "recoverbullRecoveryIncompleteDescription": "Votre sauvegarde a été importée, mais ses portefeuilles n’ont pas pu être créés. Réessayez pour terminer la récupération.",
   "recoverbullScrambleKeypadHint": "Mélanger les chiffres à chaque appui",
-  "torTitle": "Tor"
+  "torTitle": "Tor",
+  "recoverbullUsePasskeyInstead": "Utiliser une passkey à la place",
+  "recoverbullUsePasswordInstead": "Utiliser un mot de passe à la place",
+  "recoverbullOrEnterVaultKey": "Ou saisir la clé du coffre",
+  "recoverbullPasskeyUnavailable": "Clé d’accès indisponible ou non prise en charge. Veuillez réessayer."
 }

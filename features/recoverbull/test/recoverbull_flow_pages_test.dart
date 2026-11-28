@@ -5,6 +5,16 @@ import 'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart';
 import 'package:bull_recoverbull/src/domain/repositories/google_drive_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/backup_metadata_repository.dart';
 import 'package:bull_recoverbull/src/domain/repositories/attempt_monitoring_repository.dart';
+import 'package:bull_recoverbull/src/data/passkey_password_deriver.dart';
+import 'package:bull_recoverbull/src/domain/passkey_credential_port.dart';
+import 'package:bull_recoverbull/src/domain/repositories/key_server_session_repository.dart';
+import 'package:bull_recoverbull/src/domain/repositories/key_server_repository.dart';
+import 'package:bull_recoverbull/src/domain/usecases/create_and_store_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/create_vault_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/fetch_vault_key_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/manage_vault_session_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/open_key_server_usecase.dart';
+import 'package:bull_recoverbull/src/domain/usecases/save_vault_usecase.dart';
 import 'package:file_system/file_system.dart';
 import 'package:bull_recoverbull/src/domain/repositories/vault_repository.dart';
 import 'package:bull_recoverbull/src/domain/usecases/complete_vault_usecase.dart';
@@ -19,6 +29,8 @@ import 'package:bull_recoverbull/src/domain/usecases/test_vault_usecase.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_cubit.dart';
 import 'package:bull_recoverbull/src/presentation/vault_flow_presentation.dart';
 import 'package:bull_recoverbull/src/ui/pages/password_input_page.dart';
+import 'package:bull_recoverbull/src/ui/pages/settings_page.dart';
+import 'package:bull_recoverbull/src/ui/pages/vault_provider_selection_page.dart';
 import 'package:bull_recoverbull/src/ui/recoverbull_flow_navigator.dart';
 import 'package:bull_ui/bull_ui.dart';
 import 'package:bull_ui/testing.dart';
@@ -72,6 +84,9 @@ VaultFlowPresentation flow({
   RecoverBullWalletPort? wallets,
   BackupMetadataRepository? metadata,
   AttemptMonitoringRepository? monitoring,
+  bool passkeys = false,
+  bool passkeyVault = false,
+  bool hasPassphrase = false,
 }) => VaultFlowPresentation(
   VaultFlowCubit(
     const ManageBackupSettingsUsecase(null, RecoverBullStorageFullFailure()),
@@ -82,7 +97,7 @@ VaultFlowPresentation flow({
       delete: DeleteDriveVaultUsecase(_Drive()),
       export: ExportDriveVaultUsecase(_Files(), _Drive()),
     ),
-    null,
+    passkeys ? _session() : null,
     CompleteVaultUsecase(
       TestVaultUsecase(vaults ?? _Vaults(), wallets ?? _Wallets()),
       RestoreVaultUsecase(vaults ?? _Vaults(), wallets ?? _Wallets()),
@@ -95,11 +110,73 @@ VaultFlowPresentation flow({
       salt: '22' * 16,
       ciphertext: List.filled(64, 0),
       createdAt: DateTime.utc(2026),
+      passkey: passkeyVault
+          ? VaultPasskey(
+              rpId: 'passkey.example.com',
+              credentialId: [1],
+              prfSalt: List.filled(32, 2),
+            )
+          : null,
     ),
   ),
   const Ok(BitcoinNetwork.testnet),
   null,
+  defaultHasPassphrase: hasPassphrase,
 );
+
+ManageVaultSessionUsecase _session() {
+  final metadata = _Metadata();
+  final monitoring = _Monitoring();
+  final fetch = FetchVaultKeyUsecase(monitoring);
+  return ManageVaultSessionUsecase(
+    metadata,
+    OpenKeyServerUsecase(metadata, _KeySessions()),
+    fetch,
+    CreateAndStoreVaultUsecase(
+      CreateVaultUsecase(_Vaults(), _Wallets()),
+      SaveVaultUsecase(_Files(), _Drive()),
+      metadata,
+      monitoring,
+      fetch,
+    ),
+    CompleteVaultUsecase(
+      TestVaultUsecase(_Vaults(), _Wallets()),
+      RestoreVaultUsecase(_Vaults(), _Wallets()),
+      null,
+      null,
+    ),
+    passkeys: _Credentials(),
+    passkeyPasswords: const PasskeyPasswordDeriver(),
+  );
+}
+
+final class _KeySessions extends Fake implements KeyServerSessionRepository {
+  @override
+  Future<Result<KeyServerRepository, RecoverBullFailure>> open(
+    Uri server, {
+    bool restartEmbedded = false,
+    bool viaSnowflake = false,
+  }) async => const Err(VaultPasskeyUnavailableFailure());
+}
+
+final class _Credentials implements PasskeyCredentialPort {
+  @override
+  Future<Result<VaultPasskey, RecoverBullFailure>> create() async => Ok(
+    VaultPasskey(
+      rpId: 'passkey.example.com',
+      credentialId: [1],
+      prfSalt: List.filled(32, 2),
+    ),
+  );
+
+  @override
+  Future<Result<Uint8List, RecoverBullFailure>> get(
+    VaultPasskey passkey,
+  ) async => const Err(VaultPasskeyUnavailableFailure());
+
+  @override
+  Future<void> cancel() async {}
+}
 
 void main() {
   setUp(() => ScreenCaptureProtection.instance.enabledByUser = true);
@@ -107,6 +184,201 @@ void main() {
     () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, null),
   );
+
+  testWidgets('passkey choice reveals the required passphrase warning', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 2020);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (_) async => true,
+    );
+    final presentation = flow(passkeys: true, hasPassphrase: true);
+    await tester.pumpWidget(secure(presentation));
+    await tester.pumpAndSettle();
+
+    final button = find.widgetWithText(BullButton, 'Use a passkey instead');
+    final checkbox = find.byType(BullCheckbox);
+    final scroll = find
+        .ancestor(of: checkbox, matching: find.byType(SingleChildScrollView))
+        .first;
+    expect(
+      tester.getRect(scroll).contains(tester.getRect(checkbox).bottomCenter),
+      isFalse,
+    );
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    // The warning and acknowledgement must both be visible after the tap.
+    expect(
+      tester.getRect(checkbox).bottom,
+      lessThanOrEqualTo(tester.getRect(scroll).bottom + 0.01),
+    );
+    final l10n = await RecoverBullLocalizations.delegate.load(
+      const Locale('en'),
+    );
+    expect(
+      tester
+          .getRect(scroll)
+          .contains(
+            tester
+                .getRect(find.text(l10n.recoverbullVaultPassphraseNotIncluded))
+                .topCenter,
+          ),
+      isTrue,
+    );
+    expect(find.byType(VaultProviderSelectionPage), findsNothing);
+    await tester.tap(checkbox);
+    await tester.ensureVisible(button);
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(find.byType(VaultProviderSelectionPage), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    await presentation.close();
+  });
+
+  testWidgets('passkey is not a separate settings entry', (tester) async {
+    usePhoneScreen(tester);
+    tester.view.physicalSize = const Size(2200, 2340);
+    final presentation = flow(passkeys: true);
+    await tester.pumpWidget(
+      app(
+        RecoverBullFlowHost(
+          flow: RecoverBullFlow.recoverVault,
+          presentation: presentation,
+          page: const SettingsPage(),
+          copiedMessage: 'Copied',
+          onTestVault: () {},
+          onFinished: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Passkey demo'), findsNothing);
+    await tester.pumpWidget(const SizedBox());
+    await presentation.close();
+  });
+
+  testWidgets('passkey alternative preserves recovery choices and returns', (
+    tester,
+  ) async {
+    usePhoneScreen(tester);
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      _channel,
+      (_) async => true,
+    );
+    final presentation = flow(passkeys: true, passkeyVault: true);
+    await tester.pumpWidget(recovery(presentation));
+    await tester.pumpAndSettle();
+    expect(find.text('Use a passkey instead'), findsOneWidget);
+    final button = tester.widget<BullButton>(
+      find.widgetWithText(BullButton, 'Use a passkey instead'),
+    );
+    expect(button.outlined, isFalse);
+    final buttonContainer = tester.widget<Container>(
+      find.descendant(
+        of: find.widgetWithText(BullButton, 'Use a passkey instead'),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Container && widget.decoration is BoxDecoration,
+        ),
+      ),
+    );
+    final decoration = buttonContainer.decoration as BoxDecoration;
+    expect(decoration.color, testBullTheme.secondary);
+    expect(decoration.color, const Color(0xFF000000));
+    expect(decoration.border, isNull);
+    expect(find.byType(BullPinPad), findsOneWidget);
+    expect(find.text('Enter a vault key instead'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Pick a password instead')).dy,
+      lessThan(tester.getTopLeft(find.text('Use a passkey instead')).dy),
+    );
+    expect(
+      tester.getTopLeft(find.text('Use a passkey instead')).dy,
+      lessThan(tester.getTopLeft(find.text('Enter a vault key instead')).dy),
+    );
+    await tester.tap(find.text('Pick a password instead'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pick a PIN instead'), findsOneWidget);
+    expect(find.text('Use a passkey instead'), findsOneWidget);
+    await tester.tap(find.text('Use a passkey instead'));
+    await tester.pumpAndSettle();
+    expect(find.text('Passkey demo'), findsNothing);
+    expect(
+      find.text('Passkey unavailable or unsupported. Please try again.'),
+      findsOneWidget,
+    );
+    expect(find.text('Pick a PIN instead'), findsOneWidget);
+    await tester.tap(find.text('Pick a PIN instead'));
+    await tester.pumpAndSettle();
+    expect(find.text('Pick a password instead'), findsOneWidget);
+    expect(find.text('Enter a vault key instead'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox());
+    await presentation.close();
+  });
+
+  for (final kind in [
+    RecoverBullFlow.secureVault,
+    RecoverBullFlow.testVault,
+    RecoverBullFlow.viewVaultKey,
+  ]) {
+    testWidgets('passkey alternative in $kind', (tester) async {
+      usePhoneScreen(tester);
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        _channel,
+        (_) async => true,
+      );
+      final presentation = flow(passkeys: true, passkeyVault: true);
+      await tester.pumpWidget(
+        app(
+          RecoverBullFlowHost(
+            flow: kind,
+            presentation: presentation,
+            page: const PasswordInputPage(),
+            copiedMessage: 'Copied',
+            onTestVault: () {},
+            onFinished: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      if (kind == RecoverBullFlow.viewVaultKey) {
+        expect(find.text('Use a passkey instead'), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+        await presentation.close();
+        return;
+      }
+      expect(find.text('Pick a password instead'), findsOneWidget);
+      expect(find.text('Use a passkey instead'), findsOneWidget);
+      final vaultKey = find.text('Enter a vault key instead');
+      expect(
+        vaultKey,
+        kind == RecoverBullFlow.testVault ? findsOneWidget : findsNothing,
+      );
+      if (kind == RecoverBullFlow.testVault) {
+        expect(
+          tester.getTopLeft(find.text('Use a passkey instead')).dy,
+          lessThan(tester.getTopLeft(vaultKey).dy),
+        );
+        await tester.tap(vaultKey);
+        await tester.pumpAndSettle();
+        expect(vaultKey, findsNothing);
+        expect(find.text('Use a passkey instead'), findsOneWidget);
+      }
+      if (kind == RecoverBullFlow.secureVault) {
+        await tester.tap(find.text('Use a passkey instead'));
+        await tester.pumpAndSettle();
+        expect(find.byType(VaultProviderSelectionPage), findsOneWidget);
+        expect(find.text('Passkey demo'), findsNothing);
+      }
+      await tester.pumpWidget(const SizedBox());
+      await presentation.close();
+    });
+  }
 
   for (final warning in [true, false]) {
     testWidgets('recovery callback acknowledges accounting warning: $warning', (

@@ -3,6 +3,7 @@ export 'package:primitives/primitives.dart'
 export 'package:secrets/secrets.dart' show VaultKey;
 
 export 'src/domain/entities/encrypted_vault.dart' show EncryptedVault;
+export 'src/domain/entities/vault_passkey.dart' show VaultPasskey;
 export 'src/domain/entities/vault_backup.dart' show VaultBackup;
 export 'src/domain/entities/vault_context.dart' show VaultContext;
 export 'src/domain/entities/backup_status.dart' show BackupStatus;
@@ -19,6 +20,7 @@ export 'src/domain/recoverbull_failure.dart'
         KeyServerUnreachableCause,
         ExternalTorProxyUnavailableFailure,
         VaultInvalidFailure,
+        VaultPasskeyUnavailableFailure,
         VaultDecryptionFailure,
         VaultPassphraseRequiredFailure,
         VaultPassphraseAcknowledgementFailure,
