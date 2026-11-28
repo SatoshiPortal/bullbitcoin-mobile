@@ -9,6 +9,7 @@ import 'package:bull_exchange/src/sell/presentation/sell_flow_bloc.dart';
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 
 import '../sell_fixtures.dart';
 
@@ -79,6 +80,41 @@ Future<void> _settle() async {
 }
 
 void main() {
+  test(
+    'a witnessed choice revoked before handling cannot create a Sell order',
+    () => withClock(Clock.fixed(sellNow), () async {
+      final calls = _Calls();
+      final bloc = SellFlowBloc(
+        calls: calls.of,
+        session: sellSession,
+        accessChanges: const Stream.empty(),
+      );
+      addTearDown(bloc.close);
+      await _settle();
+      bloc.add(const SellAmountChanged(AmountTyped('10')));
+      bloc.add(const SellAmountChanged(AmountContinuePressed()));
+      await _settle();
+      expect(bloc.state, isA<SellSource>());
+      var live = true;
+      bloc.add(
+        SellSourcePicked(
+          PayinFromAppWallet.witnessed(
+            PayinWalletWitness(
+              walletId: sellAppWallet.walletId,
+              network: BitcoinNetwork.mainnet,
+              generation: 1,
+              currentReceipt: () => live ? true : null,
+            ),
+          ),
+        ),
+      );
+      live = false;
+      await _settle();
+      expect(bloc.state, isA<SellSource>());
+      expect(calls.log.where((call) => call.startsWith('create')), isEmpty);
+    }),
+  );
+
   test(
     'creates once, then Confirm builds the payin from the wallet',
     () => withClock(Clock.fixed(sellNow), () async {

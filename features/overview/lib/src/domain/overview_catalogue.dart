@@ -1,0 +1,305 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart'
+    show SecretFailure, WalletInventory, WalletSelection, WalletSigner;
+import 'package:startup/balances.dart';
+import 'package:sync/sync.dart' show WalletKey, WalletRevision;
+
+enum OverviewCatalogueStatus {
+  revoked,
+  replacing,
+  ready,
+  empty,
+  partial,
+  unreadable,
+  closed,
+}
+
+typedef OverviewCatalogueEntry = ({
+  WalletKey key,
+  ScriptType script,
+  WalletSigner signer,
+  String? label,
+  bool isDefault,
+
+  /// Published public root fingerprint, when the signer has one. It scopes
+  /// features that group wallets by seed; it is not key material and it does
+  /// not authorize spending.
+  Fingerprint? masterFingerprint,
+});
+
+/// Wallet identity and display metadata returned by ordinary pickers.
+/// Payment code must validate spending separately.
+typedef OverviewWalletSelection = ({
+  WalletKey key,
+  String? label,
+  bool isDefault,
+});
+
+final class OverviewCatalogueRow {
+  final OverviewCatalogueEntry entry;
+  final OverviewCatalogue _owner;
+  final ForegroundBalanceContext _context;
+  final ForegroundBalanceReceipt? _receipt;
+
+  const OverviewCatalogueRow._(
+    this.entry,
+    this._owner,
+    this._context,
+    this._receipt,
+  );
+
+  /// An old row can outlive an event. Neither accessor returns stale money.
+  BigInt? get balanceSat => _owner._read(this);
+  WalletRevision? get revision =>
+      balanceSat == null ? null : _receipt?.revision;
+
+  /// Membership is independent of whether a financial receipt is available.
+  bool get isCurrent =>
+      !_owner._closed &&
+      identical(_owner._context, _context) &&
+      _owner._balances.isCurrent(_context) &&
+      _owner._entries[entry.key] == entry;
+
+  /// Rows from different grants or catalogue revisions are not interchangeable.
+  bool sameMembership(OverviewCatalogueRow other) =>
+      identical(_owner, other._owner) &&
+      identical(_context, other._context) &&
+      entry == other.entry &&
+      isCurrent &&
+      other.isCurrent;
+}
+
+typedef OverviewCatalogueSnapshot = ({
+  OverviewCatalogueStatus status,
+  List<OverviewCatalogueRow> rows,
+});
+
+/// One join of admitted membership and already-produced financial receipts.
+/// No native change can add or remove an inventory row.
+final class OverviewCatalogue {
+  final ForegroundBalanceObservation _balances;
+  final Future<Result<WalletSelection, SecretFailure>> Function(Network)
+  _membership;
+  final _changes = StreamController<void>.broadcast();
+  late final StreamSubscription<void> _subscription;
+  ForegroundBalanceContext? _context;
+  Future<void>? _loading;
+  Future<void>? _closing;
+  var _closed = false;
+  var _retryRequested = false;
+  var _status = OverviewCatalogueStatus.revoked;
+  var _entries = <WalletKey, OverviewCatalogueEntry>{};
+
+  OverviewCatalogue.mount({
+    required this._balances,
+    required WalletInventory inventory,
+  }) : _membership = inventory.walletsForNetwork {
+    _subscription = _balances.changes.listen((_) => _woken());
+    _woken();
+  }
+
+  /// Subscribers always re-read; no event carries membership or money.
+  Stream<void> get changes => _changes.stream;
+
+  OverviewCatalogueSnapshot get snapshot {
+    final current = _balances.current;
+    if (_closed || current == null || !identical(current, _context)) {
+      return (
+        status: _closed
+            ? OverviewCatalogueStatus.closed
+            : current == null
+            ? OverviewCatalogueStatus.revoked
+            : OverviewCatalogueStatus.replacing,
+        rows: const [],
+      );
+    }
+    return (
+      status: _status,
+      rows: List.unmodifiable(
+        _entries.values.map(
+          (entry) => OverviewCatalogueRow._(
+            entry,
+            this,
+            current,
+            _balances.receipt(current, entry.key),
+          ),
+        ),
+      ),
+    );
+  }
+
+  BigInt? _read(OverviewCatalogueRow row) {
+    if (_closed ||
+        !identical(_context, row._context) ||
+        !_balances.isCurrent(row._context) ||
+        _entries[row.entry.key] != row.entry) {
+      return null;
+    }
+    final receipt = row._receipt;
+    return receipt == null ? null : _balances.read(receipt);
+  }
+
+  /// Conservative handoff: require a live local receipt at the point of use.
+  /// The result is not a spend or detail-route authorization.
+  OverviewWalletSelection? selectLocal(OverviewCatalogueRow row) {
+    final entry = row.entry;
+    if (!identical(row._owner, this) ||
+        entry.signer != WalletSigner.local ||
+        _read(row) == null) {
+      return null;
+    }
+    return (key: entry.key, label: entry.label, isDefault: entry.isDefault);
+  }
+
+  void _woken() {
+    if (_closed) return;
+    final current = _balances.current;
+    if (!identical(_context, current)) {
+      _retryRequested = false;
+      _context = current;
+      _entries = {};
+      _status = current == null
+          ? OverviewCatalogueStatus.revoked
+          : OverviewCatalogueStatus.replacing;
+    }
+    _changes.add(null);
+    _schedule();
+  }
+
+  /// Retry once on an explicit request, without retrying indefinitely on error.
+  /// During a load, retry only if its result is incomplete.
+  void retryMembership() {
+    if (_closed ||
+        (_loading == null &&
+            _status != OverviewCatalogueStatus.partial &&
+            _status != OverviewCatalogueStatus.unreadable)) {
+      return;
+    }
+    _retryRequested = true;
+    _schedule();
+  }
+
+  void _schedule() {
+    final context = _context;
+    if (_closed ||
+        context == null ||
+        !_balances.isCurrent(context) ||
+        _loading != null) {
+      return;
+    }
+    final replacing = _status == OverviewCatalogueStatus.replacing;
+    final incomplete =
+        _status == OverviewCatalogueStatus.partial ||
+        _status == OverviewCatalogueStatus.unreadable;
+    if (!replacing && !(_retryRequested && incomplete)) {
+      _retryRequested = false;
+      return;
+    }
+    _retryRequested = false;
+    _loading = Future<void>.microtask(() async {
+      try {
+        await _load(context);
+      } finally {
+        _loading = null;
+        _schedule();
+      }
+    });
+  }
+
+  Future<void> _load(ForegroundBalanceContext context) async {
+    bool current() =>
+        !_closed &&
+        identical(_context, context) &&
+        _balances.isCurrent(context);
+    if (!current()) return;
+    final List<Network> networks = switch (context.environment) {
+      NetworkEnv.mainnet => [BitcoinNetwork.mainnet, LiquidNetwork.mainnet],
+      NetworkEnv.testnet => [BitcoinNetwork.testnet, LiquidNetwork.testnet],
+      NetworkEnv.regtest => [BitcoinNetwork.regtest, LiquidNetwork.regtest],
+      _ => <Network>[],
+    };
+    final entries = <OverviewCatalogueEntry>[];
+    var complete = true;
+    var readable = 0;
+    for (final network in networks) {
+      final result = await _membership(network);
+      if (!current()) return;
+      switch (result) {
+        case Err():
+          complete = false;
+        case Ok(:final value):
+          readable++;
+          complete &= value.isComplete;
+          for (final wallet in value.wallets) {
+            if (wallet.network != network) {
+              complete = false;
+              continue;
+            }
+            entries.add((
+              key: WalletKey(id: wallet.id, network: wallet.network),
+              script: wallet.scriptType,
+              signer: wallet.signer,
+              label: wallet.label,
+              isDefault: wallet.isDefault,
+              masterFingerprint: wallet.masterFingerprint,
+            ));
+          }
+      }
+    }
+    if (!current()) return;
+    // Secrets' combined inventory uses SQLite's default BINARY collation.
+    // Compare UTF-8 bytes, not Dart's UTF-16 string ordering.
+    entries.sort((a, b) {
+      int rank(OverviewCatalogueEntry entry) => !entry.isDefault
+          ? 2
+          : entry.key.network is BitcoinNetwork
+          ? 0
+          : 1;
+      final rankOrder = rank(a).compareTo(rank(b));
+      if (rankOrder != 0) return rankOrder;
+      final left = utf8.encode(a.key.id);
+      final right = utf8.encode(b.key.id);
+      final length = left.length < right.length ? left.length : right.length;
+      for (var i = 0; i < length; i++) {
+        final difference = left[i] - right[i];
+        if (difference != 0) return difference;
+      }
+      return left.length - right.length;
+    });
+    final duplicates = <WalletKey>{};
+    final nextEntries = <WalletKey, OverviewCatalogueEntry>{};
+    for (final entry in entries) {
+      if (duplicates.contains(entry.key)) continue;
+      if (nextEntries.containsKey(entry.key)) {
+        nextEntries.remove(entry.key);
+        duplicates.add(entry.key);
+        complete = false;
+      } else {
+        nextEntries[entry.key] = entry;
+      }
+    }
+    _entries = nextEntries;
+    _status = readable == 0
+        ? OverviewCatalogueStatus.unreadable
+        : !complete
+        ? OverviewCatalogueStatus.partial
+        : _entries.isEmpty
+        ? OverviewCatalogueStatus.empty
+        : OverviewCatalogueStatus.ready;
+    _changes.add(null);
+  }
+
+  Future<void> close() => _closing ??= _close();
+
+  Future<void> _close() async {
+    _closed = true;
+    _entries.clear();
+    _changes.add(null);
+    await _subscription.cancel();
+    await _loading;
+    unawaited(_changes.close());
+  }
+}

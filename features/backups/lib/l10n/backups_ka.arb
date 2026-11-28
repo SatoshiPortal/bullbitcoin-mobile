@@ -61,5 +61,15 @@
   "testBackupErrorSeedNotMnemonic": "ამ საფულეს არ აქვს აღდგენის ფრაზა შესამოწმებლად.",
   "testBackupErrorCompletionFailed": "თქვენი აღდგენის ფრაზა სწორი იყო, მაგრამ შედეგის შენახვა ვერ მოხერხდა. სცადეთ ხელახლა.",
   "backupCardTitle": "დაიცავით თქვენი bitcoin.",
-  "backupCardSubtitle": "შექმენით თქვენი საფულის სარეზერვო ასლი ახლავე."
+  "backupCardSubtitle": "შექმენით თქვენი საფულის სარეზერვო ასლი ახლავე.",
+  "backupWarningBackupLater": "არა, მესმის რისკის შესახებ",
+  "backupWarningBackupNow": "დიახ",
+  "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
+  "backupWarningLoseReasonCloudRestore": "აღადგენთ თქვენს მოწყობილობას ღრუბლოვანი სარეზერვო ასლიდან",
+  "backupWarningLoseReasonCriticalIssue": "მოხდება აპლიკაციის ან მოწყობილობის კრიტიკული ხარვეზი",
+  "backupWarningLoseReasonDeletedApp": "წაშლით აპლიკაციას",
+  "backupWarningLoseReasonKeystore": "თქვენი მოწყობილობა გააუქმებს გასაღებების საცავს (keystore) ეკრანის დაბლოკვის/მოწყობილობის ავთენტიფიკაციის შეცვლისას",
+  "backupWarningLoseReasonLostPhone": "დაკარგავთ თქვენს ტელეფონს",
+  "backupWarningNoRecovery": "სარეზერვო ასლის გარეშე საფულის აღდგენა შეუძლებელია.",
+  "backupWarningTitle": "დაცავით თქვენი საფულე ახლავე"
 }

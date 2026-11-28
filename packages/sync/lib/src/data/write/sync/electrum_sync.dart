@@ -46,6 +46,7 @@ final class ElectrumSync {
   final _failures = <WalletKey, String>{};
   int _runSequence = 0;
   final _started = StreamController<WalletKey>.broadcast();
+  final _runsStarted = StreamController<SyncStarted>.broadcast();
   final _finished = StreamController<SyncFinished>.broadcast();
 
   ElectrumSync({
@@ -57,6 +58,7 @@ final class ElectrumSync {
   });
 
   Stream<WalletKey> get started => _started.stream;
+  Stream<SyncStarted> get runsStarted => _runsStarted.stream;
   Stream<SyncFinished> get finished => _finished.stream;
 
   bool isSyncing({String? walletId}) => walletId == null
@@ -122,6 +124,7 @@ final class ElectrumSync {
     _active[key] = pass;
     final completer = pass.completer;
     unawaited(() async {
+      var runId = 0;
       try {
         // A failed predecessor, whatever it threw, never cancels a queued pass.
         if (previous != null) {
@@ -136,13 +139,14 @@ final class ElectrumSync {
         pass.started = true;
         final coveredTargets = List<SyncTransactionTarget>.of(pass.targets);
         final watch = Stopwatch()..start();
-        final runId = ++_runSequence;
+        runId = ++_runSequence;
         final context =
             'run=$runId chain=${key.network is BitcoinNetwork ? 'bitcoin' : 'liquid'} network=${key.network.env.name} script=${descriptor.scriptType.name} headless=$headless reason=${reason.name}';
         log.fine(
           'Electrum sync started $context discovery=$discover allow_initial_scan=$allowInitialScan targeted=${coveredTargets.length}',
         );
         _started.add(key);
+        _runsStarted.add(SyncStarted(key, runId));
         var connectionSummary = 'route=unselected';
         var cacheSummary = '';
         final result = await _run(
@@ -183,19 +187,21 @@ final class ElectrumSync {
               }
             }
         }
-        _finished.add(SyncFinished(key, result));
+        _finished.add(SyncFinished(key, result, runId: runId));
         completer.complete(result);
       } on Exception {
         const result = Err<SyncCompletion, SyncFailure>(SyncStorageFailure());
         completer.complete(result);
         _unexpected(key, reason);
-        _finished.add(SyncFinished(key, result));
+        _finished.add(SyncFinished(key, result, runId: runId));
       } catch (error, trace) {
         // Not a recoverable failure: every waiting caller receives the error
         // itself, and indicators still learn that the pass ended.
         completer.completeError(error, trace);
         _unexpected(key, reason);
-        _finished.add(SyncFinished(key, const Err(SyncStorageFailure())));
+        _finished.add(
+          SyncFinished(key, const Err(SyncStorageFailure()), runId: runId),
+        );
       } finally {
         if (identical(_active[key], pass)) {
           _active.remove(key);

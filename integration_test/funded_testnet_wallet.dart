@@ -1,6 +1,3 @@
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bb_mobile/locator.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, ScriptType;
@@ -31,14 +28,9 @@ Future<WalletKey> openFundedTestnetWallet({
         'import the fixture secret',
       );
 
-  const walletNetwork = Network.bitcoinTestnet;
   const network = BitcoinNetwork.testnet;
   const scriptType = ScriptType.bip84;
-  final id = WalletMetadataService.encodeId(
-    fingerprint: secret.id.hex,
-    network: walletNetwork,
-    scriptType: scriptType,
-  );
+  final id = 'wpkh([${secret.id.hex}/84h/1h/0h])';
   final key = WalletKey(id: id, network: network);
   if (requireValue(await inventory.findWallet(id), 'read the fixture wallet') ==
       null) {
@@ -63,7 +55,7 @@ Future<WalletKey> openFundedTestnetWallet({
           secretFingerprint: secret.id.hex,
           masterFingerprint: secret.id.hex,
           signer: WalletSigner.local.name,
-          network: WalletNetworkCodec.encode(walletNetwork),
+          network: 'bitcoinTestnet',
           xpub: xpub,
           externalDescriptor: descriptors.external,
           internalDescriptor: descriptors.internal,

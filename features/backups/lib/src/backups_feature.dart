@@ -36,6 +36,14 @@ final class BackupsFeature {
 
   static const localizationsDelegate = BackupsLocalizations.delegate;
 
+  /// Unknown readiness lets the host retain its existing fallback.
+  static Future<bool?> readWarningNeeded(
+    Future<Result<bool, rb.RecoverBullFailure>> Function() read,
+  ) async => switch (await read()) {
+    Ok(:final value) => value,
+    Err() => null,
+  };
+
   static BackupsFeature mount({
     required Secrets Function() secrets,
     required WalletInventory Function() inventory,

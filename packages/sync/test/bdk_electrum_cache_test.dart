@@ -554,11 +554,14 @@ void main() {
       () async {
         await fixture.load('S10-no-change', 0);
         final started = <WalletKey>[];
+        final runsStarted = <SyncStarted>[];
         final finished = <SyncFinished>[];
         final a = sync.started.listen(started.add);
         final b = sync.finished.listen(finished.add);
+        final c = sync.runsStarted.listen(runsStarted.add);
         addTearDown(a.cancel);
         addTearDown(b.cancel);
+        addTearDown(c.cancel);
         final first = sync.execute(descriptor);
         final second = sync.execute(descriptor);
         expect(identical(first, second), isTrue);
@@ -567,6 +570,10 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         expect(started, hasLength(1));
         expect(finished, hasLength(1));
+        expect(runsStarted, hasLength(1));
+        expect(runsStarted.single.key, descriptor.key);
+        expect(runsStarted.single.runId, greaterThan(0));
+        expect(finished.single.runId, runsStarted.single.runId);
         expect(sync.isSyncing(), isFalse);
       },
     );

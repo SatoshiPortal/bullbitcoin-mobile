@@ -85,5 +85,15 @@
   "testBackupErrorSeedNotMnemonic": "У этого кошелька нет фразы восстановления для проверки.",
   "testBackupErrorCompletionFailed": "Ваша фраза восстановления верна, но нам не удалось сохранить результат. Попробуйте ещё раз.",
   "backupCardTitle": "Защитите свои биткоины.",
-  "backupCardSubtitle": "Создайте резервную копию кошелька прямо сейчас."
+  "backupCardSubtitle": "Создайте резервную копию кошелька прямо сейчас.",
+  "backupWarningBackupLater": "НЕТ, Я ПОНИМАЮ РИСК",
+  "backupWarningBackupNow": "ДА",
+  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если:",
+  "backupWarningLoseReasonCloudRestore": "Восстановление устройства из облачной резервной копии",
+  "backupWarningLoseReasonCriticalIssue": "Столкнётесь с критической проблемой приложения или устройства",
+  "backupWarningLoseReasonDeletedApp": "Удалите приложение",
+  "backupWarningLoseReasonKeystore": "Устройство аннулирует keystore при смене блокировки экрана или способа аутентификации устройства",
+  "backupWarningLoseReasonLostPhone": "Потеряете телефон",
+  "backupWarningNoRecovery": "Без резервной копии восстановить кошелёк невозможно.",
+  "backupWarningTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ КОШЕЛЬКА СЕЙЧАС"
 }

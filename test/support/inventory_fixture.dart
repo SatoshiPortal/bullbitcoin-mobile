@@ -1,26 +1,20 @@
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
 import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:bull_recoverbull/testing.dart';
 import 'package:drift/native.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:sync/storage.dart' show syncWalletMetadataImport;
-import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:legacy_storage/legacy_storage.dart';
-import 'package:primitives/primitives.dart' hide Network;
+import 'package:primitives/primitives.dart';
+import 'package:provisioning/testing.dart';
 import 'package:secrets/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart';
 import 'package:signers/storage.dart';
-
-import 'wallet_registrations.dart';
 
 import 'package:secrets/testing.dart' show unlockedSessionAuthority;
 
@@ -237,11 +231,11 @@ final class InventoryFixture {
 
   Future<void> registerMnemonic(
     Secret secret, {
-    Network network = Network.bitcoinMainnet,
+    Network network = BitcoinNetwork.mainnet,
     String? unresolvedNetwork,
     String? internalDescriptor,
   }) async {
-    final shared = network.shared;
+    final shared = network;
     final xpub = switch (await secret.derive.xpub(
       network: shared,
       scriptType: ScriptType.bip84,
@@ -274,7 +268,7 @@ final class InventoryFixture {
     final registered = await inventory.registerWallet(
       RegisteredWallet(
         id: unresolvedNetwork == null
-            ? WalletMetadataService.encodeId(
+            ? walletIdForTesting(
                 fingerprint: secret.id.hex,
                 network: network,
                 scriptType: ScriptType.bip84,
@@ -283,7 +277,7 @@ final class InventoryFixture {
         secretFingerprint: secret.id.hex,
         masterFingerprint: secret.id.hex,
         signer: 'local',
-        network: unresolvedNetwork ?? WalletNetworkCodec.encode(network),
+        network: unresolvedNetwork ?? storedWalletNetworkForTesting(network),
         xpub: xpub,
         externalDescriptor: descriptors.external,
         internalDescriptor: internalDescriptor ?? descriptors.internal,
@@ -293,17 +287,6 @@ final class InventoryFixture {
       ),
     );
     expect(registered, isA<Ok<void, SecretFailure>>());
-  }
-
-  void register(GetIt services) {
-    services.registerSingleton<SecretsInventory>(inventory);
-    if (_signerDevices case final signers?) {
-      services.registerSingleton<SignerDevices>(signers);
-    }
-    services.registerSingleton<WalletRegistrations>(
-      MemoryWalletRegistrations(),
-    );
-    services.registerSingleton<WalletSessionJoin>(passthroughSessionJoin);
   }
 
   Future<void> close() async {

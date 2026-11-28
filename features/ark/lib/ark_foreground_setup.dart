@@ -10,3 +10,4 @@ export 'src/ark_foreground_runtime.dart'
         ArkForegroundRuntime,
         openArkForeground,
         prepareArkCustodyReferences;
+export 'src/ark_wallet_app_services.dart' show arkWalletAppServices;

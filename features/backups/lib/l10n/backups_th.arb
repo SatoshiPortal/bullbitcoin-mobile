@@ -232,5 +232,15 @@
   "testBackupErrorSeedNotMnemonic": "กระเป๋าเงินนี้ไม่มีวลีกู้คืนให้ทดสอบ",
   "testBackupErrorCompletionFailed": "วลีกู้คืนของคุณถูกต้อง แต่เราไม่สามารถบันทึกผลลัพธ์ได้ โปรดลองอีกครั้ง",
   "backupCardTitle": "ปกป้องบิตคอยน์ของคุณ",
-  "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้"
+  "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้",
+  "backupWarningBackupLater": "ไม่ ฉันเข้าใจความเสี่ยง",
+  "backupWarningBackupNow": "ใช่",
+  "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
+  "backupWarningLoseReasonCloudRestore": "การกู้คืนอุปกรณ์ของคุณจากการสำรองข้อมูลบนคลาวด์",
+  "backupWarningLoseReasonCriticalIssue": "เกิดปัญหาร้ายแรงกับแอปหรืออุปกรณ์",
+  "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
+  "backupWarningLoseReasonKeystore": "อุปกรณ์ของคุณจะยกเลิกคีย์สโตร์เมื่อเปลี่ยนรหัสล็อกหน้าจอ/วิธียืนยันตัวตนของอุปกรณ์",
+  "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
+  "backupWarningNoRecovery": "หากไม่มีข้อมูลสำรอง จะไม่มีทางกู้คืนกระเป๋าเงินของคุณได้",
+  "backupWarningTitle": "สำรองกระเป๋าสตางค์ของคุณตอนนี้"
 }

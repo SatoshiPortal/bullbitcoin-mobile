@@ -23,22 +23,21 @@ import 'package:path/path.dart' as p;
 // Wallet reader ownership (2026-11-22): see ARCHITECTURE.md, "Wallet readers".
 // Exchange workspace UI consumers use the published routes. Bull Exchange
 // builds its destination fields with Address View and opens order details
-// through Transactions; the app keeps only the wallet-card payin binding.
+// through Transactions; the shell supplies the Wallet picker to Pay and Sell.
 // Sell and Pay use the public Coins and Fees UI inside Bull Exchange.
 // Settings consumes Receive's disclaimer and typed Wallet Import navigation.
 // Wallet details read device associations through Signers' public storage API.
 // Wallet Import owns mnemonic input and scanning.
 const _allowedTargets = <String, String>{
   'address_view': 'label_editor scanning silent',
-  'ark': 'scanning',
+  'ark': 'address_view scanning',
   'all_seed_view': 'access',
   'backups': 'access label_editor physical_backup_verification recoverbull',
   'bull_exchange': 'address_view bitcoin_price coins fees transactions',
   'coins': 'address_view bitcoin_price',
-  'exchange': 'bull_exchange wallet',
   'network': 'recoverbull silent',
   'onboarding': 'mnemonic_entry network recoverbull settings wallet_import',
-  'overview': 'bitcoin_price quick_actions silent swap',
+  'overview': 'bitcoin_price quick_actions silent startup swap',
   'receive': 'address_view label_editor signers transactions',
   'scanning': 'signers',
   'send': 'address_view ark coins fees label_editor receive scanning signers silent transactions',
@@ -46,7 +45,6 @@ const _allowedTargets = <String, String>{
   'startup': 'access logs mnemonic_entry recoverbull',
   'swap': 'address_view ark coins fees receive send signers transactions',
   'transactions': 'bitcoin_price label_editor',
-  'wallet': 'address_view ark backups bitcoin_price coins network onboarding overview quick_actions receive recoverbull send settings signers silent swap transactions',
   'wallet_import': 'mnemonic_entry scanning signers',
   'wizard': 'bull_exchange settings',
 };
@@ -158,12 +156,12 @@ void main() {
         'lib/features/sp/renamed.dart':
             "import '../../core/barrel.dart'; import 'local.dart';",
         'lib/features/sp/local.dart': '',
-        'lib/core/barrel.dart': "export 'barrel.dart'; export '../features/wallet/public/api.dart';",
-        'lib/features/wallet/public/api.dart':
+        'lib/core/barrel.dart': "export 'barrel.dart'; export '../features/catalogue/public/api.dart';",
+        'lib/features/catalogue/public/api.dart':
             "export '../data/repository.dart' if (dart.library.io) "
             "'package:bb_mobile/features/swap/anything.dart'; "
             "export 'package:bull_logs/bull_logs.dart';",
-        'lib/features/wallet/data/repository.dart': '',
+        'lib/features/catalogue/data/repository.dart': '',
         'lib/features/swap/anything.dart': '',
         'features/logs/lib/bull_logs.dart': '',
       },
@@ -172,11 +170,11 @@ void main() {
     expect(
       edges.keys,
       unorderedEquals([
-        'sp -> wallet',
+        'sp -> catalogue',
         'sp -> swap',
         'sp -> logs',
-        'wallet -> swap',
-        'wallet -> logs',
+        'catalogue -> swap',
+        'catalogue -> logs',
       ]),
     );
   });

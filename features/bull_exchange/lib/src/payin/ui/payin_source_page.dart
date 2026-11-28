@@ -5,6 +5,7 @@ import 'package:bull_ui/bull_ui.dart'
 import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:primitives/primitives.dart' show LiquidNetwork;
 
 /// Where a sell or pay payin comes from: one of the app's wallets (the
 /// host's wallet cards) or another wallet on a rail that can be paid from
@@ -44,8 +45,10 @@ class PayinSourcePage extends StatelessWidget {
               context,
               (wallet) => onPicked(
                 PayinFromAppWallet(
-                  wallet.id,
-                  wallet.btcNetwork,
+                  wallet.key.id,
+                  wallet.key.network is LiquidNetwork
+                      ? BtcNetwork.liquid
+                      : BtcNetwork.bitcoin,
                   label: wallet.label,
                   isDefault: wallet.isDefault,
                 ),

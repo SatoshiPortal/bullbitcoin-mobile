@@ -1,4 +1,12 @@
 import 'package:address_view/routes.dart' show AddressViewFeature;
+import 'package:bb_mobile/localizations.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bitcoin_price/testing.dart';
+import 'package:settings/testing.dart';
+import 'package:overview/overview.dart'
+    show OverviewHomeController, WalletHomeAppBar;
+import 'package:overview/routes.dart' show WalletRoute;
 import 'package:announcements/setup.dart' show AnnouncementDismissals;
 import 'package:labels/labels.dart' show Labels;
 import 'package:access/access.dart' show Access;
@@ -11,6 +19,8 @@ import 'package:swaps/order_swaps.dart' show OrderSwaps;
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:sync/sync.dart'
     show
+        PublicWalletDescriptor,
+        WalletCatalogPort,
         InputReservation,
         InputReservationPort,
         ReservedAddressPort,
@@ -38,9 +48,19 @@ import 'dart:io';
 
 import 'package:access/setup.dart';
 import 'package:views/setup.dart' show ViewsFeature;
-import 'package:exchange/exchange.dart' show Exchange;
+import 'package:exchange/exchange.dart'
+    show
+        Exchange,
+        ExchangeAccessSignedIn,
+        ExchangeAvailability,
+        ExchangeEnvironment,
+        ExchangeSession,
+        ExchangeAccountUnavailableFailure;
 import 'package:exchange/setup.dart' show ExchangeAccessLifecycle;
 import 'package:exchange/testing.dart' show exchangeForTesting;
+import 'package:bull_exchange/bull_exchange.dart'
+    show BullExchangeNavigation, ExchangeSessionScope, PayRoute, SellRoute;
+import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinSender;
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
@@ -49,7 +69,8 @@ import 'package:bull_ark/bull_ark.dart' show ArkFacade, ArkAccountId;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_quick_actions/setup.dart';
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:bull_ui/bull_ui.dart' show BullTopBar;
+import 'package:bull_ui/bull_ui.dart'
+    show BullTopBar, bullUiLocalizationsDelegate;
 import 'package:bull_ui/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -60,18 +81,19 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network/network.dart';
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart'
-    show BitcoinNetwork, Fingerprint, Network, ScriptType;
+    show BitcoinNetwork, BitcoinUnit, Fingerprint, Network, ScriptType;
 import 'package:receive/setup.dart';
 import 'package:secrets/secrets.dart' hide Language;
 import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
+import 'package:send/send.dart' show Consolidation;
 import 'package:spend/spend.dart' show Spend;
 import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
-import '../../support/wallet_registrations.dart';
+import '../overview/support/overview_home_harness.dart';
 
 import 'package:silent/setup.dart';
 import 'package:silent/silent.dart' show Silent;
@@ -90,6 +112,13 @@ class ImportPreferences extends Mock implements Preferences {}
 class ElectrumServers extends Mock implements ElectrumServersPort {}
 
 class _ExchangeAccess extends Mock implements ExchangeAccessLifecycle {}
+
+class _Consolidation extends Mock implements Consolidation {}
+
+// Home is mounted through its current Overview controller below.
+
+class _WalletSettingsCubit extends MockCubit<SettingsState>
+    implements SettingsCubit {}
 
 class SilentPreferences extends Mock implements Preferences {}
 
@@ -216,6 +245,17 @@ class _UnusedAccounts implements WalletProvisioning {
 
 class _UnusedProvisioning extends Mock implements DefaultWalletProvisioning {}
 
+final class _EmptyWalletCatalog implements WalletCatalogPort {
+  @override
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      const Ok([]);
+
+  @override
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
+    WalletKey key,
+  ) async => const Err(SyncNotFoundFailure());
+}
+
 void main() {
   testWidgets(
     'actual shell routes keep unavailable Ark entries inert and navigable',
@@ -242,7 +282,14 @@ void main() {
         ),
         wallets: wallets,
       );
-      locator.registerSingleton<Exchange>(exchangeForTesting(access: exchange));
+      locator.registerSingleton<Exchange>(
+        exchangeForTesting(
+          access: exchange,
+          getAccount: (_) async =>
+              const Err(ExchangeAccountUnavailableFailure()),
+          listAnnouncements: (_) async => const Ok([]),
+        ),
+      );
       locator.registerSingleton<QuickActionsFeature>(
         quickActions,
         dispose: (owner) => owner.close(),
@@ -370,7 +417,7 @@ void main() {
       );
       locator.registerSingleton<ElectrumSync>(electrumSync);
       final nativeRuntime = WalletNativeRuntime.open(
-        catalog: TestWalletCatalog(MemoryWalletRegistrations()),
+        catalog: _EmptyWalletCatalog(),
         reserved: _UnusedReserved(),
         inputReservations: _UnusedInputReservations(),
         deleteCatalogEntry: (_) async => const Ok(null),
@@ -482,6 +529,9 @@ void main() {
         ),
       );
       final router = AppRouter.router;
+      expect(locator.isRegistered<PayjoinSender>(), isFalse);
+      expect(router.namedLocation(PayRoute.pay.name), PayRoute.pay.path);
+      expect(router.namedLocation(SellRoute.sell.name), SellRoute.sell.path);
       expect(promptFactories, 0);
       addTearDown(() async {
         router.dispose();
@@ -647,6 +697,104 @@ void main() {
       expect(promptFactories, 0);
       verifyZeroInteractions(wallets);
       verifyZeroInteractions(exchange);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+
+      const session = ExchangeSession(
+        environment: ExchangeEnvironment.mainnet,
+        epoch: 1,
+        sessionId: 'tab-navigation',
+      );
+      when(() => exchange.current)
+          .thenReturn(const ExchangeAccessSignedIn(session));
+      when(exchange.watch).thenAnswer((_) => const Stream.empty());
+      when(exchange.tradingAvailability)
+          .thenAnswer((_) async => const Ok(ExchangeAvailability.ready));
+      when(locator<OrderSwaps>().watchAppUpdateRequired)
+          .thenAnswer((_) => const Stream.empty());
+      when(() => locator<OrderSwaps>().isAppUpdateRequired).thenReturn(false);
+      when(locator<AnnouncementDismissals>().read)
+          .thenAnswer((_) async => const Ok([]));
+      final home = OverviewHomeHarness();
+      locator.registerSingleton<OverviewHomeController>(home.controller);
+      addTearDown(() async {
+        await locator.unregister<OverviewHomeController>();
+        await home.close();
+      });
+      final settings = _WalletSettingsCubit();
+      addTearDown(settings.close);
+      const display = (
+        bitcoinUnit: BitcoinUnit.sats,
+        currencyCode: 'CAD',
+        hideAmounts: false,
+      );
+      home.amountPreferences.publish(display);
+      whenListen(
+        settings,
+        const Stream<SettingsState>.empty(),
+        initialState: const SettingsState(),
+      );
+      router.goNamed(WalletRoute.walletHome.name);
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider<SettingsCubit>.value(value: settings),
+            RepositoryProvider<Consolidation>.value(value: _Consolidation()),
+            BitcoinPriceFixture.prices(
+              amountDisplay: display,
+              currency: 'CAD',
+              bitcoinPrice: 100000,
+            ),
+            BitcoinPriceFixture.chart(),
+          ],
+          child: ExchangeSessionScope(
+            exchange: locator.call<Exchange>,
+            preferences: _UnusedPreferences.new,
+            child: MaterialApp.router(
+              routerConfig: router,
+              theme: ThemeData(extensions: testBullExtensions),
+              localizationsDelegates: const [
+                QuickActionsLocalizations.delegate,
+                bullUiLocalizationsDelegate,
+                ...appLocalizationsDelegates,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      final appBar = find.byType(WalletHomeAppBar);
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        WalletRoute.walletHome.path,
+      );
+      expect(appBar, findsOneWidget);
+      expect(
+        tester
+            .widget<Scaffold>(
+              find.ancestor(of: appBar, matching: find.byType(Scaffold)).first,
+            )
+            .extendBodyBehindAppBar,
+        isTrue,
+      );
+      router.goNamed(BullExchangeNavigation.dashboardName);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        BullExchangeNavigation.dashboardPath,
+      );
+      expect(appBar, findsNothing);
+      await tester.tap(find.byType(BackButton));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        WalletRoute.walletHome.path,
+      );
+      expect(appBar, findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     },

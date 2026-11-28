@@ -109,36 +109,41 @@ final class InventoryRepository {
     required DateTime? birthday,
   }) async {
     final applied = await boundary<({bool label, bool birthday})?>(
-      () => guardedTransaction(_database, () async {
-        final matches = _matches(
-          await _listRows(view, networkCode: storedWalletNetwork(network)),
-          external,
-          internal,
-        );
-        if (matches.length != 1) return null;
-        final row = matches.single;
-        final id = row.read<String>('id');
-        final localLabel = row.read<String?>('label');
-        final localBirthday = row.read<String?>('birthday');
-        final newLabel =
-            label != null &&
-            label.trim().isNotEmpty &&
-            (localLabel == null || localLabel.trim().isEmpty);
-        final newBirthday = birthday != null && localBirthday == null;
-        if (newLabel || newBirthday) {
-          await (_database.update(
-            _database.wallets,
-          )..where((wallet) => wallet.id.equals(id))).write(
-            WalletsCompanion(
-              label: newLabel ? Value(label) : const Value.absent(),
-              birthday: newBirthday
-                  ? Value(birthday.toIso8601String())
-                  : const Value.absent(),
-            ),
+      () => guardedTransaction(
+        _database,
+        () async {
+          final matches = _matches(
+            await _listRows(view, networkCode: storedWalletNetwork(network)),
+            external,
+            internal,
           );
-        }
-        return (label: newLabel, birthday: newBirthday);
-      }),
+          if (matches.length != 1) return null;
+          final row = matches.single;
+          final id = row.read<String>('id');
+          final localLabel = row.read<String?>('label');
+          final localBirthday = row.read<String?>('birthday');
+          final newLabel =
+              label != null &&
+              label.trim().isNotEmpty &&
+              (localLabel == null || localLabel.trim().isEmpty);
+          final newBirthday = birthday != null && localBirthday == null;
+          if (newLabel || newBirthday) {
+            await (_database.update(
+              _database.wallets,
+            )..where((wallet) => wallet.id.equals(id))).write(
+              WalletsCompanion(
+                label: newLabel ? Value(label) : const Value.absent(),
+                birthday: newBirthday
+                    ? Value(birthday.toIso8601String())
+                    : const Value.absent(),
+              ),
+            );
+          }
+          return (label: newLabel, birthday: newBirthday);
+        },
+        catalogueChanged: (report) =>
+            report?.label == true || report?.birthday == true,
+      ),
       orElse: StoreSecretFailure.new,
     );
     return switch (applied) {
@@ -585,7 +590,7 @@ final class InventoryRepository {
               ViewMembersCompanion.insert(viewId: view, member: member),
             );
         return true;
-      }),
+      }, catalogueChanged: (inserted) => inserted),
       orElse: StoreSecretFailure.new,
     );
     final refusal = refused;
@@ -611,21 +616,29 @@ final class InventoryRepository {
     required String? label,
     required DateTime? birthday,
     required bool isDefault,
-  }) => boundary(
+  }) async => (await boundary(
     () => guardedTransaction(_database, () async {
-      await _requireWallet(view, id);
+      await serializeInventoryWrites(_database);
+      final previous = await _requireWallet(view, id);
+      final storedBirthday = birthday?.toIso8601String();
+      if (previous.label == label &&
+          previous.birthday == storedBirthday &&
+          previous.isDefault == isDefault) {
+        return false;
+      }
       final update = _database.update(_database.wallets)
         ..where((wallet) => wallet.id.equals(id));
       await update.write(
         WalletsCompanion(
           label: Value(label),
-          birthday: Value(birthday?.toIso8601String()),
+          birthday: Value(storedBirthday),
           isDefault: Value(isDefault),
         ),
       );
-    }),
+      return previous.label != label || previous.isDefault != isDefault;
+    }, catalogueChanged: (changed) => changed),
     orElse: StoreSecretFailure.new,
-  );
+  )).map((_) {});
 
   /// Deletes the wallet's row, which every view holding its member reads. A
   /// member another view refers to is not this view's to delete: the call is
@@ -648,7 +661,7 @@ final class InventoryRepository {
                 .get();
         if (others.isNotEmpty) {
           refused = const SharedWithOtherViewFailure();
-          return;
+          return false;
         }
         final removeWallet = _database.delete(_database.wallets)
           ..where((wallet) => wallet.id.equals(id));
@@ -661,11 +674,12 @@ final class InventoryRepository {
             ..where((member) => member.member.equals('wallet:$id'));
           await removeMembers.go();
         }
-      }),
+        return true;
+      }, catalogueChanged: (removed) => removed),
       orElse: TrashSecretFailure.new,
     );
     final refusal = refused;
-    return refusal == null ? result : Err(refusal);
+    return refusal == null ? result.map((_) {}) : Err(refusal);
   }
 
   Future<RegisteredWallet> _requireWallet(String view, String id) async =>

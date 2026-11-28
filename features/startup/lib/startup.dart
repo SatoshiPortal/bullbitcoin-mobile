@@ -2,6 +2,7 @@
 library;
 
 export 'src/foreground_wallet_startup.dart' show ForegroundWalletStartup;
+export 'src/foreground_balance_startup.dart' show ForegroundBalanceStartup;
 export 'src/session_engines.dart' show SessionEngine, SessionEngines;
 export 'src/ui/screens/app_init_error_screen.dart' show AppInitErrorScreen;
 export 'src/ui/screens/route_error_screen.dart' show RouteErrorScreen;

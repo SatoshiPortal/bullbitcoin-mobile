@@ -12,8 +12,6 @@ import 'package:signers/storage.dart';
 import 'package:sync/storage.dart';
 import 'package:sync/sync.dart' show SyncFailure;
 
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-
 /// Mounts the authorized catalog and the wallet properties of other owners.
 /// The caller owns [admission] and closes it if composition fails.
 Future<Result<SecretsInventory, Failure>> openWalletInventory(
@@ -99,13 +97,6 @@ Future<Result<SecretsInventory, Failure>> openWalletInventory(
       regtestBackups: regtestBackups,
     ),
   );
-  registerWalletProjections(
-    services,
-    inventory,
-    signerDevices,
-    syncFreshness,
-    mainBackups,
-    regtestBackups,
-  );
+  // RegisteredWallet is the only catalog. Feature stores own its decorations.
   return Ok(inventory);
 }

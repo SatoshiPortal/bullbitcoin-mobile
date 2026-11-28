@@ -27,5 +27,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Mukautettu Mempool-palvelin",
   "onboardingAdvancedOptionsCustomRecoverbull": "Mukautettu Recoverbull-palvelin",
   "onboardingAdvancedOptionsFooter": "Voit muuttaa näitä asetuksia myöhemmin sovelluksen asetuksissa",
-  "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen."
+  "onboardingBackupVerificationError": "Lompakkosi palautettiin, mutta varmuuskopion vahvistusta ei voitu suorittaa loppuun. Yritä uudelleen.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Tuo siemenlause",
+  "networkFeatureUnavailable": "Tämä toiminto ei ole käytettävissä valitussa verkossa.",
+  "onboardingCreateWalletButtonLabel": "Luo lompakko",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Lompakkoa, jota yrität poistaa, ei ole olemassa.",
+  "walletDetailsWalletFingerprintLabel": "Lompakon sormenjälki",
+  "walletLoadFailed": "Lompakoitasi ei voitu ladata. Tarkista yhteytesi ja yritä uudelleen."
 }

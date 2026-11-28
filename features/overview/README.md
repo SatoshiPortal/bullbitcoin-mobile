@@ -1,0 +1,12 @@
+# Overview catalogue
+
+The application mounts one `OverviewCatalogue` outside its screens. Secrets owns wallet membership and metadata; Startup supplies passive foreground admission and exact per-key receipts; Sync verifies the durable native revision when a receipt is used. Overview does not request hydration or drive wallet synchronization. A missing receipt never removes a row or represents zero. Selection requires a current local signer and a durable receipt; it does not authorize spending or bind a later route to that wallet.
+
+## Production Secrets writer boundary
+
+- `lib/wallet_inventory_setup.dart` opens the foreground `SecretsInventory`. Registration (including provisioning and its compensating removal), removal, label/default edits, and public metadata restore go through that owner. The inventory wraps mutations in its session boundary; `InventoryRepository` and `ViewAdministrationRepository` mark catalogue-affecting transactions. `guardedTransaction` advances the process-local catalogue generation after the owner transaction commits, not on a refusal or a no-op. Switching or locking the active view invalidates the exact grant independently.
+- Import and schema preparation belong to `SecretsImport` and foreground readiness, before the live inventory and projection are exposed. Background bootstrap checks readiness; it does not run a concurrent import over the live owner. The explicit test-only inventory insertion and sharing seams are not production writers.
+- `BackgroundWalletDescriptors` and `ArkBackgroundAccess` only read their projections. `ArkRenewalSecrets` uses a transaction and takes the existing inventory write lock before checking permission and deriving the child; it does not write wallet rows or memberships. Its lock acquisition touches `access_state`, not the catalogue.
+- The generation is **not** a SQLite WAL notification. A future production writer on another connection must provide an invalidation contract before a UI consumer can rely on it. Overview never opens `secrets.sqlite` or its sidecars.
+
+The `startup` dependency supplies only the passive observation API. Native lifecycle and durable financial revisions remain owned by Sync. A read refuses a same-stamp pending write from another native connection; no notification means no guarantee that already-painted pixels refresh. A future UI must revalidate callbacks at use and must not reduce the validated identity to an unguarded wallet ID.

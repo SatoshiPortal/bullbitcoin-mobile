@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
 import 'package:meta/meta.dart';
+import 'package:primitives/primitives.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../../domain/ports/freeze_store_port.dart';
 import '../../domain/ports/input_reservation_port.dart';
 import '../../domain/ports/funding_reservation_port.dart';
+import '../../domain/ports/read_admission_port.dart';
 import '../input_reservations.dart';
 import '../../domain/ports/reserved_address_port.dart';
 import '../../domain/ports/wallet_catalog_port.dart';
@@ -14,6 +16,8 @@ import '../../domain/ports/wallet_connection_port.dart';
 import '../../domain/ports/wallet_revision_reader_port.dart';
 import '../../domain/repositories/wallet_writer_repository.dart';
 import '../../domain/wallet_revision.dart';
+import '../../domain/wallet_key.dart';
+import '../../domain/sync_failure.dart';
 import '../read/persisted_wallet_readiness.dart';
 import '../read/wallet_snapshot_reader.dart';
 import 'bitcoin_spend_gate.dart';
@@ -32,7 +36,7 @@ import 'writer_session.dart';
 /// stores; it does so before any sync pass can run.
 final class ForegroundStores {
   final String documentsDirectory;
-  final WalletWriterRepository writer;
+  final NativeWalletWriterRepository _writer;
   final SqliteWalletRevisionReader _revisions;
 
   /// Hydrates native handles for sync's own projections; never lent out.
@@ -56,7 +60,7 @@ final class ForegroundStores {
 
   ForegroundStores._(
     this.documentsDirectory,
-    this.writer,
+    this._writer,
     this._revisions,
     this.reader,
     this.spendGate,
@@ -68,6 +72,35 @@ final class ForegroundStores {
   );
 
   WalletRevisionReaderPort get revisions => _revisions;
+  WalletWriterRepository get writer => _writer;
+
+  @internal
+  Future<Result<ReadLease, SyncFailure>> acquireExistingRead(WalletKey key) =>
+      _writer.acquire(key, existingOnly: true);
+
+  /// Read only the already-open SQLite connection, without publishing a
+  /// revision event or calling any recovery or native-store code.
+  @internal
+  Result<WalletRevisionState, SyncFailure> retainedRevision(WalletKey key) {
+    if (_closed || _recovering) return const Err(SyncClosedFailure());
+    try {
+      final record = _store.record(key);
+      if (record == null || record.state.lifecycle == WalletLifecycle.deleted) {
+        return const Err(SyncNotFoundFailure());
+      }
+      if (record.intent != null ||
+          record.state.lifecycle != WalletLifecycle.active) {
+        return const Err(SyncBusyFailure());
+      }
+      return Ok(record.state);
+    } on SqliteException catch (error) {
+      return Err(
+        error.resultCode == 5
+            ? const SyncBusyFailure()
+            : const SyncStorageFailure(),
+      );
+    }
+  }
 
   /// Every state this isolate commits or reads, for all wallets.
   Stream<WalletRevisionState> get changes => _revisions.changes;

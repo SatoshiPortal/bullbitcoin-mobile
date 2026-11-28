@@ -27,5 +27,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Пользовательский сервер Mempool",
   "onboardingAdvancedOptionsCustomRecoverbull": "Пользовательский сервер Recoverbull",
   "onboardingAdvancedOptionsFooter": "Вы можете изменить эти настройки позже в настройках приложения",
-  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова."
+  "onboardingBackupVerificationError": "Ваш кошелёк был восстановлен, но проверку резервной копии не удалось завершить. Пожалуйста, попробуйте снова.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Импорт Mnemonic",
+  "networkFeatureUnavailable": "Эта функция недоступна в выбранной сети.",
+  "onboardingCreateWalletButtonLabel": "Создать кошелёк",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Кошелек, который вы пытаетесь удалить, не существует.",
+  "walletDetailsWalletFingerprintLabel": "Фотография",
+  "walletLoadFailed": "Не удалось загрузить ваши кошельки. Проверьте подключение и попробуйте ещё раз."
 }

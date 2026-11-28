@@ -232,5 +232,15 @@
   "testBackupErrorSeedNotMnemonic": "لا تحتوي هذه المحفظة على عبارة استرداد لاختبارها.",
   "testBackupErrorCompletionFailed": "كانت عبارة الاسترداد صحيحة، لكن لم نتمكن من حفظ النتيجة. حاول مرة أخرى.",
   "backupCardTitle": "احمِ بيتكوين الخاص بك.",
-  "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن."
+  "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن.",
+  "backupWarningBackupLater": "لا، أنا أتفهّم المخاطرة",
+  "backupWarningBackupNow": "نعم",
+  "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
+  "backupWarningLoseReasonCloudRestore": "استعادة جهازك من نسخة احتياطية على السحابة",
+  "backupWarningLoseReasonCriticalIssue": "حدوث مشكلة خطيرة في التطبيق أو الجهاز",
+  "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
+  "backupWarningLoseReasonKeystore": "يقوم جهازك بإبطال مخزن المفاتيح (keystore) عند تغيير طريقة قفل الشاشة أو مصادقة الجهاز",
+  "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
+  "backupWarningNoRecovery": "لا توجد طريقة لاستعادة محفظتك بدون نسخة احتياطية.",
+  "backupWarningTitle": "انسخ محفظتك احتياطيًا الآن"
 }

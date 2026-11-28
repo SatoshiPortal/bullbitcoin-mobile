@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Özel Mempool Sunucusu",
   "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
   "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
-  "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin."
+  "onboardingBackupVerificationError": "Cüzdanınız kurtarıldı ancak yedek doğrulaması tamamlanamadı. Lütfen tekrar deneyin.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Import Mnemonik",
+  "networkFeatureUnavailable": "Bu özellik seçili ağda kullanılamıyor.",
+  "onboardingCreateWalletButtonLabel": "Create Cüzdan Create Cüzdan",
+  "receiveLiquid": "Sıvı",
+  "walletDeletionErrorWalletNotFound": "Silmeye çalıştığınız cüzdan mevcut değildir.",
+  "walletDetailsWalletFingerprintLabel": "Cüzdan parmak izi",
+  "walletLoadFailed": "Cüzdanlarınız yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin."
 }

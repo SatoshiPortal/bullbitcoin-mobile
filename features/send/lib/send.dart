@@ -9,5 +9,7 @@ export 'src/consolidation/domain/consolidation.dart'
 export 'src/consolidation/ui/consolidation_router.dart' show ConsolidationRoute;
 export 'src/consolidation/ui/widgets/consolidation_banner.dart'
     show ConsolidationBanner;
+export 'src/consolidation/ui/widgets/home_consolidation_banner.dart'
+    show HomeConsolidationBanner;
 export 'src/payment/domain/send_failure.dart';
 export 'src/payment/public/send.dart' show Send;

@@ -4,11 +4,13 @@ import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart' show WalletCatalogueStamp;
 
 import '../data/datasources/revision_store_datasource.dart';
 import '../data/freeze_authority.dart';
 import '../data/native_store_paths.dart';
 import '../data/read/native_frame_source.dart';
+import '../data/secrets_wallet_catalog.dart';
 import '../data/wallet_projections.dart';
 import '../data/datasources/spend_gate_store_datasource.dart'
     show BitcoinSpendGateUnavailable;
@@ -42,10 +44,11 @@ import '../domain/wallet_values.dart';
 final class Sync {
   final ForegroundStores _stores;
   final WalletProjections _projections;
+  final NativeFrameSource _source;
   final _Cell<bool> _recoveryPending;
   Future<void>? _closing;
 
-  Sync._(this._stores, this._projections)
+  Sync._(this._stores, this._projections, this._source)
     : _recoveryPending = _Cell(_stores.recoveredMetadata);
 
   /// Opens or creates the package stores, quarantining unreadable revision
@@ -80,14 +83,19 @@ final class Sync {
       connections: connections,
     );
     stores.freezes.demand();
+    final ownerCatalogue = catalog is SecretsWalletCatalog ? catalog : null;
+    final source = NativeFrameSource(stores.reader, catalog);
     return Sync._(
       stores,
       WalletProjections(
         revisions: stores.revisions,
         changes: stores.changes,
-        source: NativeFrameSource(stores.reader, catalog),
+        source: source,
         freezes: stores.freezes,
+        catalogueSignal: ownerCatalogue?.walletCatalogue,
+        bindCatalogue: ownerCatalogue?.bindWalletCatalogue,
       ),
+      source,
     );
   }
 
@@ -167,6 +175,36 @@ final class Sync {
 @internal
 extension SyncForegroundStores on Sync {
   ForegroundStores get stores => _stores;
+
+  BigInt? retainedTotal(WalletCatalogueStamp catalogue, WalletRevision stamp) =>
+      _projections.retainedTotal(catalogue, stamp);
+
+  Future<Result<WalletRevision, SyncFailure>> retainBalance(
+    WalletKey key,
+    WalletCatalogueStamp catalogue,
+    WalletCatalogPort bound, {
+    required bool Function() isCurrent,
+    Future<void> Function()? beforeHydration,
+    Future<void> Function()? beforePublication,
+  }) => _projections.retainBalance(
+    key,
+    catalogue,
+    isCurrent: isCurrent,
+    readCommitted: () => _stores.retainedRevision(key),
+    mapBalance: (stamp) => _source.loadBalance(
+      stamp,
+      bound,
+      isCurrent: isCurrent,
+      acquireExisting: _stores.acquireExistingRead,
+      beforeHydration: beforeHydration,
+    ),
+    beforePublication: beforePublication,
+  );
+
+  Future<Result<WalletRevision, SyncFailure>> loadFromCatalogue(
+    Wallet wallet,
+    WalletCatalogueStamp catalogue,
+  ) => wallet._load(catalogue);
 }
 
 /// `sync.changes.watch()`.
@@ -249,8 +287,16 @@ final class Wallet {
   /// The freezes are read too when none are known yet, so coins are ready,
   /// or unavailable with the reason, once this returns.
   @useResult
-  Future<Result<WalletRevision, SyncFailure>> load() async {
-    final loaded = await _projections.load(key, generation);
+  Future<Result<WalletRevision, SyncFailure>> load() => _load();
+
+  Future<Result<WalletRevision, SyncFailure>> _load([
+    WalletCatalogueStamp? catalogue,
+  ]) async {
+    final loaded = await _projections.load(
+      key,
+      generation,
+      catalogue: catalogue,
+    );
     final freezes = _projections.freezes;
     if (freezes.snapshot == null) await freezes.read();
     return loaded;

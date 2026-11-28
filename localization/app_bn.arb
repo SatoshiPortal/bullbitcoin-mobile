@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
-  "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
-  "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",
-  "backupWarningLoseReasonCriticalIssue": "কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যা হলে",
-  "backupWarningLoseReasonKeystore": "আপনি লকস্ক্রিন বা ডিভাইস অথেন্টিকেশন পরিবর্তন করলে আপনার ডিভাইস কীস্টোর (keystore) বাতিল করে দেয়",
-  "backupWarningLoseReasonCloudRestore": "ক্লাউড ব্যাকআপ থেকে আপনার ডিভাইস রিস্টোর করা",
-  "backupWarningNoRecovery": "ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
   "@@locale": "bn",
   "exchangeSettingsSecuritySettingsTitle": "নিরাপত্তা সেটিংস",
   "@exchangeSettingsSecuritySettingsTitle": {
@@ -4272,18 +4265,6 @@
   "errorReportingProgramDescription": "আমাদের ত্রুটি রিপোর্টিং প্রোগ্রামে অংশ নিয়ে Bull Bitcoin উন্নত করতে সাহায্য করুন। এটি সরাসরি আমাদের সবার জন্য Bull Bitcoin আরও ভালো করতে সাহায্য করে।\n\nসক্রিয় থাকলে, অ্যাপে সমস্যা হলে আমরা স্বয়ংক্রিয়ভাবে ত্রুটি রিপোর্ট পাঠাই। এই তথ্য বিশ্বজুড়ে আমাদের ব্যবহারকারীদের জন্য কী ঘটছে তা বুঝতে এবং সেই অনুযায়ী সমাধান করতে সাহায্য করে।\n\nআমরা এই তথ্য কোনো তৃতীয় পক্ষের সাথে শেয়ার করি না। আমরা আমাদের নিজস্ব সেলফ-হোস্টেড ব্যাকএন্ড সার্ভারের সাথে Sentry-র ওপেন-সোর্স ক্লায়েন্ট ব্যবহার করি।",
   "@errorReportingProgramDescription": {
     "description": "Description of the error reporting program"
-  },
-  "backupWarningTitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningBackupNow": "হ্যাঁ",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "না, আমি ঝুঁকি বুঝি",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
   },
   "coreScreensResolvingInputs": "লেনদেনের ইনপুট সমাধান করা হচ্ছে...",
   "coreScreensFeeRateLabel": "ফি রেট",

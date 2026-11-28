@@ -4,7 +4,6 @@ import 'package:secrets/custody.dart';
 import 'dart:io';
 
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
@@ -102,7 +101,7 @@ void main() {
     test('additional custody owner $outcome preserves seed', () async {
       when(
         () => walletRepository.getCustodyFingerprints(),
-      ).thenAnswer((_) async => const Ok<Set<Fingerprint>, WalletFailure>({}));
+      ).thenAnswer((_) async => const Ok<Set<Fingerprint>, SecretFailure>({}));
       final owner = _MockSeedOwner();
       references.register(owner);
       if (outcome == 'throws') {
@@ -111,9 +110,9 @@ void main() {
       } else {
         when(() => owner.getCustodyFingerprints()).thenAnswer(
           (_) async => outcome == 'referenced'
-              ? Ok<Set<Fingerprint>, WalletFailure>({id})
-              : const Err<Set<Fingerprint>, WalletFailure>(
-                  WalletStorageFailure('incomplete'),
+              ? Ok<Set<Fingerprint>, SecretFailure>({id})
+              : const Err<Set<Fingerprint>, SecretFailure>(
+                  FetchSecretFailure('incomplete'),
                 ),
         );
       }
@@ -131,7 +130,7 @@ void main() {
   group('DeleteSecretUsecase', () {
     test('deletes when no wallet uses the secret', () async {
       when(() => walletRepository.getCustodyFingerprints())
-          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, SecretFailure>({}));
 
       expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
       expect(storedSecrets(), isEmpty);
@@ -148,7 +147,7 @@ void main() {
         // would leave the entry undeletable from the one screen that exists
         // to clean up orphans — the same rule DeleteWalletUsecase applies.
         when(() => walletRepository.getCustodyFingerprints())
-            .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+            .thenAnswer((_) async => Ok<Set<Fingerprint>, SecretFailure>({}));
 
         expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
         expect(storedSecrets(), isEmpty);
@@ -159,7 +158,7 @@ void main() {
       'refuses, and keeps the secret, when a wallet still uses it',
       () async {
         when(() => walletRepository.getCustodyFingerprints())
-            .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({id}));
+            .thenAnswer((_) async => Ok<Set<Fingerprint>, SecretFailure>({id}));
 
         final result = await usecase.execute(id);
 
@@ -183,8 +182,8 @@ void main() {
       // An unreadable list is not an empty one: deleting key material on a
       // failed read is unrecoverable.
       when(() => walletRepository.getCustodyFingerprints()).thenAnswer(
-        (_) async => const Err<Set<Fingerprint>, WalletFailure>(
-          WalletStorageFailure('read'),
+        (_) async => const Err<Set<Fingerprint>, SecretFailure>(
+          FetchSecretFailure('read'),
         ),
       );
 
@@ -197,7 +196,7 @@ void main() {
     test('another wallet fingerprint does not protect this secret', () async {
       when(() => walletRepository.getCustodyFingerprints()).thenAnswer(
         (_) async =>
-            Ok<Set<Fingerprint>, WalletFailure>({Fingerprint('00000000')}),
+            Ok<Set<Fingerprint>, SecretFailure>({Fingerprint('00000000')}),
       );
 
       expect(await usecase.execute(id), isA<Ok<void, AllSeedViewFailure>>());
@@ -208,7 +207,7 @@ void main() {
       // The words exist nowhere else: an orphan is not a reason to destroy
       // the only copy.
       when(() => walletRepository.getCustodyFingerprints())
-          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, SecretFailure>({}));
       proofs.verified.clear();
 
       final result = await usecase.execute(id);
@@ -222,7 +221,7 @@ void main() {
 
     test('refuses when the backup state cannot be read', () async {
       when(() => walletRepository.getCustodyFingerprints())
-          .thenAnswer((_) async => Ok<Set<Fingerprint>, WalletFailure>({}));
+          .thenAnswer((_) async => Ok<Set<Fingerprint>, SecretFailure>({}));
       proofs.unreadable = true;
 
       final result = await usecase.execute(id);

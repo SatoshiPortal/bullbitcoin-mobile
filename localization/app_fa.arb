@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
-  "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
-  "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
-  "backupWarningLoseReasonCriticalIssue": "مشکل جدی در برنامه یا دستگاه رخ دهد",
-  "backupWarningLoseReasonKeystore": "دستگاه شما هنگام تغییر قفل صفحه یا روش احراز هویت دستگاه، کی‌استور (keystore) را باطل می‌کند",
-  "backupWarningLoseReasonCloudRestore": "بازیابی دستگاه شما از یک نسخه پشتیبان ابری",
-  "backupWarningNoRecovery": "بدون نسخه پشتیبان هیچ راهی برای بازیابی کیف پول شما وجود ندارد.",
   "exchangeSettingsSecuritySettingsTitle": "تنظیمات امنیتی",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
@@ -4277,9 +4270,6 @@
   "statusScreenContinue": "ادامه",
   "viewerAddressTab": "آدرس",
   "viewerPaymentUriTab": "نشانی پرداخت",
-  "backupWarningTitle": "همین حالا از کیف پول خود پشتیبان بگیرید",
-  "backupWarningBackupNow": "بله",
-  "backupWarningBackupLater": "خیر، ریسک را می‌پذیرم",
   "transactionSwapOpenWithin24h": "برای تکمیل مبادله‌ی خود، ظرف ۲۴ ساعت برنامه را باز کنید.",
   "recipientsContinue": "ادامه",
   "recipientsTypeInteracEmail": "انتقال پول از طریق ایمیل",

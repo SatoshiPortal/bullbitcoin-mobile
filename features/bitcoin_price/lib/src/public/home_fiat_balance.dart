@@ -14,6 +14,7 @@ class HomeFiatBalance extends StatelessWidget {
     required this.balanceSat,
     required this.onCurrencyChanged,
     this.showBalanceLoading = false,
+    this.forceHideAmounts = false,
     this.frameBuilder,
   });
 
@@ -25,6 +26,7 @@ class HomeFiatBalance extends StatelessWidget {
 
   /// When true (e.g. wallet list still loading), avoids showing fiat from 0 sats.
   final bool showBalanceLoading;
+  final bool forceHideAmounts;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,9 @@ class HomeFiatBalance extends StatelessWidget {
         ? const _HomeFiatBalanceSkeleton()
         : FiatAmountText(
             formattedAmount: priceState.calculateFiatPrice(balanceSat),
-            hideAmounts: priceState.amountDisplay?.hideAmounts ?? true,
+            hideAmounts:
+                forceHideAmounts ||
+                (priceState.amountDisplay?.hideAmounts ?? true),
             style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
             color: context.bull.onPrimary,
           );

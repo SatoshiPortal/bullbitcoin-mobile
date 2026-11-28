@@ -34,5 +34,19 @@
   "emptyWalletBitcoinOnly": "No se encontró historial de transacciones de Bitcoin. Liquid no se ha comprobado.",
   "onboardingScanUnavailableTitle": "No se pudo comprobar el historial de transacciones de Bitcoin.",
   "onboardingScanUnavailableMessage": "No se pudo comprobar tu historial de Bitcoin. Puedes reintentarlo o continuar sin comprobarlo.",
-  "onboardingContinueWithoutChecking": "Continuar sin comprobar"
+  "onboardingContinueWithoutChecking": "Continuar sin comprobar",
+  "electrumMainnet": "Mainnet",
+  "electrumRegtest": "Regtest",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Importar mnemónica",
+  "networkFeatureUnavailable": "Esta función no está disponible en la red seleccionada.",
+  "networkWalletBackupRequired": "Esta vista está protegida por un PIN. Quita el PIN, crea la billetera, verifica la copia de seguridad de su frase de recuperación y vuelve a configurar el PIN.",
+  "networkWalletReuseNoRecoveryPhrase": "Esta billetera no tiene frase de recuperación, así que no se puede reutilizar aquí. Importa una frase de recuperación o crea una billetera nueva.",
+  "networkWalletReuseSecret": "Reutilizar el secreto de una billetera existente",
+  "networkWalletSetupTitle": "No hay billeteras en esta red",
+  "onboardingCreateWalletButtonLabel": "Crear billetera",
+  "receiveLiquid": "Líquido",
+  "walletDeletionErrorWalletNotFound": "La Billetera que está intentando borrar no existe.",
+  "walletDetailsWalletFingerprintLabel": "Huella digital de la billetera",
+  "walletLoadFailed": "No se pudieron cargar sus billeteras. Compruebe su conexión e inténtelo de nuevo."
 }

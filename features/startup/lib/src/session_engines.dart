@@ -32,6 +32,7 @@ final class SessionEngines {
   final _unlocks = StreamController<void>.broadcast(sync: true);
   var _token = 0;
   var _locked = false;
+  var _closed = false;
 
   SessionEngines(List<SessionEngine> engines)
     : _slots = [for (final engine in engines) _Slot(engine)];
@@ -40,8 +41,8 @@ final class SessionEngines {
 
   /// Completes once the session is unlocked; immediately if it already is.
   Future<void> untilUnlocked() async {
-    while (_locked) {
-      await _unlocks.stream.first;
+    while (_locked && !_closed) {
+      await _unlocks.stream.isEmpty;
     }
   }
 
@@ -50,7 +51,7 @@ final class SessionEngines {
   /// happen with no await between them, so a lock cannot fall in the middle.
   /// Returns false, having started nothing, if the session is locked.
   bool admitStart(void Function() start) {
-    if (_locked) return false;
+    if (_locked || _closed) return false;
     start();
     markStarted();
     return true;
@@ -65,6 +66,7 @@ final class SessionEngines {
 
   /// Revokes every running engine now. Idempotent.
   void lock() {
+    if (_closed) return;
     _token++;
     _locked = true;
     for (final slot in _slots) {
@@ -78,6 +80,7 @@ final class SessionEngines {
   /// Resumes each suspended engine once its stop is confirmed, if the session
   /// is still the one this call opened.
   void unlock() {
+    if (_closed) return;
     _token++;
     _locked = false;
     final token = _token;
@@ -87,7 +90,11 @@ final class SessionEngines {
     _unlocks.add(null);
   }
 
-  Future<void> close() => _unlocks.close();
+  Future<void> close() {
+    _closed = true;
+    _token++;
+    return _unlocks.close();
+  }
 
   Future<void> _stop(_Slot slot) async {
     try {

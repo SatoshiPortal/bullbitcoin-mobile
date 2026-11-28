@@ -317,6 +317,11 @@ PayinCalls payinCallsOf(
 
   return (
     build: (effect) async {
+      // The legacy Spend calls resolve internally by ID. This includes the
+      // preparation used for signing and for the original Payjoin spend.
+      if (effect.spend.walletAttempt != null) {
+        return const PayinBuildFailed(PayinBuildProblem.notAuthorized);
+      }
       final amountSat = (effect.order.payinAmount * 100000000).round();
       return switch (effect.target) {
         OnchainDeposit(:final address) => buildBitcoin(
@@ -336,6 +341,9 @@ PayinCalls payinCallsOf(
       };
     },
     send: (built) async {
+      if (built.spend.walletAttempt != null) {
+        return const PayinBroadcastNotSent(PayinNotSentReason.walletBusy);
+      }
       final payload = built.payload;
       final PayinBroadcastOutcome outcome = switch (payload) {
         SignedBitcoinPayin(signed: final SignedBitcoinSpend signed) =>

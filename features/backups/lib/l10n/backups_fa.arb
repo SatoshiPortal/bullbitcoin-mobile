@@ -232,5 +232,15 @@
   "testBackupErrorSeedNotMnemonic": "این کیف‌پول عبارت بازیابی برای آزمایش ندارد.",
   "testBackupErrorCompletionFailed": "عبارت بازیابی شما درست بود، اما نتوانستیم نتیجه را ذخیره کنیم. لطفاً دوباره تلاش کنید.",
   "backupCardTitle": "از بیت‌کوین خود محافظت کنید.",
-  "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید."
+  "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید.",
+  "backupWarningBackupLater": "خیر، ریسک را می‌پذیرم",
+  "backupWarningBackupNow": "بله",
+  "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
+  "backupWarningLoseReasonCloudRestore": "بازیابی دستگاه شما از یک نسخه پشتیبان ابری",
+  "backupWarningLoseReasonCriticalIssue": "مشکل جدی در برنامه یا دستگاه رخ دهد",
+  "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
+  "backupWarningLoseReasonKeystore": "دستگاه شما هنگام تغییر قفل صفحه یا روش احراز هویت دستگاه، کی‌استور (keystore) را باطل می‌کند",
+  "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
+  "backupWarningNoRecovery": "بدون نسخه پشتیبان هیچ راهی برای بازیابی کیف پول شما وجود ندارد.",
+  "backupWarningTitle": "همین حالا از کیف پول خود پشتیبان بگیرید"
 }

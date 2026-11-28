@@ -1,16 +1,16 @@
+import 'dart:async';
+
 import 'package:backups/testing.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/app_theme.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:overview/routes.dart';
+
+import '../../../overview/support/overview_home_harness.dart';
+
 import 'package:bb_mobile/localizations.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:mocktail/mocktail.dart';
-
-class _Wallet extends Mock implements WalletBloc {}
 
 void main() {
   for (final theme in [AppThemeType.light, AppThemeType.dark]) {
@@ -19,8 +19,10 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final wallet = _Wallet();
-      when(() => wallet.stream).thenAnswer((_) => const Stream.empty());
+      final home = OverviewHomeHarness();
+      await tester.runAsync(home.mount);
+      final readsBefore = home.backupReadsStarted;
+      addTearDown(home.close);
       final router = GoRouter(
         routes: [
           GoRoute(
@@ -28,7 +30,7 @@ void main() {
             builder: (context, _) => BackupTestSuccessScreen(
               successImage: AssetImage(Assets.animations.successTick.path),
               onContinue: () {
-                context.read<WalletBloc>().add(const VerifyBackupStatus());
+                unawaited(home.controller.verifyBackup());
                 context.goNamed(WalletRoute.walletHome.name);
               },
             ),
@@ -42,25 +44,22 @@ void main() {
       );
       addTearDown(router.dispose);
       await tester.pumpWidget(
-        BlocProvider<WalletBloc>.value(
-          value: wallet,
-          child: MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.themeData(theme),
-            localizationsDelegates: appLocalizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: router,
-          ),
+        MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.themeData(theme),
+          localizationsDelegates: appLocalizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
         ),
       );
       await tester.pumpAndSettle();
       final success = find.byType(BackupTestSuccessScreen);
       final loc = AppLocalizations.of(tester.element(success));
       expect(find.text(loc.testBackupSuccessTitle), findsOneWidget);
-      verifyNever(() => wallet.add(const VerifyBackupStatus()));
+      expect(home.backupReadsStarted, readsBefore);
       await tester.tap(find.text(loc.testBackupSuccessButton));
       await tester.pumpAndSettle();
-      verify(() => wallet.add(const VerifyBackupStatus())).called(1);
+      expect(home.backupReadsStarted, readsBefore + 1);
       expect(find.text('Wallet destination'), findsOneWidget);
     });
   }

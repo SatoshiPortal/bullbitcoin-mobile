@@ -2,9 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_metadata_service.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_network_codec.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as app;
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:primitives/primitives.dart';
@@ -37,14 +34,9 @@ Future<Wallet> fundedRegtestWallet() async {
     await locator<Secrets>().generate(),
     'generate fixture secret',
   );
-  const appNetwork = app.Network.bitcoinRegtest;
   const network = BitcoinNetwork.regtest;
   const scriptType = ScriptType.bip84;
-  final id = WalletMetadataService.encodeId(
-    fingerprint: secret.id.hex,
-    network: appNetwork,
-    scriptType: scriptType,
-  );
+  final id = 'wpkh([${secret.id.hex}/84h/1h/0h]):regtest';
   final key = WalletKey(id: id, network: network);
   final xpub = requireValue(
     await secret.derive.xpub(network: network, scriptType: scriptType),
@@ -67,7 +59,7 @@ Future<Wallet> fundedRegtestWallet() async {
         secretFingerprint: secret.id.hex,
         masterFingerprint: secret.id.hex,
         signer: WalletSigner.local.name,
-        network: WalletNetworkCodec.encode(appNetwork),
+        network: 'bitcoinRegtest',
         xpub: xpub,
         externalDescriptor: descriptors.external,
         internalDescriptor: descriptors.internal,

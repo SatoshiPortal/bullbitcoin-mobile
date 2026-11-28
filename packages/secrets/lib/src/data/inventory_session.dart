@@ -10,6 +10,7 @@ Future<Result<T, SecretFailure>> runInventorySession<T>(
   Future<Result<T, SecretFailure>> Function() run, {
   required bool Function() isCurrent,
   bool preserveCommittedCommand = false,
+  void Function()? onCatalogueCommit,
 }) async {
   var committed = false;
   final result = await Zone.current
@@ -17,6 +18,7 @@ Future<Result<T, SecretFailure>> runInventorySession<T>(
         zoneValues: {
           inventorySessionCheck: isCurrent,
           inventoryCommitConfirmed: () => committed = true,
+          inventoryCatalogueCommitConfirmed: onCatalogueCommit,
         },
       )
       .run(run);

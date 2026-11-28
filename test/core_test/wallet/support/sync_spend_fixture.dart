@@ -1,6 +1,5 @@
 import 'wallet_model.dart';
 
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:primitives/primitives.dart' as p;
 import 'package:sync/sync.dart';
@@ -33,7 +32,7 @@ final class SyncSpendFixture {
     PublicBdkWalletModel model, {
     InputReservationPort? reservations,
   }) async {
-    final key = WalletKey(id: model.id, network: model.network.shared);
+    final key = WalletKey(id: model.id, network: model.network);
     final descriptor = BitcoinWalletDescriptor(
       key: key,
       scriptType: p.ScriptType.bip84,

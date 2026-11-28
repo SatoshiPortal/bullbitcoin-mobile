@@ -232,5 +232,15 @@
   "testBackupErrorSeedNotMnemonic": "Bu cüzdanın test edilecek bir kurtarma ifadesi yok.",
   "testBackupErrorCompletionFailed": "Kurtarma ifadeniz doğruydu, ancak sonucu kaydedemedik. Lütfen tekrar deneyin.",
   "backupCardTitle": "Bitcoin'inizi koruyun.",
-  "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin."
+  "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin.",
+  "backupWarningBackupLater": "HAYIR, RİSKİ ANLIYORUM",
+  "backupWarningBackupNow": "EVET",
+  "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
+  "backupWarningLoseReasonCloudRestore": "Cihazınızı bir bulut yedeğinden geri yüklerseniz",
+  "backupWarningLoseReasonCriticalIssue": "Kritik bir uygulama veya cihaz sorunu oluşursa",
+  "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
+  "backupWarningLoseReasonKeystore": "Kilit ekranını veya cihaz kimlik doğrulamasını değiştirdiğinizde cihazınız keystore'u geçersiz kılar",
+  "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
+  "backupWarningNoRecovery": "Yedek olmadan cüzdanınızı kurtarmanın hiçbir yolu yoktur.",
+  "backupWarningTitle": "CÜZDANINIZI ŞİMDİ YEDEKLEYİN"
 }

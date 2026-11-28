@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
-  "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
-  "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",
-  "backupWarningLoseReasonCriticalIssue": "Dojde ke kritickému problému s aplikací nebo zařízením",
-  "backupWarningLoseReasonKeystore": "Zařízení zneplatní keystore při změně zámku obrazovky nebo ověřování zařízení",
-  "backupWarningLoseReasonCloudRestore": "Obnovení zařízení ze zálohy v cloudu",
-  "backupWarningNoRecovery": "Bez zálohy nelze peněženku obnovit.",
   "durationSeconds": "{seconds} vteřin(y)",
   "@durationSeconds": {
     "description": "Duration format for seconds",
@@ -4265,9 +4258,6 @@
   "statusScreenContinue": "Pokračovat",
   "viewerAddressTab": "Adresa",
   "viewerPaymentUriTab": "Platební URI",
-  "backupWarningTitle": "ZÁLOHUJTE SVOU PENĚŽENKU HNED TEĎ",
-  "backupWarningBackupNow": "ANO",
-  "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
   "transactionSwapOpenWithin24h": "Otevřete aplikaci do 24 hodin, abyste dokončili swap.",
   "mempoolErrorUnexpected": "Došlo k neočekávané chybě",
   "mempoolErrorUpdateSettingsFailed": "Nepodařilo se aktualizovat nastavení: {error}",

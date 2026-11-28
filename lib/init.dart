@@ -34,7 +34,11 @@ import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart'
     show arkBoardFundingBinding, SqliteArkFundingReservations;
 import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
-import 'package:bb_mobile/features/wallet/wallet_ark_services.dart';
+import 'package:overview/overview.dart' show OverviewHomeController;
+import 'package:overview/routes.dart' show WalletRoute;
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
+import 'package:go_router/go_router.dart' show GoRouterHelper;
+import 'package:material_ui/material_ui.dart' show BoxFit, Image;
 import 'package:fees/fees.dart';
 import 'package:sync/write.dart'
     show ForegroundWalletSynchronization, WalletNativeRuntime;
@@ -430,6 +434,7 @@ class Bull {
         ),
       );
       if (!pinProtected) {
+        locator<OverviewHomeController>().startBackupChecks();
         unawaited(locator<RecoverBullFacade>().checkAtColdStart());
       }
       final settings = locator<Preferences>();
@@ -527,6 +532,18 @@ Future<void> _setupArkRegtestProfile() async {
     primaryEsploraUrl: esploraUrl,
     initializeNew: _arkInitializeNew,
     dispatcher: backgroundTasksHandler,
-    services: walletArkAppServices(locator),
+    services: arkWalletAppServices(
+      locator,
+      walletBackground: Image.asset(
+        Assets.backgrounds.bgSecureWallet.path,
+        fit: BoxFit.cover,
+      ),
+      confirmIcon: Image.asset(
+        Assets.icons.rightArrow.path,
+        height: 24,
+        width: 24,
+      ),
+      onHome: (context) => context.goNamed(WalletRoute.walletHome.name),
+    ),
   );
 }

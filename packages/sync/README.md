@@ -4,6 +4,8 @@ The single writer of the native BDK and LWK wallet stores: revisions, a cross-is
 
 ## Public surface
 
+`storage.dart` also exposes `SyncWalletValuesDatasource` for the remaining legacy wallet reader. It reads the existing Sync handles and preserves their snapshot failures; it does not open or write native stores.
+
 `sync.dart` is the entry point. `Sync.foreground` returns `Sync`, which owns the stores and the published values of this isolate; `Sync.background` returns `BackgroundSync`, which only refreshes an existing wallet, reads the revision it last saw and closes. `sync.wallet(key)` returns a `Wallet`: a key and the generation it was obtained for, never a native object. A handle obtained before a delete or a re-import never follows it; its values then read unavailable with `SyncNotFoundFailure`.
 
 Reads are `Observed<T>` values. `now` returns the last value published in this isolate, synchronously, with no IO, native call or mapping. `watch()` emits that value, then each distinct change; a newer revision with identical data is not a change, staleness and generation changes always are. Every value carries its status (`notLoaded`, `ready`, `stale`, `unavailable`, `closed`), its revision and, when relevant, a `SyncFailure`: an unavailable wallet never reads as a zero balance or an empty list.
@@ -32,6 +34,8 @@ Address lists can read wallet.addresses.usage() after loading. The result combin
 Every `WalletCatalogPort` read must complete, with either a value or a failure. Catalog reads must never call `Sync.close()` because closing waits for in-flight reads to finish.
 
 `package:sync/inventory.dart` adapts the Secrets inventory to this port. A foreground catalog captures its live grant before each read and discards the result if that grant expires; `captureForeground` binds a read-only port to one explicit grant for callers that must retain that identity across several reads. A background catalog reads only the persisted background grants and does not follow foreground view changes or locking.
+
+For an exact local balance, capture a `RetainedBalanceDemand` for a full `WalletKey` before scheduling work. Its synchronous environment snapshot must be absent during a transition and advance its epoch even when the committed environment is unchanged. `demandRetainedBalance` requires a successfully initialized owner and an existing store and reader lease; it never opens a runtime, provisions, syncs, or retries. It maps only the total, even when the revision has not changed, and returns the exact native revision. Recheck the demand before using that receipt with `readRetainedBalance`: the getter itself only checks the catalogue and native revision, not the environment epoch. `retainedBalanceChanges` is a wake-up signal without data, not a native revision event. Catalogue or environment renewal requires a new explicit demand; no startup or UI consumer is installed by this API.
 
 ## Transactions
 

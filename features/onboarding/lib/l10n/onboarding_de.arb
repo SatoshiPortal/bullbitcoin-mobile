@@ -27,5 +27,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Benutzerdefinierter Mempool-Server",
   "onboardingAdvancedOptionsCustomRecoverbull": "Benutzerdefinierter Recoverbull-Server",
   "onboardingAdvancedOptionsFooter": "Sie können diese Einstellungen später in den App-Einstellungen ändern.",
-  "onboardingBackupVerificationError": "Ihre Wallet wurde wiederhergestellt, aber die Backup-Verifizierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut."
+  "onboardingBackupVerificationError": "Ihre Wallet wurde wiederhergestellt, aber die Backup-Verifizierung konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Mnemonic importieren",
+  "networkFeatureUnavailable": "Diese Funktion ist im ausgewählten Netzwerk nicht verfügbar.",
+  "onboardingCreateWalletButtonLabel": "Wallet erstellen",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Die Wallet, die Sie löschen möchten, existiert nicht.",
+  "walletDetailsWalletFingerprintLabel": "Wallet-Fingerabdruck",
+  "walletLoadFailed": "Ihre Wallets konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
 }

@@ -212,7 +212,10 @@ final class NativeWalletWriterRepository
 
   @override
   @useResult
-  Future<Result<ReadLease, SyncFailure>> acquire(WalletKey key) async {
+  Future<Result<ReadLease, SyncFailure>> acquire(
+    WalletKey key, {
+    bool existingOnly = false,
+  }) async {
     final failure = nativeKeyFailure(key);
     if (failure != null) return Err(failure);
     final trace =
@@ -227,6 +230,7 @@ final class NativeWalletWriterRepository
       _session.documentsDirectory,
       key,
       diagnostics: trace,
+      existingOnly: existingOnly,
     );
     if (acquisition case Err(:final failure)) {
       return Err(failure);

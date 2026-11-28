@@ -16,12 +16,20 @@ import 'package:exchange/exchange.dart';
 import 'package:exchange/steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:primitives/primitives.dart' show FormatAmount;
+import 'package:primitives/primitives.dart' show FormatAmount, LiquidNetwork;
+import 'package:sync/sync.dart' show WalletKey;
 
 import '../sell_fixtures.dart';
 
 final ExchangePayinUi _ui = (
-  walletCards: (context, onSelected) => const SizedBox(key: Key('wallets')),
+  walletCards: (_, onSelected) => TextButton(
+    onPressed: () => onSelected?.call((
+      key: WalletKey(id: 'liquid:regtest', network: LiquidNetwork.regtest),
+      label: 'Savings',
+      isDefault: false,
+    )),
+    child: const Text('Pick Liquid wallet'),
+  ),
   openWalletHome: (context) {},
   brandAsset: 'assets/none.png',
   successAsset: 'assets/none.png',
@@ -63,6 +71,31 @@ SellFlowState _reviewWith(QuoteStatus status) {
 }
 
 void main() {
+  testWidgets('Sell preserves the selected Liquid wallet ID and raw label', (
+    tester,
+  ) async {
+    final events = <SellFlowEvent>[];
+    await _pump(tester, sellSourceState, events: events);
+    await tester.tap(find.text('Pick Liquid wallet'));
+    expect(
+      (events.single as SellSourcePicked).source,
+      const PayinFromAppWallet(
+        'liquid:regtest',
+        BtcNetwork.liquid,
+        label: 'Savings',
+      ),
+    );
+  });
+
+  testWidgets('back cancels Sell source selection without picking a wallet', (
+    tester,
+  ) async {
+    final events = <SellFlowEvent>[];
+    await _pump(tester, sellSourceState, events: events);
+    await tester.tap(find.byType(BackButton));
+    expect(events.single, isA<SellBackPressed>());
+  });
+
   testWidgets('each step shows its page on top', (tester) async {
     await _pump(tester, sellAmountState);
     expect(find.byType(SellAmountPage), findsOneWidget);

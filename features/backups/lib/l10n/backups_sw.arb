@@ -61,5 +61,15 @@
   "testBackupErrorSeedNotMnemonic": "Pochi hii haina kifungu cha kurejesha cha kujaribu.",
   "testBackupErrorCompletionFailed": "Kifungu chako cha kurejesha kilikuwa sahihi, lakini hatukuweza kuhifadhi matokeo. Tafadhali jaribu tena.",
   "backupCardTitle": "Linda bitcoin yako.",
-  "backupCardSubtitle": "Hifadhi nakala ya pochi yako sasa."
+  "backupCardSubtitle": "Hifadhi nakala ya pochi yako sasa.",
+  "backupWarningBackupLater": "HAPANA, NAELEWA HATARI",
+  "backupWarningBackupNow": "NDIYO",
+  "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
+  "backupWarningLoseReasonCloudRestore": "Utarejesha kifaa chako kutoka kwenye nakala rudufu ya wingu",
+  "backupWarningLoseReasonCriticalIssue": "Tatizo kubwa la programu au kifaa litatokea",
+  "backupWarningLoseReasonDeletedApp": "Utafuta programu",
+  "backupWarningLoseReasonKeystore": "Kifaa chako kitabatilisha hifadhi ya funguo (keystore) unapobadilisha njia ya kufungua skrini/uthibitishaji wa kifaa",
+  "backupWarningLoseReasonLostPhone": "Utapoteza simu yako",
+  "backupWarningNoRecovery": "Hakuna njia ya kurejesha pochi yako bila nakala rudufu.",
+  "backupWarningTitle": "HIFADHI NAKALA YA POCHI YAKO SASA"
 }

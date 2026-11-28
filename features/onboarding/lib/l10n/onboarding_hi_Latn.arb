@@ -78,5 +78,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Custom Mempool Server",
   "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
   "onboardingAdvancedOptionsFooter": "Aap in settings ko baad mein App Settings mein badal sakte hain",
-  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein."
+  "onboardingBackupVerificationError": "Aapka wallet recover ho gaya, lekin backup verification poora nahi ho saka. Kripya phir se try karein.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Mnemonic Import Karo",
+  "networkFeatureUnavailable": "Yeh feature chune gaye network par available nahi hai.",
+  "onboardingCreateWalletButtonLabel": "Naya wallet banao",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Jis wallet ko delete karna hai woh exist nahi karta.",
+  "walletDetailsWalletFingerprintLabel": "Wallet fingerprint",
+  "walletLoadFailed": "Aapke wallet load nahi ho sake. Apna connection check karein aur dobara koshish karein."
 }

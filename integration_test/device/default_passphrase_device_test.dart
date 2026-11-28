@@ -16,7 +16,7 @@ import 'package:onboarding/setup.dart';
 import 'package:provisioning/provisioning.dart';
 import 'package:preferences/preferences.dart' as preferences;
 import 'package:wallet_import/wallet_import.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:overview/routes.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:mnemonic_entry/mnemonic_entry.dart';
 import 'package:bb_mobile/localizations.dart';

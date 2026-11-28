@@ -232,5 +232,15 @@
   "testBackupErrorSeedNotMnemonic": "Tato peněženka nemá obnovovací frázi k otestování.",
   "testBackupErrorCompletionFailed": "Vaše obnovovací fráze byla správná, ale výsledek se nepodařilo uložit. Zkuste to prosím znovu.",
   "backupCardTitle": "Chraňte své bitcoiny.",
-  "backupCardSubtitle": "Zazálohujte si peněženku hned teď."
+  "backupCardSubtitle": "Zazálohujte si peněženku hned teď.",
+  "backupWarningBackupLater": "NE, ROZUMÍM RIZIKU",
+  "backupWarningBackupNow": "ANO",
+  "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
+  "backupWarningLoseReasonCloudRestore": "Obnovení zařízení ze zálohy v cloudu",
+  "backupWarningLoseReasonCriticalIssue": "Dojde ke kritickému problému s aplikací nebo zařízením",
+  "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",
+  "backupWarningLoseReasonKeystore": "Zařízení zneplatní keystore při změně zámku obrazovky nebo ověřování zařízení",
+  "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
+  "backupWarningNoRecovery": "Bez zálohy nelze peněženku obnovit.",
+  "backupWarningTitle": "ZÁLOHUJTE SVOU PENĚŽENKU HNED TEĎ"
 }

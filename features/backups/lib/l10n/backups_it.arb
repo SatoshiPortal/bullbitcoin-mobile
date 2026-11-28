@@ -86,5 +86,15 @@
   "testBackupErrorCompletionFailed": "La tua frase di recupero era corretta, ma non è stato possibile salvare il risultato. Riprova.",
   "settingsBackupTitle": "Backup",
   "backupCardTitle": "Proteggi i tuoi bitcoin.",
-  "backupCardSubtitle": "Esegui ora il backup del tuo portafoglio."
+  "backupCardSubtitle": "Esegui ora il backup del tuo portafoglio.",
+  "backupWarningBackupLater": "NO, CAPISCO IL RISCHIO",
+  "backupWarningBackupNow": "SÌ",
+  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se:",
+  "backupWarningLoseReasonCloudRestore": "Ripristinare il dispositivo da un backup sul cloud",
+  "backupWarningLoseReasonCriticalIssue": "Si verifica un problema critico legato all'applicazione o al dispositivo",
+  "backupWarningLoseReasonDeletedApp": "Elimini l'app",
+  "backupWarningLoseReasonKeystore": "Il dispositivo invalida il keystore quando modifichi l'autenticazione della schermata di blocco o del dispositivo",
+  "backupWarningLoseReasonLostPhone": "Perdi il telefono",
+  "backupWarningNoRecovery": "Non c'è modo di recuperare il portafoglio senza un backup.",
+  "backupWarningTitle": "ESEGUI IL BACKUP DEL TUO PORTAFOGLIO ORA"
 }

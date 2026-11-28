@@ -76,16 +76,19 @@ final class PayinRunner {
   );
   final Map<String, StreamSubscription<PayjoinProgress>> _payjoins = {};
   bool _closed = false;
+  bool _witnessed = false;
 
   PayinRunner(this._calls, this._gate, this._session, this._emit);
 
+  void useWitnessedWallet() => _witnessed = true;
+
   void run(List<PayinEffect<PayinSpend>> effects) {
+    if (_closed) return;
     for (final effect in effects) {
       switch (effect) {
         case final PayinBuild<PayinSpend> build:
           _answer(
-            _calls
-                .build(build)
+            _build(build)
                 .then((r) => PayinBuildAnswered(build.attempt, r, clock.now())),
           );
         case final PayinSend<PayinSpend> send:
@@ -120,11 +123,31 @@ final class PayinRunner {
         case PayinStopPayjoin(:final sessionId):
           unawaited(_payjoins.remove(sessionId)?.cancel());
         case PayinRetryPayjoin(:final sessionId):
-          unawaited(_calls.retryPayjoin(sessionId));
+          // A persisted session ID cannot rebind a foreground attempt.
+          // Leave watches/reconciliation in place after a previous handoff.
+          if (!_witnessed) unawaited(_calls.retryPayjoin(sessionId));
         case PayinWatchEffect(:final effect):
           _watch.run(effect);
       }
     }
+  }
+
+  Future<PayinBuildResult<PayinSpend>> _build(
+    PayinBuild<PayinSpend> effect,
+  ) async {
+    final attempt = effect.spend.walletAttempt;
+    if (attempt == null) return _calls.build(effect);
+    const refused = PayinBuildFailed<PayinSpend>(
+      PayinBuildProblem.notAuthorized,
+    );
+    if (!attempt.isCurrent) return refused;
+    final result = await _calls.build(effect);
+    if (!attempt.isCurrent) return refused;
+    if (result case PayinBuildOk(:final built)
+        when !identical(built.spend.walletAttempt, attempt)) {
+      return refused;
+    }
+    return result;
   }
 
   Future<PayinEvent<PayinSpend>> _verify(

@@ -11,6 +11,7 @@ export 'src/domain/coins_failure.dart';
 export 'src/domain/wallet_utxo.dart';
 export 'src/coin_selection_sheet.dart'
     show CoinSelectionEntry, CoinSelectionLabels, CoinSelectionSheet;
+export 'src/ui/widgets/coins_entry.dart' show CoinsEntry;
 export 'src/ui/widgets/coins_entry_subtitle.dart' show CoinsEntrySubtitle;
 export 'src/ui/widgets/wallet_coin_selection.dart' show walletCoinSelection;
 

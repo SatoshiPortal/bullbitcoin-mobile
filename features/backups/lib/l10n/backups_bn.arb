@@ -233,5 +233,15 @@
   "testBackupErrorSeedNotMnemonic": "এই ওয়ালেটে পরীক্ষা করার মতো কোনো পুনরুদ্ধার বাক্যাংশ নেই।",
   "testBackupErrorCompletionFailed": "আপনার পুনরুদ্ধার বাক্যাংশ সঠিক ছিল, কিন্তু আমরা ফলাফল সংরক্ষণ করতে পারিনি। আবার চেষ্টা করুন।",
   "backupCardTitle": "আপনার বিটকয়েন সুরক্ষিত করুন।",
-  "backupCardSubtitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন।"
+  "backupCardSubtitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন।",
+  "backupWarningBackupLater": "না, আমি ঝুঁকি বুঝি",
+  "backupWarningBackupNow": "হ্যাঁ",
+  "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
+  "backupWarningLoseReasonCloudRestore": "ক্লাউড ব্যাকআপ থেকে আপনার ডিভাইস রিস্টোর করা",
+  "backupWarningLoseReasonCriticalIssue": "কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যা হলে",
+  "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",
+  "backupWarningLoseReasonKeystore": "আপনি লকস্ক্রিন বা ডিভাইস অথেন্টিকেশন পরিবর্তন করলে আপনার ডিভাইস কীস্টোর (keystore) বাতিল করে দেয়",
+  "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
+  "backupWarningNoRecovery": "ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
+  "backupWarningTitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন"
 }

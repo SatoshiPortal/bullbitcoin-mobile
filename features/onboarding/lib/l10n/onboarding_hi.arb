@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "कस्टम Mempool सर्वर",
   "onboardingAdvancedOptionsCustomRecoverbull": "कस्टम Recoverbull सर्वर",
   "onboardingAdvancedOptionsFooter": "आप इन सेटिंग्स को बाद में App Settings में बदल सकते हैं",
-  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।"
+  "onboardingBackupVerificationError": "आपका वॉलेट पुनर्प्राप्त कर लिया गया, लेकिन बैकअप सत्यापन पूरा नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "electrumMainnet": "मेननेट",
+  "electrumTestnet": "टेस्टनेट",
+  "importWalletImportMnemonic": "Mnemonic",
+  "networkFeatureUnavailable": "यह सुविधा चुने गए नेटवर्क पर उपलब्ध नहीं है।",
+  "onboardingCreateWalletButtonLabel": "वॉलेट बनाएं",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "जो वॉलेट आप हटाने की कोशिश कर रहे हैं वह मौजूद नहीं है।",
+  "walletDetailsWalletFingerprintLabel": "वॉलेट फ़िंगरप्रिंट",
+  "walletLoadFailed": "आपके वॉलेट लोड नहीं हो सके। अपना कनेक्शन जाँचें और फिर से प्रयास करें।"
 }

@@ -24,5 +24,14 @@
   "onboardingCreateNewWallet": "Ստեղծել նոր դրամապանակ",
   "continueButton": "Շարունակել",
   "torSettingsTitle": "Tor կարգավորումներ",
-  "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։"
+  "onboardingBackupVerificationError": "Ձեր դրամապանակը վերականգնվեց, բայց պահուստավորման ստուգումը չհաջողվեց ավարտել։ Կրկին փորձեք։",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Ներմուծել մնեմոնիկ",
+  "networkFeatureUnavailable": "Այս գործառույթն անհասանելի է ընտրված ցանցում։",
+  "onboardingCreateWalletButtonLabel": "Ստեղծել դրամապանակ",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Դրամապանակը, որը փորձում եք ջնջել, գոյություն չունի։",
+  "walletDetailsWalletFingerprintLabel": "Դրամապանակի մատնահետք",
+  "walletLoadFailed": "Չհաջողվեց բեռնել ձեր դրամապանակները։ Ստուգեք կապը և կրկին փորձեք։"
 }

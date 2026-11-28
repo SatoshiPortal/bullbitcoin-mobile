@@ -24,5 +24,14 @@
   "onboardingCreateNewWallet": "Tạo ví mới",
   "continueButton": "Tiếp tục",
   "torSettingsTitle": "Cài đặt Tor",
-  "onboardingBackupVerificationError": "Ví của bạn đã được khôi phục, nhưng không thể hoàn tất việc xác minh bản sao lưu. Vui lòng thử lại."
+  "onboardingBackupVerificationError": "Ví của bạn đã được khôi phục, nhưng không thể hoàn tất việc xác minh bản sao lưu. Vui lòng thử lại.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Nhập Mnemonic",
+  "networkFeatureUnavailable": "Tính năng này không khả dụng trên mạng đã chọn.",
+  "onboardingCreateWalletButtonLabel": "Tạo ví",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Ví bạn đang cố xóa không tồn tại.",
+  "walletDetailsWalletFingerprintLabel": "Fingerprint của ví",
+  "walletLoadFailed": "Không thể tải ví của bạn. Hãy kiểm tra kết nối và thử lại."
 }

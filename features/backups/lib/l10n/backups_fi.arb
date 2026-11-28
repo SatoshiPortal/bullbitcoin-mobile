@@ -86,5 +86,15 @@
   "testBackupErrorSeedNotMnemonic": "Tällä lompakolla ei ole testattavaa palautuslausetta.",
   "testBackupErrorCompletionFailed": "Palautuslauseesi oli oikein, mutta tulosta ei voitu tallentaa. Yritä uudelleen.",
   "backupCardTitle": "Suojaa bitcoinisi.",
-  "backupCardSubtitle": "Varmuuskopioi lompakkosi nyt."
+  "backupCardSubtitle": "Varmuuskopioi lompakkosi nyt.",
+  "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
+  "backupWarningBackupNow": "KYLLÄ",
+  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos:",
+  "backupWarningLoseReasonCloudRestore": "palautat laitteen pilvivarmuuskopiosta",
+  "backupWarningLoseReasonCriticalIssue": "kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman",
+  "backupWarningLoseReasonDeletedApp": "poistat sovelluksen",
+  "backupWarningLoseReasonKeystore": "laitteesi mitätöi keystoren, kun vaihdat lukitusnäytön tai laitteen tunnistautumistavan",
+  "backupWarningLoseReasonLostPhone": "kadotat puhelimesi",
+  "backupWarningNoRecovery": "Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
+  "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT"
 }

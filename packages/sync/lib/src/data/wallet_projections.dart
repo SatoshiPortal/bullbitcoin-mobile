@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:primitives/primitives.dart';
+import 'package:secrets/storage.dart'
+    show WalletCatalogueSignal, WalletCatalogueStamp;
 
 import '../domain/coin_freezes.dart';
 import '../domain/observed.dart';
 import '../domain/ports/wallet_revision_reader_port.dart';
+import '../domain/ports/wallet_catalog_port.dart';
 import '../domain/sync_failure.dart';
 import '../domain/wallet_key.dart';
 import '../domain/wallet_revision.dart';
@@ -72,6 +75,18 @@ abstract interface class FrameSource {
   );
 }
 
+/// A source whose frame mapping can be performed against an exact catalogue.
+abstract interface class CatalogueFrameSource implements FrameSource {
+  Future<Result<LoadedFrame, SyncFailure>> loadFrom(
+    WalletKey key,
+    WalletFrame? current,
+    WalletCatalogPort catalog,
+  );
+}
+
+bool _sameCatalogue(WalletCatalogueStamp? a, WalletCatalogueStamp b) =>
+    a != null && identical(a.grant, b.grant) && a.generation == b.generation;
+
 /// The published values of every wallet in this isolate.
 ///
 /// A slot holds one immutable frame. Publication builds the whole frame, then
@@ -87,6 +102,8 @@ final class WalletProjections {
   final FrameSource _source;
   final FreezePolicy freezes;
   final _slots = <WalletKey, _Slot>{};
+  final WalletCatalogueSignal? catalogueSignal;
+  final WalletCatalogPort? Function(WalletCatalogueStamp)? bindCatalogue;
   final _pendingReads = <Future<void>>{};
   late final StreamSubscription<WalletRevisionState> _subscription;
   late final StreamSubscription<void> _freezeSubscription;
@@ -98,6 +115,8 @@ final class WalletProjections {
     required Stream<WalletRevisionState> changes,
     required this._source,
     required this.freezes,
+    this.catalogueSignal,
+    this.bindCatalogue,
   }) {
     _subscription = changes.listen(_changed);
     // A freeze change republishes coins without reloading any wallet.
@@ -112,6 +131,50 @@ final class WalletProjections {
   bool get isClosed => _closed;
 
   _Slot _slot(WalletKey key) => _slots.putIfAbsent(key, _Slot.new);
+
+  /// Retains only the scalar. Does not publish a general-purpose wallet frame
+  /// (which would wake observers and schedule address or freeze reads).
+  Future<Result<WalletRevision, SyncFailure>> retainBalance(
+    WalletKey key,
+    WalletCatalogueStamp catalogue, {
+    required bool Function() isCurrent,
+    required Result<WalletRevisionState, SyncFailure> Function() readCommitted,
+    required Future<Result<BigInt, SyncFailure>> Function(WalletRevision)
+    mapBalance,
+    Future<void> Function()? beforePublication,
+  }) {
+    bool current() => !_closed && isCurrent();
+    if (!current()) return Future.value(const Err(SyncClosedFailure()));
+    final slot = _slot(key);
+    final run = slot.tail.then<Result<WalletRevision, SyncFailure>>((_) async {
+      if (!current()) return const Err(SyncClosedFailure());
+      final epoch = slot.epoch;
+      final initial = readCommitted();
+      if (initial case Err(:final failure)) return Err(failure);
+      final stamp =
+          (initial as Ok<WalletRevisionState, SyncFailure>).value.stamp;
+      final balance = await mapBalance(stamp);
+      if (!current()) return const Err(SyncClosedFailure());
+      if (balance case Err(:final failure)) return Err(failure);
+      if (beforePublication != null) await beforePublication();
+      if (!current()) return const Err(SyncClosedFailure());
+      if (slot.epoch != epoch) return const Err(SyncNotFoundFailure());
+      final settled = readCommitted();
+      if (settled case Err(:final failure)) return Err(failure);
+      if ((settled as Ok<WalletRevisionState, SyncFailure>).value.stamp !=
+          stamp) {
+        return const Err(SyncBusyFailure());
+      }
+      slot.financial = (
+        catalogue: catalogue,
+        stamp: stamp,
+        totalSat: (balance as Ok<BigInt, SyncFailure>).value,
+      );
+      return Ok(stamp);
+    });
+    slot.tail = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return run;
+  }
 
   /// The active generation of [key], from revision metadata only.
   Future<Result<int, SyncFailure>> generation(WalletKey key) async {
@@ -145,19 +208,29 @@ final class WalletProjections {
   /// Calls for one wallet run one after the other.
   Future<Result<WalletRevision, SyncFailure>> load(
     WalletKey key,
-    int generation,
-  ) async => switch (await _enqueue(key, generation)) {
+    int generation, {
+    WalletCatalogueStamp? catalogue,
+  }) async => switch (await _enqueue(key, generation, catalogue: catalogue)) {
     Ok(:final value) => Ok(value.frame.revision),
     Err(:final failure) => Err(failure),
   };
 
   Future<Result<({WalletFrame frame, bool exact}), SyncFailure>> _enqueue(
     WalletKey key,
-    int generation,
-  ) {
+    int generation, {
+    WalletCatalogueStamp? catalogue,
+  }) {
     if (_closed) return Future.value(const Err(SyncClosedFailure()));
+    final signal = catalogueSignal;
+    final stamp = catalogue ?? signal?.capture();
+    final bound = stamp == null ? null : bindCatalogue?.call(stamp);
+    if (signal != null && bound == null) {
+      return Future.value(const Err(SyncClosedFailure()));
+    }
     final slot = _slot(key);
-    final run = slot.tail.then((_) => _load(key, slot, generation));
+    final run = slot.tail.then(
+      (_) => _load(key, slot, generation, stamp, bound),
+    );
     slot.tail = run.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     return run;
   }
@@ -166,12 +239,17 @@ final class WalletProjections {
     WalletKey key,
     _Slot slot,
     int generation,
+    WalletCatalogueStamp? catalogue,
+    WalletCatalogPort? bound,
   ) async {
-    if (_closed) return const Err(SyncClosedFailure());
+    bool currentCatalogue() =>
+        !_closed &&
+        (catalogue == null || catalogueSignal?.isCurrent(catalogue) == true);
+    if (!currentCatalogue()) return const Err(SyncClosedFailure());
     // A delete or re-import seen while this load runs invalidates it.
     final epoch = slot.epoch;
     final state = await _revisions.read(key);
-    if (_closed) return const Err(SyncClosedFailure());
+    if (!currentCatalogue()) return const Err(SyncClosedFailure());
     switch (state) {
       case Err(:final failure):
         if (failure is SyncNotFoundFailure) _fail(slot, failure);
@@ -185,12 +263,18 @@ final class WalletProjections {
           return const Err(SyncNotFoundFailure());
         }
     }
-    final current = slot.frame;
-    final result = await _source.load(
-      key,
-      current?.revision.generation == generation ? current : null,
-    );
-    if (_closed) return const Err(SyncClosedFailure());
+    final prior = slot.frame;
+    final current =
+        prior?.revision.generation == generation &&
+            (catalogue == null ||
+                _sameCatalogue(slot.frameCatalogue, catalogue))
+        ? prior
+        : null;
+    final source = _source;
+    final result = bound != null && source is CatalogueFrameSource
+        ? await source.loadFrom(key, current, bound)
+        : await source.load(key, current);
+    if (!currentCatalogue()) return const Err(SyncClosedFailure());
     switch (result) {
       case Err(:final failure):
         _fail(slot, failure);
@@ -200,7 +284,7 @@ final class WalletProjections {
         // the committed one once the load is over: a witness read before the
         // load would accept a cache the writer has since moved past.
         final settled = await _revisions.read(key);
-        if (_closed) return const Err(SyncClosedFailure());
+        if (!currentCatalogue()) return const Err(SyncClosedFailure());
         // Nothing is published for a generation a delete or a re-import has
         // ended, even when the mapping started before it.
         if (slot.epoch != epoch) return const Err(SyncNotFoundFailure());
@@ -219,14 +303,41 @@ final class WalletProjections {
         }
         final exact =
             admitted &&
+            frame.revision.key == key &&
+            frame.revision.generation == generation &&
             committed.lifecycle == WalletLifecycle.active &&
             committed.stamp == frame.revision;
+        slot.frameCatalogue = exact ? catalogue : null;
+        if (exact &&
+            catalogue != null &&
+            bound != null &&
+            source is CatalogueFrameSource) {
+          slot.financial = (
+            catalogue: catalogue,
+            stamp: frame.revision,
+            totalSat: frame.balances.totalSat,
+          );
+        } else {
+          slot.financial = null;
+        }
         if (!identical(frame, slot.frame)) _publish(key, slot, frame);
         if (frame.revision.generation != generation) {
           return const Err(SyncNotFoundFailure());
         }
         return Ok((frame: frame, exact: exact));
     }
+  }
+
+  BigInt? retainedTotal(WalletCatalogueStamp catalogue, WalletRevision stamp) {
+    final value = _slots[stamp.key]?.financial;
+    if (_closed ||
+        catalogueSignal?.isCurrent(catalogue) != true ||
+        value == null ||
+        !_sameCatalogue(value.catalogue, catalogue) ||
+        value.stamp != stamp) {
+      return null;
+    }
+    return value.totalSat;
   }
 
   /// Loads, then returns the frame only if the reader admitted it and it was
@@ -261,6 +372,8 @@ final class WalletProjections {
   void _fail(_Slot slot, SyncFailure failure) {
     slot.epoch++;
     slot.frame = null;
+    slot.frameCatalogue = null;
+    slot.financial = null;
     slot.failure = failure;
     slot.derived.clear();
     slot.deriveFailures.clear();
@@ -401,6 +514,9 @@ final class WalletProjections {
 
 final class _Slot {
   WalletFrame? frame;
+  WalletCatalogueStamp? frameCatalogue;
+  ({WalletCatalogueStamp catalogue, WalletRevision stamp, BigInt totalSat})?
+  financial;
 
   /// Advanced by every invalidation; a load publishes only if it is unchanged.
   int epoch = 0;

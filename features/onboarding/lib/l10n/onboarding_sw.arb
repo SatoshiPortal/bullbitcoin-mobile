@@ -27,5 +27,14 @@
   "onboardingCreateNewWallet": "Unda Pochi Mpya",
   "continueButton": "Endelea",
   "torSettingsTitle": "Mipangilio ya Tor",
-  "onboardingBackupVerificationError": "Pochi yako imerejeshwa, lakini uthibitishaji wa hifadhi rudufu haukuweza kukamilika. Tafadhali jaribu tena."
+  "onboardingBackupVerificationError": "Pochi yako imerejeshwa, lakini uthibitishaji wa hifadhi rudufu haukuweza kukamilika. Tafadhali jaribu tena.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Ingiza Msemo",
+  "networkFeatureUnavailable": "Kipengele hiki hakipatikani kwenye mtandao uliochaguliwa.",
+  "onboardingCreateWalletButtonLabel": "Unda pochi",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Pochi unayojaribu kufuta haipo.",
+  "walletDetailsWalletFingerprintLabel": "Alama ya vidole ya pochi",
+  "walletLoadFailed": "Pochi zako hazikuweza kupakiwa. Angalia muunganisho wako na ujaribu tena."
 }

@@ -14,7 +14,6 @@ import '../../../../features/send/test/payment/testing/send_spend_test_double.da
         BroadcastFailureCategory;
 
 import 'package:coins/coins.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
 import 'package:secrets/testing.dart';
 import 'package:secrets/secrets.dart' show WalletSigner;
 import 'package:primitives/primitives.dart'
@@ -72,7 +71,7 @@ abstract interface class PrepareLiquidSendUsecase {
 }
 
 abstract interface class PrepareBitcoinSendUsecase {
-  Future<Result<PreparedBitcoinSend, WalletFailure>> execute({
+  Future<Result<PreparedBitcoinSend, SendFailure>> execute({
     required String walletId,
     required List<primitives.BitcoinTransactionRecipient> recipients,
     required NetworkFee networkFee,
@@ -1689,7 +1688,7 @@ void main() {
   test('an in-flight old amount rebuild cannot repopulate signedPsbt after amountChanged', () async {
     final prepareStarted = Completer<void>();
     final prepareCompleter =
-        Completer<Result<PreparedBitcoinSend, WalletFailure>>();
+        Completer<Result<PreparedBitcoinSend, SendFailure>>();
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -1737,7 +1736,7 @@ void main() {
   test('an in-flight swap creation cannot repopulate signedPsbt after amountChanged', () async {
     final prepareStarted = Completer<void>();
     final prepareCompleter =
-        Completer<Result<PreparedBitcoinSend, WalletFailure>>();
+        Completer<Result<PreparedBitcoinSend, SendFailure>>();
     when(
       () => prepareBitcoin.execute(
         walletId: 'wallet-1',
@@ -1786,7 +1785,7 @@ void main() {
   test('an in-flight swap creation cannot repopulate after destination wallet changes', () async {
     final prepareStarted = Completer<void>();
     final prepareCompleter =
-        Completer<Result<PreparedBitcoinSend, WalletFailure>>();
+        Completer<Result<PreparedBitcoinSend, SendFailure>>();
     final destination = _destinationWallet();
     final replacementDestination = _destinationWallet(id: 'wallet-3');
     when(
@@ -1845,7 +1844,7 @@ void main() {
       final selected = _bitcoinUtxo('selected-tx');
       final prepareStarted = Completer<void>();
       final prepareCompleter =
-          Completer<Result<PreparedBitcoinSend, WalletFailure>>();
+          Completer<Result<PreparedBitcoinSend, SendFailure>>();
       when(
         () => prepareBitcoin.execute(
           walletId: 'wallet-1',
@@ -3825,12 +3824,12 @@ final class _SwapSpend extends FakeSpend {
         );
       }
       return Err(
-        switch ((result as Err<PreparedBitcoinSend, WalletFailure>).failure) {
-          WalletInsufficientFundsFailure() =>
+        switch ((result as Err<PreparedBitcoinSend, SendFailure>).failure) {
+          SendInsufficientBalanceFailure() =>
             const SpendInsufficientFundsFailure(),
-          WalletNoSpendableInputsFailure() =>
+          SendSelectedCoinsInsufficientFailure() =>
             const SpendNoSpendableInputsFailure(),
-          WalletSelectedInputsUnavailableFailure() =>
+          SendSelectedCoinsUnavailableFailure() =>
             const SpendSelectedInputsUnavailableFailure(),
           _ => const SpendBuildRefusedFailure(),
         },

@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:bull_ui/app_theme.dart';
 import 'package:transactions/testing.dart';
 import 'package:transactions/routes.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:overview/routes.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

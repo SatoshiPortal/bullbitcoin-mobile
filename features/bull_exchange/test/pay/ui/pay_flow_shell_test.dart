@@ -18,6 +18,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
+import 'package:sync/sync.dart' show WalletKey;
 
 import '../pay_fixtures.dart';
 
@@ -38,7 +40,14 @@ RecipientsServices _recipients() {
 }
 
 final ExchangePayinUi _ui = (
-  walletCards: (context, onSelected) => const SizedBox(key: Key('wallets')),
+  walletCards: (_, onSelected) => TextButton(
+    onPressed: () => onSelected?.call((
+      key: WalletKey(id: 'btc:regtest', network: BitcoinNetwork.regtest),
+      label: null,
+      isDefault: true,
+    )),
+    child: const Text('Pick Bitcoin wallet'),
+  ),
   openWalletHome: (context) {},
   brandAsset: 'assets/none.png',
   successAsset: 'assets/none.png',
@@ -77,6 +86,31 @@ Future<ExchangeLocalizations> _pump(
 }
 
 void main() {
+  testWidgets('Pay preserves the selected wallet ID and default marker', (
+    tester,
+  ) async {
+    final events = <PayFlowEvent>[];
+    await _pump(tester, paySourceState, events: events);
+    await tester.tap(find.text('Pick Bitcoin wallet'));
+    expect(
+      (events.single as PaySourcePicked).source,
+      const PayinFromAppWallet(
+        'btc:regtest',
+        BtcNetwork.bitcoin,
+        isDefault: true,
+      ),
+    );
+  });
+
+  testWidgets('back cancels Pay source selection without picking a wallet', (
+    tester,
+  ) async {
+    final events = <PayFlowEvent>[];
+    await _pump(tester, paySourceState, events: events);
+    await tester.tap(find.byType(BackButton));
+    expect(events.single, isA<PayBackPressed>());
+  });
+
   testWidgets('each step shows its page on top', (tester) async {
     await _pump(tester, payAmountState);
     expect(find.byType(PayAmountPage), findsOneWidget);

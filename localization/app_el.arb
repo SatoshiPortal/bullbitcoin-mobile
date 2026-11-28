@@ -1,11 +1,4 @@
 {
-  "backupWarningDescription": "Χωρίς αντίγραφο ασφαλείας, θα χάσετε την πρόσβαση στα bitcoin σας εάν:",
-  "backupWarningLoseReasonLostPhone": "Χάσετε το τηλέφωνό σας",
-  "backupWarningLoseReasonDeletedApp": "Διαγράψετε την εφαρμογή",
-  "backupWarningLoseReasonCriticalIssue": "Προκύψει κρίσιμο πρόβλημα στην εφαρμογή ή τη συσκευή",
-  "backupWarningLoseReasonKeystore": "Η συσκευή σας ακυρώνει το keystore όταν αλλάζετε την οθόνη κλειδώματος ή τον έλεγχο ταυτότητας της συσκευής",
-  "backupWarningLoseReasonCloudRestore": "Επαναφορά της συσκευής σας από αντίγραφο ασφαλείας στο cloud",
-  "backupWarningNoRecovery": "Δεν υπάρχει τρόπος να ανακτήσετε το πορτοφόλι σας χωρίς αντίγραφο ασφαλείας.",
   "swapMax": "MAX",
   "@swapMax": {
     "description": "MAX button label"
@@ -4257,9 +4250,6 @@
   "statusScreenContinue": "Συνέχεια",
   "viewerAddressTab": "Διεύθυνση",
   "viewerPaymentUriTab": "URI πληρωμής",
-  "backupWarningTitle": "ΔΗΜΙΟΥΡΓΗΣΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΡΑ",
-  "backupWarningBackupNow": "ΝΑΙ",
-  "backupWarningBackupLater": "ΟΧΙ, ΚΑΤΑΛΑΒΑΙΝΩ ΤΟΝ ΚΙΝΔΥΝΟ",
   "transactionSwapOpenWithin24h": "Ανοίξτε την εφαρμογή εντός 24 ωρών για να ολοκληρώσετε την ανταλλαγή σας.",
   "mempoolErrorUnexpected": "Παρουσιάστηκε ένα μη αναμενόμενο σφάλμα",
   "mempoolErrorUpdateSettingsFailed": "Αποτυχία ενημέρωσης ρυθμίσεων: {error}",

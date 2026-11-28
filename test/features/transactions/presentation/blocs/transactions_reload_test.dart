@@ -1,17 +1,11 @@
-import 'package:bb_mobile/features/wallet/domain/wallet_failure.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_failure_log_code.dart';
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:transactions/testing.dart';
 
 import 'dart:async';
 
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Failure, Ok;
 
 import 'package:overview/setup.dart';
 import 'package:overview/overview.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sync/sync.dart' hide Wallet;
@@ -20,27 +14,15 @@ class _Read extends Mock implements GetTransactionsUsecase {}
 
 class _Labels extends Mock implements RefreshTransactionLabelsUsecase {}
 
-class _Wallets extends Mock implements GetWalletsUsecase {}
-
-class _Sync extends Mock implements WalletRepository {}
-
-class _Wallet extends Mock implements Wallet {}
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  registerFallbackValue(SyncReason.auto);
-
   testWidgets('wallet-scoped history still reloads only its own wallet', (
     tester,
   ) async {
     final read = _Read();
     final revisions = StreamController<WalletRevisionState>.broadcast();
-    final finishes = StreamController<Wallet>.broadcast();
+    final finishes = StreamController<String>.broadcast();
     final facade = walletHistoryEvents(revisions.stream);
-    final a = _Wallet();
-    final b = _Wallet();
-    when(() => a.id).thenReturn('a');
-    when(() => b.id).thenReturn('b');
     var reads = 0;
     when(() => read.execute(walletId: 'a')).thenAnswer((_) async {
       reads++;
@@ -56,9 +38,7 @@ void main() {
       getTransactionsUsecase: read,
       refreshTransactionLabelsUsecase: _Labels(),
       watchStartedWalletSyncsUsecase: const Stream.empty(),
-      watchFinishedWalletSyncsUsecase: finishes.stream.map(
-        (wallet) => wallet.id,
-      ),
+      watchFinishedWalletSyncsUsecase: finishes.stream,
       watchWalletRevisionsUsecase: WatchWalletRevisionsUsecase(facade),
       watchTransactionReloadsUsecase: WatchTransactionReloadsUsecase(facade),
     );
@@ -68,12 +48,12 @@ void main() {
       await finishes.close();
     });
     revisions.add(_revision('b'));
-    finishes.add(b);
+    finishes.add('b');
     await tester.pump();
     await tester.pump(const Duration(seconds: 4));
     expect(reads, 0);
     revisions.add(_revision('a'));
-    finishes.add(a);
+    finishes.add('a');
     await tester.pump();
     await tester.pump(const Duration(seconds: 4));
     expect(reads, 1);
@@ -84,24 +64,30 @@ void main() {
     tester,
   ) async {
     final read = _Read();
-    final wallets = _Wallets();
-    final sync = _Sync();
-    final a = _Wallet();
-    final b = _Wallet();
+    final a = WalletKey(id: 'a', network: BitcoinNetwork.mainnet);
+    final b = WalletKey(id: 'b', network: BitcoinNetwork.mainnet);
     final first = Completer<void>();
     final second = Completer<void>();
     final revisions = StreamController<WalletRevisionState>.broadcast();
-    final finishes = StreamController<Wallet>.broadcast();
-    final coordinator = SyncCoordinator<Wallet, WalletFailure>(
-      walletKey: (wallet) =>
-          WalletKey(id: wallet.id, network: wallet.network.shared),
-      classifyFailure: (failure) =>
-          (empty: failure is NoWalletsFoundFailure, code: failure.logCode),
-      getWallets: ({onlyBitcoin, onlyLiquid}) async => (await wallets.execute(
-        onlyBitcoin: onlyBitcoin,
-        onlyLiquid: onlyLiquid,
-      )).map((wallets) => WalletRead<Wallet, WalletFailure>(wallets)),
-      syncWallet: sync.sync,
+    final finishes = StreamController<WalletKey>.broadcast();
+    var walletRuns = 0;
+    final coordinator = SyncCoordinator<WalletKey, Failure>(
+      walletKey: (wallet) => wallet,
+      classifyFailure: (_) => (empty: false, code: 'unexpected'),
+      getWallets: ({onlyBitcoin, onlyLiquid}) async =>
+          Ok(WalletRead<WalletKey, Failure>([a, b])),
+      syncWallet:
+          (
+            wallet, {
+            discover = false,
+            allowInitialScan = false,
+            reason = SyncReason.auto,
+          }) async {
+            walletRuns++;
+            await (wallet == a ? first.future : second.future);
+            revisions.add(_revision(wallet.id));
+            finishes.add(wallet);
+          },
     );
     final facade = walletHistoryEvents(
       revisions.stream,
@@ -109,25 +95,6 @@ void main() {
       syncPassActivity: coordinator.syncPassActivity,
       isSyncPassActive: () => coordinator.isSyncPassActive,
     );
-    when(() => a.id).thenReturn('a');
-    when(() => b.id).thenReturn('b');
-    when(() => wallets.execute(onlyBitcoin: true))
-        .thenAnswer((_) async => Ok([a, b]));
-    var walletRuns = 0;
-    for (final entry in [(a, first), (b, second)]) {
-      when(
-        () => sync.sync(
-          entry.$1,
-          discover: any(named: 'discover'),
-          reason: any(named: 'reason'),
-        ),
-      ).thenAnswer((_) async {
-        walletRuns++;
-        await entry.$2.future;
-        revisions.add(_revision(entry.$1.id));
-        finishes.add(entry.$1);
-      });
-    }
     var finishSubscriptions = 0;
     final legacyFinishes = StreamController<String>.broadcast(
       onListen: () => finishSubscriptions++,

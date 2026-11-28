@@ -4,7 +4,6 @@ import 'package:primitives/primitives.dart'
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:preferences/preferences.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet_error.dart';
 import 'package:wallet_import/testing.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -127,9 +126,7 @@ void main() {
         inFlight--;
         return Ok(settings);
       });
-      failCreateWalletWith(
-        const WalletAlreadyExistsException('existing-wallet-id'),
-      );
+      failCreateWalletWith(Exception('wallet already exists'));
 
       await Future.wait([
         usecase.execute(mnemonicWords: words, language: bip39.Language.english),
@@ -172,9 +169,7 @@ void main() {
       );
       when(() => settingsRepository.fetch())
           .thenAnswer((_) async => Ok(settings));
-      failCreateWalletWith(
-        const WalletAlreadyExistsException('existing-wallet-id'),
-      );
+      failCreateWalletWith(Exception('wallet already exists'));
 
       final result = await usecase.execute(
         mnemonicWords: words,

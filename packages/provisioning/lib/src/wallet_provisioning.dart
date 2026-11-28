@@ -495,3 +495,14 @@ final class _WalletProvisioning implements WalletProvisioning {
     BitcoinNetwork.signet => 'bitcoinSignet',
   };
 }
+
+/// For owner test support only; delegates to the production identity codec.
+String walletIdForTesting({
+  required String fingerprint,
+  required Network network,
+  required ScriptType scriptType,
+}) => _WalletProvisioning._id(fingerprint, network, scriptType);
+
+/// For owner test support only; delegates to the production storage codec.
+String storedWalletNetworkForTesting(Network network) =>
+    _WalletProvisioning._networkCode(network);

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:primitives/primitives.dart';
 import 'package:startup/startup.dart';
 
 final class _Probe {
@@ -127,7 +128,7 @@ void main() {
         late final SessionEngines engines;
         engines = SessionEngines([probe.engine()]);
         final startup = ForegroundWalletStartup(
-          initialize: () async {},
+          initialize: () async => const Ok(null),
           startWatchers: () {
             if (engines.isLocked) startedWhileLocked++;
             starts++;

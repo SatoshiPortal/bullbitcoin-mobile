@@ -5,9 +5,11 @@ import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:rust_bindings/lwk.dart' as lwk;
 import 'package:primitives/primitives.dart';
 
+import '../../domain/sync_failure.dart';
 import '../../domain/wallet_revision.dart';
 import '../../domain/wallet_values.dart';
 import '../wallet_projections.dart';
+import 'wallet_snapshot_reader.dart' show WalletSnapshotException;
 
 /// Confirmation count for an output confirmed at [height], given the wallet's
 /// [tip]. Null (unconfirmed) is 0; clamped to 0 when a reorg or mid-sync
@@ -178,6 +180,30 @@ DerivedAddress bitcoinAddress(bdk.Wallet wallet, Keychain keychain, int index) {
   }
 }
 
+Future<BigInt> liquidPolicyBalance(
+  lwk.Wallet wallet, {
+  bool Function()? isCurrent,
+}) async => _liquidPolicyBalance(
+  wallet,
+  await wallet.policyAsset(),
+  isCurrent: isCurrent,
+);
+
+Future<BigInt> _liquidPolicyBalance(
+  lwk.Wallet wallet,
+  String policy, {
+  bool Function()? isCurrent,
+}) async {
+  if (isCurrent?.call() == false) {
+    throw const WalletSnapshotException(SyncClosedFailure());
+  }
+  return (await wallet.balances())
+          .where((balance) => balance.assetId == policy)
+          .firstOrNull
+          ?.value ??
+      (throw const LiquidMappingException('policy asset balance'));
+}
+
 /// Maps a hydrated Liquid reader handle into frame data. L-BTC only: coins
 /// and balances of other assets are not published.
 Future<WalletFrameData> liquidFrameData(
@@ -185,12 +211,7 @@ Future<WalletFrameData> liquidFrameData(
   WalletRevision revision,
 ) async {
   final policy = await wallet.policyAsset();
-  final total =
-      (await wallet.balances())
-          .where((balance) => balance.assetId == policy)
-          .firstOrNull
-          ?.value ??
-      (throw const LiquidMappingException('policy asset balance'));
+  final total = await _liquidPolicyBalance(wallet, policy);
   final balances = Balances(
     confirmedSat: total,
     immatureSat: BigInt.zero,

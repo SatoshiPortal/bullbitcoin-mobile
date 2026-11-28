@@ -75,5 +75,14 @@
   "onboardingAdvancedOptionsCustomMempool": "خادم Mempool مخصص",
   "onboardingAdvancedOptionsCustomRecoverbull": "خادم Recoverbull مخصص",
   "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
-  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى."
+  "onboardingBackupVerificationError": "تم استرداد محفظتك، ولكن تعذر إكمال التحقق من النسخة الاحتياطية. يرجى المحاولة مرة أخرى.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Import Mnemonic",
+  "networkFeatureUnavailable": "هذه الميزة غير متاحة على الشبكة المحددة.",
+  "onboardingCreateWalletButtonLabel": "محفظة إنشاء",
+  "receiveLiquid": "سائل",
+  "walletDeletionErrorWalletNotFound": "المحفظة التي تحاول حذفها ليست موجودة.",
+  "walletDetailsWalletFingerprintLabel": "بصمت",
+  "walletLoadFailed": "تعذّر تحميل محافظك. تحقق من اتصالك وحاول مرة أخرى."
 }

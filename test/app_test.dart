@@ -7,6 +7,7 @@ import 'package:primitives/primitives.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sync/sync.dart';
 
 class _MockPayjoinLifecycle extends Mock implements PayjoinLifecycle {}
 
@@ -14,7 +15,7 @@ void main() {
   test('foreground recovery waits for wallet runtime startup', () async {
     final lifecycle = _MockPayjoinLifecycle();
     when(lifecycle.resume).thenAnswer((_) async => const Ok(null));
-    final initialized = Completer<void>();
+    final initialized = Completer<Result<void, SyncFailure>>();
     var starts = 0;
     final startup = ForegroundWalletStartup(
       initialize: () => initialized.future,
@@ -29,7 +30,7 @@ void main() {
     resumePayjoinsOnAppResume(AppLifecycleState.resumed, startup);
     expect(starts, 0);
     verifyNever(lifecycle.resume);
-    initialized.complete();
+    initialized.complete(const Ok(null));
     await starting;
     expect(starts, 1);
     verify(lifecycle.resume).called(1);

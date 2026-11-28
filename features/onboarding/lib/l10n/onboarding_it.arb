@@ -27,5 +27,14 @@
   "onboardingAdvancedOptionsCustomMempool": "Server Mempool personalizzato",
   "onboardingAdvancedOptionsCustomRecoverbull": "Server Recoverbull personalizzato",
   "onboardingAdvancedOptionsFooter": "Puoi modificare queste impostazioni in seguito nelle impostazioni dell'app",
-  "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova."
+  "onboardingBackupVerificationError": "Il tuo portafoglio è stato recuperato, ma la verifica del backup non è stata completata. Riprova.",
+  "electrumMainnet": "Mainnet",
+  "electrumTestnet": "Testnet",
+  "importWalletImportMnemonic": "Importazione della mnemonica",
+  "networkFeatureUnavailable": "Questa funzione non è disponibile sulla rete selezionata.",
+  "onboardingCreateWalletButtonLabel": "Crea portafoglio",
+  "receiveLiquid": "Liquid",
+  "walletDeletionErrorWalletNotFound": "Il portafoglio che stai cercando di eliminare non esiste.",
+  "walletDetailsWalletFingerprintLabel": "Impronta portafoglio (fingerprint)",
+  "walletLoadFailed": "Non è stato possibile caricare i tuoi portafogli. Controlla la connessione e riprova."
 }

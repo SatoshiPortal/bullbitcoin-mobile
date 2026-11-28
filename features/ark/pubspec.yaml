@@ -7,6 +7,7 @@ environment:
   sdk: '3.14.0'
   flutter: '3.50.1'
 dependencies:
+  address_view:
   fees:
   flutter:
     sdk: flutter
@@ -33,6 +34,7 @@ dependencies:
   shared_preferences: ^2.3.0
   shared_preferences_platform_interface: ^2.4.2
   path: ^1.9.1
+  spend:
   sync:
   sqlite3: ^3.5.2
   crypto: ^3.0.7
