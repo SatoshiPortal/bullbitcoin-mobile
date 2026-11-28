@@ -520,6 +520,34 @@ void main() {
     expect(state.totalSat, 350);
   });
 
+  test(
+    'a failed Silent refresh hides its previously admitted balance',
+    () async {
+      h.silent
+        ..enabled = true
+        ..setUp = true
+        ..wallet = silentWallet(700, network: BitcoinNetwork.mainnet);
+      await h.mount();
+      h.source.publish(
+        snapshot(OverviewCatalogueStatus.ready, [
+          homeWallet('btc', network: BitcoinNetwork.mainnet, balanceSat: 100),
+        ]),
+      );
+      await flushEvents();
+      expect(h.controller.current.silent.balanceSat, 700);
+      expect(h.controller.current.totalSat, 800);
+
+      h.silent.failRefresh = true;
+      await h.controller.refresh();
+      await flushEvents();
+
+      expect(h.controller.current.showSilentCard, isFalse);
+      expect(h.controller.current.silent.balanceSat, 0);
+      expect(h.controller.current.silent.loading, isFalse);
+      expect(h.controller.current.totalSat, 100);
+    },
+  );
+
   test('a silent wallet on another environment never joins Home', () async {
     await h.mount();
     h.silent

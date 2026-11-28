@@ -177,6 +177,7 @@ final class FakeSilent extends Fake implements Silent {
   bool enabled = false;
   bool setUp = false;
   SilentWallet? wallet;
+  bool failRefresh = false;
   int refreshes = 0;
 
   @override
@@ -191,6 +192,7 @@ final class FakeSilent extends Fake implements Silent {
   @override
   Future<Result<SilentWallet?, SilentFailure>> refresh() async {
     refreshes++;
+    if (failRefresh) return const Err(SilentUnexpected());
     return Ok(wallet);
   }
 
