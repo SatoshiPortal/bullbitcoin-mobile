@@ -3,6 +3,7 @@
 import contextlib
 import io
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -158,6 +159,29 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("TEST_RUN_MULTIVIEW=0", WORKFLOW)
         self.assertIn("TEST_TOTAL_SHARDS=${{ matrix.shards }}", WORKFLOW)
         self.assertIn("TRACE_ACCESS_SHARD: ${{ matrix.package == 'access' && '1' || '0' }}", WORKFLOW)
+
+    def test_every_matrix_expression_resolves_against_a_generated_job(self):
+        unit_tests = WORKFLOW.split("  unit-tests:\n", 1)[1].split("  unit-multiview:\n", 1)[0]
+        paths = set(re.findall(r"\bmatrix\.([A-Za-z_][A-Za-z0-9_.]*)", unit_tests))
+        self.assertEqual(paths, {"name", "package", "run", "shard", "shards"})
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            (workspace / "test").mkdir()
+            jobs, _ = tool.build_jobs(
+                mode=tool.IMPACTED,
+                packages="bb_mobile",
+                members={"bb_mobile": "."},
+                workspace=workspace,
+            )
+        for job in jobs:
+            for path in paths:
+                with self.subTest(job=job["name"], path=path):
+                    value = job
+                    for segment in path.split("."):
+                        self.assertIsInstance(value, dict)
+                        self.assertIn(segment, value)
+                        value = value[segment]
+                    self.assertIsNotNone(value)
 
     def test_static_checks_no_longer_run_an_aggregate_unit_shard(self):
         checks = WORKFLOW.split("  checks:\n", 1)[1].split("  # Each selected", 1)[0]
