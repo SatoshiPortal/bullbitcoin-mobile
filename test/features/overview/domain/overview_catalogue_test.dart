@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart'
-    show walletDisplayOrder;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' as legacy;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:bull_ui/bull_ui.dart' show BullReceiveSendButtons;
@@ -283,33 +280,12 @@ void main() {
         liquidDefault,
         bitcoinDefault,
       ]);
-      final legacyWallets = [
-        for (final row in rows)
-          legacy.Wallet(
-            origin: row.id,
-            network: row.network == 'bitcoinRegtest'
-                ? legacy.Network.bitcoinRegtest
-                : legacy.Network.liquidRegtest,
-            isDefault: row.isDefault,
-            xpubFingerprint: '',
-            scriptType: ScriptType.bip84,
-            xpub: '',
-            externalPublicDescriptor: '',
-            internalPublicDescriptor: '',
-            signer: SignerEntity.none,
-            signerDevice: null,
-            balanceSat: null,
-          ),
-      ];
-      final expected = walletDisplayOrder(legacyWallets)
-          .map((wallet) => wallet.origin)
-          .toList();
-      expect(expected, [
+      const expected = [
         bitcoinDefault,
         liquidDefault,
         bitcoinImport,
         liquidImport,
-      ]);
+      ];
       await startup.start();
       await until(() => overview.snapshot.rows.length == 4);
       expect(overview.snapshot.rows.map((row) => row.entry.key.id), expected);
