@@ -74,6 +74,8 @@ void main() {
           ),
         );
         when(() => wallets.stream).thenAnswer((_) => const Stream.empty());
+        when(() => wallets.walletActionChanges)
+            .thenAnswer((_) => const Stream.empty());
         final settings = _Settings();
         when(() => settings.state).thenReturn(
           const SettingsState(
