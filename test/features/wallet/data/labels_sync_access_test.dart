@@ -2,15 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:labels/backup.dart';
 import 'package:labels/testing.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart';
@@ -21,7 +17,6 @@ import 'package:sync/testing.dart';
 import 'package:sync/write.dart';
 
 import '../../../support/inventory_fixture.dart';
-import '../../../support/wallet_registrations.dart';
 
 const _id = 'wpkh([01234567/84h/1h/0h])';
 
@@ -72,26 +67,14 @@ void main() {
       inventory = _Inventory();
       catalog = _Catalog();
       locator = GetIt.asNewInstance();
-      openWallet = WalletLocator.walletAccess(locator);
+      openWallet = AuthorizedWalletAccess(
+        inventory: inventory,
+        runtime: locator.call<WalletNativeRuntime>,
+      ).open;
       final dir = Directory.systemTemp.createTempSync('labels-sync-');
       addTearDown(() => dir.delete(recursive: true));
       addTearDown(locator.reset);
-      final legacy = MemoryWalletRegistrations();
-      legacy.rows[_id] = const WalletMetadataModel(
-        id: _id,
-        networkCode: 'bitcoinMainnet',
-        masterFingerprint: '',
-        xpubFingerprint: '',
-        isEncryptedVaultTested: false,
-        isPhysicalBackupTested: false,
-        xpub: 'public',
-        externalPublicDescriptor: 'wpkh(public)',
-        internalPublicDescriptor: 'wpkh(change)',
-        signer: Signer.none,
-        isDefault: false,
-      );
       locator.registerSingleton<WalletInventory>(inventory);
-      locator.registerSingleton<WalletRegistrations>(legacy);
       final connections = _Connections();
       Future<String> directory() async => dir.path;
       runtimeResolutions = 0;
