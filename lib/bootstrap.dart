@@ -13,6 +13,7 @@ import 'package:bb_mobile/init.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotifications;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_logger/startup_bench.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSupportScope;
 import 'package:exchange/exchange.dart'
     show ExchangeAvailability, ExchangePlatform;
@@ -28,6 +29,7 @@ Future<void> startApp() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
+        StartupBench.start();
         final wizard = WizardFeature.mount();
         var allowDeveloperNetwork = false;
         try {
@@ -161,6 +163,7 @@ void _showInitError(Object error, {VoidCallback? onRetry}) {
 
 void _refreshDiagnosticContextAfterFirstFrame() {
   WidgetsBinding.instance.addPostFrameCallback((_) {
+    StartupBench.markOnce('app_first_frame');
     unawaited(log.refreshDiagnosticContext());
   });
 }
