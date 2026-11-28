@@ -1,15 +1,8 @@
-import '../../../support/wallet_registrations.dart';
-
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/write.dart';
 import 'package:sync/sync.dart';
@@ -17,7 +10,49 @@ import 'package:sync/sync.dart' as sync show Wallet;
 import 'package:sync/testing.dart' show MemoryFreezeStore;
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
 
-class _Metadata extends Mock implements WalletRegistrations {}
+final class _Catalog implements WalletCatalogPort {
+  final Map<String, PublicWalletDescriptor> rows;
+  bool failList = false;
+  int listCalls = 0;
+
+  _Catalog([Map<String, PublicWalletDescriptor>? rows]) : rows = rows ?? {};
+
+  @override
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async {
+    listCalls++;
+    if (failList) return const Err(SyncStorageFailure());
+    return Ok(rows.values.toList());
+  }
+
+  @override
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
+    WalletKey key,
+  ) async {
+    final descriptor = rows[key.id];
+    if (descriptor == null || descriptor.key != key) {
+      return const Err(SyncNotFoundFailure());
+    }
+    return Ok(descriptor);
+  }
+}
+
+T _value<T>(Result<T, SyncFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw WalletSnapshotException(failure),
+};
+
+BitcoinWalletDescriptor _descriptor({
+  required String id,
+  required BitcoinNetwork network,
+  required String external,
+  required String internal,
+}) => BitcoinWalletDescriptor(
+  key: WalletKey(id: id, network: network),
+  scriptType: ScriptType.bip84,
+  origin: id,
+  externalDescriptor: external,
+  internalDescriptor: internal,
+);
 
 class _Reserved implements ReservedAddressPort {
   @override
@@ -43,12 +78,11 @@ void main() {
     'failed service assembly closes metadata and permits a fresh open',
     () async {
       final directory = Directory.systemTemp.createTempSync('runtime-open-');
-      final metadata = _Metadata();
-      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+      final catalog = _Catalog();
       ForegroundStores? abandoned;
       var attempts = 0;
       final runtime = WalletNativeRuntime.open(
-        catalog: TestWalletCatalog(metadata),
+        catalog: catalog,
         reserved: _Reserved(),
         inputReservations: _NoInputReservations(),
         deleteCatalogEntry: (_) async => const Ok(null),
@@ -80,7 +114,7 @@ void main() {
         );
         expect(await runtime.initialize(), isA<Ok<void, SyncFailure>>());
         expect(attempts, 2);
-        verify(() => metadata.fetchAll()).called(1);
+        expect(catalog.listCalls, 1);
       } finally {
         await runtime.close();
         directory.deleteSync(recursive: true);
@@ -91,11 +125,10 @@ void main() {
     'failed initialization can be retried without failing startup',
     () async {
       final directory = Directory.systemTemp.createTempSync('runtime-retry-');
-      final metadata = _Metadata();
-      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+      final catalog = _Catalog();
       var attempts = 0;
       final runtime = WalletNativeRuntime.open(
-        catalog: TestWalletCatalog(metadata),
+        catalog: catalog,
         reserved: _Reserved(),
         inputReservations: _NoInputReservations(),
         deleteCatalogEntry: (_) async => const Ok(null),
@@ -125,10 +158,9 @@ void main() {
     'refresh tolerates an unknown key but reports revision storage failure',
     () async {
       final directory = Directory.systemTemp.createTempSync('runtime-refresh-');
-      final metadata = _Metadata();
-      when(() => metadata.fetchAll()).thenAnswer((_) async => []);
+      final catalog = _Catalog();
       final runtime = WalletNativeRuntime.open(
-        catalog: TestWalletCatalog(metadata),
+        catalog: catalog,
         reserved: _Reserved(),
         inputReservations: _NoInputReservations(),
         deleteCatalogEntry: (_) async => const Ok(null),
@@ -191,29 +223,19 @@ void main() {
       }
     }
 
-    final row = WalletMetadataModel(
-      networkCode: 'bitcoinTestnet',
+    final row = _descriptor(
       id: 'wpkh([aabbccdd/84h/1h/0h])',
-      masterFingerprint: 'aabbccdd',
-      xpubFingerprint: 'aabbccdd',
-      isEncryptedVaultTested: false,
-      isPhysicalBackupTested: false,
-      xpub: 'public',
-      externalPublicDescriptor: derive(bdk.KeychainKind.external_),
-      internalPublicDescriptor: derive(bdk.KeychainKind.internal),
-      signer: Signer.none,
-      isDefault: false,
+      network: BitcoinNetwork.testnet,
+      external: derive(bdk.KeychainKind.external_),
+      internal: derive(bdk.KeychainKind.internal),
     );
     secret.dispose();
     mnemonic.dispose();
-    final rows = <String, WalletMetadataModel>{row.id: row};
+    final rows = <String, PublicWalletDescriptor>{row.key.id: row};
     final deletedFromCatalog = <String>[];
-    final metadata = _Metadata();
-    when(() => metadata.fetchAll())
-        .thenAnswer((_) async => rows.values.toList());
-    when(() => metadata.fetch(row.id)).thenAnswer((_) async => rows[row.id]);
+    final catalog = _Catalog(rows);
     WalletNativeRuntime open() => WalletNativeRuntime.open(
-      catalog: TestWalletCatalog(metadata),
+      catalog: catalog,
       reserved: _Reserved(),
       inputReservations: _NoInputReservations(),
       deleteCatalogEntry: (key) async {
@@ -233,70 +255,56 @@ void main() {
     var runtime = open();
     // A loaded handle proves the wallet available, as builders used to
     // prove it by borrowing the native one.
-    Future<sync.Wallet> loaded(WalletMetadataModel model) async =>
-        WalletSyncBinding.value(
-          await runtime.loadWallet(
-            (WalletSyncBinding.descriptorFromMetadata(
-              model,
-            ) as Ok<PublicWalletDescriptor, SyncFailure>).value.key,
-          ),
-        );
+    Future<sync.Wallet> loaded(PublicWalletDescriptor model) async =>
+        _value(await runtime.loadWallet(model.key));
     try {
-      final unfinished = row.copyWith(
-        externalPublicDescriptor: 'wpkh(invalid)',
+      final unfinished = _descriptor(
+        id: row.key.id,
+        network: BitcoinNetwork.testnet,
+        external: 'wpkh(invalid)',
+        internal: row.internalDescriptor,
       );
-      rows[row.id] = unfinished;
+      rows[row.key.id] = unfinished;
       expect(
         await runtime.create(
-          WalletKey(id: unfinished.id, network: BitcoinNetwork.testnet),
+          WalletKey(id: unfinished.key.id, network: BitcoinNetwork.testnet),
         ),
         isA<Err<void, SyncFailure>>(),
       );
-      expect(rows[row.id], unfinished);
-      rows[row.id] = row;
-      WalletSyncBinding.value(
-        await runtime.create(WalletSyncBinding.keyFromMetadata(row)),
-      );
-      WalletSyncBinding.value(await runtime.initialize());
-      var address = WalletSyncBinding.value(
-        await runtime.receive(WalletSyncBinding.keyFromMetadata(row)),
-      );
+      expect(rows[row.key.id], unfinished);
+      rows[row.key.id] = row;
+      _value(await runtime.create(row.key));
+      _value(await runtime.initialize());
+      var address = _value(await runtime.receive(row.key));
       final wallet = await loaded(row);
       expect(wallet.balances.now.data?.totalSat, BigInt.zero);
 
       // A failed global enumeration does not hide a known wallet whose own
       // catalog entry and native stores remain available.
-      when(() => metadata.fetchAll())
-          .thenThrow(const FileSystemException('catalog unavailable'));
+      catalog.failList = true;
       final degraded = open();
       try {
-        final key = WalletSyncBinding.keyFromMetadata(row);
+        final key = row.key;
         expect(await degraded.initialize(), isA<Err<void, SyncFailure>>());
         expect(await degraded.wallet(key), isA<Ok<sync.Wallet, SyncFailure>>());
         expect(
           await degraded.loadWallet(key),
           isA<Ok<sync.Wallet, SyncFailure>>(),
         );
-        expect(WalletSyncBinding.value(await degraded.receive(key)), address);
+        expect(_value(await degraded.receive(key)), address);
       } finally {
         await degraded.close();
-        when(() => metadata.fetchAll())
-            .thenAnswer((_) async => rows.values.toList());
+        catalog.failList = false;
       }
       final revisions = <WalletRevisionState>[];
       final observation = runtime.changes.listen(revisions.add);
       final other = open();
-      WalletSyncBinding.value(await other.initialize());
-      address = WalletSyncBinding.value(
-        await other.receive(
-          WalletSyncBinding.keyFromMetadata(row),
-          advance: true,
-        ),
-      );
+      _value(await other.initialize());
+      address = _value(await other.receive(row.key, advance: true));
       await other.close();
       await pumpEventQueue();
       expect(revisions, isEmpty);
-      WalletSyncBinding.value(await runtime.refreshAll());
+      _value(await runtime.refreshAll());
       await pumpEventQueue();
       expect(revisions, hasLength(1));
       expect(revisions.single.lifecycle, WalletLifecycle.active);
@@ -304,36 +312,20 @@ void main() {
 
       await runtime.close();
       runtime = open();
-      WalletSyncBinding.value(await runtime.initialize());
-      expect(
-        WalletSyncBinding.value(
-          await runtime.receive(WalletSyncBinding.keyFromMetadata(row)),
-        ),
-        address,
-      );
-      final advanced = WalletSyncBinding.value(
-        await runtime.receive(
-          WalletSyncBinding.keyFromMetadata(row),
-          advance: true,
-        ),
-      );
-      expect(
-        WalletSyncBinding.value(
-          await runtime.issuedReceiveIndex(
-            WalletSyncBinding.keyFromMetadata(row),
-          ),
-        ),
-        advanced.index,
-      );
+      _value(await runtime.initialize());
+      expect(_value(await runtime.receive(row.key)), address);
+      final advanced = _value(await runtime.receive(row.key, advance: true));
+      expect(_value(await runtime.issuedReceiveIndex(row.key)), advanced.index);
       expect(advanced.index, address.index + 1);
       await runtime.close();
-      final missing = row.copyWith(id: 'wpkh([11223344/84h/1h/0h])');
-      rows[missing.id] = missing;
-      when(() => metadata.fetch(missing.id))
-          .thenAnswer((_) async => rows[missing.id]);
-      final missingKey = (WalletSyncBinding.descriptorFromMetadata(
-        missing,
-      ) as Ok<PublicWalletDescriptor, SyncFailure>).value.key;
+      final missing = _descriptor(
+        id: 'wpkh([11223344/84h/1h/0h])',
+        network: BitcoinNetwork.testnet,
+        external: row.externalDescriptor,
+        internal: row.internalDescriptor,
+      );
+      rows[missing.key.id] = missing;
+      final missingKey = missing.key;
       final missingStore = File(
         nativeWalletStoragePath(directory.path, missingKey),
       );
@@ -343,22 +335,18 @@ void main() {
       metadataFile.writeAsStringSync('corrupt revision metadata');
       runtime = open();
       // A global catalog failure leaves recovery pending across a restart.
-      when(() => metadata.fetchAll())
-          .thenThrow(const FileSystemException('catalog unavailable'));
+      catalog.failList = true;
       expect(await runtime.initialize(), isA<Err<void, SyncFailure>>());
       final recoveryMarker = File('${metadataFile.path}.recovery');
       expect(recoveryMarker.existsSync(), isTrue);
       await runtime.close();
-      when(() => metadata.fetchAll())
-          .thenAnswer((_) async => rows.values.toList());
+      catalog.failList = false;
       runtime = open();
-      WalletSyncBinding.value(await runtime.initialize());
+      _value(await runtime.initialize());
       expect(missingStore.existsSync(), isFalse);
-      final healthyKey = (WalletSyncBinding.descriptorFromMetadata(
-        row,
-      ) as Ok<PublicWalletDescriptor, SyncFailure>).value.key;
+      final healthyKey = row.key;
       final beforeReads = await runtime.readRevision(healthyKey) as Ok;
-      clearInteractions(metadata);
+      final listCallsBeforeReads = catalog.listCalls;
       for (var i = 0; i < 5; i++) {
         await loaded(row);
         await expectLater(
@@ -366,14 +354,14 @@ void main() {
           throwsA(isA<WalletSnapshotException>()),
         );
       }
-      verifyNever(() => metadata.fetchAll());
+      expect(catalog.listCalls, listCallsBeforeReads);
       final afterReads = await runtime.readRevision(healthyKey) as Ok;
       expect(
         (afterReads.value as WalletRevisionState).stamp,
         (beforeReads.value as WalletRevisionState).stamp,
       );
       expect(recoveryMarker.existsSync(), isFalse);
-      WalletSyncBinding.value(await runtime.resumeProvisioning());
+      _value(await runtime.resumeProvisioning());
       expect(
         missingStore.existsSync(),
         isTrue,
@@ -381,9 +369,9 @@ void main() {
       );
       await runtime.close();
       runtime = open();
-      WalletSyncBinding.value(await runtime.initialize());
+      _value(await runtime.initialize());
       expect(await loaded(missing), isA<sync.Wallet>());
-      rows.remove(missing.id);
+      rows.remove(missing.key.id);
       final adopted = await loaded(row);
       expect(adopted.balances.now.data?.totalSat, BigInt.zero);
       expect(
@@ -392,39 +380,33 @@ void main() {
         ),
         isNotEmpty,
       );
-      WalletSyncBinding.value(
-        await runtime.delete(WalletSyncBinding.keyFromMetadata(row)),
-      );
+      _value(await runtime.delete(row.key));
       await expectLater(loaded(row), throwsA(isA<WalletSnapshotException>()));
       // Simulate crash after writer.delete and before catalog deletion.
       expect(rows, isNotEmpty);
       await runtime.close();
       runtime = open();
-      WalletSyncBinding.value(await runtime.initialize());
+      _value(await runtime.initialize());
       expect(rows, isEmpty);
-      expect(deletedFromCatalog, [row.id]);
+      expect(deletedFromCatalog, [row.key.id]);
       // Re-import is interrupted after its catalog row becomes visible.
-      WalletSyncBinding.value(
-        await runtime.prepareCreate(WalletSyncBinding.keyFromMetadata(row)),
-      );
-      rows[row.id] = row;
+      _value(await runtime.prepareCreate(row.key));
+      rows[row.key.id] = row;
       await runtime.close();
       runtime = open();
-      WalletSyncBinding.value(await runtime.initialize());
-      expect(rows[row.id], row);
+      _value(await runtime.initialize());
+      expect(rows[row.key.id], row);
       expect(await loaded(row), isA<sync.Wallet>());
       // If corruption destroys a deletion tombstone before catalog removal,
       // the surviving row is indistinguishable from an interrupted import.
-      WalletSyncBinding.value(
-        await runtime.delete(WalletSyncBinding.keyFromMetadata(row)),
-      );
+      _value(await runtime.delete(row.key));
       await runtime.close();
       metadataFile.writeAsStringSync('corrupt deletion metadata');
       runtime = open();
-      WalletSyncBinding.value(await runtime.initialize());
+      _value(await runtime.initialize());
       await expectLater(loaded(row), throwsA(isA<WalletSnapshotException>()));
       expect(recoveryMarker.existsSync(), isFalse);
-      WalletSyncBinding.value(await runtime.resumeProvisioning());
+      _value(await runtime.resumeProvisioning());
       expect(
         await loaded(row),
         isA<sync.Wallet>(),
@@ -460,27 +442,18 @@ void main() {
       }
     }
 
-    final row = WalletMetadataModel(
-      networkCode: 'bitcoinMainnet',
+    final row = _descriptor(
       id: 'wpkh([aabbccdd/84h/0h/0h])',
-      masterFingerprint: 'aabbccdd',
-      xpubFingerprint: 'aabbccdd',
-      isEncryptedVaultTested: false,
-      isPhysicalBackupTested: false,
-      xpub: 'public',
-      externalPublicDescriptor: derive(bdk.KeychainKind.external_),
-      internalPublicDescriptor: derive(bdk.KeychainKind.internal),
-      signer: Signer.none,
-      isDefault: false,
+      network: BitcoinNetwork.mainnet,
+      external: derive(bdk.KeychainKind.external_),
+      internal: derive(bdk.KeychainKind.internal),
     );
     secret.dispose();
     mnemonic.dispose();
-    final metadata = _Metadata();
-    when(() => metadata.fetchAll()).thenAnswer((_) async => [row]);
-    when(() => metadata.fetch(row.id)).thenAnswer((_) async => row);
+    final catalog = _Catalog({row.key.id: row});
     // Any server contact throws: the refusal must come before transport.
     final runtime = WalletNativeRuntime.open(
-      catalog: TestWalletCatalog(metadata),
+      catalog: catalog,
       reserved: _Reserved(),
       inputReservations: _NoInputReservations(),
       deleteCatalogEntry: (_) async => const Ok(null),
@@ -494,11 +467,9 @@ void main() {
       connections: _Offline(),
     );
     try {
-      WalletSyncBinding.value(
-        await runtime.create(WalletSyncBinding.keyFromMetadata(row)),
-      );
+      _value(await runtime.create(row.key));
       final result = await runtime.broadcast(
-        WalletSyncBinding.keyFromMetadata(row),
+        row.key,
         SignedBitcoinTransaction(_transaction()),
         network: BitcoinNetwork.testnet,
       );

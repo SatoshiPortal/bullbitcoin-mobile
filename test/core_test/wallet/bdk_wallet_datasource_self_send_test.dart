@@ -1,6 +1,5 @@
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
+import 'package:primitives/primitives.dart' show BitcoinNetwork;
 import 'package:sync/sync.dart' show WalletKey;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 // Regression test for a send-to-self recorded with the whole value of the
 // utxos it consumed instead of the amount paid. `sentAndReceived.sent` is the
@@ -217,7 +216,7 @@ void main() {
       id: 'bdk-self-send-test',
       externalDescriptor: external.toString(),
       internalDescriptor: internal.toString(),
-      network: Network.bitcoinTestnet,
+      network: BitcoinNetwork.testnet,
     ) as PublicBdkWalletModel;
 
     final wallet = await BdkTestStore.createWallet(walletModel);
@@ -298,16 +297,13 @@ void main() {
           .toString();
       wallet.dispose();
       final matches = (await datasource.getTransactions(
-        key: WalletKey(id: walletModel.id, network: walletModel.network.shared),
+        key: WalletKey(id: walletModel.id, network: walletModel.network),
         toAddress: second,
       )).fold((value) => value, (failure) => fail(failure.logCode));
       expect(matches.map((tx) => tx.txId), contains(fundingTxId));
       expect(
         (await datasource.getTransactions(
-          key: WalletKey(
-            id: walletModel.id,
-            network: walletModel.network.shared,
-          ),
+          key: WalletKey(id: walletModel.id, network: walletModel.network),
           toAddress: _externalTestnetAddress,
         )).fold((value) => value, (failure) => fail(failure.logCode)),
         isEmpty,
@@ -347,10 +343,7 @@ void main() {
 
     final transactions =
         (await BdkTestStore.history(walletModel).getTransactions(
-          key: WalletKey(
-            id: walletModel.id,
-            network: walletModel.network.shared,
-          ),
+          key: WalletKey(id: walletModel.id, network: walletModel.network),
         )).fold((value) => value, (failure) => fail(failure.logCode));
     return transactions.firstWhere(
       (transaction) => transaction.txId == tx.computeTxid().toString(),
@@ -440,10 +433,7 @@ void main() {
   test('an incoming transaction is unaffected', () async {
     final transactions =
         (await BdkTestStore.history(walletModel).getTransactions(
-          key: WalletKey(
-            id: walletModel.id,
-            network: walletModel.network.shared,
-          ),
+          key: WalletKey(id: walletModel.id, network: walletModel.network),
         )).fold((value) => value, (failure) => fail(failure.logCode));
     final funding = transactions.firstWhere((tx) => tx.txId == fundingTxId);
 

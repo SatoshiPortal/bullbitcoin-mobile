@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
+import 'package:primitives/primitives.dart';
 
 /// Public descriptor data for tests which construct native stores directly.
 sealed class WalletModel {

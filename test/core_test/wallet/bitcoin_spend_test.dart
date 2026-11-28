@@ -1,6 +1,5 @@
 import 'package:sync/storage.dart' show SyncWalletValuesDatasource;
 import 'package:sync/testing.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 
 import '../../../features/send/test/payment/testing/legacy_spend_fixture.dart';
 
@@ -41,14 +40,13 @@ import 'package:fees/fees.dart';
 import 'support/bdk_test_store.dart';
 import 'support/sync_spend_fixture.dart';
 
-import 'package:primitives/primitives.dart' show Err, Ok;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
 import 'package:sync/sync.dart'
     show
         SyncInsufficientFundsFailure,
         SyncNoSpendableInputsFailure,
         SyncProtectedInputsFailure;
 import 'package:sync/sync.dart' as sync;
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 
 import 'support/wallet_model.dart';
 
@@ -169,7 +167,7 @@ void main() {
       id: 'bdk-wallet-datasource-test',
       externalDescriptor: external.toString(),
       internalDescriptor: internal.toString(),
-      network: Network.bitcoinTestnet,
+      network: BitcoinNetwork.testnet,
     ) as PublicBdkWalletModel;
 
     // Build the wallet once here to fund it, then persist so the
@@ -252,10 +250,7 @@ void main() {
     final native = await BdkTestStore.createWallet(walletModel);
     final wallet = await testWalletFromNative(
       native,
-      key: sync.WalletKey(
-        id: walletModel.id,
-        network: walletModel.network.shared,
-      ),
+      key: sync.WalletKey(id: walletModel.id, network: walletModel.network),
     );
     final before = native.nextDerivationIndex(
       keychain: bdk.KeychainKind.external_,
@@ -274,7 +269,7 @@ void main() {
       id: walletModel.id,
       externalDescriptor: walletModel.internalDescriptor,
       internalDescriptor: walletModel.externalDescriptor,
-      network: Network.bitcoinTestnet,
+      network: BitcoinNetwork.testnet,
     );
     await expectLater(BdkTestStore.createWallet(mismatched), throwsA(anything));
     expect(await file.readAsBytes(), before);
@@ -290,7 +285,7 @@ void main() {
 
     final key = sync.WalletKey(
       id: walletModel.id,
-      network: walletModel.network.shared,
+      network: walletModel.network,
     );
 
     expect(
@@ -683,12 +678,12 @@ void main() {
     final lowFeeAmounts = await datasource.getRecipientAmounts(
       lowFeePsbt,
       recipients,
-      network: Network.bitcoinTestnet,
+      network: BitcoinNetwork.testnet,
     );
     final highFeeAmounts = await datasource.getRecipientAmounts(
       highFeePsbt,
       recipients,
-      network: Network.bitcoinTestnet,
+      network: BitcoinNetwork.testnet,
     );
     expect(lowFeeAmounts.first, fixedAmountSat);
     expect(highFeeAmounts.first, fixedAmountSat);
@@ -714,7 +709,7 @@ void main() {
       await datasource.getRecipientAmounts(
         psbt,
         recipients,
-        network: Network.bitcoinTestnet,
+        network: BitcoinNetwork.testnet,
       ),
       [utxoLargeAmountSat - feeSat],
     );
@@ -748,7 +743,7 @@ void main() {
         await datasource.getRecipientAmounts(
           psbt,
           recipients,
-          network: Network.bitcoinTestnet,
+          network: BitcoinNetwork.testnet,
         ),
         [
           fixedAmountSat,
@@ -855,10 +850,10 @@ final class _Datasource {
   Future<List<int>> getRecipientAmounts(
     String psbt,
     List<({String address, int? amountSat})> recipients, {
-    required Network network,
+    required BitcoinNetwork network,
   }) async => switch (await sync.bitcoinRecipientAmounts(
     psbt: psbt,
-    network: network.bitcoin,
+    network: network,
     recipients: [
       for (final recipient in recipients)
         (address: recipient.address, amountSat: recipient.amountSat),
@@ -871,7 +866,7 @@ final class _Datasource {
   Future<int> getAmountSentToAddress(
     String psbt,
     String address, {
-    required Network network,
+    required BitcoinNetwork network,
   }) async => (await getRecipientAmounts(psbt, [
     (address: address, amountSat: null),
   ], network: network)).single;

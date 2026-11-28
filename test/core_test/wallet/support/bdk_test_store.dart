@@ -1,4 +1,4 @@
-import 'package:primitives/primitives.dart' show Ok;
+import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 import 'package:transactions/testing.dart';
 import 'package:sync/testing.dart';
 
@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'wallet_model.dart';
 
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
@@ -53,7 +52,7 @@ abstract final class BdkTestStore {
               changeDescriptor: internal,
               network: model.network.isMainnet
                   ? bdk.Network.bitcoin
-                  : model.network == Network.bitcoinRegtest
+                  : model.network == BitcoinNetwork.regtest
                   ? bdk.Network.regtest
                   : bdk.Network.testnet,
               persister: persister,

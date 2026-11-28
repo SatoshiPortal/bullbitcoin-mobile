@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
@@ -13,19 +11,6 @@ const publicFundingPsbt =
     'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
     'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
 const fundingWalletId = '[00112233/84h/1h/0h]:regtest';
-const fundingMetadata = WalletMetadataModel(
-  id: fundingWalletId,
-  networkCode: 'bitcoinRegtest',
-  masterFingerprint: '00112233',
-  xpubFingerprint: '00112233',
-  isEncryptedVaultTested: false,
-  isPhysicalBackupTested: false,
-  xpub: 'public-test-metadata',
-  externalPublicDescriptor: 'public-external',
-  internalPublicDescriptor: 'public-internal',
-  signer: Signer.local,
-  isDefault: true,
-);
 WalletKey get fundingKey =>
     WalletKey(id: fundingWalletId, network: BitcoinNetwork.regtest);
 WalletRevision get fundingStamp =>

@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ark/ark.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart' show Network;
 import 'package:bull_ark/ark_ui_setup.dart' show ArkDisplayData;
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:bull_ark/bull_ark.dart'
     show ArkFailure, ArkFeatureStorageFailure;
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:primitives/primitives.dart' hide Network;
+import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
 import '../../../core_test/wallet/support/sync_spend_fixture.dart';
@@ -29,7 +28,7 @@ void main() {
   );
   const model = PublicBdkWalletModel(
     id: 'ark-display-order:regtest',
-    network: Network.bitcoinRegtest,
+    network: BitcoinNetwork.regtest,
     externalDescriptor: 'wpkh($_xpub/0/*)',
     internalDescriptor: 'wpkh($_xpub/1/*)',
   );
