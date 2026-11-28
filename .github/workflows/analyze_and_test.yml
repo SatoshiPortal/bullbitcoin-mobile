@@ -175,6 +175,8 @@ jobs:
       artifact: ${{ steps.upload.outputs.artifact-id }}
       unit-test-mode: ${{ steps.unit-tests.outputs.mode }}
       unit-test-packages: ${{ steps.unit-tests.outputs.packages }}
+      unit-test-jobs: ${{ steps.unit-test-matrix.outputs.jobs }}
+      unit-test-multi-view: ${{ steps.unit-test-matrix.outputs.multi_view }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -197,6 +199,16 @@ jobs:
             args+=(--base "$PR_BASE_SHA" --head "$PR_HEAD_SHA")
           fi
           python3 tools/impacted_unit_tests.py "${args[@]}"
+
+      - name: Build the per-member unit test matrix
+        id: unit-test-matrix
+        env:
+          UNIT_TEST_MODE: ${{ steps.unit-tests.outputs.mode }}
+          UNIT_TEST_PACKAGES: ${{ steps.unit-tests.outputs.packages }}
+        run: |
+          python3 tools/unit_test_matrix.py \
+            --mode "$UNIT_TEST_MODE" --packages "$UNIT_TEST_PACKAGES" \
+            --output "$GITHUB_OUTPUT"
 
       # Diagnostic, compared with the same step in unit shard 1: hooks_runner reruns a hook when one of these variables changes, so print a short hash of each value, never the value.
       - name: Fingerprint the Native Assets hook environment
@@ -239,14 +251,10 @@ jobs:
 
   checks:
     needs: prepare-x64
-    name: Static checks and unit tests
+    name: Static checks and AOT
     runs-on: ubuntu-24.04
-    # Measured 2026-11-14 on develop: ~18 min of setup (free disk, Flutter,
-    # build_runner), ~3 min of static checks, then the unit suites alone pass
-    # 27 min (the app suite is ~22 min of that), so 45 min cancelled healthy
-    # runs with every test still green. Raised to 90 min on 2026-11-23: the
-    # sibling unit-shards job already allows 90, and a slow runner must not
-    # cancel a green run.
+    # Static checks share the preparation artefact but no longer wait for unit
+    # suites. Keep the slow-runner margin used by the previous combined job.
     timeout-minutes: 90
     steps:
       - name: Checkout Repository
@@ -320,25 +328,53 @@ jobs:
         if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: make aot-check
 
-      # Default success() gate on purpose: if any static check above is red,
-      # skip the tests — the PR needs another push anyway.
-      # This job runs shard 0 of the unit tests; unit-shards runs the others in parallel.
-      - name: Unit tests must pass (shard 0 of 3)
-        env:
-          TEST_PACKAGES: ${{ needs.prepare-x64.outputs.unit-test-packages }}
-        run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=0
-
-  # Each shard gets a disjoint third of every member's test files and uses
-  # the same generated code as checks.
-  unit-shards:
+  # Each selected member has its own rerunnable check. Only the large root app
+  # suite is split into three file-based sub-shards; other modules run intact.
+  # A matrix failure never cancels another member's job.
+  unit-tests:
     needs: prepare-x64
-    name: Unit tests (shard ${{ matrix.shard }} of 3)
+    name: ${{ matrix.job.name }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        include: ${{ fromJSON(needs.prepare-x64.outputs.unit-test-jobs) }}
+    steps:
+      - name: Checkout Repository
+        if: ${{ matrix.job.run }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Flutter setup
+        if: ${{ matrix.job.run }}
+        uses: ./.github/actions/flutter-setup
+        with:
+          codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
+
+      - name: No selected unit test suites
+        if: ${{ !matrix.job.run }}
+        run: echo "The impacted workspace members have no test/ directory."
+
+      - name: Fingerprint the Native Assets hook environment
+        if: ${{ matrix.job.package == 'access' && matrix.job.shard == 1 }}
+        run: python3 tools/trace_access_hooks.py --fingerprint
+
+      - name: Unit tests must pass
+        if: ${{ matrix.job.run }}
+        env:
+          TRACE_ACCESS_SHARD: ${{ matrix.job.package == 'access' && matrix.job.shard == 1 && '1' || '0' }}
+          TRACE_ACCESS_HOOKS: '1'
+          TEST_PACKAGES: ${{ matrix.job.package }}
+        # FVM adds its SDK directory to PATH for each nested invocation.
+        # Keep Access aligned with the single FVM invocation in prepare-x64.
+        run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_RUN_MULTIVIEW=0 TEST_TOTAL_SHARDS=${{ matrix.job.shards }} TEST_SHARD_INDEX=${{ matrix.job.shard }}
+
+  unit-multiview:
+    needs: prepare-x64
+    if: ${{ !cancelled() && needs.prepare-x64.result == 'success' && needs.prepare-x64.outputs.unit-test-multi-view == 'true' }}
+    name: Unit tests / secrets and sync (multiple views)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -348,18 +384,8 @@ jobs:
         with:
           codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
-      - name: Fingerprint the Native Assets hook environment
-        if: matrix.shard == 1
-        run: python3 tools/trace_access_hooks.py --fingerprint
-
-      - name: Unit tests must pass
-        env:
-          TRACE_ACCESS_SHARD: ${{ matrix.shard == 1 && '1' || '0' }}
-          TRACE_ACCESS_HOOKS: '1'
-          TEST_PACKAGES: ${{ needs.prepare-x64.outputs.unit-test-packages }}
-        # FVM adds its SDK directory to PATH for each nested invocation.
-        # Keep Access aligned with the single FVM invocation in prepare-x64.
-        run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
+      - name: Multiple-view tests must pass
+        run: make secrets-multiview-test
 
   integration:
     needs: [classification, action-pins, readiness]
@@ -444,7 +470,7 @@ jobs:
   ci:
     name: CI
     if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
-    needs: [classification, action-pins, readiness, checks, unit-shards, integration]
+    needs: [classification, action-pins, readiness, prepare-x64, checks, unit-tests, unit-multiview, integration]
     runs-on: ubuntu-24.04
     steps:
       - name: Require the expected checks
@@ -453,8 +479,11 @@ jobs:
           RUN_APP_CHECKS: ${{ needs.classification.outputs.run_app_checks }}
           ACTION_PINS_RESULT: ${{ needs.action-pins.result }}
           READINESS_RESULT: ${{ needs.readiness.result }}
+          PREPARE_RESULT: ${{ needs.prepare-x64.result }}
           CHECKS_RESULT: ${{ needs.checks.result }}
-          UNIT_SHARDS_RESULT: ${{ needs.unit-shards.result }}
+          UNIT_TESTS_RESULT: ${{ needs.unit-tests.result }}
+          MULTI_VIEW_RESULT: ${{ needs.unit-multiview.result }}
+          MULTI_VIEW_REQUIRED: ${{ needs.prepare-x64.outputs.unit-test-multi-view }}
           INTEGRATION_RESULT: ${{ needs.integration.result }}
         run: |
           set -euo pipefail
@@ -475,22 +504,44 @@ jobs:
 
           case "$RUN_APP_CHECKS" in
             true)
+              [[ "$PREPARE_RESULT" == success ]] || {
+                echo "Preparation result was ${PREPARE_RESULT}, expected success" >&2
+                exit 1
+              }
               [[ "$CHECKS_RESULT" == success ]] || {
                 echo "Application checks result was ${CHECKS_RESULT}, expected success" >&2
                 exit 1
               }
-              [[ "$UNIT_SHARDS_RESULT" == success ]] || {
-                echo "Unit test shards result was ${UNIT_SHARDS_RESULT}, expected success" >&2
+              [[ "$UNIT_TESTS_RESULT" == success ]] || {
+                echo "Per-member unit tests result was ${UNIT_TESTS_RESULT}, expected success" >&2
                 exit 1
               }
+              case "$MULTI_VIEW_REQUIRED" in
+                true)
+                  [[ "$MULTI_VIEW_RESULT" == success ]] || {
+                    echo "Multiple-view result was ${MULTI_VIEW_RESULT}, expected success" >&2
+                    exit 1
+                  }
+                  ;;
+                false)
+                  [[ "$MULTI_VIEW_RESULT" == skipped ]] || {
+                    echo "Multiple-view result was ${MULTI_VIEW_RESULT}, expected skipped" >&2
+                    exit 1
+                  }
+                  ;;
+                *)
+                  echo "Multiple-view requirement was '${MULTI_VIEW_REQUIRED}', expected true or false" >&2
+                  exit 1
+                  ;;
+              esac
               [[ "$INTEGRATION_RESULT" == success ]] || {
                 echo "Integration result was ${INTEGRATION_RESULT}, expected success" >&2
                 exit 1
               }
               ;;
             false)
-              [[ "$CHECKS_RESULT" == skipped && "$UNIT_SHARDS_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
-                echo "Docs-only PR expected every application job to be skipped; got checks=${CHECKS_RESULT}, unit-shards=${UNIT_SHARDS_RESULT}, integration=${INTEGRATION_RESULT}" >&2
+              [[ "$PREPARE_RESULT" == skipped && "$CHECKS_RESULT" == skipped && "$UNIT_TESTS_RESULT" == skipped && "$MULTI_VIEW_RESULT" == skipped && "$INTEGRATION_RESULT" == skipped ]] || {
+                echo "Docs-only PR expected every application job to be skipped; got prepare=${PREPARE_RESULT}, checks=${CHECKS_RESULT}, unit-tests=${UNIT_TESTS_RESULT}, unit-multiview=${MULTI_VIEW_RESULT}, integration=${INTEGRATION_RESULT}" >&2
                 exit 1
               }
               ;;
