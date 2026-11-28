@@ -11,6 +11,7 @@ import '../domain/entities/drive_file_metadata.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/vault_completion.dart';
 import '../domain/entities/vault_provider.dart';
+import '../domain/entities/vault_passkey.dart';
 import '../domain/recoverbull_failure.dart';
 import '../domain/usecases/complete_vault_usecase.dart';
 import '../domain/usecases/manage_backup_settings_usecase.dart';
@@ -78,6 +79,7 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
   /// a Tor bootstrap can take minutes, and recovering with the vault key needs
   /// no server, so it must not wait for it.
   bool _connecting = false;
+  bool get passkeysAvailable => _session?.passkeysAvailable ?? false;
 
   VaultFlowCubit(
     this._settings,
@@ -301,6 +303,49 @@ final class VaultFlowCubit extends Cubit<VaultFlowState> {
           Future.value(Err<VaultCompletion, RecoverBullFailure>(unavailable)),
     );
     if (value != null) _publish(vault: value.vault, completion: value);
+  }
+
+  Future<VaultPasskey?> createPasskey() => _run(
+    () =>
+        _session?.createPasskey() ??
+        Future.value(Err<VaultPasskey, RecoverBullFailure>(unavailable)),
+  );
+
+  Future<void> createWithPasskey(
+    VaultProvider provider,
+    VaultPasskey passkey, {
+    bool passphraseWarningAccepted = false,
+  }) async {
+    final value = await _run(
+      () =>
+          _session?.createWithPasskey(
+            provider: provider,
+            passkey: passkey,
+            passphraseWarningAccepted: passphraseWarningAccepted,
+          ) ??
+          Future.value(Err<VaultCompletion, RecoverBullFailure>(unavailable)),
+    );
+    if (value != null) _publish(vault: value.vault, completion: value);
+  }
+
+  Future<void> verifyPasskey(
+    BitcoinNetwork? network, {
+    String passphrase = '',
+    bool allowUnverified = false,
+  }) async {
+    final vault = state.vault;
+    if (vault == null) return;
+    final value = await _run(
+      () =>
+          _session?.verifyPasskey(
+            vault: vault,
+            recoveryNetwork: network,
+            passphrase: passphrase,
+            allowUnverified: allowUnverified,
+          ) ??
+          Future.value(Err<VaultCompletion, RecoverBullFailure>(unavailable)),
+    );
+    if (value != null) _publish(completion: value);
   }
 
   /// Without [provider], the vault goes where the user first chose.

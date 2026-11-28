@@ -32,8 +32,25 @@ if (betaKeystorePropertiesFile.exists()) {
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
 def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
+// Flutter passes dart-defines as comma-separated base64-encoded KEY=VALUE pairs.
+def passkeyRegtestRpId = ''
+if (project.hasProperty('dart-defines')) {
+    project.property('dart-defines').toString().split(',').each { encoded ->
+        def value = new String(encoded.decodeBase64(), 'UTF-8')
+        if (value.startsWith('RECOVERBULL_PASSKEY_REGTEST_RP_ID=')) {
+            passkeyRegtestRpId = value.substring('RECOVERBULL_PASSKEY_REGTEST_RP_ID='.length())
+        }
+    }
+}
+if (passkeyRegtestRpId && !(passkeyRegtestRpId ==~ /(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?/)) {
+    throw new GradleException('Invalid Regtest passkey RP ID')
+}
 
 android {
+    buildFeatures {
+        resValues = true
+    }
+
     compileOptions {
         coreLibraryDesugaringEnabled true
     }
@@ -57,6 +74,7 @@ android {
 
     defaultConfig {
         applicationId = 'com.bullbitcoin.mobile'
+        manifestPlaceholders['mainActivity'] = 'com.bullbitcoin.mobile.MainActivity'
         minSdkVersion project.properties['android.minSdk'].toInteger()
         targetSdkVersion project.properties['android.targetSdk'].toInteger()
         versionCode flutterVersionCode.toInteger()
@@ -114,6 +132,11 @@ android {
             shrinkResources false
             signingConfig signingConfigs.debug
             applicationIdSuffix ".debug"
+            manifestPlaceholders['mainActivity'] = 'com.bullbitcoin.mobile.RecoverBullPasskeyActivity'
+            resValue 'string', 'recoverbull_passkey_regtest_rp_id', passkeyRegtestRpId
+            def statements = passkeyRegtestRpId ?
+                "[{\\\"include\\\":\\\"https://${passkeyRegtestRpId}/.well-known/assetlinks.json\\\"}]" : '[]'
+            resValue 'string', 'recoverbull_passkey_asset_statements', statements
         }
         release {
             minifyEnabled false
@@ -178,4 +201,6 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+    debugImplementation 'androidx.credentials:credentials:1.6.0'
+    debugImplementation 'androidx.credentials:credentials-play-services-auth:1.6.0'
 }

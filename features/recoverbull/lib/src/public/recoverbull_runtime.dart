@@ -1,5 +1,6 @@
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bull_tor/tor.dart';
+import 'package:flutter/foundation.dart';
 
 import '../data/datasources/google_drive_datasource.dart';
 
@@ -15,6 +16,9 @@ import '../data/database/recoverbull_cutover.dart';
 import '../data/database/wallet_backup_import.dart';
 import '../data/google_drive_repository.dart';
 import '../data/key_server_session_repository_impl.dart';
+import '../data/android_passkey_credentials.dart';
+import '../data/passkey_availability.dart';
+import '../data/passkey_password_deriver.dart';
 import '../data/secrets_vault_repository.dart';
 import '../domain/entities/encrypted_vault.dart';
 import '../domain/entities/recoverbull_flow.dart';
@@ -222,6 +226,25 @@ final class RecoverBullRuntime {
     ManageVaultSessionUsecase? session;
     if (metadata != null && monitoring != null) {
       final fetch = FetchVaultKeyUsecase(monitoring);
+      const rpId = String.fromEnvironment('RECOVERBULL_PASSKEY_REGTEST_RP_ID');
+      const mainnetOptIn = bool.fromEnvironment(
+        'RECOVERBULL_PASSKEY_DEBUG_MAINNET',
+      );
+      final network = switch (captured.network) {
+        Ok(:final value) => value,
+        _ => null,
+      };
+      final passkeys =
+          passkeysAvailableForBuild(
+            debug: kDebugMode,
+            android: defaultTargetPlatform == TargetPlatform.android,
+            web: kIsWeb,
+            rpId: rpId,
+            network: network,
+            mainnetOptIn: mainnetOptIn,
+          )
+          ? AndroidPasskeyCredentials(rpId)
+          : null;
       session = ManageVaultSessionUsecase(
         metadata,
         OpenKeyServerUsecase(metadata, _sessions),
@@ -234,6 +257,10 @@ final class RecoverBullRuntime {
           fetch,
         ),
         complete,
+        passkeys: passkeys,
+        passkeyPasswords: passkeys == null
+            ? null
+            : const PasskeyPasswordDeriver(),
       );
     }
     return (session: session, complete: complete);

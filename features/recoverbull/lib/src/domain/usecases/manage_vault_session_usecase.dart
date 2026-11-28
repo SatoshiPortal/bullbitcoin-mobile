@@ -7,6 +7,9 @@ import '../entities/backup_settings.dart';
 import '../entities/encrypted_vault.dart';
 import '../entities/vault_completion.dart';
 import '../entities/vault_provider.dart';
+import '../entities/vault_passkey.dart';
+import '../passkey_credential_port.dart';
+import '../passkey_password_port.dart';
 import '../recoverbull_failure.dart';
 import '../repositories/backup_metadata_repository.dart';
 import '../repositories/key_server_repository.dart';
@@ -23,6 +26,8 @@ final class ManageVaultSessionUsecase {
   final FetchVaultKeyUsecase _fetch;
   final CreateAndStoreVaultUsecase _create;
   final CompleteVaultUsecase _complete;
+  final PasskeyCredentialPort? passkeys;
+  final PasskeyPasswordPort? passkeyPasswords;
   KeyServerRepository? _server;
   BackupSettings? _settings;
   Completer<void>? _active;
@@ -34,10 +39,13 @@ final class ManageVaultSessionUsecase {
     this._open,
     this._fetch,
     this._create,
-    this._complete,
-  );
+    this._complete, {
+    this.passkeys,
+    this.passkeyPasswords,
+  });
 
   bool get hasPendingProviderSave => _create.hasPendingProviderSave;
+  bool get passkeysAvailable => passkeys != null && passkeyPasswords != null;
 
   /// [restartTor] restarts a Tor bootstrap that failed or stalled, as Retry
   /// does when Tor is not ready; [viaSnowflake] restarts it through Snowflake.
@@ -75,6 +83,95 @@ final class ManageVaultSessionUsecase {
         passphraseWarningAccepted: passphraseWarningAccepted,
       ),
     );
+  }
+
+  Future<Result<VaultPasskey, RecoverBullFailure>> createPasskey() async {
+    final passkeys = this.passkeys;
+    if (_closed || passkeys == null) return const Err(VaultCancelledFailure());
+    final result = await passkeys.create();
+    return _closed ? const Err(VaultCancelledFailure()) : result;
+  }
+
+  Future<Result<VaultCompletion, RecoverBullFailure>> createWithPasskey({
+    required VaultProvider provider,
+    required VaultPasskey passkey,
+    bool passphraseWarningAccepted = false,
+  }) {
+    final passkeys = this.passkeys;
+    final passwords = passkeyPasswords;
+    if (passkeys == null || passwords == null || hasPendingProviderSave) {
+      return Future.value(const Err(VaultContextChangedFailure()));
+    }
+    return _run(
+      (server, settings) => _create.executePasskey(
+        settings: settings,
+        server: server,
+        provider: provider,
+        passkey: passkey,
+        secrets: passkeys,
+        passwords: passwords,
+        passphraseWarningAccepted: passphraseWarningAccepted,
+      ),
+    );
+  }
+
+  Future<Result<VaultCompletion, RecoverBullFailure>> verifyPasskey({
+    required EncryptedVault vault,
+    required BitcoinNetwork? recoveryNetwork,
+    String passphrase = '',
+    bool allowUnverified = false,
+  }) {
+    final passkeys = this.passkeys;
+    final passwords = passkeyPasswords;
+    final metadata = vault.passkey;
+    if (passkeys == null || passwords == null || metadata == null) {
+      return Future.value(const Err(VaultInvalidFailure()));
+    }
+    return _run((server, settings) async {
+      switch (await passkeys.get(metadata)) {
+        case Err(:final failure):
+          return Err(failure);
+        case Ok(value: final prf):
+          try {
+            if (_closed) return const Err(VaultCancelledFailure());
+            if (prf.length != 32) {
+              return const Err(VaultPasskeyUnavailableFailure());
+            }
+            final password = passwords.derive(prf, vault);
+            prf.fillRange(0, prf.length, 0);
+            if (!await _current(settings)) {
+              return const Err(VaultContextChangedFailure());
+            }
+            if (_closed) return const Err(VaultCancelledFailure());
+            final fetched = await _fetch.execute(
+              settings: settings,
+              server: server,
+              vault: vault,
+              password: password,
+            );
+            if (_closed) return const Err(VaultCancelledFailure());
+            if (!await _current(settings)) {
+              return const Err(VaultContextChangedFailure());
+            }
+            switch (fetched) {
+              case Err(:final failure):
+                return Err(failure);
+              case Ok(:final value):
+                return await _complete.execute(
+                  vault: vault,
+                  key: value.key,
+                  recoveryNetwork: recoveryNetwork,
+                  cancelled: () => _closed,
+                  capturedSettings: settings,
+                  passphrase: passphrase,
+                  allowUnverified: allowUnverified,
+                );
+            }
+          } finally {
+            prf.fillRange(0, prf.length, 0);
+          }
+      }
+    });
   }
 
   /// Without [provider], the vault goes where the user first chose.
@@ -253,6 +350,7 @@ final class ManageVaultSessionUsecase {
   }
 
   Future<void> _close() async {
+    await passkeys?.cancel();
     await _active?.future;
     final server = _server;
     _server = null;

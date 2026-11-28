@@ -10,6 +10,7 @@ final class EncryptedVaultMapper {
     ciphertext: model.ciphertext,
     createdAt: DateTime.fromMillisecondsSinceEpoch(model.createdAt),
     derivationPath: model.path,
+    passkey: model.passkey,
   );
   static EncryptedVaultModel fromEntity(EncryptedVault vault) =>
       EncryptedVaultModel(
@@ -18,6 +19,7 @@ final class EncryptedVaultMapper {
         salt: convert.hex.decode(vault.salt),
         ciphertext: vault.ciphertext,
         path: vault.derivationPath,
+        passkey: vault.passkey,
       );
   static EncryptedVault parse(String file) =>
       toEntity(EncryptedVaultModel.fromFile(file));

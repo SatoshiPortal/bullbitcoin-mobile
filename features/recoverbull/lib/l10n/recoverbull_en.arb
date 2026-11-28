@@ -943,5 +943,15 @@
   "recoverbullRecoveryIncompleteDescription": "Your backup was imported, but its wallets could not be created. Retry to finish the recovery.",
   "@recoverbullRecoveryIncompleteDescription": {"description": "Explains that the backup was imported but its wallets could not be created, with a retry"},
   "recoverbullScrambleKeypadHint": "Scramble the digits on every tap",
-  "@recoverbullScrambleKeypadHint": {"description": "Tooltip on the PIN keypad key that shuffles the digit keys after each press so an onlooker cannot follow their positions"}
+  "@recoverbullScrambleKeypadHint": {"description": "Tooltip on the PIN keypad key that shuffles the digit keys after each press so an onlooker cannot follow their positions"},
+  "recoverbullUsePasskeyInstead": "Use a passkey instead",
+  "@recoverbullUsePasskeyInstead": {},
+  "recoverbullUsePasswordInstead": "Use a password instead",
+  "@recoverbullUsePasswordInstead": {},
+  "recoverbullOrEnterVaultKey": "Or enter the vault key",
+  "@recoverbullOrEnterVaultKey": {},
+  "recoverbullPasskeyUnavailable": "Passkey unavailable or unsupported. Please try again.",
+  "@recoverbullPasskeyUnavailable": {
+    "description": "Passkey or PRF unavailable"
+  }
 }
