@@ -1,15 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:bull_ark/ark_wallet_setup.dart';
-import 'package:bb_mobile/features/wallet/data/ark_source_wallet_name.dart';
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bull_ark/ark_ui_setup.dart'
-    show ArkDefaultSourceWallet, ArkNamedSourceWallet;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
-
-import 'ark_funding_test_fixture.dart' show fundingMetadata;
 
 void main() {
   final stamp = WalletRevision(
@@ -37,20 +31,12 @@ void main() {
       frozen: frozen,
     ),
   ]);
-  InputReservation reservation({Outpoint outpoint = point}) => InputReservation(
-    outpoint: outpoint,
-    protocol: 'ark',
-    session: 'public-operation',
-    walletId: 'other-scope',
-    network: BitcoinNetwork.regtest,
-    state: 'pending',
-  );
   Sats? read({
     int amount = 1234,
     WalletBalances? balance,
     WalletRevisionState? revision,
     bool frozen = false,
-    List<InputReservation> held = const [],
+    Set<Outpoint> held = const {},
   }) => availableArkSourceBalance(
     stamp: stamp,
     balance: balance ?? WalletValue.ready(values(amount), stamp),
@@ -106,44 +92,10 @@ void main() {
   test('a frozen or Board-held output comes off the available amount', () {
     // The only coin is protected: nothing is left for a new Board.
     expect(read(amount: 2000, frozen: true), Sats.zero);
-    // Matching outpoints stay protected even if metadata names another scope.
-    expect(read(amount: 2000, held: [reservation()]), Sats.zero);
+    expect(read(amount: 2000, held: {point}), Sats.zero);
     // The rest of the wallet stays available.
-    expect(read(amount: 5000, held: [reservation()]), Sats.fromInt(3000));
-    expect(
-      read(held: [reservation(outpoint: (txId: 'unrelated', vout: 1))]),
-      Sats.fromInt(1234),
-    );
-  });
-
-  group('source wallet name', () {
-    test('a missing wallet has no name', () {
-      expect(arkSourceWalletName(null), isNull);
-    });
-    test('the default wallet uses the app default name', () {
-      expect(
-        arkSourceWalletName(fundingMetadata),
-        isA<ArkDefaultSourceWallet>(),
-      );
-    });
-    test('another wallet uses its label, else its origin', () {
-      final labelled = fundingMetadata.copyWith(
-        isDefault: false,
-        label: 'My savings',
-      );
-      expect(
-        arkSourceWalletName(labelled),
-        isA<ArkNamedSourceWallet>().having((n) => n.name, 'name', 'My savings'),
-      );
-      final unlabelled = fundingMetadata.copyWith(isDefault: false, label: ' ');
-      expect(
-        arkSourceWalletName(unlabelled),
-        isA<ArkNamedSourceWallet>().having(
-          (n) => n.name,
-          'name',
-          unlabelled.origin,
-        ),
-      );
-    });
+    expect(read(amount: 5000, held: {point}), Sats.fromInt(3000));
+    expect(read(amount: 5000, frozen: true, held: {point}), Sats.fromInt(3000));
+    expect(read(held: {(txId: 'unrelated', vout: 1)}), Sats.fromInt(1234));
   });
 }

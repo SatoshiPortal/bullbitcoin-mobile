@@ -5,7 +5,8 @@ export 'src/domain/access_attempt.dart';
 export 'src/domain/inventory_backup_verification.dart';
 export 'src/domain/recorded_derivation.dart';
 export 'src/domain/registered_wallet.dart';
-export 'src/domain/session_authority.dart' show SessionAuthority, SessionToken;
+export 'src/domain/session_authority.dart'
+    show ForegroundSession, SessionAuthority, SessionToken;
 export 'src/domain/wallet_property_store.dart';
 export 'src/domain/wallet_registration.dart' show BitcoinRecoveryWallet;
 export 'src/public/ark_background_access.dart'

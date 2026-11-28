@@ -245,5 +245,12 @@
   "swapArkMinimum": "Monto mínimo de {amount} sats más comisiones de red",
   "swapArkRouteUnavailable": "Esta transferencia no está disponible.",
   "swapInternalTransferDescription": "Transfiere bitcoin fácilmente entre tus billeteras. Guarda en la Billetera de Pagos Instantáneos solo lo que necesites para tus gastos diarios.",
-  "swapTransferDirection": "Invertir el origen y el destino de la transferencia"
+  "swapTransferDirection": "Invertir el origen y el destino de la transferencia",
+  "swapHomeInProgress": "Intercambio en curso",
+  "swapHomeBitcoinToLiquid": "BTC → L-BTC",
+  "swapHomeLiquidToBitcoin": "L-BTC → BTC",
+  "swapHomeLightningToLiquid": "Lightning → L-BTC",
+  "swapHomeLightningToBitcoin": "Lightning → BTC",
+  "swapHomeLiquidToLightning": "L-BTC → Lightning",
+  "swapHomeBitcoinToLightning": "BTC → Lightning"
 }

@@ -31,6 +31,7 @@ import 'package:preferences/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
+import 'package:sync/write.dart' show WalletNativeRuntime;
 
 import 'support/inventory_fixture.dart';
 
@@ -144,7 +145,6 @@ void main() {
               (failure) =>
                   fail('Preferences open failed: ${failure.runtimeType}'),
             );
-        CoreLocator.register(services, database);
         services.registerSingleton<Secrets>(secrets);
         await SettingsLocator.registerRepositories(services, preferences);
         // Replace native initialization through the published host seam; keep
@@ -164,15 +164,16 @@ void main() {
             tor: () => services<Tor>(),
           ),
         );
-        await WalletLocator.registerDatasources(services);
         WalletLocator.registerUsecases(services);
-        final walletSync = WalletLocator.syncAccess(services);
         setupLabels(
           services,
           createLabelsForTesting(
             database: database,
-            sync: walletSync.foreground,
-            openWallet: walletSync.openWallet,
+            listAttributedFreezes: () =>
+                services<WalletNativeRuntime>().listAttributedFreezes(),
+            freezeAttributedOutpoints: (rows) =>
+                services<WalletNativeRuntime>().freezeAttributedOutpoints(rows),
+            openWallet: WalletLocator.walletAccess(services),
           ),
         );
         // Wallet's native runtime requires the Payjoin owner's reservation port.

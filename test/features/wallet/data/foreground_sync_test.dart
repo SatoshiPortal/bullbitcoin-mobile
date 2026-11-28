@@ -42,6 +42,7 @@ void main() {
         .thenAnswer((_) async => const Ok(Environment.mainnet));
     foreground = OverviewSynchronization.open(
       inventory: _Inventory(),
+      readInSession: <T>(Future<T> Function() read) async => Ok(await read()),
       environment: settings,
       catalog: () => throw StateError('Unexpected wallet catalog read'),
       synchronize: (

@@ -32,14 +32,12 @@ Future<Wallet> testWallet({
   bool stale = false,
   bool load = true,
   WalletSpender? spender,
+  Future<void> Function()? beforeFirstFrame,
 }) {
   final revision = WalletRevision(key: key, generation: 0, revision: 0);
-  return _wallet(
-    key,
-    frozen: frozen,
-    load: load,
-    spender: spender,
-    (_) async => WalletFrame(
+  return _wallet(key, frozen: frozen, load: load, spender: spender, (_) async {
+    if (beforeFirstFrame != null) await beforeFirstFrame();
+    return WalletFrame(
       WalletFrameData(
         revision: revision,
         balances:
@@ -69,8 +67,8 @@ Future<Wallet> testWallet({
         ),
       ),
       stale: stale,
-    ),
-  );
+    );
+  });
 }
 
 /// A loaded wallet mapped from a `bdk.Wallet` or `lwk.Wallet` the test built,

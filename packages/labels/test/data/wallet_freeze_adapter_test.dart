@@ -49,8 +49,9 @@ void main() {
           load: false,
         );
         final adapter = WalletFreezeAdapter(
-          sync: () =>
-              throw StateError('Ownership uses the supplied wallet handle'),
+          readInSession: (read) async => Ok(await read()),
+          listAttributedFreezes: () => fail('Unexpected freeze read'),
+          freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
           openWallet: (id) async {
             expect(id, walletId);
             return wallet;
@@ -69,8 +70,9 @@ void main() {
     test('does not report an absent wallet as an empty coin list', () async {
       const failure = WalletSnapshotException(sync.SyncNotFoundFailure());
       final adapter = WalletFreezeAdapter(
-        sync: () =>
-            throw StateError('Ownership uses the supplied wallet handle'),
+        readInSession: (read) async => Ok(await read()),
+        listAttributedFreezes: () => fail('Unexpected freeze read'),
+        freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
         openWallet: (_) async => throw failure,
       );
 
@@ -80,9 +82,36 @@ void main() {
       );
     });
 
+    test(
+      'returns an empty list when the loaded wallet holds no coins',
+      () async {
+        final wallet = await testWallet(key: key, load: false);
+        final adapter = WalletFreezeAdapter(
+          listAttributedFreezes: () => fail('Unexpected freeze read'),
+          freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
+          openWallet: (_) async => wallet,
+          readInSession: (read) async => Ok(await read()),
+        );
+
+        expect(await adapter.getOwnedOutpoints(walletId: walletId), isEmpty);
+        expect(wallet.coins.now.status, sync.ValueStatus.ready);
+      },
+    );
+
     test('keeps every origin, empty ones included', () async {
       final adapter = WalletFreezeAdapter(
-        sync: () async => owner,
+        readInSession: (_) =>
+            throw StateError('Freeze needs no ownership read'),
+        listAttributedFreezes: owner.coins.listFrozen,
+        freezeAttributedOutpoints: (rows) async {
+          for (final row in rows) {
+            if (await owner.coins.freeze(row.outpoint, origin: row.origin)
+                case Err(:final failure)) {
+              return Err(failure);
+            }
+          }
+          return const Ok(null);
+        },
         openWallet: (_) => throw StateError('Freeze does not load a wallet'),
       );
       await adapter.freeze([

@@ -131,7 +131,8 @@ void main() {
       expect(await readLabelsSequence(current.database), 99);
       final labels = createLabelsForTesting(
         database: current.database,
-        sync: () async => throw StateError('Sync must remain lazy'),
+        listAttributedFreezes: () => fail('Unexpected freeze read'),
+        freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
         openWallet: (_) async => throw StateError('Wallet must remain lazy'),
       );
       final freezes = labels.freezes;
@@ -335,7 +336,8 @@ void main() {
       addTearDown(services.reset);
       final labels = createLabelsForTesting(
         database: current.database,
-        sync: () async => throw StateError('Sync must remain lazy'),
+        listAttributedFreezes: () => fail('Unexpected freeze read'),
+        freezeAttributedOutpoints: (_) => fail('Unexpected freeze'),
         openWallet: (_) async => throw StateError('Wallet must remain lazy'),
       );
       setupLabels(services, labels);

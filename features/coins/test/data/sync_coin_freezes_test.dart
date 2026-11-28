@@ -66,7 +66,21 @@ void main() {
         expect(resolved, key);
         return Ok(wallet);
       },
-      foreground: () async => Ok(owner),
+      readFrozenOutpoints: () async => (await owner.coins.listFrozen()).map(
+        (rows) => {for (final row in rows) row.outpoint},
+      ),
+      freezeWalletOutpoints: (resolved, _) async {
+        expect(resolved, key);
+        return const Ok(null);
+      },
+      unfreezeOutpoints: (outpoints) async {
+        for (final outpoint in outpoints) {
+          if (await owner.coins.unfreeze(outpoint) case Err(:final failure)) {
+            return Err(failure);
+          }
+        }
+        return const Ok(null);
+      },
     );
   }
 
@@ -103,6 +117,43 @@ void main() {
     expect((result as Ok<List<Outpoint>, CoinsFailure>).value, isEmpty);
   });
 
+  test(
+    'freeze forwards the exact inventory key and ordered outpoints',
+    () async {
+      final inventory = _Inventory();
+      when(() => inventory.readWallet(walletId)).thenAnswer(
+        (_) async => Ok(
+          walletRegistrationForTesting(
+            id: walletId,
+            network: BitcoinNetwork.testnet,
+          ),
+        ),
+      );
+      final calls = <({sync.WalletKey key, List<Outpoint> outpoints})>[];
+      final repository = WalletUtxoRepositoryImpl(
+        inventory: inventory,
+        labelsFacade: labels,
+        loadWallet: (_) async => fail('Freeze must not load the native wallet'),
+        readFrozenOutpoints: () => fail('Unexpected read'),
+        freezeWalletOutpoints: (key, outpoints) async {
+          calls.add((key: key, outpoints: outpoints));
+          return const Ok(null);
+        },
+        unfreezeOutpoints: (_) => fail('Unexpected unfreeze'),
+      );
+      expect(
+        await repository.freezeUtxos(
+          walletId: walletId,
+          outpoints: [kept, frozen],
+        ),
+        isA<Ok>(),
+      );
+      expect(calls, hasLength(1));
+      expect(calls.single.key, key);
+      expect(calls.single.outpoints, [kept, frozen]);
+    },
+  );
+
   test('an unreadable freeze store fails; it is never empty', () async {
     final broken = freezesOnlySync(
       '${dir.path}/broken',
@@ -113,7 +164,11 @@ void main() {
       inventory: _Inventory(),
       labelsFacade: labels,
       loadWallet: (_) async => fail('unexpected wallet load'),
-      foreground: () async => Ok(broken),
+      readFrozenOutpoints: () async => (await broken.coins.listFrozen()).map(
+        (rows) => {for (final row in rows) row.outpoint},
+      ),
+      freezeWalletOutpoints: (_, _) => fail('Unexpected freeze'),
+      unfreezeOutpoints: (_) => fail('Unexpected unfreeze'),
     );
     expect(
       await repository.getAllFrozenOutpoints(),

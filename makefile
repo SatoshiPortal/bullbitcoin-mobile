@@ -242,6 +242,7 @@ drift-migrations:
 # The multiple-view gate is a compile-time constant, so the suites that need it open run in their own invocation.
 secrets-multiview-test:
 	@(cd packages/secrets && fvm flutter test --dart-define=BULL_MULTI_VIEW=true test/view_*_test.dart test/last_view_test.dart test/supported_view_format_test.dart)
+	@(cd packages/sync && fvm flutter test --enable-vmservice --dart-define=BULL_MULTI_VIEW=true test/secrets_wallet_catalog_test.dart)
 
 .PHONY: secrets-drift-migrations
 secrets-drift-migrations:

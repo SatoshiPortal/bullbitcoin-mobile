@@ -279,12 +279,12 @@ void main() {
       final database = await legacy.open(admission);
       await AppLocator.setup(
         locator,
-        database,
         secrets: secrets,
-        openLabels: (sync, openWallet) async => Ok(
+        openLabels: (listFreezes, freeze, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
-            sync: sync,
+            listAttributedFreezes: listFreezes,
+            freezeAttributedOutpoints: freeze,
             openWallet: openWallet,
           ),
         ),

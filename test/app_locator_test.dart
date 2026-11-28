@@ -101,6 +101,11 @@ class _NativeTor implements TorNativeInitializer {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('foreground bootstrap does not open an unused legacy connection', () {
+    final bootstrap = File('lib/init.dart').readAsStringSync();
+    expect(bootstrap, isNot(matches(r'\blegacy\s*\.\s*open\s*\(')));
+  });
+
   test(
     'initial network is applied before network services are mounted',
     () async {
@@ -130,11 +135,11 @@ void main() {
       var applied = false;
       final result = await AppLocator.setup(
         locator,
-        database,
-        openLabels: (sync, openWallet) async => Ok(
+        openLabels: (listFreezes, freeze, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
-            sync: sync,
+            listAttributedFreezes: listFreezes,
+            freezeAttributedOutpoints: freeze,
             openWallet: openWallet,
           ),
         ),
@@ -177,6 +182,7 @@ void main() {
         (settings as Ok<SettingsEntity, PreferencesFailure>).value.environment,
         Environment.testnet,
       );
+      expect(locator.isRegistered<SqliteDatabase>(), isFalse);
     },
   );
 
@@ -218,11 +224,11 @@ void main() {
       expect(
         await AppLocator.setup(
           locator,
-          database,
-          openLabels: (sync, openWallet) async => Ok(
+          openLabels: (listFreezes, freeze, openWallet) async => Ok(
             createLabelsForTesting(
               database: database,
-              sync: sync,
+              listAttributedFreezes: listFreezes,
+              freezeAttributedOutpoints: freeze,
               openWallet: openWallet,
             ),
           ),
@@ -290,7 +296,7 @@ void main() {
       ]);
       expect(
         swap.routes.first.routes.cast<GoRoute>().map((route) => route.path),
-        ['/swap/confirm', '/swap/in-progress'],
+        ['/swap/confirm'],
       );
       expect(swap.autoswapSettingsRoute.path, 'autoswap-settings');
 
@@ -525,11 +531,11 @@ void main() {
 
       final result = await AppLocator.setup(
         locator,
-        database,
-        openLabels: (sync, openWallet) async => Ok(
+        openLabels: (listFreezes, freeze, openWallet) async => Ok(
           createLabelsForTesting(
             database: database,
-            sync: sync,
+            listAttributedFreezes: listFreezes,
+            freezeAttributedOutpoints: freeze,
             openWallet: openWallet,
           ),
         ),
@@ -628,11 +634,11 @@ void main() {
     );
     final result = await AppLocator.setup(
       locator,
-      database,
-      openLabels: (sync, openWallet) async => Ok(
+      openLabels: (listFreezes, freeze, openWallet) async => Ok(
         createLabelsForTesting(
           database: database,
-          sync: sync,
+          listAttributedFreezes: listFreezes,
+          freezeAttributedOutpoints: freeze,
           openWallet: openWallet,
         ),
       ),

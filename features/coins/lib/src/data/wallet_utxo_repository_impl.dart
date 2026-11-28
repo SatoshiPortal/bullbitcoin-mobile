@@ -13,13 +13,20 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletInventory _inventory;
   final Labels _labelsFacade;
   final Future<Result<Wallet, SyncFailure>> Function(WalletKey) _loadWallet;
-  final Future<Result<Sync, SyncFailure>> Function() _foreground;
+  final Future<Result<Set<Outpoint>, SyncFailure>> Function()
+  _readFrozenOutpoints;
+  final Future<Result<void, SyncFailure>> Function(WalletKey, List<Outpoint>)
+  _freezeWalletOutpoints;
+  final Future<Result<void, SyncFailure>> Function(List<Outpoint>)
+  _unfreezeOutpoints;
 
   WalletUtxoRepositoryImpl({
     required this._inventory,
     required this._labelsFacade,
     required this._loadWallet,
-    required this._foreground,
+    required this._readFrozenOutpoints,
+    required this._freezeWalletOutpoints,
+    required this._unfreezeOutpoints,
   });
 
   /// The stored wallet's key, with the storage failure mapped to the sync
@@ -113,11 +120,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   }) => _read(
     () async {
       final key = await _walletKey(walletId);
-      final sync = _value(await _foreground());
-      final wallet = _value(await sync.wallet(key));
-      for (final outpoint in outpoints) {
-        _value(await wallet.coins.freeze(outpoint));
-      }
+      _value(await _freezeWalletOutpoints(key, outpoints));
     },
     CoinsFreezeFailure.new,
     'Failed to freeze wallet coins',
@@ -129,10 +132,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     required List<Outpoint> outpoints,
   }) => _read(
     () async {
-      final sync = _value(await _foreground());
-      for (final outpoint in outpoints) {
-        _value(await sync.coins.unfreeze(outpoint));
-      }
+      _value(await _unfreezeOutpoints(outpoints));
     },
     CoinsUnfreezeFailure.new,
     'Failed to unfreeze wallet coins',
@@ -140,12 +140,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
 
   @override
   Future<Result<List<Outpoint>, CoinsFailure>> getAllFrozenOutpoints() => _read(
-    () async {
-      final sync = _value(await _foreground());
-      return {
-        for (final row in _value(await sync.coins.listFrozen())) row.outpoint,
-      }.toList();
-    },
+    () async => _value(await _readFrozenOutpoints()).toList(),
     CoinsLoadFailure.new,
     'Failed to load frozen outpoints',
   );

@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_quick_actions/setup.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -73,10 +74,13 @@ void main() {
         initialState: const WalletState(failure: NoWalletsFoundFailure()),
       );
 
-      final quickActions = createQuickActionsCubit(
+      final quickActions = QuickActionsFeature.mount(
         storage: _MemoryQuickActionsStorage(),
         warning: (_) {},
-        exchangeVisible: Stream.value(false),
+        isIOS: false,
+        exchangeVisible: () => Stream.value(false),
+        exchangeEntry: () => const Stream.empty(),
+        exchangeOffered: () => const Stream.empty(),
       );
       addTearDown(quickActions.close);
       Object? recoveryRequest;
@@ -88,15 +92,11 @@ void main() {
             routes: [
               WalletRouter.walletHomeRoute(
                 arkHost: null,
-                quickActions: quickActions,
+                quickActions: () => quickActions.quickActions,
                 onQuickAction: (_, _) {},
                 onCustomizeQuickActions: (_) {},
                 watchUnreadSupportMessages: (_) => 0,
-                exchangePrompt: createExchangePromptCubit(
-                  storage: _MemoryQuickActionsStorage(),
-                  warning: (_) {},
-                  offered: const Stream.empty(),
-                ),
+                exchangePrompt: () => quickActions.exchangePrompt,
                 onActivateExchange: (_) {},
                 announcements: () => const SizedBox.shrink(),
                 createSetupCubit: createSetupCubit,

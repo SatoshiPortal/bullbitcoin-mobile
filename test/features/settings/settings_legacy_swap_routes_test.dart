@@ -1,10 +1,11 @@
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
   test('publishes the legacy swap recovery routes', () {
-    final routeNames = SettingsRouter.childRoutes(
+    final routeNames = AppRouter.settingsChildren(
+      quickActions: () => fail('Unexpected Quick Actions resolution'),
       swapRecoveryRoutes: [
         GoRoute(
           name: 'swapRestore',

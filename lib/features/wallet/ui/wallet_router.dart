@@ -22,10 +22,10 @@ enum WalletRoute {
 class WalletRouter {
   static GoRoute walletHomeRoute({
     required ArkForegroundHost? arkHost,
-    required QuickActionsCubit quickActions,
+    required QuickActionsCubit Function() quickActions,
     required void Function(BuildContext, QuickAction) onQuickAction,
     required void Function(BuildContext) onCustomizeQuickActions,
-    required ExchangePromptCubit exchangePrompt,
+    required ExchangePromptCubit Function() exchangePrompt,
     required void Function(BuildContext) onActivateExchange,
     required int Function(BuildContext) watchUnreadSupportMessages,
     required Widget Function() announcements,
@@ -44,10 +44,10 @@ class WalletRouter {
               OnboardingNavigation.openPhysicalRecovery(context),
           onRecoverEncryptedVault: () =>
               RecoverBullFeature.open(context, RecoverBullFlow.recoverVault),
-          quickActions: quickActions,
+          quickActions: quickActions(),
           onQuickAction: onQuickAction,
           onCustomizeQuickActions: onCustomizeQuickActions,
-          exchangePrompt: exchangePrompt,
+          exchangePrompt: exchangePrompt(),
           onActivateExchange: onActivateExchange,
           watchUnreadSupportMessages: watchUnreadSupportMessages,
           announcements: announcements(),

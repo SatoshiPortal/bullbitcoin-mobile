@@ -14,7 +14,7 @@ final class SessionToken {
   /// The view the authentication opened.
   final String activeView;
 
-  /// Increases on every grant. Never reused within a process.
+  /// Increases on every grant from the same authority.
   final int generation;
 
   const SessionToken._(this.activeView, this.generation);
@@ -35,6 +35,9 @@ final class SessionAuthority {
   Future<Set<String>?> Function(SessionToken)? _memberships;
   final _madeInSession = <String>{};
   final _changes = StreamController<SessionToken?>.broadcast(sync: true);
+
+  @internal
+  late final ForegroundSession foreground = ForegroundSession._(this);
 
   SessionAuthority();
 
@@ -79,13 +82,8 @@ final class SessionAuthority {
     if (isCurrent(token)) _madeInSession.add(id.hex);
   }
 
-  /// Whether [token] is the live session: same view and same generation.
-  bool isCurrent(SessionToken token) {
-    final live = _current;
-    return live != null &&
-        live.generation == token.generation &&
-        live.activeView == token.activeView;
-  }
+  /// Whether [token] is the exact live grant made by this authority.
+  bool isCurrent(SessionToken token) => identical(_current, token);
 
   /// Opens a session for [view]. Called by the inventory after authentication.
   @internal
@@ -105,6 +103,22 @@ final class SessionAuthority {
     _current = null;
     _changes.add(null);
   }
+}
+
+/// Read-only observation of the foreground grant from one authority.
+final class ForegroundSession {
+  final SessionAuthority _authority;
+
+  const ForegroundSession._(this._authority);
+
+  /// The live grant, or null while locked.
+  SessionToken? capture() => _authority.current;
+
+  /// Whether [token] is still this authority's live grant.
+  bool isCurrent(SessionToken token) => _authority.isCurrent(token);
+
+  /// Replacements and revocations, in order. Use [capture] for initial state.
+  Stream<SessionToken?> get changes => _authority.changes;
 }
 
 /// One session as seen by an operation or a handle: the authority and the

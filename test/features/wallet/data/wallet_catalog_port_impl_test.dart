@@ -120,28 +120,6 @@ void main() {
     },
   );
 
-  test(
-    'key lookup reports storage exceptions and preserves programmer errors',
-    () async {
-      final catalog = _Catalog()..failure = const FormatException('storage');
-      await expectLater(
-        WalletSyncBinding.keyForId(catalog, 'wallet'),
-        throwsA(
-          isA<WalletSnapshotException>().having(
-            (error) => error.failure,
-            'failure',
-            isA<SyncStorageFailure>(),
-          ),
-        ),
-      );
-      catalog.failure = StateError('bug');
-      await expectLater(
-        WalletSyncBinding.keyForId(catalog, 'wallet'),
-        throwsStateError,
-      );
-    },
-  );
-
   test('invalid descriptor is refused before issuing a native key', () {
     final invalid = _row('wpkh([aabbccdd/84h/0h/0h])', external: '');
     expect(

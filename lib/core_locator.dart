@@ -1,5 +1,7 @@
 import 'package:labels/labels.dart';
-import 'package:sync/sync.dart' show Sync, Wallet, WalletConnectionPort;
+import 'package:sync/sync.dart'
+    show FrozenOutpoint, SyncFailure, Wallet, WalletConnectionPort;
+import 'package:sync/write.dart' show WalletNativeRuntime;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bull_exchange/setup.dart';
@@ -7,7 +9,6 @@ import 'package:exchange/exchange.dart' show Exchange;
 import 'package:exchange/setup.dart' show ExchangeCredentialStorage;
 import 'package:preferences/preferences.dart' as settings;
 import 'package:settings/setup.dart';
-import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:primitives/primitives.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
@@ -16,10 +17,6 @@ import 'package:get_it/get_it.dart';
 import 'package:labels/setup.dart';
 
 class CoreLocator {
-  static void register(GetIt locator, SqliteDatabase database) {
-    locator.registerLazySingleton<SqliteDatabase>(() => database);
-  }
-
   static Future<void> registerDatasources(GetIt locator) async {
     await bull_tor.TorLocator.registerDatasources(
       locator,
@@ -36,7 +33,6 @@ class CoreLocator {
       ),
       dispose: (exchange) => exchange.close(),
     );
-    await WalletLocator.registerDatasources(locator);
   }
 
   static void setupElectrum(GetIt locator, Electrum electrum) {
@@ -63,15 +59,16 @@ class CoreLocator {
   static Future<Result<void, LabelFailure>> registerPorts(
     GetIt locator, {
     required Future<Result<Labels, LabelFailure>> Function(
-      Future<Sync> Function() sync,
+      Future<Result<List<FrozenOutpoint>, SyncFailure>> Function() listFreezes,
+      Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>) freeze,
       Future<Wallet> Function(String) openWallet,
     )
     openLabels,
   }) async {
-    final walletSync = WalletLocator.syncAccess(locator);
     final labels = await openLabels(
-      walletSync.foreground,
-      walletSync.openWallet,
+      () => locator<WalletNativeRuntime>().listAttributedFreezes(),
+      (rows) => locator<WalletNativeRuntime>().freezeAttributedOutpoints(rows),
+      WalletLocator.walletAccess(locator),
     );
     if (labels case Err(:final failure)) return Err(failure);
     setupLabels(locator, (labels as Ok<Labels, LabelFailure>).value);

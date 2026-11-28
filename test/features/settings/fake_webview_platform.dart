@@ -44,12 +44,18 @@ class FakePlatformWebViewController extends PlatformWebViewController {
 
   /// Number of times [reload] was requested.
   int reloadCount = 0;
+  Uri? loadedUri;
 
   @override
   Future<void> setJavaScriptMode(JavaScriptMode javaScriptMode) async {}
 
   @override
-  Future<void> loadRequest(LoadRequestParams params) async {}
+  Future<void> loadRequest(LoadRequestParams params) async {
+    loadedUri = params.uri;
+  }
+
+  @override
+  Future<void> setUserAgent(String? userAgent) async {}
 
   @override
   Future<void> runJavaScript(String javaScript) async {

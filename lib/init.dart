@@ -23,7 +23,7 @@ import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:legacy_storage/legacy_storage.dart';
 import 'package:mempool/migration.dart';
 import 'package:primitives/primitives.dart' show Failure;
-import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_quick_actions/setup.dart';
 import 'package:background_tasks/wallet_jobs.dart';
 import 'package:notifications/payment_store.dart' show PaymentNotificationStore;
 import 'package:startup/startup.dart';
@@ -351,13 +351,14 @@ class Bull {
       }
       final setup = await AppLocator.setup(
         locator,
-        await legacy.open(admission),
         secrets: secrets,
-        openLabels: (sync, openWallet) => Labels.open(
+        openLabels: (listFreezes, freeze, openWallet) => Labels.open(
           file: labelsFile,
           admission: admission,
-          sync: sync,
+          listAttributedFreezes: listFreezes,
+          freezeAttributedOutpoints: freeze,
           openWallet: openWallet,
+          readInSession: (read) => inventory.readInSession(read),
         ),
         openElectrum: (readPreferences, tor) => Electrum.open(
           file: electrumFile,
@@ -415,7 +416,7 @@ class Bull {
         ScreenCaptureProtection.instance.enabledByUser =
             value.screenCaptureProtectionEnabled;
       }
-      await locator<QuickActionsCubit>().load();
+      await locator<QuickActionsFeature>().preload();
       await AppLocator.setupRecoverBull(
         locator,
         databasePath: recoverBull.standalone.path,

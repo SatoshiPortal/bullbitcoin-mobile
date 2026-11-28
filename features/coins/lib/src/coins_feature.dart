@@ -27,7 +27,15 @@ final class CoinsFeature {
   static CoinsFeature mount<T extends Object>({
     required WalletInventory inventory,
     required Future<Result<Wallet, SyncFailure>> Function(WalletKey) loadWallet,
-    required Future<Result<Sync, SyncFailure>> Function() foreground,
+    required Future<Result<Set<Outpoint>, SyncFailure>> Function()
+    readFrozenOutpoints,
+    required Future<Result<void, SyncFailure>> Function(
+      WalletKey,
+      List<Outpoint>,
+    )
+    freezeWalletOutpoints,
+    required Future<Result<void, SyncFailure>> Function(List<Outpoint>)
+    unfreezeOutpoints,
     required Labels labels,
     required AmountDisplayPreferencesReader preferences,
     required Future<void> Function(String) poll,
@@ -42,7 +50,9 @@ final class CoinsFeature {
     final repository = WalletUtxoRepositoryImpl(
       inventory: inventory,
       loadWallet: loadWallet,
-      foreground: foreground,
+      readFrozenOutpoints: readFrozenOutpoints,
+      freezeWalletOutpoints: freezeWalletOutpoints,
+      unfreezeOutpoints: unfreezeOutpoints,
       labelsFacade: labels,
     );
     final load = GetUtxosUsecase(repository: repository);

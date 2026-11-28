@@ -1836,13 +1836,6 @@
   "allSeedViewUnreadableEntries": "{count, plural, =1{1 entrée enregistrée est illisible et n’est pas affichée.} other{{count} entrées enregistrées sont illisibles et ne sont pas affichées.}}",
   "sendRemainingBalance": "Envoyer le solde restant",
   "sendAddRecipient": "Ajouter un destinataire",
-  "walletHomeSwapInProgress": "Échange en cours",
   "walletWarningSwapServerUnreachable": "Impossible de se connecter à Boltz",
-  "walletWarningSwapServerAction": "Touchez pour configurer",
-  "walletHomeSwapBitcoinToLiquid": "BTC → L-BTC",
-  "walletHomeSwapLiquidToBitcoin": "L-BTC → BTC",
-  "walletHomeSwapLightningToLiquid": "Lightning → L-BTC",
-  "walletHomeSwapLightningToBitcoin": "Lightning → BTC",
-  "walletHomeSwapLiquidToLightning": "L-BTC → Lightning",
-  "walletHomeSwapBitcoinToLightning": "BTC → Lightning"
+  "walletWarningSwapServerAction": "Touchez pour configurer"
 }

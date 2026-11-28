@@ -761,5 +761,33 @@
   "swapsFailureUnexpected": "Something went wrong with the swap. Please try again.",
   "@swapsFailureUnexpected": {"description": "Rescue failure: generic catch-all, never shows raw details"},
   "walletLoadFailed": "Your wallets could not be loaded. Check your connection and try again.",
-  "@walletLoadFailed": {"description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."}
+  "@walletLoadFailed": {"description": "Shown on the wallet home when loading the wallets fails. Previously this state rendered a 0-sat home screen with no explanation (#1895)."},
+  "swapHomeInProgress": "Swap in progress",
+  "@swapHomeInProgress": {
+    "description": "Subtitle of the home card for a swap that is still in progress"
+  },
+  "swapHomeBitcoinToLiquid": "BTC → L-BTC",
+  "@swapHomeBitcoinToLiquid": {
+    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
+  },
+  "swapHomeLiquidToBitcoin": "L-BTC → BTC",
+  "@swapHomeLiquidToBitcoin": {
+    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
+  },
+  "swapHomeLightningToLiquid": "Lightning → L-BTC",
+  "@swapHomeLightningToLiquid": {
+    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
+  },
+  "swapHomeLightningToBitcoin": "Lightning → BTC",
+  "@swapHomeLightningToBitcoin": {
+    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
+  },
+  "swapHomeLiquidToLightning": "L-BTC → Lightning",
+  "@swapHomeLiquidToLightning": {
+    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
+  },
+  "swapHomeBitcoinToLightning": "BTC → Lightning",
+  "@swapHomeBitcoinToLightning": {
+    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
+  }
 }

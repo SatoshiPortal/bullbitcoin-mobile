@@ -7,10 +7,10 @@ import 'package:sync/src/data/datasources/revision_store_datasource.dart';
 import 'package:sync/src/data/freeze_authority.dart';
 import 'package:sync/src/data/native_store_paths.dart';
 import 'package:sync/src/data/wallet_projections.dart';
-import 'package:sync/src/public/sync.dart' show walletOver;
+import 'package:sync/src/public/sync.dart'
+    show SyncForegroundStores, walletOver;
 import 'package:sync/sync.dart';
 import 'package:sync/testing.dart' show MemoryFreezeStore;
-import 'package:sync/write.dart';
 
 import 'support/connections.dart';
 import 'support/projection_fakes.dart';

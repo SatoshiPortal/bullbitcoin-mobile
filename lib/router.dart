@@ -31,6 +31,7 @@ import 'package:bull_exchange/bull_exchange.dart'
         ExchangeFailureL10n,
         ExchangeGuardedPaths,
         ExchangeHomeAction,
+        ExchangeSettingsHost,
         ExchangeSessionScope,
         ExchangeRouteGuard,
         PayRoute,
@@ -40,6 +41,8 @@ import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSnackBar;
 import 'package:settings/settings.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
+import 'package:bull_quick_actions/setup.dart';
+import 'package:bull_logs/bull_logs.dart';
 import 'package:btc_map/btc_map.dart';
 import 'package:bb_mobile/features/wallet/presentation/network_wallet_setup_cubit.dart';
 
@@ -70,7 +73,6 @@ import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
 import 'package:overview/setup.dart' show OverviewSynchronization;
@@ -115,6 +117,54 @@ class AppRouter {
   );
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
+
+  static final exchangeSettingsHost = ExchangeSettingsHost(
+    networkOf: Settings.networkOf,
+    isSuperuser: Settings.isSuperuserOf,
+    title: (context) => context.loc.settingsExchangeSettingsTitle,
+    signedOutMessage: (context) => context.loc.notLoggedInMessage,
+    accessDescription: (context) =>
+        context.loc.exchangeAccessSettingsDescription,
+    onOpenRecipients: (context) => context.pushNamed(PayRoute.pay.name),
+    onOpenTransactions: (context) =>
+        TransactionsNavigation.openHistory(context, exchangeOnly: true),
+    includeDefaultWallets: true,
+  );
+
+  static void exitExchange(BuildContext context) =>
+      context.goNamed(WalletRoute.walletHome.name);
+
+  static void customizeQuickActions(BuildContext context) =>
+      context.pushNamed(SettingsRoute.quickActions.name);
+
+  static List<RouteBase> settingsChildren({
+    required List<RouteBase> priceRoutes,
+    required QuickActionsCubit Function() quickActions,
+    required List<RouteBase> exchangeSettingsRoutes,
+    required List<RouteBase> swapRecoveryRoutes,
+    RouteBase? autoswapSettingsRoute,
+    required List<RouteBase> accessRoutes,
+    required List<RouteBase> backupRoutes,
+    required List<RouteBase> walletRoutes,
+    List<RouteBase> addressRoutes = const [],
+    RouteBase? seedViewRoute,
+  }) => [
+    ...priceRoutes,
+    GoRoute(
+      name: SettingsRoute.quickActions.name,
+      path: SettingsRoute.quickActions.path,
+      builder: (_, _) => QuickActionsCustomizationScreen(cubit: quickActions()),
+    ),
+    ...exchangeSettingsRoutes,
+    ...swapRecoveryRoutes,
+    ?autoswapSettingsRoute,
+    ...accessRoutes,
+    ...backupRoutes,
+    ...walletRoutes,
+    ...addressRoutes,
+    const LogsFeature().route,
+    ?seedViewRoute,
+  ];
 
   static void _openQuickAction(BuildContext context, QuickAction action) {
     switch (action) {
@@ -174,7 +224,7 @@ class AppRouter {
     preferences: () => locator<Preferences>(),
     isSuperuser: (context) => Settings.readEnvironment(context).isSuperuser,
     homePath: WalletRoute.walletHome.path,
-    onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
+    onExit: exitExchange,
     onOpenSettings: SettingsNavigation.open,
     onAction: (context, action) => switch (action) {
       ExchangeHomeAction.buy => context.pushNamed<void>(BuyRoute.buy.name),
@@ -184,7 +234,7 @@ class AppRouter {
     },
     brandAssetPath: Assets.logos.bbLogoSmall.path,
     settingsAssetPath: Assets.icons.settingsLine.path,
-    settings: SettingsRouter.exchangeSettingsHost,
+    settings: exchangeSettingsHost,
     purchases: (
       displayPreferences: () => locator<AmountDisplayPreferencesReader>(),
       inventory: () => locator<SecretsInventory>(),
@@ -309,11 +359,10 @@ class AppRouter {
             arkHost: locator.isRegistered<ArkForegroundHost>()
                 ? locator<ArkForegroundHost>()
                 : null,
-            quickActions: locator<QuickActionsCubit>(),
+            quickActions: () => locator<QuickActionsFeature>().quickActions,
             onQuickAction: _openQuickAction,
-            onCustomizeQuickActions: (context) =>
-                context.pushNamed(SettingsRoute.quickActions.name),
-            exchangePrompt: locator<ExchangePromptCubit>(),
+            onCustomizeQuickActions: customizeQuickActions,
+            exchangePrompt: () => locator<QuickActionsFeature>().exchangePrompt,
             onActivateExchange: _activateExchange,
             watchUnreadSupportMessages:
                 ExchangeSessionScope.watchUnreadSupportMessages,
@@ -339,11 +388,12 @@ class AppRouter {
       ),
       _sendRoutes.consolidation,
       SettingsFeature.mount(
-        menuScope: SettingsRouter.menuScope,
+        exchange: locator.call<Exchange>,
         settings: locator.call<Settings>,
         appSettingsRoutes: locator<NetworkFeature>().routes.appSettings,
         status: locator<NetworkFeature>().status,
-        childRoutes: SettingsRouter.childRoutes(
+        childRoutes: settingsChildren(
+          quickActions: () => locator<QuickActionsFeature>().quickActions,
           swapRecoveryRoutes: locator<SwapFeature>().recoveryRoutes,
           autoswapSettingsRoute: locator<SwapFeature>().autoswapSettingsRoute,
           addressRoutes: [locator<AddressViewFeature>().route],

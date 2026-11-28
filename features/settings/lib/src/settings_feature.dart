@@ -1,3 +1,6 @@
+import 'package:bull_exchange/bull_exchange.dart' show ExchangeAccessBuilder;
+import 'package:exchange/exchange.dart' show Exchange, ExchangeAccess;
+import 'package:flutter_bloc/flutter_bloc.dart' show RepositoryProvider;
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart'
     show BuildContext, Builder, Widget;
@@ -57,6 +60,7 @@ final class SettingsFeature {
   /// Resolves menu data and labels from the screen's current context.
   ///
   /// [menuScope] can provide inherited display inputs to both screens.
+  /// [exchange] is resolved only when either menu is built.
   static SettingsFeature mount({
     SettingsMenu Function(BuildContext) menuOf = SettingsHubBindings.menuOf,
     SettingsLabels Function(BuildContext) labelsOf =
@@ -65,9 +69,20 @@ final class SettingsFeature {
     required List<RouteBase> childRoutes,
     List<RouteBase> appSettingsRoutes = const [],
     Settings Function()? settings,
+    Exchange Function()? exchange,
     Widget Function(Widget child)? menuScope,
   }) {
-    Widget scoped(Widget child) => menuScope?.call(child) ?? child;
+    Widget scoped(Widget child) {
+      final menu = menuScope?.call(child) ?? child;
+      if (exchange == null) return menu;
+      return ExchangeAccessBuilder(
+        exchange: exchange(),
+        builder: (_, access) => RepositoryProvider<ExchangeAccess>.value(
+          value: access,
+          child: menu,
+        ),
+      );
+    }
 
     return SettingsFeature._(
       GoRoute(

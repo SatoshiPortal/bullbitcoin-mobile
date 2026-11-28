@@ -19,7 +19,6 @@ import 'autobuy/autobuy_mount.dart';
 import 'dashboard/exchange_dashboard_route.dart';
 import 'dashboard/exchange_home_actions.dart';
 import 'dca/ui/dca_router.dart';
-import 'default_wallets/default_wallets_payout_fields.dart';
 import 'exchange_failure_l10n.dart';
 import 'exchange_l10n.dart';
 import 'exchange_payout_destinations.dart';
@@ -139,7 +138,16 @@ final class BullExchangeFeature {
       unavailableRedirectPath: homePath,
       brandAssetPath: brandAssetPath,
       onExit: onExit,
-      settings: settings,
+      settingsRoutes: settings == null
+          ? const []
+          : ExchangeSettingsRouter.routes(
+              settings,
+              exchange: exchange,
+              preferences: preferences,
+              homePath: homePath,
+              onExit: onExit,
+              payoutFields: exchangePayoutFields,
+            ),
       purchases: purchases == null
           ? null
           : (
@@ -250,7 +258,7 @@ BullExchangeFeature mountBullExchange({
   required void Function(BuildContext) onExit,
   ExchangeSupportChatHost? supportChat,
   ExchangeKycHost? kyc,
-  ExchangeSettingsHost? settings,
+  List<RouteBase> settingsRoutes = const [],
   ExchangeFundingHost? funding,
   AutoBuyHost? autoBuy,
   ExchangeAuthHost? auth,
@@ -259,7 +267,6 @@ BullExchangeFeature mountBullExchange({
   Exchange Function()? limitOrders,
   ExchangePurchaseHost? purchases,
   ExchangePayinHost? payins,
-  DefaultWalletsPayoutFields? payoutFields,
 }) {
   final kycRoute = kyc == null
       ? null
@@ -310,14 +317,7 @@ BullExchangeFeature mountBullExchange({
             onMessagesRead: supportChat.onMessagesRead,
           ),
     kycRoute,
-    settings == null
-        ? const []
-        : List.unmodifiable(
-            ExchangeSettingsRouter.routes(
-              settings,
-              payoutFields: payoutFields ?? exchangePayoutFields,
-            ),
-          ),
+    List.unmodifiable(settingsRoutes),
     funding == null
         ? const []
         : List.unmodifiable(FundExchangeRouter.routes(funding)),

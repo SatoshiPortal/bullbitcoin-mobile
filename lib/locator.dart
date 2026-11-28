@@ -46,7 +46,7 @@ import 'package:signers/storage.dart' show SignerDevices;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
-import 'package:exchange/exchange.dart' show Exchange;
+import 'package:exchange/exchange.dart' show Exchange, ExchangePlatform;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart' show NetworkFeature;
 import 'package:bull_ark/ark_foreground_setup.dart';
@@ -66,7 +66,6 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
 import 'package:bull_tor/tor.dart';
-import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:settings/settings.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
@@ -89,7 +88,7 @@ import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:send/send.dart' show ReplaceByFee, SendNavigation;
-import 'package:bb_mobile/features/settings/settings_locator.dart';
+import 'package:bull_quick_actions/setup.dart';
 import 'package:silent/silent.dart';
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/router.dart';
@@ -106,7 +105,7 @@ import 'package:spend/setup.dart' show SpendCatalog;
 import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
     show
-        Sync,
+        FrozenOutpoint,
         Wallet,
         SyncFailure,
         SyncStorageFailure,
@@ -201,10 +200,10 @@ class AppLocator {
 
   /// Call this in the `main` function **before** `runApp()`
   static Future<Result<void, Failure>> setup(
-    GetIt locator,
-    SqliteDatabase database, {
+    GetIt locator, {
     required Future<Result<Labels, LabelFailure>> Function(
-      Future<Sync> Function() sync,
+      Future<Result<List<FrozenOutpoint>, SyncFailure>> Function() listFreezes,
+      Future<Result<void, SyncFailure>> Function(List<FrozenOutpoint>) freeze,
       Future<Wallet> Function(String) openWallet,
     )
     openLabels,
@@ -299,7 +298,6 @@ class AppLocator {
     }
 
     // Register core dependencies first
-    CoreLocator.register(locator, database);
     await CoreLocator.registerDatasources(locator);
     final electrum = await openElectrum(
       () => locator<ConnectionPreferencesReader>().readConnectionPreferences(),
@@ -377,6 +375,7 @@ class AppLocator {
     locator.registerLazySingleton<OverviewSynchronization>(
       () => OverviewSynchronization.open(
         inventory: inventory,
+        readInSession: inventory.readInSession,
         environment: locator<ActiveEnvironmentReader>(),
         catalog: () => locator<WalletCatalogPort>(),
         synchronize: locator<ForegroundWalletSynchronization>().execute,
@@ -485,7 +484,26 @@ class AppLocator {
       },
     );
     locator.registerLazySingleton<Silent>(() => silent.silent);
-    SettingsLocator.setup(locator);
+    Stream<bool> watchExchangeOffer({required bool onlyWhileOff}) =>
+        locator<Exchange>().watchActivationOffer(
+          platform: ExchangePlatform.current,
+          currentSuperuser: () => locator<Settings>().isSuperuser,
+          superuserChanges: locator<Settings>().watchSuperuser(),
+          onlyWhileOff: onlyWhileOff,
+        );
+    locator.registerLazySingleton<QuickActionsFeature>(
+      () => QuickActionsFeature.mount(
+        isIOS: ExchangePlatform.current == ExchangePlatform.ios,
+        warning: log.warning,
+        exchangeVisible: () => locator<Exchange>().watchTradingVisibility(
+          platform: ExchangePlatform.current,
+          superuserChanges: locator<Settings>().watchSuperuser(),
+        ),
+        exchangeEntry: () => watchExchangeOffer(onlyWhileOff: false),
+        exchangeOffered: () => watchExchangeOffer(onlyWhileOff: true),
+      ),
+      dispose: (feature) => feature.close(),
+    );
     locator.registerSingleton(
       BackgroundSchedule.open(dispatcher: backgroundTasksHandler),
     );
@@ -610,7 +628,9 @@ class AppLocator {
       () => CoinsFeature.mount<WalletKey>(
         inventory: inventory,
         loadWallet: locator<WalletNativeRuntime>().loadWallet,
-        foreground: locator<WalletNativeRuntime>().foreground,
+        readFrozenOutpoints: native.readFrozenOutpoints,
+        freezeWalletOutpoints: native.freezeWalletOutpoints,
+        unfreezeOutpoints: native.unfreezeOutpoints,
         labels: locator<Labels>(),
         preferences: locator<AmountDisplayPreferencesReader>(),
         poll: (id) =>

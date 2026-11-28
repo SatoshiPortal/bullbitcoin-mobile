@@ -4,13 +4,13 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/home_ongoing_swaps.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/ark_dashboard_entry.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:overview/overview.dart';
+import 'package:swap_feature/swap_feature.dart' show HomeOngoingSwaps;
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,9 +83,18 @@ class WalletHomeScreen extends StatelessWidget {
         ),
       ),
       announcements: announcements,
-      warnings: const Column(
+      warnings: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [HomeOngoingSwaps(), HomeWarnings()],
+        children: [
+          Builder(
+            builder: (context) => HomeOngoingSwaps(
+              swaps: context.select(
+                (WalletBloc bloc) => bloc.state.ongoingSwaps,
+              ),
+            ),
+          ),
+          const HomeWarnings(),
+        ],
       ),
       consolidation: const HomeConsolidationBanner(),
       wallets: WalletCards(

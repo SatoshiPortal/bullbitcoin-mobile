@@ -222,6 +222,8 @@ The explicit legacy PIN key allowance is `securityKey`. The remaining fixed keys
 
 ## Encrypted wallet inventory
 
+`SecretsInventory.foregroundSession` in `package:secrets/storage.dart` lets composition capture the live grant, check it synchronously and observe replacement or revocation without granting or revoking access. `listDescriptorsFor` refuses missing or stale authorization rather than reading from whichever view is now active. A token from another authority cannot authorize a read, even for the same view and generation. Background descriptors still use their separate persisted grants.
+
 The Secrets schema owns wallet definitions, BIP85 derivation records and access views. `package:secrets/migration.dart` supplies the foreground participant for split-v1. It copies the inventory from a read-only schema-16 snapshot and verifies every destination value before committing its receipt in `access_state`. A wallet marked local keeps its expected seed fingerprint even when the seed cannot be read. Descriptor spelling, nullable labels and unknown legacy enum text survive the copy.
 
 When the source contains wallets, an existing PIN becomes a salted Argon2id verifier and the failed-attempt count and lockout are copied in the same transaction. An inventory initialized without wallets starts unprotected, including after an iOS reinstall where the keychain can survive the app container. The importer skips malformed seed keys and leaves the receipt pending when the keystore listing is unavailable. It retains the legacy file and keychain entries for coordinated retirement after all owners verify their data.

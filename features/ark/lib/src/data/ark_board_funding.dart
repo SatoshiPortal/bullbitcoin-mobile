@@ -216,23 +216,20 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           for (final tx in transactions) {
             if (tx.txid != binding.unsignedTxid) continue;
             if ((tx.confirmationTime ?? 0) > 0) {
-              final gate = _sync(await _runtime.foreground()).stores.spendGate;
-              final lease = await gate.acquire(key);
-              if (lease is! BitcoinSpendAdmission) {
-                return const Err(ArkOperationBusyFailure());
-              }
-              try {
-                _require(lease.revision == loaded);
-                _sync(
-                  await _authority.observe(
-                    key,
-                    history,
-                    admittedRevision: lease.revision,
-                  ),
-                );
-              } finally {
-                lease.close();
-              }
+              _sync(
+                await _runtime.withBitcoinRevisionAdmission(key, (
+                  revision,
+                ) async {
+                  _require(revision == loaded);
+                  _sync(
+                    await _authority.observe(
+                      key,
+                      history,
+                      admittedRevision: revision,
+                    ),
+                  );
+                }),
+              );
               final settled = _sync(
                 await _authority.readExitReserveRequest(id),
               );
@@ -258,22 +255,17 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
           amount,
           ownership,
         );
-        final gate = _sync(await _runtime.foreground()).stores.spendGate;
-        final lease = await gate.acquire(key);
-        if (lease is! BitcoinSpendAdmission) {
-          return const Err(ArkOperationBusyFailure());
-        }
-        try {
-          _require(lease.revision == loaded);
-          _sync(
-            await _authority.admitExitReserveSigning(
-              expected: binding,
-              admittedRevision: lease.revision,
-            ),
-          );
-        } finally {
-          lease.close();
-        }
+        _sync(
+          await _runtime.withBitcoinRevisionAdmission(key, (revision) async {
+            _require(revision == loaded);
+            _sync(
+              await _authority.admitExitReserveSigning(
+                expected: binding,
+                admittedRevision: revision,
+              ),
+            );
+          }),
+        );
         final secret = _secret(await _secrets.fetch(parent));
         _require(secret.info.isMnemonic);
         final candidate = _secret(
@@ -649,23 +641,21 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
         review.display.fundingAmount,
         ownership,
       );
-      final gate = _sync(await _runtime.foreground()).stores.spendGate;
-      final lease = await gate.acquire(entry.binding.key);
-      if (lease is! BitcoinSpendAdmission) {
-        throw const _HostFailure(ArkOperationBusyFailure());
-      }
-      try {
-        _require(lease.revision == loaded);
-        admitted = true; // A failed CAS may follow a durable irreversible seal.
-        _sync(
-          await _authority.admitBoardSigning(
-            expected: entry.binding,
-            admittedRevision: lease.revision,
-          ),
-        );
-      } finally {
-        lease.close();
-      }
+      _sync(
+        await _runtime.withBitcoinRevisionAdmission(entry.binding.key, (
+          revision,
+        ) async {
+          _require(revision == loaded);
+          // A failed CAS may follow a durable irreversible seal.
+          admitted = true;
+          _sync(
+            await _authority.admitBoardSigning(
+              expected: entry.binding,
+              admittedRevision: revision,
+            ),
+          );
+        }),
+      );
       // The normal source lease is actually CLOSED before the first signer.
       _unexpired(review);
       final secret = _secret(await _secrets.fetch(entry.binding.sourceParent));
@@ -844,53 +834,50 @@ final class WalletArkBoardFunding implements ArkTransferBoardFundingPort {
             history.status == sync.ValueStatus.ready &&
             history.data != null,
       );
-      final gate = _sync(await _runtime.foreground()).stores.spendGate;
-      final lease = await gate.acquire(key);
-      if (lease is! BitcoinSpendAdmission) {
-        throw const _HostFailure(ArkOperationBusyFailure());
-      }
-      try {
-        _require(lease.revision == loaded);
-        if (request != null) {
-          _sync(
-            await _authority.closeNeverPrepared(
-              expected: request,
-              admittedRevision: lease.revision,
-            ),
-          );
-        } else {
-          // Positive confirmed settlement takes precedence over local expiry.
-          _sync(
-            await _authority.observe(
-              key,
-              history,
-              admittedRevision: lease.revision,
-            ),
-          );
-          if ((expiredUnsigned &&
-                  _sync(
-                    await _authority.expiredUnsignedBoardReview(
-                      operationId,
-                      DateTime.now().toUtc(),
-                    ),
-                  )) ||
-              (unregistered &&
-                  _sync(
-                    await _authority.unregisteredNeverSignedBoard(operationId),
-                  ))) {
-            // The CAS loses to every irreversible signing-start, including a
-            // signer that has not yet persisted its signed bytes.
+      _sync(
+        await _runtime.withBitcoinRevisionAdmission(key, (revision) async {
+          _require(revision == loaded);
+          if (request != null) {
             _sync(
-              await _authority.tombstoneNeverSigned(
-                expected: binding,
-                admittedRevision: lease.revision,
+              await _authority.closeNeverPrepared(
+                expected: request,
+                admittedRevision: revision,
               ),
             );
+          } else {
+            // Positive confirmed settlement takes precedence over local expiry.
+            _sync(
+              await _authority.observe(
+                key,
+                history,
+                admittedRevision: revision,
+              ),
+            );
+            if ((expiredUnsigned &&
+                    _sync(
+                      await _authority.expiredUnsignedBoardReview(
+                        operationId,
+                        DateTime.now().toUtc(),
+                      ),
+                    )) ||
+                (unregistered &&
+                    _sync(
+                      await _authority.unregisteredNeverSignedBoard(
+                        operationId,
+                      ),
+                    ))) {
+              // The CAS loses to every irreversible signing-start, including a
+              // signer that has not yet persisted its signed bytes.
+              _sync(
+                await _authority.tombstoneNeverSigned(
+                  expected: binding,
+                  admittedRevision: revision,
+                ),
+              );
+            }
           }
-        }
-      } finally {
-        lease.close();
-      }
+        }),
+      );
       return const Ok(null);
     } catch (error) {
       if (error is Error) rethrow;

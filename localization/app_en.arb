@@ -5495,10 +5495,6 @@
   "@networkWalletBackupRequired": {
     "description": "Explains why a new seed cannot be added to a PIN-protected view"
   },
-  "walletHomeSwapInProgress": "Swap in progress",
-  "@walletHomeSwapInProgress": {
-    "description": "Subtitle of the home card for a swap that is still in progress"
-  },
   "walletWarningSwapServerUnreachable": "Unable to connect to Boltz",
   "@walletWarningSwapServerUnreachable": {
     "description": "Home warning shown when the swap server (Boltz) does not answer at startup"
@@ -5506,29 +5502,5 @@
   "walletWarningSwapServerAction": "Tap to configure",
   "@walletWarningSwapServerAction": {
     "description": "Second line of the home warning about the swap server; tapping opens the swap settings"
-  },
-  "walletHomeSwapBitcoinToLiquid": "BTC → L-BTC",
-  "@walletHomeSwapBitcoinToLiquid": {
-    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
-  },
-  "walletHomeSwapLiquidToBitcoin": "L-BTC → BTC",
-  "@walletHomeSwapLiquidToBitcoin": {
-    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
-  },
-  "walletHomeSwapLightningToLiquid": "Lightning → L-BTC",
-  "@walletHomeSwapLightningToLiquid": {
-    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
-  },
-  "walletHomeSwapLightningToBitcoin": "Lightning → BTC",
-  "@walletHomeSwapLightningToBitcoin": {
-    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
-  },
-  "walletHomeSwapLiquidToLightning": "L-BTC → Lightning",
-  "@walletHomeSwapLiquidToLightning": {
-    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
-  },
-  "walletHomeSwapBitcoinToLightning": "BTC → Lightning",
-  "@walletHomeSwapBitcoinToLightning": {
-    "description": "Swap type on the home notice for a swap in progress, naming what is swapped into what"
   }
 }
