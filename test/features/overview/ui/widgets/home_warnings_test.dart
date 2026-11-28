@@ -46,6 +46,7 @@ Future<void> _pump(
   List<WalletWarning> network = const [],
   OverviewLoadFailure? failure,
   bool swapDown = false,
+  List<Widget> swaps = const [],
   VoidCallback? onBackup,
   ValueChanged<HomeWarningDestination>? onOpen,
 }) async {
@@ -61,6 +62,7 @@ Future<void> _pump(
             swapServerUnreachable: swapDown,
             loadFailure: failure,
             copy: _copy(context),
+            swaps: swaps,
             backup: onBackup == null
                 ? null
                 : BackupCard(
@@ -109,7 +111,7 @@ void main() {
         );
         expect(
           find.byType(BullCarousel),
-          hasNetwork ? findsOneWidget : findsNothing,
+          hasNetwork || hasBackup ? findsOneWidget : findsNothing,
         );
         expect(
           find.byType(BackupCard),
@@ -188,7 +190,7 @@ void main() {
   });
 
   testWidgets(
-    'network, swap and load stay ordered with a separate backup action',
+    'network, swap and load stay ordered, with the backup card last',
     (tester) async {
       final destinations = <HomeWarningDestination>[];
       var backupOpens = 0;
@@ -201,10 +203,12 @@ void main() {
         onOpen: destinations.add,
       );
       final carousel = tester.widget<BullCarousel>(find.byType(BullCarousel));
-      final cards = carousel.children
+      final children = carousel.children
           .cast<ConstrainedBox>()
-          .map((box) => box.child as BullInfoCard)
+          .map((box) => box.child)
           .toList();
+      expect(children.last, isA<BackupCard>());
+      final cards = children.whereType<BullInfoCard>().toList();
       final l10n = AppLocalizations.of(
         tester.element(find.byType(BullCarousel)),
       );
@@ -236,14 +240,39 @@ void main() {
       ]);
       final backup = find.byType(BackupCard);
       expect(backup, findsOneWidget);
-      expect(
-        find.descendant(of: find.byType(BullCarousel), matching: backup),
-        findsNothing,
-      );
       tester.widget<BackupCard>(backup).onTap();
       expect(backupOpens, 1);
     },
   );
+
+  testWidgets('one notice at a time: errors, then swaps, then backup', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      network: [_bitcoinDown],
+      swaps: const [Text('swap one'), Text('swap two')],
+      onBackup: () {},
+    );
+
+    final l10n = AppLocalizations.of(tester.element(find.byType(BullCarousel)));
+    final screen = tester.getRect(find.byType(BullCarousel));
+    bool onScreen(Finder finder) => screen.overlaps(tester.getRect(finder));
+    final error = find.text(l10n.walletWarningElectrumBitcoinDown);
+    final first = find.text('swap one');
+    final second = find.text('swap two');
+    final backup = find.byType(BackupCard);
+
+    expect(
+      [onScreen(error), onScreen(first), onScreen(second), onScreen(backup)],
+      [true, false, false, false],
+    );
+    for (final next in [first, second, backup]) {
+      await tester.drag(find.byType(BullCarousel), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+      expect(onScreen(next), isTrue);
+    }
+  });
 
   testWidgets('both Electrum chains and Liquid alone have distinct copy', (
     tester,
