@@ -2,7 +2,6 @@ import 'package:labels/testing.dart';
 import 'package:electrum/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/testing.dart';
-import 'package:bb_mobile/features/wallet/wallet_locator.dart' as wallet;
 import 'package:transactions/setup.dart';
 
 import 'dart:io';
@@ -10,7 +9,6 @@ import 'dart:io';
 import 'package:bb_mobile/core_locator.dart';
 import 'package:settings/setup.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/native_runtime_setup.dart';
 import 'package:overview/setup.dart' show OverviewSynchronization;
@@ -18,6 +16,7 @@ import 'package:bull_recoverbull/bull_recoverbull.dart';
 import 'package:bull_recoverbull/migration.dart'
     show readLegacyRecoverBullPermission;
 import 'package:bull_recoverbull/testing.dart';
+import 'package:bull_recoverbull/storage.dart' show RecoverBullWalletBackups;
 import 'package:bull_tor/tor.dart';
 import 'package:bull_tor/tor_adapter.dart';
 import 'package:drift/native.dart';
@@ -31,7 +30,8 @@ import 'package:preferences/migration.dart';
 import 'package:secrets/secrets.dart';
 import 'package:secrets/testing.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
-import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show AuthorizedWalletAccess, WalletNativeRuntime;
 
 import 'support/inventory_fixture.dart';
 
@@ -164,7 +164,6 @@ void main() {
             tor: () => services<Tor>(),
           ),
         );
-        WalletLocator.registerUsecases(services);
         setupLabels(
           services,
           createLabelsForTesting(
@@ -173,7 +172,10 @@ void main() {
                 services<WalletNativeRuntime>().listAttributedFreezes(),
             freezeAttributedOutpoints: (rows) =>
                 services<WalletNativeRuntime>().freezeAttributedOutpoints(rows),
-            openWallet: WalletLocator.walletAccess(services),
+            openWallet: AuthorizedWalletAccess(
+              inventory: services<WalletInventory>(),
+              runtime: services.call<WalletNativeRuntime>,
+            ).open,
           ),
         );
         // Wallet's native runtime requires the Payjoin owner's reservation port.
@@ -182,7 +184,6 @@ void main() {
           services,
           overview: () => services<OverviewSynchronization>(),
         );
-        wallet.WalletLocator.setup(services);
 
         expect(services.isRegistered<EmbeddedTor>(), isFalse);
         await AppLocator.setupRecoverBull(
@@ -278,7 +279,17 @@ void main() {
           services<RecoverBullRoutePort>(),
           same(services<RecoverBullEnvironmentPort>()),
         );
-        expect(services<RecoverBullWalletPort>(), isNotNull);
+        expect(
+          await services<RecoverBullWalletPort>().currentDefault(),
+          isA<Ok>().having((result) => result.value, 'default wallet', isNull),
+        );
+        final mainBackups = services<RecoverBullWalletBackups>();
+        final regtestBackups = services<RecoverBullWalletBackups>(
+          instanceName: 'regtest',
+        );
+        expect(regtestBackups, isNot(same(mainBackups)));
+        expect(await mainBackups.read('missing'), isA<Ok>());
+        expect(await regtestBackups.read('missing'), isA<Ok>());
       },
     );
   }

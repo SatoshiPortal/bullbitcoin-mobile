@@ -20,7 +20,6 @@ import 'package:sync/sync.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 
-import 'features/wallet/data/ark_funding_test_fixture.dart';
 import 'support/owner_databases.dart';
 import 'support/inventory_fixture.dart';
 
@@ -36,7 +35,7 @@ import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
 import 'package:legacy_storage/app_database_testing.dart';
 import 'package:overview/setup.dart';
 import 'package:overview/catalogue.dart';
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
+import 'package:overview/overview.dart' show OverviewHomeController;
 import 'package:silent/setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:startup/startup.dart';
@@ -50,9 +49,29 @@ import 'package:secrets/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:settings/setup.dart' show StartupNetwork;
 import 'package:bull_payjoin/bull_payjoin.dart' show PayjoinLifecycle;
+import 'package:background_tasks/background_tasks.dart'
+    show backgroundSyncAvailable;
+import 'package:background_tasks/wallet_jobs.dart' show WalletPaymentObserver;
+import 'package:notifications/payment_store.dart' show PaymentNotificationStore;
 
 import 'support/preferences_database.dart';
 import '../packages/electrum/test/electrum_test_database.dart';
+
+// Synthetic public PSBT; it contains no key or valid signature.
+const publicFundingPsbt =
+    'cHNidP8BAFICAAAAAQECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gAAAAAAD9////'
+    'AaCGAQAAAAAAFgAUIiIiIiIiIiIiIiIiIiIiIiIiIiIAAAAAAAEBH2iHAQAAAAAAFgAUMzMz'
+    'MzMzMzMzMzMzMzMzMzMzMzMAAA==';
+WalletKey get fundingKey => WalletKey(
+  id: '[00112233/84h/1h/0h]:regtest',
+  network: BitcoinNetwork.regtest,
+);
+WalletRevision get fundingStamp =>
+    WalletRevision(key: fundingKey, generation: 1, revision: 1);
+T sourceOk<T>(Result<T, SyncFailure> result) => switch (result) {
+  Ok(:final value) => value,
+  Err(:final failure) => throw StateError('Unexpected ${failure.runtimeType}'),
+};
 
 Future<Result<Preferences, PreferencesFailure>> _openTestPreferences(
   SqliteDatabase legacy,
@@ -559,9 +578,13 @@ void main() {
         startAutoswapWatcher: false,
       );
       expect(result, isA<Ok>());
+      expect(locator.isRegistered<OverviewHomeController>(), isTrue);
+      expect(locator.isRegistered<ForegroundWalletStartup>(), isTrue);
+      expect(backgroundSyncAvailable, isFalse);
+      expect(locator.isRegistered<WalletPaymentObserver>(), isFalse);
+      expect(locator.isRegistered<PaymentNotificationStore>(), isFalse);
       await locator<ForegroundWalletStartup>().start();
       expect(nativeTor.calls, 1);
-      expect(locator<WalletRepository>(), isA<WalletRepository>());
       const id = 'wpkh([01234567/84h/0h/0h])';
       final key = WalletKey(id: id, network: BitcoinNetwork.mainnet);
       final catalog = locator<WalletCatalogPort>();
@@ -667,7 +690,9 @@ void main() {
       (result as Err<void, ElectrumFailure>).failure,
       isA<ElectrumSaveFailure>(),
     );
-    expect(locator.isRegistered<WalletRepository>(), isFalse);
+    expect(locator.isRegistered<WalletCatalogPort>(), isFalse);
+    expect(locator.isRegistered<WalletNativeRuntime>(), isFalse);
+    expect(locator.isRegistered<OverviewHomeController>(), isFalse);
     expect(locator.isRegistered<OverviewSynchronization>(), isFalse);
     expect(locator.isRegistered<SilentFeature>(), isFalse);
     expect(
