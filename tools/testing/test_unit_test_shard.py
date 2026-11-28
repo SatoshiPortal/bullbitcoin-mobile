@@ -171,6 +171,39 @@ class UnitTestShardTest(unittest.TestCase):
         self.assertEqual([arg for arg in traced_args if arg != "-v"], plain_args)
         self.assertTrue(any(arg.endswith("_test.dart") for arg in plain_args))
 
+    def test_real_access_unsharded_trace_runs_the_whole_suite(self):
+        access = SCRIPT.parents[1] / "features" / "access"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fvm = root / "fvm"
+            fvm.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$ARGUMENTS"\n')
+            fvm.chmod(0o755)
+            env = dict(
+                os.environ,
+                PATH=f"{root}:{os.environ['PATH']}",
+                TEST_TOTAL_SHARDS="1",
+                TEST_SHARD_INDEX="0",
+                MELOS_PACKAGE_NAME="access",
+                ARGUMENTS=str(root / "args"),
+            )
+            command = ["bash", str(SCRIPT), "flutter", "--enable-vmservice", "--reporter=compact"]
+            plain = subprocess.run(command, cwd=access, env=env, text=True, capture_output=True, check=False)
+            plain_args = (root / "args").read_text().splitlines()
+            traced = subprocess.run(
+                command,
+                cwd=access,
+                env=dict(env, TRACE_ACCESS_SHARD="1", TRACE_ACCESS_HOOKS="1"),
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            traced_args = (root / "args").read_text().splitlines()
+        self.assertEqual(plain.returncode, 0)
+        self.assertEqual(traced.returncode, 0)
+        self.assertEqual(traced_args.count("-v"), 1)
+        self.assertEqual([arg for arg in traced_args if arg != "-v"], plain_args)
+        self.assertFalse(any(arg.endswith("_test.dart") for arg in plain_args))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,4 @@
-.PHONY: regtest-hosted-check workspace-graph workspace-graph-check rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
+.PHONY: regtest-hosted-check workspace-graph workspace-graph-check rust-bindings-codegen onion-codegen onion-device-test bitbox-device-test native-write-check secrets-api-docs secrets-api-docs-check sync-api-docs sync-api-docs-check custody-check custody-ci-check all setup clean deps deps-update bootstrap analyze build-runner translations hooks ios-simulator ios-release drift-migrations devcontainer devcontainer-up container-tools container-app android release debug beta verify verify-rustc-pins rust-versions rustc-pins-test aot-check unit-test-shard-test unit-test-matrix-test action-pins-check pr-governance-ci-test test unit-test integration-test catalogue fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -461,7 +461,10 @@ rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins
 
 unit-test-shard-test:
-	@python3 -m unittest tools.testing.test_unit_test_shard
+	@python3 -m unittest tools.testing.test_unit_test_shard tools.testing.test_impacted_unit_tests tools.testing.test_unit_test_makefile tools.testing.test_unit_test_matrix
+
+unit-test-matrix-test:
+	@python3 -m unittest tools.testing.test_unit_test_matrix
 
 # Read-only reachability check of every hosted regtest endpoint the app uses.
 regtest-hosted-check:
@@ -511,14 +514,27 @@ test: unit-test integration-test
 # One run per workspace member that has a test/ directory, each with its own tool, the app included (melos useRootAsPackage). melos iterates the declared `workspace:` list, not a directory glob, so a member added anywhere — features/ included — is tested without editing this target. `melos exec` is called directly through `fvm dart run`: `melos run` would re-invoke a bare `melos` from PATH, which the pinned SDK forbids. Fail-fast and one package at a time, like the loop it replaces.
 # Optionally bound test processes inside each package on shared machines.
 TEST_CONCURRENCY ?=
+# CI's per-member jobs disable this aggregate fixture; a dedicated job runs it.
+TEST_RUN_MULTIVIEW ?= 1
 # TEST_TOTAL_SHARDS=N TEST_SHARD_INDEX=i runs one of N disjoint shards of every member's test files (tools/unit_test_shard.sh); CI runs the shards in parallel.
+# TEST_PACKAGES=a,b limits a PR run to the live impacted selection. Empty keeps the full suite; the comma-separated value is one Melos scope glob.
 TEST_TOTAL_SHARDS ?= 1
 TEST_SHARD_INDEX ?= 0
+TEST_PACKAGES ?=
+MELOS_UNIT_TEST_SCOPE = $(if $(TEST_PACKAGES),--scope='$(TEST_PACKAGES)')
 unit-test:
-	@echo "🏃‍ running unit tests of every workspace member"
-	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh flutter --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
-	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh dart --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
-	@$(MAKE) secrets-multiview-test
+	@echo "🏃‍ running unit tests of $(if $(TEST_PACKAGES),impacted workspace members: $(TEST_PACKAGES),every workspace member)"
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --flutter --dir-exists=test $(MELOS_UNIT_TEST_SCOPE) --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh flutter --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --no-flutter --dir-exists=test $(MELOS_UNIT_TEST_SCOPE) --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh dart --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@if [ "$(TEST_RUN_MULTIVIEW)" != 1 ]; then \
+		echo "Skipping multiple-view tests: disabled for this per-member job."; \
+	elif [ "$(TEST_SHARD_INDEX)" != 0 ]; then \
+		echo "Skipping multiple-view tests: they run only in shard 0."; \
+	elif [ -n "$(TEST_PACKAGES)" ] && ! printf ',%s,' "$(TEST_PACKAGES)" | grep -Eq ',(secrets|sync),'; then \
+		echo "Skipping multiple-view tests: neither secrets nor sync is impacted."; \
+	else \
+		$(MAKE) secrets-multiview-test; \
+	fi
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the
