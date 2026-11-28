@@ -16,7 +16,6 @@ import 'package:overview/overview.dart';
 import 'package:overview/routes.dart';
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:send/send.dart' show Consolidation;
-import 'package:swap_feature/swap_feature.dart' show HomeOngoingSwaps;
 import 'package:swaps/swaps.dart';
 import 'package:transactions/routes.dart';
 
@@ -138,12 +137,16 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final notices = find.byType(HomeOngoingSwaps);
+    final notices = find.byType(OverviewHomeWarnings);
     final carousel = find.descendant(
       of: notices,
       matching: find.byType(BullCarousel),
     );
-    expect(carousel, findsNothing);
+    int pages() => carousel.evaluate().isEmpty
+        ? 0
+        : tester.widget<BullCarousel>(carousel).children.length;
+    final errors = pages();
+    expect(find.byKey(const ValueKey('first')), findsNothing);
 
     final first = _swap('first', 1, SwapType.bitcoinToLiquid);
     final second = _swap('second', 2, SwapType.liquidToBitcoin);
@@ -152,6 +155,18 @@ void main() {
     await tester.pumpAndSettle();
     await tester.ensureVisible(carousel);
     await tester.pumpAndSettle();
+    expect(pages(), errors + 2);
+    final ahead = tester
+        .widget<BullCarousel>(carousel)
+        .children
+        .indexWhere(
+          (card) =>
+              (card as ConstrainedBox).child?.key == const ValueKey('first'),
+        );
+    for (var i = 0; i < ahead; i++) {
+      await tester.fling(carousel, const Offset(-600, 0), 1200);
+      await tester.pumpAndSettle();
+    }
     expect(find.byKey(const ValueKey('first')).hitTestable(), findsOneWidget);
     expect(find.byKey(const ValueKey('second')).hitTestable(), findsNothing);
     await tester.fling(carousel, const Offset(-600, 0), 1200);
@@ -174,7 +189,8 @@ void main() {
     h.swaps.result = const Ok([]);
     await controller.refresh();
     await tester.pumpAndSettle();
-    expect(carousel, findsNothing);
+    expect(pages(), errors);
+    expect(find.byKey(const ValueKey('first')), findsNothing);
     await tester.pumpWidget(const SizedBox.shrink());
     router.dispose();
     await locator.popScope();

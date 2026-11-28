@@ -52,7 +52,7 @@ void main() {
         home: Builder(builder: feature.buildLoadingSplash),
       ),
     );
-    // The store delegate loads asynchronously, and the loading spinner never
+    // The store delegate loads asynchronously, and the loading line never
     // settles. Pump a second frame instead of waiting for all animations.
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.textContaining('Bitcoin-only services'), findsOneWidget);

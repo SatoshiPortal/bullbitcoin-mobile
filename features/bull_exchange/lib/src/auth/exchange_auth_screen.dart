@@ -16,7 +16,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullDialog, BullInfoCard, BullShapesX;
+    show BullDialog, BullFadingLinearProgress, BullInfoCard, BullShapesX;
 
 typedef ExchangeAuthHost = ({
   Future<Result<ExchangeWebPreferences, ExchangeFailure>> Function()
@@ -274,28 +274,47 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => switch (_state) {
-    AuthLoadingConfig() || AuthGeneratingKey() || AuthDone() => const SafeArea(
-      child: Center(child: CircularProgressIndicator()),
-    ),
-    AuthConfigFailed(:final failure) => SafeArea(
+  Widget build(BuildContext context) {
+    final busy = switch (_state) {
+      AuthLoadingConfig() || AuthGeneratingKey() || AuthDone() => true,
+      AuthConfigFailed() ||
+      AuthBrowsing() ||
+      AuthKeyFailed() ||
+      AuthClosing() => false,
+    };
+    return SafeArea(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CloseButton(onPressed: () => _add(const AuthCloseRequested())),
-          BullInfoCard(
-            description: widget.host.failureMessage(context, failure),
-            tagColor: context.appColors.error,
-            bgColor: context.appColors.errorContainer,
-            onTap: () => _add(const AuthRetryRequested()),
+          BullFadingLinearProgress(trigger: busy),
+          Expanded(
+            child: switch (_state) {
+              AuthLoadingConfig() ||
+              AuthGeneratingKey() ||
+              AuthDone() => const SizedBox.shrink(),
+              AuthConfigFailed(:final failure) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CloseButton(
+                    onPressed: () => _add(const AuthCloseRequested()),
+                  ),
+                  BullInfoCard(
+                    description: widget.host.failureMessage(context, failure),
+                    tagColor: context.appColors.error,
+                    bgColor: context.appColors.errorContainer,
+                    onTap: () => _add(const AuthRetryRequested()),
+                  ),
+                ],
+              ),
+              AuthBrowsing() ||
+              AuthKeyFailed() ||
+              AuthClosing() => WebViewWidget(controller: _controller),
+            },
           ),
         ],
       ),
-    ),
-    AuthBrowsing() ||
-    AuthKeyFailed() ||
-    AuthClosing() => SafeArea(child: WebViewWidget(controller: _controller)),
-  };
+    );
+  }
 
   Future<bool> _hasBBSessionCookie(String url) async {
     final cookies = await _cookieManager.getCookies(domain: Uri.parse(url));

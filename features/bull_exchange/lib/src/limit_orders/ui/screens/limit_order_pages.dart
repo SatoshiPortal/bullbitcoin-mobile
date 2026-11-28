@@ -438,12 +438,6 @@ class LimitDestinationPage extends StatelessWidget {
                   _ => limitRailName(context, option.rail),
                 }),
                 subtitle: Text(limitRailName(context, option.rail)),
-                trailing: resolving && _selected(option)
-                    ? const SizedBox.square(
-                        dimension: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : null,
               ),
               const Gap(8),
             ],

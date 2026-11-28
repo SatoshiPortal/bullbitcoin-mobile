@@ -24,6 +24,7 @@ import 'package:settings/src/wallet_details/domain/wallet_details_failure.dart';
 import 'package:settings/src/wallet_details/presentation/wallet_details_cubit.dart';
 import 'package:settings/src/wallet_details/presentation/wallet_discovery_cubit.dart';
 import 'package:settings/src/wallet_details/ui/wallet_details_screen.dart';
+import 'package:settings/src/wallet_details/ui/wallet_discovery_button.dart';
 
 class _MockReadWalletDetails extends Mock implements ReadWalletDetailsUsecase {}
 
@@ -193,12 +194,13 @@ void main() {
       settle: false,
     );
 
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(_topBarProgress(tester).trigger, isTrue);
     expect(find.text(loc.walletDetailsUnnamedWalletFallback), findsOneWidget);
 
     gate.complete(Ok(_details()));
     await tester.pumpAndSettle();
     expect(find.text('Savings'), findsOneWidget);
+    expect(_topBarProgress(tester).trigger, isFalse);
   });
 
   testWidgets('reports a wallet that cannot be read', (tester) async {
@@ -224,6 +226,7 @@ void main() {
     await tester.tap(find.text(loc.walletDeletionConfirmationDeleteButton));
     await tester.pump();
     expect(find.text(loc.walletDetailsDeletingMessage), findsOneWidget);
+    expect(_topBarProgress(tester).trigger, isTrue);
     expect(
       tester
           .widget<IconButton>(
@@ -291,7 +294,10 @@ void main() {
     expect(
       tester
           .widget<BullFadingLinearProgress>(
-            find.byType(BullFadingLinearProgress),
+            find.descendant(
+              of: find.byType(WalletDiscoveryButton),
+              matching: find.byType(BullFadingLinearProgress),
+            ),
           )
           .trigger,
       isTrue,
@@ -327,6 +333,14 @@ WalletDiscoveryCubit _discovery([
 /// Scrolls the details list to its last rows. The list is taller than the
 /// phone-sized viewport the tests use, so the scan button is only reachable
 /// once scrolled to.
+BullFadingLinearProgress _topBarProgress(WidgetTester tester) =>
+    tester.widget<BullFadingLinearProgress>(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.byType(BullFadingLinearProgress),
+      ),
+    );
+
 Future<void> _revealBottom(WidgetTester tester) async {
   await tester.drag(find.byType(ListView), const Offset(0, -400));
   await tester.pumpAndSettle();

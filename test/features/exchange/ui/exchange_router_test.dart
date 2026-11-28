@@ -4,6 +4,7 @@ import 'package:exchange/testing.dart';
 import 'dart:async';
 
 import 'package:bull_ui/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 import 'package:exchange/exchange.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_exchange/testing.dart';
@@ -68,6 +69,10 @@ List<RouteBase> _routes(BullExchangeFeature feature) => [
   ?feature.dashboardRoute,
   ...feature.routes,
 ];
+
+final _loading = find.byWidgetPredicate(
+  (widget) => widget is BullFadingLinearProgress && widget.trigger,
+);
 
 void main() {
   test('landing copy retains the App Store vocabulary override', () async {
@@ -235,7 +240,7 @@ void main() {
           context.go('/home');
         },
       );
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(_loading, findsOneWidget);
 
       // Explicit sign-out reports an incomplete cleanup, then disabled access.
       trade.set(const ExchangeAccessSignOutIncomplete());
@@ -291,7 +296,7 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(_loading, findsOneWidget);
     expect(find.byType(ExchangeLandingScreen), findsNothing);
 
     current = signedOut;

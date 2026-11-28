@@ -70,11 +70,11 @@ void main() {
   testWidgets('scanning shows progress indicator and Stop', (tester) async {
     await loadWith(tester, spWalletData(isScanning: true));
 
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
     expect(find.text('Stop'), findsOneWidget);
   });
 
-  testWidgets('scan progress shows determinate circular and current/target', (
+  testWidgets('scan progress shows determinate bar and current/target', (
     tester,
   ) async {
     final controller = StreamController<SpNotification>.broadcast();
@@ -98,8 +98,8 @@ void main() {
     expect(find.text('56%'), findsOneWidget);
     expect(find.text('Step 1 of 2: Receiving'), findsOneWidget);
     expect(find.textContaining('Elapsed'), findsOneWidget);
-    final indicator = tester.widget<CircularProgressIndicator>(
-      find.byType(CircularProgressIndicator),
+    final indicator = tester.widget<LinearProgressIndicator>(
+      find.byType(LinearProgressIndicator),
     );
     expect(indicator.value, closeTo(5 / 9, 0.001));
   });

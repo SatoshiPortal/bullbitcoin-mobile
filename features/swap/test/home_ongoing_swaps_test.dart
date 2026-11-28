@@ -44,8 +44,6 @@ Swap _swap(SwapType type) {
   };
 }
 
-const _notice = ValueKey('ongoing-swap-notice');
-
 Future<void> _pump(
   WidgetTester tester,
   List<Swap> swaps, {
@@ -62,32 +60,29 @@ Future<void> _pump(
     ],
     localizationsDelegates: bullUiLocalizationsDelegates,
     home: Scaffold(
-      body: Column(
-        children: [HomeOngoingSwaps(key: _notice, swaps: swaps)],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            for (final swap in swaps)
+              HomeSwapNotice(key: ValueKey(swap.id), swap: swap),
+          ],
+        ),
       ),
     ),
   ),
 );
 
 void main() {
-  testWidgets('an empty list takes no vertical space', (tester) async {
-    await _pump(tester, []);
-    expect(tester.getSize(find.byKey(_notice)).height, 0);
-    expect(find.byType(BullCarousel), findsNothing);
-  });
-
-  testWidgets('the carousel keeps list order, keys, directions and icons', (
+  testWidgets('each notice carries its direction, icon and amount', (
     tester,
   ) async {
     // Deliberately oldest first, opposite to Wallet's newest-first policy.
     final swaps = SwapType.values.map(_swap).toList();
     await _pump(tester, swaps, locale: const Locale('fr', 'CA'));
 
-    final carousel = tester.widget<BullCarousel>(find.byType(BullCarousel));
-    final cards = carousel.children.cast<BullHomeNotice>();
-    expect(cards.map((card) => card.key), [
-      for (final swap in swaps) ValueKey(swap.id),
-    ]);
+    final cards = tester
+        .widgetList<BullHomeNotice>(find.byType(BullHomeNotice))
+        .toList();
     expect(cards.map((card) => card.status), everyElement('Échange en cours'));
     expect(cards.map((card) => card.detail), [
       'Lightning → BTC',

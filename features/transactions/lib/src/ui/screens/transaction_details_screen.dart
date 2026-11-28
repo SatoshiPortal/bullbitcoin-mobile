@@ -303,13 +303,19 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                           appBar: AppBar(
                             title: Text(context.loc.transactionDetailTitle),
                             leading: BackButton(onPressed: closeScreen),
+                            bottom: PreferredSize(
+                              preferredSize: const Size.fromHeight(3.0),
+                              child: BullFadingLinearProgress(
+                                trigger: !expired,
+                                backgroundColor: context.bull.onPrimary,
+                                foregroundColor: context.bull.primary,
+                              ),
+                            ),
                           ),
                           body: Center(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (!expired) const CircularProgressIndicator(),
-                                const Gap(16),
                                 Text(
                                   waitingMessage,
                                   textAlign: TextAlign.center,

@@ -996,32 +996,14 @@ m.Widget bullRefreshIndicatorUseCase(m.BuildContext context) {
   );
 }
 
-m.Widget _loaderUseCase(m.BuildContext context, BullLoader loader) {
-  final style = context.knobs.object.dropdown<BullLoaderStyle>(
-    label: 'style',
-    options: BullLoaderStyle.values,
-    labelBuilder: (s) => s.name,
-  );
-  final theme = m.Theme.of(context);
-  return m.Theme(
-    data: theme.copyWith(
-      extensions: [
-        ...theme.extensions.values,
-        BullLoaderTheme(style: style),
-      ],
-    ),
-    child: m.Builder(builder: (context) => _frame(context, loader)),
-  );
-}
-
 @widgetbook.UseCase(name: 'Large', type: BullLoader)
 m.Widget bullLoaderLargeUseCase(m.BuildContext context) {
-  return _loaderUseCase(context, const BullLoader.large());
+  return _frame(context, const BullLoader.large());
 }
 
 @widgetbook.UseCase(name: 'Small', type: BullLoader)
 m.Widget bullLoaderSmallUseCase(m.BuildContext context) {
-  return _loaderUseCase(context, const BullLoader.small());
+  return _frame(context, const BullLoader.small());
 }
 
 @widgetbook.UseCase(name: 'Box', type: BullShimmerBox)

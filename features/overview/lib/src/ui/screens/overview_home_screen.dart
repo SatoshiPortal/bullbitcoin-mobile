@@ -1,5 +1,5 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:swap_feature/swap_feature.dart' show HomeOngoingSwaps;
+import 'package:swap_feature/swap_feature.dart' show HomeSwapNotice;
 
 import '../../domain/overview_catalogue.dart';
 import '../../presentation/overview_home_controller.dart';
@@ -98,19 +98,17 @@ class OverviewHomeScreen extends StatelessWidget {
             hideAmounts: state.hideAmounts,
           ),
           announcements: announcements,
-          warnings: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              HomeOngoingSwaps(swaps: state.ongoingSwaps),
-              OverviewHomeWarnings(
-                network: state.networkWarnings,
-                swapServerUnreachable: state.swapServerUnreachable,
-                loadFailure: state.loadFailure,
-                copy: warningsCopy,
-                backup: state.backupCard ? backupWarning : null,
-                onOpen: onOpenWarning,
-              ),
+          warnings: OverviewHomeWarnings(
+            network: state.networkWarnings,
+            swapServerUnreachable: state.swapServerUnreachable,
+            loadFailure: state.loadFailure,
+            copy: warningsCopy,
+            swaps: [
+              for (final swap in state.ongoingSwaps)
+                HomeSwapNotice(key: ValueKey(swap.id), swap: swap),
             ],
+            backup: state.backupCard ? backupWarning : null,
+            onOpen: onOpenWarning,
           ),
           consolidation: consolidation,
           wallets: WalletPicker(

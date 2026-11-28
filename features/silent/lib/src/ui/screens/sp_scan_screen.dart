@@ -4,6 +4,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullButtonSize,
+        BullFadingLinearProgress,
         BullInputText,
         BullThemeX,
         BullTypographyX,
@@ -294,7 +295,7 @@ class _FirstScanViewState extends State<_FirstScanView> {
   @override
   Widget build(BuildContext context) {
     final min = widget.state.minBirthdayHeight;
-    if (min == null) return const Center(child: CircularProgressIndicator());
+    if (min == null) return const _LoadingLine();
     final tip = widget.state.chainTip;
     if (widget.state.isChainTipReliable && tip != null && tip >= min) {
       return _ScanStartChooser(
@@ -307,7 +308,7 @@ class _FirstScanViewState extends State<_FirstScanView> {
       future: _tip,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const _LoadingLine();
         }
         final tip = snapshot.data;
         if (tip != null && tip >= min) {
@@ -467,30 +468,19 @@ class _ScanProgressCard extends StatelessWidget {
           ),
           const Gap(12),
         ],
-        SizedBox(
-          width: 132,
-          height: 132,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox.expand(
-                child: CircularProgressIndicator(
-                  // Indeterminate until the first progress tick, then fill.
-                  value: progress > 0 ? progress : null,
-                  strokeWidth: 6,
-                  backgroundColor: context.bull.surface,
-                  color: context.bull.primary,
-                ),
-              ),
-              Text(
-                context.silentLoc.silentScanPercent(
-                  '${(progress * 100).round()}',
-                ),
-                style: context.bullType.body.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+        Text(
+          context.silentLoc.silentScanPercent('${(progress * 100).round()}'),
+          style: context.bullType.body.copyWith(fontWeight: FontWeight.w500),
+        ),
+        const Gap(8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: LinearProgressIndicator(
+            // Indeterminate until the first progress tick, then fill.
+            value: progress > 0 ? progress : null,
+            minHeight: 6,
+            backgroundColor: context.bull.surface,
+            color: context.bull.primary,
           ),
         ),
         const Gap(16),
@@ -584,6 +574,18 @@ String _phaseLabel(BuildContext context, SpScanPhase phase) => switch (phase) {
   SpScanPhase.receive => context.silentLoc.silentScanPhaseReceiving,
   SpScanPhase.spend => context.silentLoc.silentScanPhaseCheckingSpends,
 };
+
+class _LoadingLine extends StatelessWidget {
+  const _LoadingLine();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Align(
+      alignment: Alignment.topCenter,
+      child: BullFadingLinearProgress(trigger: true),
+    );
+  }
+}
 
 /// The bottom-pinned secondary action shared by every scan-page view.
 class _BottomAction extends StatelessWidget {

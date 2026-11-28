@@ -245,7 +245,10 @@ class _PhysicalBackupChallengeState extends State<PhysicalBackupChallenge>
           fontWeight: .w700,
           color: context.bull.secondary,
         ),
-        placeholder: const Center(child: CircularProgressIndicator()),
+        placeholder: BullFadingLinearProgress(
+          trigger: true,
+          foregroundColor: context.bull.primary,
+        ),
         failureBuilder: (context, _, retry) => Column(
           mainAxisSize: .min,
           children: [

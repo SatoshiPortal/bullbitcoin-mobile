@@ -10,6 +10,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullKeyboardActions,
         BullDropdown,
+        BullFadingLinearProgress,
         BullInfoCard,
         BullInputText,
         BullPickerItem,
@@ -44,6 +45,19 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.swapCopyForLocale.autoswapSettingsTitle),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child:
+              BlocSelector<AutoSwapSettingsCubit, AutoSwapSettingsState, bool>(
+                selector: (state) => state.loading,
+                builder: (context, loading) => BullFadingLinearProgress(
+                  height: 3,
+                  trigger: loading,
+                  backgroundColor: context.appColors.surface,
+                  foregroundColor: context.appColors.primary,
+                ),
+              ),
+        ),
       ),
       body: SafeArea(
         child: BullKeyboardActions(
@@ -59,12 +73,7 @@ class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: state.loading
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(32.0),
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
+                      ? const SizedBox.shrink()
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

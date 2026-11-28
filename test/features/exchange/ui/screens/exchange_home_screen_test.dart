@@ -3,6 +3,7 @@ import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:exchange/exchange.dart';
 import 'package:bull_ui/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 import 'package:bitcoin_price/testing.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -162,7 +163,7 @@ void main() {
     final loc = AppLocalizations.of(
       tester.element(find.byType(ExchangeHomeScreen)),
     );
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(BullFadingLinearProgress), findsNothing);
     expect(find.text(loc.exchangeErrorNetwork), findsOneWidget);
     await tester.tap(find.text(loc.retry));
     expect(refreshes, 1);
@@ -199,7 +200,7 @@ void main() {
         ),
       );
       await tester.pump();
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(BullFadingLinearProgress), findsOneWidget);
       await tester.pumpWidget(const SizedBox.shrink());
       await cubit.close();
     },

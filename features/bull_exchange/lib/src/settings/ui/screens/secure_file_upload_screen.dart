@@ -29,17 +29,40 @@ class SecureFileUploadScreen extends StatelessWidget {
             onBack: () => context.pop(),
           ),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(BullSpacing.md),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [_ErrorMessage(), _UploadOptionCard()],
-            ),
+        body: const SafeArea(
+          child: Column(
+            children: [
+              _UploadProgress(),
+              Padding(
+                padding: EdgeInsets.all(BullSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [_ErrorMessage(), _UploadOptionCard()],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _UploadProgress extends StatelessWidget {
+  const _UploadProgress();
+
+  @override
+  Widget build(BuildContext context) {
+    final busy = context.select<SecureUploadBloc, bool>(
+      (bloc) => switch (bloc.state) {
+        UploadStatusLoading() ||
+        UploadDone() ||
+        UploadPicking() ||
+        UploadSending() => true,
+        UploadStatusFailed() || UploadReady() || UploadBlocked() => false,
+      },
+    );
+    return BullFadingLinearProgress(trigger: busy);
   }
 }
 
@@ -112,14 +135,14 @@ class _UploadOptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SecureUploadBloc>().state;
-    final (status, isLoading, isUploading) = switch (state) {
-      UploadStatusLoading() || UploadDone() => (null, true, false),
-      UploadStatusFailed() => (null, false, false),
-      UploadReady(:final status) => (status, false, false),
-      UploadBlocked(:final status) => (status, false, false),
+    final (status, isUploading) = switch (state) {
+      UploadStatusLoading() ||
+      UploadDone() ||
+      UploadStatusFailed() => (null, false),
+      UploadReady(:final status) => (status, false),
+      UploadBlocked(:final status) => (status, false),
       UploadPicking(:final account) || UploadSending(:final account) => (
         secureUploadStatusOf(account.status),
-        false,
         true,
       ),
     };
@@ -170,23 +193,14 @@ class _UploadOptionCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (status != SecureUploadStatus.rejected) ...[
+                  if (status != null &&
+                      status != SecureUploadStatus.rejected) ...[
                     const Gap(BullSpacing.md),
-                    if (isLoading)
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: context.bull.primary,
-                        ),
-                      )
-                    else if (status != null)
-                      _UploadStatusButton(
-                        status: status,
-                        isUploading: isUploading,
-                        onPressed: upload,
-                      ),
+                    _UploadStatusButton(
+                      status: status,
+                      isUploading: isUploading,
+                      onPressed: upload,
+                    ),
                   ],
                 ],
               ),
@@ -232,34 +246,25 @@ class _UploadStatusButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(context.bullShapes.button),
               color: context.bull.surfaceContainerHighest,
             ),
-            child: isUploading
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: context.bull.primary,
-                    ),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.upload_file,
-                        size: 20,
-                        color: context.bull.onSurface,
-                      ),
-                      const Gap(BullSpacing.xxs),
-                      BullText(
-                        context.loc.exchangeFileUploadButton,
-                        style: context.bullType.caption.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: context.bull.onSurface,
-                        ),
-                      ),
-                    ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.upload_file,
+                  size: 20,
+                  color: context.bull.onSurface,
+                ),
+                const Gap(BullSpacing.xxs),
+                BullText(
+                  context.loc.exchangeFileUploadButton,
+                  style: context.bullType.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: context.bull.onSurface,
                   ),
+                ),
+              ],
+            ),
           ),
         );
 
@@ -387,33 +392,24 @@ class _RejectedStatusWithReupload extends StatelessWidget {
               borderRadius: BorderRadius.circular(context.bullShapes.button),
               color: context.bull.surfaceContainerHighest,
             ),
-            child: isUploading
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: context.bull.primary,
-                    ),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.upload_file,
-                        size: 20,
-                        color: context.bull.onSurface,
-                      ),
-                      const Gap(BullSpacing.xs),
-                      BullText(
-                        context.loc.exchangeFileUploadTapToReupload,
-                        style: context.bullType.caption.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: context.bull.onSurface,
-                        ),
-                      ),
-                    ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.upload_file,
+                  size: 20,
+                  color: context.bull.onSurface,
+                ),
+                const Gap(BullSpacing.xs),
+                BullText(
+                  context.loc.exchangeFileUploadTapToReupload,
+                  style: context.bullType.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: context.bull.onSurface,
                   ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

@@ -5,6 +5,7 @@ class BackupPage extends StatelessWidget {
   final VoidCallback onBack;
   final List<Widget> children;
   final Widget? footer;
+  final bool loading;
 
   const BackupPage({
     super.key,
@@ -12,6 +13,7 @@ class BackupPage extends StatelessWidget {
     required this.onBack,
     required this.children,
     this.footer,
+    this.loading = false,
   });
 
   @override
@@ -21,6 +23,7 @@ class BackupPage extends StatelessWidget {
       child: Column(
         children: [
           BullTopBar(title: title, onBack: onBack),
+          BullFadingLinearProgress(trigger: loading),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(BullSpacing.md),

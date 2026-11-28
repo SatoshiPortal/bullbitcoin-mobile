@@ -3,8 +3,7 @@ import 'package:bull_ui/bull_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:labels/backup.dart';
-import 'package:material_ui/material_ui.dart'
-    show CircularProgressIndicator, StatefulBuilder, showDialog;
+import 'package:material_ui/material_ui.dart' show StatefulBuilder, showDialog;
 
 import '../../generated/l10n/backup_metadata_localizations.dart';
 import '../domain/backup_metadata_failure.dart';
@@ -457,12 +456,8 @@ class _Waiting extends StatelessWidget {
     return BackupPage(
       title: l10n.dataBackup,
       onBack: onBack,
-      children: [
-        if (text == null)
-          const Center(child: CircularProgressIndicator())
-        else
-          Text(text, style: context.bullType.body),
-      ],
+      loading: text == null,
+      children: [if (text != null) Text(text, style: context.bullType.body)],
     );
   }
 }

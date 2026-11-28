@@ -11,7 +11,7 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bull_ui/bull_ui.dart' show BullTopBar;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, BullTopBar;
 
 /// Stateful only to own the screen-capture lifecycle: the user types their
 /// recovery phrase here, so the screen must be excluded from screenshots and
@@ -50,6 +50,18 @@ class _MnemonicPageState extends State<MnemonicPage> with PrivacyScreen {
           color: context.appColors.background,
           onBack: () => context.pop(),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: BlocSelector<ImportMnemonicCubit, ImportMnemonicState, bool>(
+            selector: (state) => state.isLoading,
+            builder: (context, isLoading) => BullFadingLinearProgress(
+              height: 3,
+              trigger: isLoading,
+              backgroundColor: context.appColors.background,
+              foregroundColor: context.appColors.primary,
+            ),
+          ),
+        ),
       ),
       body: BlocBuilder<ImportMnemonicCubit, ImportMnemonicState>(
         builder: (context, state) {
@@ -72,14 +84,7 @@ class _MnemonicPageState extends State<MnemonicPage> with PrivacyScreen {
               ),
               if (state.isLoading)
                 Positioned.fill(
-                  child: ColoredBox(
-                    color: context.appColors.overlay,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: context.appColors.primary,
-                      ),
-                    ),
-                  ),
+                  child: ColoredBox(color: context.appColors.overlay),
                 ),
             ],
           );

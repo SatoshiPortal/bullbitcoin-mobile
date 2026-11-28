@@ -17,6 +17,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
         BullErrorState,
+        BullFadingLinearProgress,
         BullInfoCard,
         BullPullableBody,
         BullSupportButton,
@@ -91,7 +92,10 @@ class ExchangeHomeScreen extends StatelessWidget {
       case ExchangeSignedOut() || ExchangeLoading():
         return _WithExit(
           onExit: onExit,
-          child: const Center(child: CircularProgressIndicator()),
+          child: const Align(
+            alignment: Alignment.topCenter,
+            child: SafeArea(child: BullFadingLinearProgress(trigger: true)),
+          ),
         );
       case final ExchangeLoaded loaded:
         state = loaded;

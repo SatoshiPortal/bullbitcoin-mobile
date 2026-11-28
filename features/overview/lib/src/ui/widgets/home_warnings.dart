@@ -25,6 +25,7 @@ class OverviewHomeWarnings extends StatelessWidget {
   final bool swapServerUnreachable;
   final OverviewLoadFailure? loadFailure;
   final HomeWarningsCopy copy;
+  final List<Widget> swaps;
   final Widget? backup;
   final ValueChanged<HomeWarningDestination> onOpen;
 
@@ -34,6 +35,7 @@ class OverviewHomeWarnings extends StatelessWidget {
     required this.swapServerUnreachable,
     required this.loadFailure,
     required this.copy,
+    this.swaps = const [],
     required this.backup,
     required this.onOpen,
   });
@@ -66,6 +68,7 @@ class OverviewHomeWarnings extends StatelessWidget {
       load: failure == null
           ? null
           : (title: _failureTitle(failure), description: copy.retryHint),
+      swaps: swaps,
       backup: backup,
       onOpen: onOpen,
     );

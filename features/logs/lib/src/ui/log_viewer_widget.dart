@@ -32,9 +32,7 @@ class _LogsViewerWidgetState extends State<LogsViewerWidget> {
     if (state.status == LogsStatus.loading) {
       return ColoredBox(
         color: context.bull.background,
-        child: Center(
-          child: CircularProgressIndicator(color: context.bull.primary),
-        ),
+        child: const SizedBox.expand(),
       );
     }
     if (state.status == LogsStatus.failure) {

@@ -8,7 +8,7 @@ import 'package:bitcoin_price/bitcoin_price.dart'
     show BitcoinPriceLocalizations;
 import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_pricer/bull_pricer.dart';
-import 'package:bull_ui/bull_ui.dart' show BullTheme;
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress, BullTheme;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -87,10 +87,10 @@ void main() {
         if (status == 'loading') {
           expect(
             tester
-                .widget<CircularProgressIndicator>(
-                  find.byType(CircularProgressIndicator),
+                .widget<BullFadingLinearProgress>(
+                  find.byType(BullFadingLinearProgress),
                 )
-                .color,
+                .foregroundColor,
             colors.text,
           );
         } else if (status == 'error') {
