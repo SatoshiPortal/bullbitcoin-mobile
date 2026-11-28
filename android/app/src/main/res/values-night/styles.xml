@@ -17,6 +17,8 @@
 
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
+        <!-- Brand graphite behind Flutter's first frames: a white window here
+             would flash between the launch screen and the loading splash. -->
+        <item name="android:windowBackground">#15171C</item>
     </style>
 </resources>

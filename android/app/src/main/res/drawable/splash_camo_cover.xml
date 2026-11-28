@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launch-screen camo with Flutter's BoxFit.cover geometry: scaled by
+     max(bounds width / bitmap width, bounds height / bitmap height), centred on
+     the bounds, overflow cropped. A layer-list <bitmap> gravity cannot express
+     that before API 31 (fill_vertical only fills one axis, fill distorts the
+     square texture), so this uses the platform's custom-drawable hook: the
+     class is built with its no-arg constructor, then inflated with android:src. -->
+<drawable xmlns:android="http://schemas.android.com/apk/res/android"
+    class="com.bullbitcoin.mobile.CoverBitmapDrawable"
+    android:src="@drawable/splash_camo" />

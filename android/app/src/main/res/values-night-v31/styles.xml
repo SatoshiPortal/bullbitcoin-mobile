@@ -6,9 +6,12 @@
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:windowSplashScreenBackground">#C50909</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/android12splash</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">#C50909</item>
+        <!-- The full-page camo cannot be a window background (it is one
+             opaque colour) and the platform masks this icon to a circle
+             (a textured square would become the rejected badge), so the
+             launch screen is the static red mark on brand graphite. -->
+        <item name="android:windowSplashScreenBackground">#15171C</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_mark_android12</item>
     </style>
     <!-- Theme applied to the Android Window as soon as the process has started.
          This theme determines the color of the Android Window while your
@@ -17,6 +20,8 @@
          
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
+        <!-- Brand graphite behind Flutter's first frames: a white window here
+             would flash between the launch screen and the loading splash. -->
+        <item name="android:windowBackground">#15171C</item>
     </style>
 </resources>

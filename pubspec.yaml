@@ -158,7 +158,6 @@ dependencies:
   clock: ^1.1.2
   dio: ^5.9.0
   timeago: ^3.7.1
-  flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
   image_picker: ^1.1.2
   rust_bindings:
@@ -308,15 +307,12 @@ flutter:
         - asset: assets/fonts/GolosText.ttf
           weight: 700
 
-flutter_native_splash:
-  background_image: "assets/logos/bb-logo-white-splash.png"
-  android_12:
-    color: "#C50909"
-    image: assets/logos/bb-logo-white-splash.png
-    # icon_background_color: "#C50909"
-    icon_background_color: "#C50909"
-
-  color_android: "#C50909"
+# The Android launch screen is maintained by hand, not generated:
+#   res/values*-v31/styles.xml          Android 12+ graphite window + mark icon
+#   res/drawable/launch_background.xml  pre-12 full-page camo + centred mark
+#   res/drawable{,-nodpi}/splash_*.xml|png
+# Do not reintroduce flutter_native_splash: running it regenerates the previous
+# red/white launch screen over these resources.
 
 flutter_launcher_icons:
   android: "launcher_icon"

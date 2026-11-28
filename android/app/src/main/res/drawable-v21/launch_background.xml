@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Pre-Android 12 launch screen: the full-page black camo backdrop with the
+     static mark centred on it, matching the Flutter loading splash. The camo is
+     drawn by splash_camo_cover, which scales it exactly like Flutter's
+     BoxFit.cover: one scale for both axes, centred, overflow cropped. Never
+     stretch the texture (it is square) and never tile it (the seams show). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <bitmap android:gravity="fill" android:src="@drawable/background"/>
+        <!-- Brand graphite behind the cropped texture. -->
+        <color android:color="#15171C"/>
     </item>
+    <item android:drawable="@drawable/splash_camo_cover"/>
+    <item android:gravity="center" android:drawable="@drawable/splash_mark"/>
 </layer-list>
