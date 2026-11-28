@@ -40,6 +40,51 @@ void main() {
   );
 
   test(
+    'backup activation ignores early events and reads current defaults once',
+    () async {
+      h.automaticBackupStart = false;
+      h.manualBackups = true;
+      h.physicalBackups.addAll({'first': true, 'second': false});
+      h.source.publish(
+        snapshot(OverviewCatalogueStatus.ready, [
+          homeWallet('first', isDefault: true, balanceSat: 10),
+        ]),
+      );
+      h.finished.add(bitcoinKey);
+      h.source.publish(
+        snapshot(OverviewCatalogueStatus.ready, [
+          homeWallet('second', isDefault: true, balanceSat: 10),
+        ]),
+      );
+      await flushEvents();
+      expect(h.backupReadsStarted, 0);
+      expect(h.physicalBackupReads, isEmpty);
+
+      h.controller.startBackupChecks();
+      h.controller.startBackupChecks();
+      await flushEvents();
+      expect(h.backupReadsStarted, 1);
+      expect(h.backupReads, hasLength(1));
+      expect(h.physicalBackupReads, ['second']);
+      expect(h.sync.triggers, isEmpty);
+
+      h.backupReads.single.complete(true);
+      await flushEvents();
+      expect(h.controller.current.backupCard, isTrue);
+      expect(h.controller.current.backupWarning, isTrue);
+    },
+  );
+
+  test('backup activation after close is inert', () async {
+    h.automaticBackupStart = false;
+    await h.controller.close();
+    h.controller.startBackupChecks();
+    await expectLater(h.controller.verifyBackup(), completes);
+    expect(h.backupReadsStarted, 0);
+    expect(h.physicalBackupReads, isEmpty);
+  });
+
+  test(
     'backup card remains due with zero balance and after dismissal',
     () async {
       await h.mount();
@@ -805,6 +850,7 @@ void main() {
   test('swap reachability and notices survive a failed read', () async {
     h.swapServer.isReachable = false;
     await h.mount();
+    h.controller.refreshVisible();
     h.source.publish(
       snapshot(OverviewCatalogueStatus.ready, [
         homeWallet('btc:regtest', balanceSat: 100),

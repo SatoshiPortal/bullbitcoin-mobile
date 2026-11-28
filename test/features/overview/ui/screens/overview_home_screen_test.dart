@@ -176,13 +176,26 @@ void main() {
     tester,
   ) async {
     final h = OverviewHomeHarness();
+    h.swapServer.isReachable = false;
     h.source.publish(emptySnapshot);
+    expect(h.swapServer.checks, 0);
     final router = await pumpHome(tester, h);
     await tester.pump();
 
+    expect(h.swapServer.checks, 1);
     expect(find.text('empty'), findsOneWidget);
     expect(find.byType(WalletPicker), findsNothing);
     expect(find.text('announcements'), findsNothing);
+
+    h.source.publish(
+      snapshot(OverviewCatalogueStatus.ready, [
+        homeWallet('first', balanceSat: 1),
+      ]),
+    );
+    await tester.runAsync(flushEvents);
+    await tester.pumpAndSettle();
+    expect(h.swapServer.checks, 1);
+    expect(find.text('Swap down'), findsOneWidget);
 
     await disposeHome(tester, h, router);
   });

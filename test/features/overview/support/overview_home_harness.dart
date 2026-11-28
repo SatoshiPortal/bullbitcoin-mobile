@@ -228,8 +228,10 @@ final class OverviewHomeHarness {
 
   final backupReads = <Completer<bool?>>[];
   bool manualBackups = false;
+  bool automaticBackupStart = true;
   bool? backupAnswer = true;
   final physicalBackups = <String, bool>{};
+  final physicalBackupReads = <String>[];
   bool proxyNeedsAttention = false;
   bool manualProxy = false;
   final proxyReads = <Completer<bool>>[];
@@ -248,7 +250,10 @@ final class OverviewHomeHarness {
       backupReads.add(completer);
       return completer.future;
     },
-    readPhysicalBackup: (key) async => physicalBackups[key.id] ?? false,
+    readPhysicalBackup: (key) async {
+      physicalBackupReads.add(key.id);
+      return physicalBackups[key.id] ?? false;
+    },
     proxyNeedsAttention: () {
       if (!manualProxy) return Future.value(proxyNeedsAttention);
       final completer = Completer<bool>();
@@ -265,6 +270,7 @@ final class OverviewHomeHarness {
   OverviewHomeHarness() {
     source.onPublish = () {
       if (controller.isClosed) throw StateError('Controller is closed');
+      if (automaticBackupStart) controller.startBackupChecks();
     };
     registerFallbackValue(SyncTrigger.automatic);
     when(() => swapActivity.retryOngoingSwaps()).thenAnswer((_) async {});
@@ -289,6 +295,7 @@ final class OverviewHomeHarness {
   /// configuring the fakes, so the first reads observe that configuration.
   Future<void> mount() async {
     if (controller.isClosed) throw StateError('controller already closed');
+    if (automaticBackupStart) controller.startBackupChecks();
     await flushEvents();
   }
 
