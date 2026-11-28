@@ -6,6 +6,19 @@ import 'package:primitives/primitives.dart';
 
 enum ExternalTorProxyStatus { disabled, available, unavailable, unreadable }
 
+extension ExternalTorProxyStatusAttention on ExternalTorProxyStatus {
+  /// Whether the user has to act in the Tor settings: a proxy that is off or
+  /// that answers is not what hides the network, so those keep the Electrum
+  /// settings as the fix, while a proxy that should work and does not route
+  /// the user to its own settings.
+  bool get needsSettingsAttention => switch (this) {
+    ExternalTorProxyStatus.unavailable ||
+    ExternalTorProxyStatus.unreadable => true,
+    ExternalTorProxyStatus.available ||
+    ExternalTorProxyStatus.disabled => false,
+  };
+}
+
 abstract interface class ExternalTorProxyDiagnostic {
   const factory ExternalTorProxyDiagnostic(
     TorProxyPreferencesReader preferences,

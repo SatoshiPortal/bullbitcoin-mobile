@@ -53,7 +53,10 @@ import 'package:fees/fees.dart';
 import 'package:exchange/exchange.dart' show Exchange, ExchangePlatform;
 import 'package:preferences/preferences.dart';
 import 'package:network/network.dart'
-    show ExternalTorProxyDiagnostic, ExternalTorProxyStatus, NetworkFeature;
+    show
+        ExternalTorProxyDiagnostic,
+        ExternalTorProxyStatusAttention,
+        NetworkFeature;
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, Failure, NetworkEnv, Ok;
@@ -832,11 +835,8 @@ class AppLocator {
             Err() => null,
           };
         },
-        proxyNeedsAttention: () async {
-          final status = await torProxy.check();
-          return status == ExternalTorProxyStatus.unavailable ||
-              status == ExternalTorProxyStatus.unreadable;
-        },
+        proxyNeedsAttention: () async =>
+            (await torProxy.check()).needsSettingsAttention,
         silentHome: SilentHomeObservation(locator<Silent>()),
         syncStarted: electrumSync.runsStarted.map(
           (event) => (key: event.key, runId: event.runId),
