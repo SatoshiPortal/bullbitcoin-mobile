@@ -356,13 +356,13 @@ jobs:
         run: echo "The impacted workspace members have no test/ directory."
 
       - name: Fingerprint the Native Assets hook environment
-        if: ${{ matrix.job.package == 'access' && matrix.job.shard == 1 }}
+        if: ${{ matrix.job.package == 'access' }}
         run: python3 tools/trace_access_hooks.py --fingerprint
 
       - name: Unit tests must pass
         if: ${{ matrix.job.run }}
         env:
-          TRACE_ACCESS_SHARD: ${{ matrix.job.package == 'access' && matrix.job.shard == 1 && '1' || '0' }}
+          TRACE_ACCESS_SHARD: ${{ matrix.job.package == 'access' && '1' || '0' }}
           TRACE_ACCESS_HOOKS: '1'
           TEST_PACKAGES: ${{ matrix.job.package }}
         # FVM adds its SDK directory to PATH for each nested invocation.
