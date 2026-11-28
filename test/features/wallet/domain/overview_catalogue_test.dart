@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:overview/catalogue.dart';
 import 'package:preferences/preferences.dart';
 import 'package:preferences/testing.dart';
 import 'package:primitives/primitives.dart';
-import 'package:rust_bindings/bdk.dart' as bdk;
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart'
@@ -16,14 +14,13 @@ import 'package:secrets/secrets.dart'
 import 'package:sqlite3/sqlite3.dart';
 import 'package:startup/startup.dart';
 import 'package:sync/inventory.dart';
-import 'package:sync/src/data/native_store_paths.dart';
-import 'package:sync/src/data/write/datasources/bdk_wallet_store_datasource.dart';
 import 'package:sync/sync.dart';
 import 'package:sync/testing.dart';
 import 'package:sync/write.dart';
 
 import '../../../../packages/secrets/test/support/open_inventory.dart';
 import '../../../../packages/sync/test/support/connections.dart';
+import '../../../../packages/sync/test/support/native_funding.dart';
 import '../../../../packages/sync/test/support/regtest_wallet.dart'
     show regtestDescriptor;
 import '../../../../packages/sync/test/support/second_revision_connection.dart';
@@ -190,37 +187,7 @@ void main() {
 
   Future<void> funded(SecondRevisionConnection store) async {
     store.begin(bitcoin.key, WriteIntent.sync);
-    final bdkStore = BdkWalletStoreDatasource.load(
-      nativeWalletStoragePath(directory, bitcoin.key),
-      bitcoin,
-    );
-    try {
-      final address = bdkStore.wallet
-          .peekAddress(keychain: bdk.KeychainKind.external_, index: 0)
-          .address;
-      final script = address.scriptPubkey().toBytes();
-      address.dispose();
-      final amount = ByteData(8)..setUint64(0, 54321, Endian.little);
-      final raw = BytesBuilder()
-        ..add([2, 0, 0, 0, 1])
-        ..add(List.filled(32, 0x11))
-        ..add([0, 0, 0, 0, 0, 255, 255, 255, 255, 1])
-        ..add(amount.buffer.asUint8List())
-        ..add([script.length])
-        ..add(script)
-        ..add([0, 0, 0, 0]);
-      final tx = bdk.Transaction(transactionBytes: raw.toBytes());
-      try {
-        bdkStore.wallet.applyUnconfirmedTxs(
-          unconfirmedTxs: [bdk.UnconfirmedTx(tx: tx, lastSeen: 1)],
-        );
-        bdkStore.persist();
-      } finally {
-        tx.dispose();
-      }
-    } finally {
-      bdkStore.close();
-    }
+    fundBitcoinNativeStore(directory, bitcoin);
     store.finish(bitcoin.key);
     store.begin(liquid, WriteIntent.sync);
     final update = File(
