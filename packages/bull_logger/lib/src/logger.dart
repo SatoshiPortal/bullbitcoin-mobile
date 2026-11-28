@@ -430,7 +430,21 @@ class Logger {
   // ---------------------------------------------------------------------------
 
   void _ensureSinkOpen() {
-    _sink ??= logsFile.openWrite(mode: FileMode.append);
+    if (_sink != null) return;
+    // The sink opens its file asynchronously, so a target that disappeared
+    // (the log directory removed while the app runs) reports its failure
+    // later, on `flush`/`done`, instead of at this call. Skip the line then:
+    // a doomed sink would swallow it and surface the error in the enclosing
+    // zone. The next line after the directory returns opens a fresh sink.
+    if (!dir.existsSync()) return;
+    final sink = logsFile.openWrite(mode: FileMode.append);
+    _sink = sink;
+    unawaited(
+      sink.done.catchError((Object error) {
+        if (identical(_sink, sink)) _sink = null;
+        if (kDebugMode) debugPrint('[Logger sink failed] $error');
+      }),
+    );
   }
 
   Future<void> _writeDiagnosticContext() async {
@@ -486,8 +500,10 @@ class Logger {
     unawaited(
       _enqueue(() async {
         _ensureSinkOpen();
-        _sink!.writeln(log);
-        if (flush) await _sink!.flush();
+        final sink = _sink;
+        if (sink == null) return;
+        sink.writeln(log);
+        if (flush) await sink.flush();
       }),
     );
   }
