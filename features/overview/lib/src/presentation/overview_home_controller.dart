@@ -540,11 +540,19 @@ final class OverviewHomeController
     _ => _syncFailure,
   };
 
+  /// Funds and no backup: the balances that can be read must hold something.
+  /// An unknown balance, such as the moment a sync hands over to the new
+  /// balances, never raises it; the home card still asks for the backup.
   bool _showBackupWarning() =>
       (_backupNeeded ?? _physicalBackupNeeded) == true &&
       !_backupDismissed &&
-      switch (_total()) {
-        null => true,
-        final total => total > 0,
-      };
+      _knownBalanceSat() > 0;
+
+  int _knownBalanceSat() {
+    var total = (_silentVisible && _silentConfigured) ? _silentBalanceSat : 0;
+    for (final wallet in _wallets) {
+      total += wallet.balanceSat ?? 0;
+    }
+    return total;
+  }
 }

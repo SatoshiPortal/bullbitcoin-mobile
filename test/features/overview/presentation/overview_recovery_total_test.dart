@@ -9,7 +9,7 @@ void main() {
     OverviewCatalogueStatus.unreadable,
   ]) {
     test(
-      '$status keeps the total unknown and backup warning conservative',
+      '$status keeps the total unknown and warns only over readable funds',
       () async {
         final h = OverviewHomeHarness();
         addTearDown(h.close);
@@ -23,7 +23,10 @@ void main() {
         await flushEvents();
         expect(h.controller.current.totalSat, isNull);
         expect(h.controller.current.backupCard, isTrue);
-        expect(h.controller.current.backupWarning, isTrue);
+        expect(
+          h.controller.current.backupWarning,
+          status == OverviewCatalogueStatus.partial,
+        );
         h.controller.dismissBackupWarning();
         expect(h.controller.current.backupCard, isTrue);
         expect(h.controller.current.backupWarning, isFalse);

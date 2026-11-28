@@ -627,6 +627,67 @@ void main() {
   });
 
   test(
+    'an empty wallet whose balance reads as unknown mid-sync shows no warning',
+    () async {
+      await h.mount();
+      h.backupAnswer = true;
+      h.source.publish(
+        snapshot(OverviewCatalogueStatus.ready, [
+          homeWallet('btc:regtest', balanceSat: 0),
+          homeWallet(
+            'liquid:regtest',
+            network: LiquidNetwork.regtest,
+            balanceSat: 0,
+          ),
+        ]),
+      );
+      await flushEvents();
+      expect(h.controller.current.backupWarning, isFalse);
+
+      h.source.publish(
+        snapshot(OverviewCatalogueStatus.ready, [
+          homeWallet('btc:regtest', balanceSat: 0),
+          homeWallet(
+            'liquid:regtest',
+            network: LiquidNetwork.regtest,
+            balanceSat: null,
+          ),
+        ]),
+      );
+      await flushEvents();
+      expect(h.controller.current.totalSat, isNull);
+      expect(h.controller.current.backupWarning, isFalse);
+
+      h.source.publish(
+        snapshot(OverviewCatalogueStatus.ready, [
+          homeWallet('btc:regtest', balanceSat: 0),
+          homeWallet(
+            'liquid:regtest',
+            network: LiquidNetwork.regtest,
+            balanceSat: 500,
+          ),
+        ]),
+      );
+      await flushEvents();
+      expect(h.controller.current.backupWarning, isTrue);
+    },
+  );
+
+  test('an unknown balance never raises the warning, only the card', () async {
+    await h.mount();
+    h.backupAnswer = true;
+    h.source.publish(
+      snapshot(OverviewCatalogueStatus.ready, [
+        homeWallet('btc:regtest', balanceSat: null),
+      ]),
+    );
+    await flushEvents();
+    expect(h.controller.current.totalSat, isNull);
+    expect(h.controller.current.backupWarning, isFalse);
+    expect(h.controller.current.backupCard, isTrue);
+  });
+
+  test(
     'network warnings follow electrum outcomes and the proxy diagnostic',
     () async {
       await h.mount();
