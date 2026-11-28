@@ -4,6 +4,8 @@ The single writer of the native BDK and LWK wallet stores: revisions, a cross-is
 
 ## Public surface
 
+`storage.dart` also exposes `SyncWalletValuesDatasource` for the remaining legacy wallet reader. It reads the existing Sync handles and preserves their snapshot failures; it does not open or write native stores.
+
 `sync.dart` is the entry point. `Sync.foreground` returns `Sync`, which owns the stores and the published values of this isolate; `Sync.background` returns `BackgroundSync`, which only refreshes an existing wallet, reads the revision it last saw and closes. `sync.wallet(key)` returns a `Wallet`: a key and the generation it was obtained for, never a native object. A handle obtained before a delete or a re-import never follows it; its values then read unavailable with `SyncNotFoundFailure`.
 
 Reads are `Observed<T>` values. `now` returns the last value published in this isolate, synchronously, with no IO, native call or mapping. `watch()` emits that value, then each distinct change; a newer revision with identical data is not a change, staleness and generation changes always are. Every value carries its status (`notLoaded`, `ready`, `stale`, `unavailable`, `closed`), its revision and, when relevant, a `SyncFailure`: an unavailable wallet never reads as a zero balance or an empty list.

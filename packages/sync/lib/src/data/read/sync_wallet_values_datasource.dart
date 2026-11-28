@@ -1,9 +1,7 @@
-import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
-
 import 'dart:typed_data';
 
-import 'package:primitives/primitives.dart' show BitcoinNetwork, Err, Ok;
-import 'package:sync/sync.dart' show WalletSnapshotException;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, Err, Ok, Result;
 import 'package:sync/sync.dart' as sync;
 
 /// Reads through the native runtime while the application still resolves
@@ -13,14 +11,19 @@ class SyncWalletValuesDatasource {
 
   SyncWalletValuesDatasource({required this._load});
 
+  T _value<T>(Result<T, sync.SyncFailure> result) => switch (result) {
+    Ok(:final value) => value,
+    Err(:final failure) => throw sync.WalletSnapshotException(failure),
+  };
+
   Future<sync.Balances> getBalance({required sync.WalletKey key}) async =>
-      WalletSyncBinding.value((await _load(key)).balances.now.latest);
+      _value((await _load(key)).balances.now.latest);
 
   /// The unspent coins exactly at the latest committed revision, for a
   /// protocol decision. Retries briefly while the writer is busy.
   Future<sync.CoinList> getExactUtxos({required sync.WalletKey key}) async {
     final handle = await _load(key);
-    return WalletSyncBinding.value(await handle.readExactUnspent());
+    return _value(await handle.readExactUnspent());
   }
 
   /// Exact ownership at the latest committed revision: scripts the index
@@ -30,7 +33,7 @@ class SyncWalletValuesDatasource {
     required sync.WalletKey key,
   }) async {
     final handle = await _load(key);
-    return WalletSyncBinding.value(await handle.readExactOwnership());
+    return _value(await handle.readExactOwnership());
   }
 
   Future<bool> isMine(Uint8List script, {required sync.WalletKey key}) async =>
@@ -42,7 +45,9 @@ class SyncWalletValuesDatasource {
   }) async {
     final network = key.network;
     if (network is! BitcoinNetwork) {
-      throw const WalletSnapshotException(sync.SyncUnsupportedNetworkFailure());
+      throw const sync.WalletSnapshotException(
+        sync.SyncUnsupportedNetworkFailure(),
+      );
     }
     final ownership = await getOwnership(key: key);
     for (final address in addresses) {
@@ -52,7 +57,7 @@ class SyncWalletValuesDatasource {
         case Ok():
           return false;
         case Err(:final failure):
-          throw WalletSnapshotException(failure);
+          throw sync.WalletSnapshotException(failure);
       }
     }
     return true;

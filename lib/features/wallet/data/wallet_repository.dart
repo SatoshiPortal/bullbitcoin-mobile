@@ -19,7 +19,7 @@ import 'package:sync/sync.dart'
 import 'package:electrum/setup.dart';
 import 'package:preferences/preferences.dart';
 import 'package:bull_logger/bull_logger.dart';
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/storage.dart' show SyncWalletValuesDatasource;
 import 'package:sync/sync.dart' as native_sync;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
