@@ -22,3 +22,7 @@ dependencies:
   swap_feature:
   swaps:
   sync:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
