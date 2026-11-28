@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bull_ui/bull_ui.dart' show BullInfoCard, BullThemeX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, BullInfoCard, BullThemeX;
 import 'package:exchange/exchange.dart';
 import 'package:bull_logger/bull_logger.dart';
 import 'package:primitives/primitives.dart';
@@ -201,25 +202,31 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoadingConfiguration) {
-      return const SafeArea(child: Center(child: CircularProgressIndicator()));
-    }
-    if (_configurationFailure case final failure?) {
-      return SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CloseButton(onPressed: context.pop),
-            BullInfoCard(
-              description: widget.host.failureMessage(context, failure),
-              tagColor: context.bull.error,
-              bgColor: context.bull.errorContainer,
-              onTap: _retry,
-            ),
-          ],
-        ),
-      );
-    }
-    return SafeArea(child: WebViewWidget(controller: _controller));
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BullFadingLinearProgress(trigger: _isLoadingConfiguration),
+          Expanded(
+            child: switch ((_isLoadingConfiguration, _configurationFailure)) {
+              (true, _) => const SizedBox.shrink(),
+              (false, final failure?) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CloseButton(onPressed: context.pop),
+                  BullInfoCard(
+                    description: widget.host.failureMessage(context, failure),
+                    tagColor: context.bull.error,
+                    bgColor: context.bull.errorContainer,
+                    onTap: _retry,
+                  ),
+                ],
+              ),
+              (false, null) => WebViewWidget(controller: _controller),
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

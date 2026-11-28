@@ -1,5 +1,10 @@
 import 'package:bull_ui/bull_ui.dart'
-    show BullShapesX, BullSnackBar, BullThemeX, BullTypographyX;
+    show
+        BullFadingLinearProgress,
+        BullShapesX,
+        BullSnackBar,
+        BullThemeX,
+        BullTypographyX;
 import 'package:labels/labels.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -79,7 +84,8 @@ class _LabelsWidgetState extends State<LabelsWidget> {
 /// Compact chip rendering a single label string.
 ///
 /// - Provide [onDelete] to render an X affordance (system labels are never
-///   deletable). Pass `isDeleting: true` to swap the X for a spinner.
+///   deletable). Pass `isDeleting: true` to disable the X and run a line
+///   along the chip's bottom edge.
 /// - Provide [onTap] to make the whole chip tappable (used for suggestion
 ///   chips that fill an input on tap). [onTap] and [onDelete] may coexist.
 class LabelChip extends StatelessWidget {
@@ -126,41 +132,53 @@ class LabelChip extends StatelessWidget {
           ),
           if (!isSystemLabel && onDelete != null) ...[
             const SizedBox(width: 4),
-            if (isDeleting)
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    context.bull.primary,
-                  ),
-                ),
-              )
-            else
-              Semantics(
-                container: true,
-                button: true,
-                label: MaterialLocalizations.of(context).deleteButtonTooltip,
-                child: GestureDetector(
-                  onTap: onDelete,
-                  behavior: HitTestBehavior.opaque,
-                  child: SizedBox.square(
-                    dimension: 48,
-                    child: Center(
-                      child: Icon(
-                        Icons.close,
-                        size: 16,
-                        color: context.bull.primary,
-                      ),
+            Semantics(
+              container: true,
+              button: true,
+              enabled: !isDeleting,
+              label: MaterialLocalizations.of(context).deleteButtonTooltip,
+              child: GestureDetector(
+                onTap: isDeleting ? null : onDelete,
+                behavior: HitTestBehavior.opaque,
+                child: SizedBox.square(
+                  dimension: 48,
+                  child: Center(
+                    child: Icon(
+                      Icons.close,
+                      size: 16,
+                      color: isDeleting
+                          ? context.bull.textMuted
+                          : context.bull.primary,
                     ),
                   ),
                 ),
               ),
+            ),
           ],
         ],
       ),
     );
+    final chip = isDeleting
+        ? ClipRRect(
+            borderRadius: radius,
+            child: Stack(
+              children: [
+                body,
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: BullFadingLinearProgress(
+                    trigger: true,
+                    height: 2,
+                    backgroundColor: context.bull.onSecondary,
+                    foregroundColor: context.bull.primary,
+                  ),
+                ),
+              ],
+            ),
+          )
+        : body;
 
     if (onTap != null) {
       return Semantics(
@@ -170,11 +188,11 @@ class LabelChip extends StatelessWidget {
           borderRadius: radius,
           child: ConstrainedBox(
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-            child: body,
+            child: chip,
           ),
         ),
       );
     }
-    return body;
+    return chip;
   }
 }

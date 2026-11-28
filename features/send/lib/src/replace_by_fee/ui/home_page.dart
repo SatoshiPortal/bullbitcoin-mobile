@@ -12,6 +12,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullKeyboardActions,
         BullButton,
+        BullFadingLinearProgress,
         BullShapesX,
         BullSupportButton,
         BullText,
@@ -56,6 +57,18 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: BlocSelector<ReplaceByFeeCubit, ReplaceByFeeState, bool>(
+            selector: (state) =>
+                state.newFeeRate == null && state.failure == null,
+            builder: (context, loading) => BullFadingLinearProgress(
+              trigger: loading,
+              backgroundColor: context.appColors.surface,
+              foregroundColor: context.appColors.primary,
+            ),
+          ),
+        ),
       ),
       body: BullKeyboardActions(
         doneText: context.loc.doneButton,
@@ -92,7 +105,7 @@ class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
             }
 
             if (state.newFeeRate == null) {
-              return const Center(child: CircularProgressIndicator());
+              return const SizedBox.shrink();
             }
 
             final originalFeeRate = widget.tx.feeSat / widget.tx.vsize;

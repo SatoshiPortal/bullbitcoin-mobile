@@ -9,6 +9,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullBottomSheet,
         BullButton,
         BullDetailsTableItem,
+        BullFadingLinearProgress,
         BullShapesX,
         BullSwitch,
         BullText,
@@ -68,13 +69,7 @@ class SpendOptionsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (spend) {
       SpendOptionsNone() || SpendOptionsFixed() => const SizedBox.shrink(),
-      SpendFeesLoading() => BullDetailsTableItem(
-        label: labels.feePriority,
-        displayWidget: const SizedBox.square(
-          dimension: 16,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      ),
+      SpendFeesLoading() => BullDetailsTableItem(label: labels.feePriority),
       SpendFeesUnavailable() => Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
@@ -387,7 +382,7 @@ class _AdvancedOptionsSheet extends StatelessWidget {
 }
 
 /// The wallet's spendable coins (frozen ones hidden) to pick by hand; while
-/// they load a spinner, a failed read says so with Retry.
+/// they load a loading line, a failed read says so with Retry.
 class _CoinsSheet extends StatelessWidget {
   const _CoinsSheet({
     required this.changes,
@@ -444,9 +439,9 @@ class _CoinsSheet extends StatelessWidget {
               ],
             ),
           ),
-          SpendCoinsNotLoaded() || SpendCoinsLoading() => const Padding(
-            padding: EdgeInsets.all(48),
-            child: Center(child: CircularProgressIndicator()),
+          SpendCoinsNotLoaded() || SpendCoinsLoading() => const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [BullFadingLinearProgress(trigger: true), Gap(96)],
           ),
         };
       },

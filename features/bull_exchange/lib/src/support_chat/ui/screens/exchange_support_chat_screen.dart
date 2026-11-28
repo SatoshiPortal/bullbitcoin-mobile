@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullButton,
+        BullFadingLinearProgress,
         BullText,
         BullInlineIconButton,
         BullInputText,
@@ -94,11 +95,33 @@ class ExchangeSupportChatScreen extends StatelessWidget {
             ),
           ),
           backgroundColor: context.appColors.background,
+          bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(3),
+            child: _ChatProgress(),
+          ),
         ),
         backgroundColor: context.appColors.background,
         body: const _ChatBody(),
       ),
     );
+  }
+}
+
+class _ChatProgress extends StatelessWidget {
+  const _ChatProgress();
+
+  @override
+  Widget build(BuildContext context) {
+    final busy = context.select(
+      (SupportChatBloc bloc) =>
+          bloc.state.opening.isNotEmpty ||
+          switch (bloc.state.thread) {
+            ChatThreadLoading() => true,
+            ChatThreadLoaded(older: ChatOlderLoading()) => true,
+            ChatThreadLoaded() || ChatThreadLoadFailed() => false,
+          },
+    );
+    return BullFadingLinearProgress(trigger: busy);
   }
 }
 
@@ -150,9 +173,7 @@ class _ChatBodyState extends State<_ChatBody> {
               }
             },
             builder: (context, state) => switch (state.thread) {
-              ChatThreadLoading() => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              ChatThreadLoading() => const SizedBox.shrink(),
               ChatThreadLoadFailed(:final failure) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -227,15 +248,15 @@ class _ChatBodyState extends State<_ChatBody> {
         return Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: switch (thread.older) {
-              ChatOlderLoading() => const CircularProgressIndicator(),
-              ChatOlderIdle() => BullButton.secondary(
-                label: context.loc.exchangeSupportChatLoadOlder,
-                onPressed: () => context.read<SupportChatBloc>().add(
+            child: BullButton.secondary(
+              label: context.loc.exchangeSupportChatLoadOlder,
+              onPressed: switch (thread.older) {
+                ChatOlderLoading() => null,
+                ChatOlderIdle() => () => context.read<SupportChatBloc>().add(
                   const ChatOlderRequested(),
                 ),
-              ),
-            },
+              },
+            ),
           ),
         );
       },
@@ -512,7 +533,7 @@ class _AttachmentWidget extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: InkWell(
-          onTap: attachmentId == null
+          onTap: attachmentId == null || isLoading
               ? null
               : () => context.read<SupportChatBloc>().add(
                   ChatOpenPressed(attachmentId),
@@ -560,18 +581,11 @@ class _AttachmentWidget extends StatelessWidget {
                 ),
                 if (!isUserMessage && attachmentId != null) ...[
                   const Gap(8),
-                  if (isLoading)
-                    const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  else
-                    Icon(
-                      Icons.download,
-                      size: 20,
-                      color: context.appColors.onPrimary,
-                    ),
+                  Icon(
+                    Icons.download,
+                    size: 20,
+                    color: context.appColors.onPrimary,
+                  ),
                 ],
               ],
             ),
@@ -583,7 +597,7 @@ class _AttachmentWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
-        onTap: attachmentId == null
+        onTap: attachmentId == null || isLoading
             ? null
             : () => context.read<SupportChatBloc>().add(
                 ChatOpenPressed(attachmentId),
@@ -648,18 +662,11 @@ class _AttachmentWidget extends StatelessWidget {
               ),
               if (!isUserMessage && attachmentId != null) ...[
                 const Gap(8),
-                if (isLoading)
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                else
-                  Icon(
-                    Icons.download,
-                    size: 20,
-                    color: context.appColors.onPrimary,
-                  ),
+                Icon(
+                  Icons.download,
+                  size: 20,
+                  color: context.appColors.onPrimary,
+                ),
               ],
             ],
           ),

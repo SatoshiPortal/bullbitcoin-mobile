@@ -1,6 +1,11 @@
 import 'package:bull_exchange/src/exchange_l10n.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullButton, BullScrollableColumn, BullTypographyX, Gap;
+    show
+        BullButton,
+        BullFadingLinearProgress,
+        BullScrollableColumn,
+        BullTypographyX,
+        Gap;
 import 'package:material_ui/material_ui.dart';
 
 /// One action of a [FlowStatusPage].
@@ -13,7 +18,7 @@ final class FlowAction {
 }
 
 /// The page a flow shows for a step state that is waiting, failed or ended:
-/// a title, an optional message, a spinner while [busy], and the exits the
+/// a title, an optional message, a top-bar line while [busy], and the exits the
 /// state has. Every exit is an event of the flow.
 ///
 /// The app bar's back is [onBack], never one implied by the navigator: a
@@ -54,6 +59,10 @@ class FlowStatusPage extends StatelessWidget {
           null => null,
         },
         title: Text(title),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: BullFadingLinearProgress(trigger: busy),
+        ),
       ),
       body: SafeArea(
         child: BullScrollableColumn(
@@ -61,10 +70,6 @@ class FlowStatusPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Gap(24),
-            if (busy) ...[
-              const Center(child: CircularProgressIndicator()),
-              const Gap(24),
-            ],
             if (headline != null) ...[
               Text(
                 headline,

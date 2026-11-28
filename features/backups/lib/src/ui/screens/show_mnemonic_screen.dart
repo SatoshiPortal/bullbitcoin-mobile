@@ -17,6 +17,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullThemeX,
         BullButtonSize,
         BullButton,
+        BullFadingLinearProgress,
         BullScreenPrivacyGate,
         BullShapesX,
         BullText,
@@ -273,14 +274,18 @@ class _MnemonicDisplayState extends State<_MnemonicDisplay>
                   _ => null,
                 };
                 if (secret == null) {
-                  return const Center(child: CircularProgressIndicator());
+                  return BullFadingLinearProgress(
+                    trigger: true,
+                    foregroundColor: context.bull.primary,
+                  );
                 }
                 return Column(
                   children: [
                     secret.widgets.mnemonicView(
                       showPassphrase: _showPassphrase,
-                      placeholder: const Center(
-                        child: CircularProgressIndicator(),
+                      placeholder: BullFadingLinearProgress(
+                        trigger: true,
+                        foregroundColor: context.bull.primary,
                       ),
                       failureBuilder: (context, failure, retry) =>
                           _DisplayError(onRetry: retry),

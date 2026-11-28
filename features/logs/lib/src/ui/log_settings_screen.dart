@@ -31,6 +31,17 @@ final class _LogSettingsView extends StatelessWidget {
         LogsLocalizations.of(context).logSettingsLogsTitle,
         style: TextStyle(color: context.bull.onSurface),
       ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(3),
+        child: BlocSelector<LogsCubit, LogsState, bool>(
+          selector: (state) => state.status == LogsStatus.loading,
+          builder: (context, loading) => BullFadingLinearProgress(
+            trigger: loading,
+            backgroundColor: context.bull.background,
+            foregroundColor: context.bull.primary,
+          ),
+        ),
+      ),
       actions: [
         IconButton(
           key: const ValueKey('logs-delete'),

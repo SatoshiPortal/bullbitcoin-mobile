@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import 'package:bull_ui/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 import 'package:preferences/preferences.dart';
 import 'package:primitives/primitives.dart';
 import 'package:bull_exchange/testing.dart';
@@ -196,7 +197,14 @@ void main() {
       expect(platform.cookies.clears, 0);
       expect(exits, 0);
       expect(dones, 0);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(
+        tester
+            .widget<BullFadingLinearProgress>(
+              find.byType(BullFadingLinearProgress),
+            )
+            .trigger,
+        isFalse,
+      );
       expect(platform.controller?.reloadCount, scenario == 'retry' ? 1 : 0);
       verify(() => keys.readActiveApiKey(isTestnet: true)).called(1);
       verifyNoMoreInteractions(keys);

@@ -9,7 +9,8 @@ import 'package:bull_exchange/src/recipients/presentation/recipients_bloc.dart';
 import 'package:bull_exchange/src/recipients/presentation/models/recipient_form_data_model.dart';
 import 'package:bull_exchange/src/recipients/presentation/recipients_failure_l10n.dart';
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
-import 'package:bull_ui/bull_ui.dart' show Gap, BullTypographyX;
+import 'package:bull_ui/bull_ui.dart'
+    show BullFadingLinearProgress, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -132,7 +133,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
               }
             },
           ),
-          // A failed lookup used to just stop the spinner, leaving the owner
+          // A failed lookup used to just stop the loader, leaving the owner
           //  field blank with no explanation. Shown under the phone field
           //  because that is what the message asks the user to check.
           BlocSelector<RecipientsBloc, RecipientsState, RecipientsFailure?>(
@@ -154,35 +155,32 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
           BlocSelector<RecipientsBloc, RecipientsState, bool>(
             selector: (state) => state.isCheckingSinpe,
             builder: (context, isChecking) {
-              return BBTextFormField(
-                labelText: context.loc.recipientsFieldOwnerName,
-                hintText: context.loc.recipientsFieldOwnerNameSinpeHint,
-                controller: _ownerNameController,
-                disabled: true,
-                suffix: _ownerNameController.text.isNotEmpty
-                    ? Icon(Icons.check_circle, color: context.appColors.primary)
-                    : isChecking
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              context.appColors.primary,
-                            ),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  BBTextFormField(
+                    labelText: context.loc.recipientsFieldOwnerName,
+                    hintText: context.loc.recipientsFieldOwnerNameSinpeHint,
+                    controller: _ownerNameController,
+                    disabled: true,
+                    suffix: _ownerNameController.text.isNotEmpty
+                        ? Icon(
+                            Icons.check_circle,
+                            color: context.appColors.primary,
+                          )
+                        : Icon(
+                            Icons.check_circle_outline,
+                            color: context.appColors.outline,
                           ),
-                        ),
-                      )
-                    : Icon(
-                        Icons.check_circle_outline,
-                        color: context.appColors.outline,
-                      ),
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) {
-                    return context.loc.recipientsValidationSinpeOwner;
-                  }
-                  return null;
-                },
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return context.loc.recipientsValidationSinpeOwner;
+                      }
+                      return null;
+                    },
+                  ),
+                  BullFadingLinearProgress(trigger: isChecking),
+                ],
               );
             },
           ),

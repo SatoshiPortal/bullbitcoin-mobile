@@ -1,5 +1,5 @@
 import 'package:bull_ui/bull_ui.dart'
-    show BullThemeX, BullButton, BullButtonSize;
+    show BullThemeX, BullButton, BullButtonSize, BullFadingLinearProgress;
 
 import '../../../network_l10n.dart';
 
@@ -115,6 +115,12 @@ class TorConnectionStatusCard extends StatelessWidget {
                 ),
               ],
             ),
+            const Gap(12),
+            BullFadingLinearProgress(
+              trigger: _status == _VisualStatus.connecting,
+              backgroundColor: context.bull.surface,
+              foregroundColor: context.bull.warning,
+            ),
             if (_showRetry) ...[
               const Gap(12),
               Align(
@@ -214,16 +220,7 @@ class _StatusIndicator extends StatelessWidget {
         color: color.withValues(alpha: 0.1),
       ),
       child: Center(
-        child: status == _VisualStatus.connecting
-            ? SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                ),
-              )
-            : Icon(_getStatusIcon(status), color: color, size: 24),
+        child: Icon(_getStatusIcon(status), color: color, size: 24),
       ),
     );
   }

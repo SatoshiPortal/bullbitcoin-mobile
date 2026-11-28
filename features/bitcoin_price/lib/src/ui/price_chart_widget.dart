@@ -70,7 +70,15 @@ class PriceChartWidget extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(color: foreground),
+                    SizedBox(
+                      width: 120,
+                      child: BullFadingLinearProgress(
+                        trigger: true,
+                        height: 3,
+                        backgroundColor: foreground.withValues(alpha: 0.2),
+                        foregroundColor: foreground,
+                      ),
+                    ),
                     const Gap(16),
                     BullText(
                       context.loc.priceChartFetchingHistory,

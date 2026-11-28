@@ -377,27 +377,11 @@ class _WalletAddressFieldState extends State<_WalletAddressField> {
       ),
       const SizedBox(width: 12),
       Expanded(
-        child: busy
-            ? Container(
-                height: 52,
-                decoration: BoxDecoration(
-                  color: context.appColors.onSurface,
-                  borderRadius: BorderRadius.circular(
-                    context.bullShapes.button,
-                  ),
-                ),
-                child: Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: context.appColors.surface,
-                    ),
-                  ),
-                ),
-              )
-            : BullButton.primary(label: context.loc.save, onPressed: onSave),
+        child: BullButton.primary(
+          label: context.loc.save,
+          onPressed: onSave,
+          loading: busy,
+        ),
       ),
     ],
   );

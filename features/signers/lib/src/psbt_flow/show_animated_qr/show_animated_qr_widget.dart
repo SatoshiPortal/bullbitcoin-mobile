@@ -10,7 +10,13 @@ import 'package:get_it/get_it.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullQrCode, BullShapesX, BullText, Gap, BullTypographyX;
+    show
+        BullFadingLinearProgress,
+        BullQrCode,
+        BullShapesX,
+        BullText,
+        Gap,
+        BullTypographyX;
 
 class ShowAnimatedQrWidget extends StatelessWidget {
   final GetIt services;
@@ -69,11 +75,20 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
           return Container(
             width: 300,
             height: 300,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: context.bull.surfaceFixed,
               borderRadius: BorderRadius.circular(context.bullShapes.card),
             ),
-            child: const Center(child: CircularProgressIndicator()),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: BullFadingLinearProgress(
+                trigger: true,
+                height: 3,
+                backgroundColor: context.bull.surfaceFixed,
+                foregroundColor: context.bull.primary,
+              ),
+            ),
           );
         }
 

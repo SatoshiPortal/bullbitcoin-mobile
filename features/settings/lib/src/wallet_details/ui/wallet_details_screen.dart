@@ -5,6 +5,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullText,
         BullButton,
         BullCopyField,
+        BullFadingLinearProgress,
         BullIcon,
         BullIcons,
         Gap,
@@ -76,28 +77,28 @@ class WalletDetailsScreen extends StatelessWidget {
                   icon: const BullIcon(BullIcons.deleteOutline),
                 ),
             ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(3),
+              child: BullFadingLinearProgress(
+                height: 3,
+                trigger: isDeleting || state is WalletDetailsLoading,
+                backgroundColor: context.appColors.surface,
+                foregroundColor: context.appColors.primary,
+              ),
+            ),
           ),
           body: SafeArea(
             child: isDeleting
                 ? Center(
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      children: [
-                        const CircularProgressIndicator(),
-                        const Gap(16),
-                        BullText(
-                          loc.walletDetailsDeletingMessage,
-                          style: context.bullType.body.copyWith(
-                            color: context.appColors.textMuted,
-                          ),
-                        ),
-                      ],
+                    child: BullText(
+                      loc.walletDetailsDeletingMessage,
+                      style: context.bullType.body.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
                     ),
                   )
                 : switch (state) {
-                    WalletDetailsLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    WalletDetailsLoading() => const SizedBox.shrink(),
                     WalletDetailsMissing(:final failure) => Center(
                       child: Text(failure.toTranslated(context)),
                     ),

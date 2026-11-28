@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bull_ui/bull_ui.dart'
     show
         BullAdvancedOptionsLink,
+        BullFadingLinearProgress,
         BullText,
         BullTypography,
         Gap,
@@ -118,10 +119,11 @@ class _Actions extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           if (creating || loading) ...[
-            Center(
-              child: CircularProgressIndicator(
-                color: context.appColors.onPrimaryFixed,
-              ),
+            BullFadingLinearProgress(
+              trigger: true,
+              height: 3,
+              backgroundColor: context.appColors.primaryFixed,
+              foregroundColor: context.appColors.onPrimaryFixed,
             ),
           ] else ...[
             const CreateWalletButton(),

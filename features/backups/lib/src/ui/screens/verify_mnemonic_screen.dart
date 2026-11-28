@@ -5,7 +5,12 @@ import 'package:backups/src/presentation/test_wallet_backup_failure_l10n.dart';
 import 'package:backups/src/ui/app_bar_widget.dart';
 import 'package:backups/src/ui/screens/backup_test_success.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show BullThemeX, BullSnackBar, BullText, BullTypographyX;
+    show
+        BullFadingLinearProgress,
+        BullThemeX,
+        BullSnackBar,
+        BullText,
+        BullTypographyX;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:physical_backup_verification/physical_backup_verification.dart';
@@ -32,7 +37,7 @@ class VerifyMnemonicScreen extends StatelessWidget {
         final bloc = context.read<TestWalletBackupBloc>();
         if (state.failure case final failure?) {
           // Keep the initial load failure available to the body; there is no
-          // selected secret whose result would otherwise replace the spinner.
+          // selected secret whose result would otherwise end the loading line.
           if (state.selectedWallet == null) return;
           bloc.add(const ClearFailure());
           BullSnackBar.show(context, message: failure.toTranslated(context));
@@ -67,7 +72,7 @@ class VerifyMnemonicScreen extends StatelessWidget {
               final failure? => Center(
                 child: BullText(failure.toTranslated(context)),
               ),
-              null => const Center(child: CircularProgressIndicator()),
+              null => _loadingLine(context),
             },
             _ => Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,8 +156,17 @@ class _SelectedChallengeState extends State<_SelectedChallenge> {
             ),
           );
         }
-        return const Center(child: CircularProgressIndicator());
+        return _loadingLine(context);
       },
     );
   }
 }
+
+Widget _loadingLine(BuildContext context) => Align(
+  alignment: Alignment.topCenter,
+  child: BullFadingLinearProgress(
+    trigger: true,
+    backgroundColor: context.bull.onSecondary,
+    foregroundColor: context.bull.primary,
+  ),
+);

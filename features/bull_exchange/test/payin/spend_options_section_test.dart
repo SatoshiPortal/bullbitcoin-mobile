@@ -6,6 +6,7 @@ import 'package:address_view/address_view.dart' show AddressViewer;
 import 'package:bull_exchange/bull_exchange.dart' show ExchangeLocalizations;
 import 'package:bull_exchange/src/payin/spend_options.dart';
 import 'package:bull_exchange/src/payin/ui/spend_options_section.dart';
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 import 'package:bull_ui/testing.dart';
 import 'package:fees/fees.dart';
 import 'package:fees_feature/fee_ui.dart';
@@ -150,7 +151,7 @@ void main() {
     await tester.tap(find.text('Select coins manually'));
     await tester.pump();
     expect(events.last, isA<SpendCoinsRequested>());
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(BullFadingLinearProgress), findsOneWidget);
     changes.add(_ready.copyWith(coins: const SpendCoinsUnavailable()));
     await tester.pump();
     final labels = ExchangeLocalizations.of(

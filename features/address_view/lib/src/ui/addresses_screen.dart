@@ -4,6 +4,7 @@ import 'package:bull_ui/bull_ui.dart'
     show
         BullBottomSheet,
         BullButton,
+        BullFadingLinearProgress,
         BullSegmented,
         BullShapesX,
         BullText,
@@ -78,6 +79,17 @@ class _AddressesScreenState extends State<AddressesScreen> {
           header: true,
           child: Text(context.loc.addressViewAddressesTitle),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: BlocSelector<AddressViewBloc, AddressViewState, bool>(
+            selector: (state) => state.isLoading,
+            builder: (context, loading) => BullFadingLinearProgress(
+              trigger: loading,
+              backgroundColor: context.bull.surface,
+              foregroundColor: context.bull.primary,
+            ),
+          ),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -120,16 +132,13 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   final addresses = showChangeAddresses
                       ? state.changeAddresses
                       : state.receiveAddresses;
-                  final hasReachedEnd = showChangeAddresses
-                      ? state.hasReachedEndOfChangeAddresses
-                      : state.hasReachedEndOfReceiveAddresses;
                   final failure = showChangeAddresses
                       ? state.changeAddressesFailure
                       : state.receiveAddressesFailure;
                   final isLiquid = state.isLiquid;
 
                   if (state.isLoading && addresses.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const SizedBox.shrink();
                   } else if (failure != null && addresses.isEmpty) {
                     return Center(
                       child: Text(
@@ -156,38 +165,27 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       controller: _scrollController,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       separatorBuilder: (context, index) => const Gap(16),
-                      itemCount:
-                          addresses.length +
-                          (hasReachedEnd || failure != null ? 0 : 1) +
-                          (failure != null ? 1 : 0),
+                      itemCount: addresses.length + (failure != null ? 1 : 0),
                       itemBuilder: (context, index) {
-                        if (index < addresses.length) {
-                          final address = addresses[index];
-                          return AddressCard(
-                            isUsed: address.isUsed,
-                            address: address.address,
-                            index: address.index,
-                            balanceSat: address.balanceSat,
-                            labels: address.labels,
-                          );
-                        } else {
-                          if (failure != null && index == addresses.length) {
-                            return Center(
-                              child: Text(
-                                failure.toTranslated(context),
-                                style: context.bullType.body.copyWith(
-                                  color: context.bull.error,
-                                ),
-                                textAlign: TextAlign.center,
+                        if (failure != null && index == addresses.length) {
+                          return Center(
+                            child: Text(
+                              failure.toTranslated(context),
+                              style: context.bullType.body.copyWith(
+                                color: context.bull.error,
                               ),
-                            );
-                          }
-
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Center(child: CircularProgressIndicator()),
+                              textAlign: TextAlign.center,
+                            ),
                           );
                         }
+                        final address = addresses[index];
+                        return AddressCard(
+                          isUsed: address.isUsed,
+                          address: address.address,
+                          index: address.index,
+                          balanceSat: address.balanceSat,
+                          labels: address.labels,
+                        );
                       },
                     );
                   }

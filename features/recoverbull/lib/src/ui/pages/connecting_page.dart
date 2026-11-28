@@ -142,6 +142,20 @@ class _ConnectingPageState extends State<ConnectingPage> {
         appBar: AppBar(
           forceMaterialTransparency: true,
           leading: const RecoverBullBackButton(),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3),
+            child: BlocSelector<VaultFlowCubit, VaultFlowState, bool>(
+              selector: (state) =>
+                  _torPhaseOf(state) == _PhaseState.active ||
+                  _serverPhaseOf(state) == _PhaseState.active,
+              builder: (context, working) => BullFadingLinearProgress(
+                height: 3,
+                trigger: working,
+                backgroundColor: context.bull.background,
+                foregroundColor: context.bull.primary,
+              ),
+            ),
+          ),
         ),
         body: SafeArea(
           child: Padding(
@@ -181,6 +195,29 @@ class _ConnectingPageState extends State<ConnectingPage> {
 }
 
 enum _PhaseState { pending, active, done, failed }
+
+/// A user-managed proxy never reports embedded readiness: a reachable
+/// server is then the proof that Tor works.
+_PhaseState _torPhaseOf(VaultFlowState state) {
+  if (state.keyServer == KeyServerStatus.online) return _PhaseState.done;
+  return switch (state.tor) {
+    tor.TorReady() => _PhaseState.done,
+    tor.TorUnavailable() => _PhaseState.failed,
+    tor.TorConnecting() => _PhaseState.active,
+    tor.TorUninitialized() || tor.TorStopped() =>
+      state.keyServer == KeyServerStatus.connecting
+          ? _PhaseState.active
+          : _PhaseState.pending,
+  };
+}
+
+_PhaseState _serverPhaseOf(VaultFlowState state) => switch (state.keyServer) {
+  KeyServerStatus.online => _PhaseState.done,
+  KeyServerStatus.offline => _PhaseState.failed,
+  KeyServerStatus.connecting =>
+    state.tor is tor.TorReady ? _PhaseState.active : _PhaseState.pending,
+  KeyServerStatus.unknown => _PhaseState.pending,
+};
 
 class _Body extends StatelessWidget {
   final VaultFlowState state;
@@ -243,28 +280,9 @@ class _Body extends StatelessWidget {
     _ => null,
   };
 
-  /// A user-managed proxy never reports embedded readiness: a reachable
-  /// server is then the proof that Tor works.
-  _PhaseState get _torPhase {
-    if (state.keyServer == KeyServerStatus.online) return _PhaseState.done;
-    return switch (_tor) {
-      tor.TorReady() => _PhaseState.done,
-      tor.TorUnavailable() => _PhaseState.failed,
-      tor.TorConnecting() => _PhaseState.active,
-      tor.TorUninitialized() || tor.TorStopped() =>
-        state.keyServer == KeyServerStatus.connecting
-            ? _PhaseState.active
-            : _PhaseState.pending,
-    };
-  }
+  _PhaseState get _torPhase => _torPhaseOf(state);
 
-  _PhaseState get _serverPhase => switch (state.keyServer) {
-    KeyServerStatus.online => _PhaseState.done,
-    KeyServerStatus.offline => _PhaseState.failed,
-    KeyServerStatus.connecting =>
-      _tor is tor.TorReady ? _PhaseState.active : _PhaseState.pending,
-    KeyServerStatus.unknown => _PhaseState.pending,
-  };
+  _PhaseState get _serverPhase => _serverPhaseOf(state);
 
   /// A censorship verdict is not a failure: automatic mode answers it by
   /// switching to Snowflake, which the screen announces instead.
@@ -668,16 +686,6 @@ class _PhaseIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (phase == _PhaseState.active) {
-      return SizedBox(
-        width: 20,
-        height: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(color),
-        ),
-      );
-    }
     return Icon(
       switch (phase) {
         _PhaseState.done => Icons.check_circle,

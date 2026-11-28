@@ -335,19 +335,11 @@ class _SetCustomServerBottomSheetState
                     ),
                   ],
                   const Gap(24),
-                  if (_isValidating)
-                    const Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  else
-                    BullButton.primary(
-                      label: context.loc.save,
-                      onPressed: _saveServer,
-                    ),
+                  BullButton.primary(
+                    label: context.loc.save,
+                    onPressed: _saveServer,
+                    loading: _isValidating,
+                  ),
                 ],
               ),
             ),

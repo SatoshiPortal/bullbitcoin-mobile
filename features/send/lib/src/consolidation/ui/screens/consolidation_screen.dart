@@ -269,8 +269,6 @@ class _BroadcastingView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: context.appColors.primary),
-          const Gap(24),
           BullText(
             context.loc.consolidationInProgress,
             style: context.bullType.subtitle.copyWith(

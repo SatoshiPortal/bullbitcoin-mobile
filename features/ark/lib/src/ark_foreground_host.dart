@@ -17,6 +17,7 @@ import 'package:bull_ark/bull_ark.dart'
         ArkServiceUnavailableFailure,
         ArkTransferFacade;
 import 'package:bull_logger/bull_logger.dart';
+import 'package:bull_ui/bull_ui.dart' show BullFadingLinearProgress;
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -448,7 +449,12 @@ class _ArkHostPageState extends State<_ArkHostPage> {
           switch (snapshot.data) {
             case null:
               return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
+                body: SafeArea(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: BullFadingLinearProgress(trigger: true),
+                  ),
+                ),
               );
             case Err(:final failure):
               log.warning('Ark runtime unavailable: ${failure.runtimeType}');

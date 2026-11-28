@@ -29,6 +29,7 @@ import 'package:bull_ui/bull_ui.dart'
         BullButtonSize,
         BullBottomSheet,
         BullButton,
+        BullFadingLinearProgress,
         BullInstructionsSheet,
         BullSelectableList,
         BullSelectableListItem,
@@ -128,6 +129,19 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           color: context.bull.background,
           onBack: () => Navigator.of(context).pop(),
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: BlocSelector<LedgerOperationCubit, LedgerOperationState, bool>(
+            selector: (state) =>
+                state.status == LedgerOperationStatus.scanning ||
+                state.status == LedgerOperationStatus.connecting,
+            builder: (context, busy) => BullFadingLinearProgress(
+              trigger: busy,
+              backgroundColor: context.bull.background,
+              foregroundColor: context.bull.primary,
+            ),
+          ),
+        ),
       ),
       body: BlocConsumer<LedgerOperationCubit, LedgerOperationState>(
         listener: (context, state) {
@@ -214,14 +228,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
 
     if (state.status == LedgerOperationStatus.scanning ||
         state.status == LedgerOperationStatus.connecting) {
-      return SizedBox(
-        width: 80,
-        height: 80,
-        child: CircularProgressIndicator(
-          color: context.bull.primary,
-          strokeWidth: 3,
-        ),
-      );
+      return const SizedBox(width: 80, height: 80);
     }
 
     IconData icon;
