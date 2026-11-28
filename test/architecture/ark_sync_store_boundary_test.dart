@@ -34,7 +34,6 @@ void main() {
       ...Directory('features/coins/lib').listSync(recursive: true),
       ...Directory('packages/labels/lib').listSync(recursive: true),
       File('lib/core_locator.dart'),
-      File('lib/features/wallet/wallet_core_locator.dart'),
       File('lib/locator.dart'),
       File('lib/init.dart'),
       File('test/recoverbull_composition_test.dart'),

@@ -157,12 +157,12 @@ void main() {
         'lib/features/sp/renamed.dart':
             "import '../../core/barrel.dart'; import 'local.dart';",
         'lib/features/sp/local.dart': '',
-        'lib/core/barrel.dart': "export 'barrel.dart'; export '../features/wallet/public/api.dart';",
-        'lib/features/wallet/public/api.dart':
+        'lib/core/barrel.dart': "export 'barrel.dart'; export '../features/catalogue/public/api.dart';",
+        'lib/features/catalogue/public/api.dart':
             "export '../data/repository.dart' if (dart.library.io) "
             "'package:bb_mobile/features/swap/anything.dart'; "
             "export 'package:bull_logs/bull_logs.dart';",
-        'lib/features/wallet/data/repository.dart': '',
+        'lib/features/catalogue/data/repository.dart': '',
         'lib/features/swap/anything.dart': '',
         'features/logs/lib/bull_logs.dart': '',
       },
@@ -171,11 +171,11 @@ void main() {
     expect(
       edges.keys,
       unorderedEquals([
-        'sp -> wallet',
+        'sp -> catalogue',
         'sp -> swap',
         'sp -> logs',
-        'wallet -> swap',
-        'wallet -> logs',
+        'catalogue -> swap',
+        'catalogue -> logs',
       ]),
     );
   });
