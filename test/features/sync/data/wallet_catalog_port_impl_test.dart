@@ -2,9 +2,6 @@ import 'package:secrets/secrets.dart' show SecretFailure, StoreSecretFailure;
 import 'package:secrets/storage.dart' show RegisteredWalletDescriptor;
 import 'package:sync/testing.dart' show catalogForTesting;
 
-import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
-import 'package:legacy_storage/app_database.dart' show Signer;
-import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
@@ -31,25 +28,6 @@ RegisteredWalletDescriptor _descriptorRow(
   network: networkCode,
   externalDescriptor: external,
   internalDescriptor: internal,
-);
-
-WalletMetadataModel _row(
-  String origin, {
-  String networkCode = 'bitcoinMainnet',
-  String external = 'wpkh(public)',
-  String internal = 'wpkh(change)',
-}) => WalletMetadataModel(
-  id: origin,
-  networkCode: networkCode,
-  masterFingerprint: 'aabbccdd',
-  xpubFingerprint: 'aabbccdd',
-  isEncryptedVaultTested: false,
-  isPhysicalBackupTested: false,
-  xpub: 'public',
-  externalPublicDescriptor: external,
-  internalPublicDescriptor: internal,
-  signer: Signer.none,
-  isDefault: false,
 );
 
 void main() {
@@ -134,16 +112,17 @@ void main() {
     },
   );
 
-  test('invalid descriptor is refused before issuing a native key', () {
-    final invalid = _row('wpkh([aabbccdd/84h/0h/0h])', external: '');
+  test('invalid descriptor is refused before issuing a native key', () async {
+    const origin = 'wpkh([aabbccdd/84h/0h/0h])';
+    final catalog = _Catalog()..rows = [_descriptorRow(origin, external: '')];
+    final result = await catalogForTesting(catalog.read)
+        .find(WalletKey(id: origin, network: BitcoinNetwork.mainnet));
     expect(
-      () => WalletSyncBinding.keyFromMetadata(invalid),
-      throwsA(
-        isA<WalletSnapshotException>().having(
-          (error) => error.failure,
-          'failure',
-          isA<SyncInvalidCatalogFailure>(),
-        ),
+      result,
+      isA<Err<PublicWalletDescriptor, SyncFailure>>().having(
+        (error) => error.failure,
+        'failure',
+        isA<SyncInvalidCatalogFailure>(),
       ),
     );
   });
