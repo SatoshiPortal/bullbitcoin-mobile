@@ -30,9 +30,10 @@ class BullButton extends StatelessWidget {
     this.width,
     this.height,
     this.textStyle,
+    this.loading = false,
   }) : _role = _BullButtonRole.primary,
        onPressed = onPressed ?? _ignorePress,
-       disabled = onPressed == null,
+       disabled = onPressed == null || loading,
        bgColor = null,
        textColor = null,
        outlined = false,
@@ -49,9 +50,10 @@ class BullButton extends StatelessWidget {
     this.width,
     this.height,
     this.textStyle,
+    this.loading = false,
   }) : _role = _BullButtonRole.secondary,
        onPressed = onPressed ?? _ignorePress,
-       disabled = onPressed == null,
+       disabled = onPressed == null || loading,
        bgColor = null,
        textColor = null,
        outlined = false,
@@ -73,6 +75,7 @@ class BullButton extends StatelessWidget {
     this.textStyle,
     this.compact = false,
   }) : size = BullButtonSize.large,
+       loading = false,
        _role = null;
 
   const BullButton.small({
@@ -91,6 +94,7 @@ class BullButton extends StatelessWidget {
     this.textStyle,
     this.compact = false,
   }) : size = BullButtonSize.small,
+       loading = false,
        _role = null;
 
   /// Optional leading/trailing icon glyph.
@@ -123,6 +127,10 @@ class BullButton extends StatelessWidget {
 
   /// When true, dims the button and ignores taps.
   final bool disabled;
+
+  /// When true, the work this button started is running: the button is
+  /// disabled and a thin line runs along its bottom edge.
+  final bool loading;
 
   /// Requested height. Role buttons keep a minimum 48 dp target.
   final double? height;
@@ -246,7 +254,26 @@ class BullButton extends StatelessWidget {
     final accessibleButton = Semantics(
       button: true,
       enabled: !disabled,
-      child: button,
+      child: loading
+          ? ClipRRect(
+              borderRadius: radius,
+              child: Stack(
+                children: [
+                  button,
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: LinearProgressIndicator(
+                      minHeight: 3,
+                      color: foreground ?? colors.primary,
+                      backgroundColor: Colors.transparent,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : button,
     );
 
     return Builder(

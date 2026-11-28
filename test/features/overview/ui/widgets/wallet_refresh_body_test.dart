@@ -39,7 +39,8 @@ void main() {
           reason: 'show must not enqueue another pass or fetch price',
         );
         expect(waits, 1);
-        expect(find.byType(RefreshProgressIndicator), findsOneWidget);
+        expect(find.byType(RefreshProgressIndicator), findsNothing);
+        expect(find.byType(LinearProgressIndicator), findsNothing);
         await tester.pumpWidget(build(true));
         expect(waits, 1);
         gate.complete();

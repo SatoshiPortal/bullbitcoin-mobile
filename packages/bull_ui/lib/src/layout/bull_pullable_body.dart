@@ -14,7 +14,11 @@ class BullPullableBody extends StatelessWidget {
     required this.slivers,
     this.bottomChild,
     this.bottomInset = 0,
+    this.showProgress = true,
   });
+
+  /// Forwarded to [BullRefreshIndicator.showProgress].
+  final bool showProgress;
 
   /// Forwarded to the inner [BullRefreshIndicator]; use a
   /// `GlobalKey<RefreshIndicatorState>` to call `.show()` programmatically.
@@ -38,6 +42,7 @@ class BullPullableBody extends StatelessWidget {
     return BullRefreshIndicator(
       indicatorKey: indicatorKey,
       onRefresh: onRefresh,
+      showProgress: showProgress,
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [

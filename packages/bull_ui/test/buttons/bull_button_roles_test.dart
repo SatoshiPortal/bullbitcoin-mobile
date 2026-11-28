@@ -32,6 +32,31 @@ void main() {
     await tester.tap(find.text('Retry'));
     expect(taps, 1);
   });
+  testWidgets('a loading button is disabled and shows a line, not a spinner', (
+    tester,
+  ) async {
+    var taps = 0;
+    await tester.pumpWidget(
+      wrapWithTheme(
+        BullButton.primary(
+          label: 'Send',
+          loading: true,
+          onPressed: () => taps++,
+        ),
+      ),
+    );
+    await tester.tap(find.text('Send'), warnIfMissed: false);
+    expect(taps, 0);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+
+    await tester.pumpWidget(
+      wrapWithTheme(BullButton.primary(label: 'Send', onPressed: () => taps++)),
+    );
+    await tester.tap(find.text('Send'));
+    expect(taps, 1);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+  });
   testWidgets(
     'legacy constructors preserve explicit appearance and disable taps',
     (tester) async {

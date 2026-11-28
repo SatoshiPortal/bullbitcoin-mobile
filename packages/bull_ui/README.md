@@ -18,7 +18,6 @@ Brightness-invariant tokens are static consts, from the design system:
 - **`BullSpacing`** — `zero·xxs·xs·sm·md·lg·xl·xxl·xxxl` = `0·4·8·12·16·24·32·48·64`.
 - **`BullTypography`** — text style per role (`display·headline·title·subtitle·body·label·caption`), read with `context.bullType.body` or `BullText(role: .body)`; Bull's values live in `BullTypography.standard`, nothing below 12; an app passes another family with `bullUiExtensions(typography: BullTypography.standard.withFamily(…))`, keeping the scale. A caller may change a role's weight or colour, never its size. Older components still read the Material `TextTheme`.
 - **`BullKeypadColors`** — keypad panel, key and glyph colours per role (`context.bullKeypad.key`), in `BullKeypadColors.light` and `.dark`.
-- **`BullLoaderTheme`** — which animation `BullLoader` plays (`BullLoaderStyle.cubes` or `.spinner`); Bull's is `BullLoaderTheme.standard` (cubes), and an app picks another with `bullUiExtensions(loader: …)`.
 - **Icons** via `BullIcon(BullIcons.…)`.
 
 `BullPaymentAnimation` uses `sensors_plus` for decorative accelerometer roll on Android and iOS. It does not require motion data to render, and it does not open the sensor stream when motion is reduced or the route is inactive. Payment features own the actual status and supply localized text to `BullPaymentTransition`.

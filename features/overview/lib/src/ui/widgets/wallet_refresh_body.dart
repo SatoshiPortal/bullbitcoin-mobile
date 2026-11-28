@@ -59,6 +59,7 @@ class _WalletRefreshBodyState extends State<WalletRefreshBody> {
     onRefresh: () =>
         _showingExistingRefresh ? widget.waitForRefresh() : widget.onRefresh(),
     bottomInset: widget.bottomInset,
+    showProgress: false,
     slivers: widget.slivers,
   );
 }

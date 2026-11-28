@@ -136,7 +136,6 @@ export 'src/layout/gap.dart' show Gap;
 // Theme.
 export 'src/theme/bull_icon.dart';
 export 'src/theme/bull_keypad_colors.dart';
-export 'src/theme/bull_loader_theme.dart';
 export 'src/theme/bull_shapes.dart';
 export 'src/theme/bull_theme.dart';
 export 'src/theme/bull_tokens.dart';

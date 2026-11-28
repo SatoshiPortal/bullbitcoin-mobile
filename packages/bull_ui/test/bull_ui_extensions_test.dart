@@ -7,7 +7,7 @@ T _registered<T>(List<ThemeExtension<dynamic>> extensions) =>
     extensions.whereType<T>().single;
 
 void main() {
-  test("registers Bull's shapes, typography and loader by default", () {
+  test("registers Bull's shapes and typography by default", () {
     final extensions = bullUiExtensions(
       colors: testBullTheme,
       brightness: Brightness.light,
@@ -16,10 +16,6 @@ void main() {
     expect(
       _registered<BullTypography>(extensions),
       same(BullTypography.standard),
-    );
-    expect(
-      _registered<BullLoaderTheme>(extensions),
-      same(BullLoaderTheme.standard),
     );
   });
 
