@@ -433,30 +433,43 @@ void main() {
     'independent reserve and neverPrepared CAS have exactly one winner',
     () async {
       await begin();
+      // Keep rollback-journal reader locks from making both writes fail.
+      // WAL still serializes the two writers across their connections.
+      sql((db) {
+        final mode = db.select('PRAGMA journal_mode = WAL').single;
+        expect(mode['journal_mode'], 'wal');
+      });
       final messages = ReceivePort();
       final stream = StreamIterator<dynamic>(messages);
-      final exits = [ReceivePort(), ReceivePort()];
+      final exits = <ReceivePort>[];
       final controls = <SendPort>[];
       final wins = <bool>[];
-      for (var i = 0; i < 2; i++) {
-        await Isolate.spawn(
-          requestRace,
-          (fixture.path, i == 0, messages.sendPort),
-          onExit: exits[i].sendPort,
-          onError: messages.sendPort,
-        );
-      }
       try {
-        var ready = 0;
-        while (controls.length < 2 || ready < 2) {
+        // Finish opening each connection before starting the write race.
+        for (final close in [true, false]) {
+          final exit = ReceivePort();
+          try {
+            await Isolate.spawn(
+              requestRace,
+              (fixture.path, close, messages.sendPort),
+              onExit: exit.sendPort,
+              onError: messages.sendPort,
+            );
+          } catch (_) {
+            exit.close();
+            rethrow;
+          }
+          exits.add(exit);
           expect(await stream.moveNext(), true);
           if (stream.current case ['control', final SendPort port]) {
             controls.add(port);
-          } else if (stream.current case ['ready']) {
-            ready++;
           } else {
-            fail('Race prerequisite failed');
+            fail(
+              'Race worker did not send its control port: ${stream.current}',
+            );
           }
+          expect(await stream.moveNext(), true);
+          expect(stream.current, ['ready']);
         }
         for (final control in controls) {
           control.send('go');
@@ -469,14 +482,6 @@ void main() {
             fail('Race action failed before its result');
           }
         }
-        expect(wins.where((win) => win), hasLength(1));
-        final holds = sourceOk(await fixture.store.reservations());
-        expect(holds.length, lessThanOrEqualTo(1));
-        expect(
-          sourceOk(await fixture.store.pendingForAccount('public-account')) ==
-              null,
-          holds.isEmpty,
-        );
       } finally {
         for (final control in controls) {
           control.send('stop');
@@ -488,6 +493,15 @@ void main() {
         await stream.cancel();
         messages.close();
       }
+      // Read durable state once both workers have closed their connections.
+      expect(wins.where((win) => win), hasLength(1));
+      final holds = sourceOk(await fixture.store.reservations());
+      expect(holds.length, lessThanOrEqualTo(1));
+      expect(
+        sourceOk(await fixture.store.pendingForAccount('public-account')) ==
+            null,
+        holds.isEmpty,
+      );
     },
   );
 }
