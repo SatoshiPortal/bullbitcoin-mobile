@@ -34,6 +34,7 @@ import '../../../support/preferences_database.dart';
 final class _Membership extends Fake implements WalletInventory {
   final SecretsInventory inventory;
   Future<void> Function()? afterRead;
+  int reads = 0;
 
   _Membership(this.inventory);
 
@@ -41,6 +42,7 @@ final class _Membership extends Fake implements WalletInventory {
   Future<Result<WalletSelection, SecretFailure>> walletsForNetwork(
     Network network,
   ) async {
+    reads++;
     final result = await inventory.walletsForNetwork(network);
     await afterRead?.call();
     return result;
@@ -946,12 +948,16 @@ void main() {
     try {
       await startup.start();
       await entered.future.timeout(const Duration(seconds: 5));
+      expect(membership.reads, 1);
       final locking = inventory.lock();
       expect(overview.snapshot.status, OverviewCatalogueStatus.revoked);
       expect(overview.snapshot.rows, isEmpty);
       expect(await locking, isTrue);
       valueOf(await inventory.resumeUnprotected());
       startup.confirmUnlock();
+      await Future<void>.delayed(Duration.zero);
+      expect(membership.reads, 1);
+      expect(overview.snapshot.rows, isEmpty);
       valueOf(
         await inventory.setWalletProperties(
           id: bitcoin.key.id,
