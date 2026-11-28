@@ -333,7 +333,7 @@ jobs:
   # A matrix failure never cancels another member's job.
   unit-tests:
     needs: prepare-x64
-    name: ${{ matrix.job.name }}
+    name: ${{ matrix.name }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     strategy:
@@ -342,32 +342,32 @@ jobs:
         include: ${{ fromJSON(needs.prepare-x64.outputs.unit-test-jobs) }}
     steps:
       - name: Checkout Repository
-        if: ${{ matrix.job.run }}
+        if: ${{ matrix.run }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Flutter setup
-        if: ${{ matrix.job.run }}
+        if: ${{ matrix.run }}
         uses: ./.github/actions/flutter-setup
         with:
           codegen-artifact: ${{ needs.prepare-x64.outputs.artifact }}
 
       - name: No selected unit test suites
-        if: ${{ !matrix.job.run }}
+        if: ${{ !matrix.run }}
         run: echo "The impacted workspace members have no test/ directory."
 
       - name: Fingerprint the Native Assets hook environment
-        if: ${{ matrix.job.package == 'access' }}
+        if: ${{ matrix.package == 'access' }}
         run: python3 tools/trace_access_hooks.py --fingerprint
 
       - name: Unit tests must pass
-        if: ${{ matrix.job.run }}
+        if: ${{ matrix.run }}
         env:
-          TRACE_ACCESS_SHARD: ${{ matrix.job.package == 'access' && '1' || '0' }}
+          TRACE_ACCESS_SHARD: ${{ matrix.package == 'access' && '1' || '0' }}
           TRACE_ACCESS_HOOKS: '1'
-          TEST_PACKAGES: ${{ matrix.job.package }}
+          TEST_PACKAGES: ${{ matrix.package }}
         # FVM adds its SDK directory to PATH for each nested invocation.
         # Keep Access aligned with the single FVM invocation in prepare-x64.
-        run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_RUN_MULTIVIEW=0 TEST_TOTAL_SHARDS=${{ matrix.job.shards }} TEST_SHARD_INDEX=${{ matrix.job.shard }}
+        run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_RUN_MULTIVIEW=0 TEST_TOTAL_SHARDS=${{ matrix.shards }} TEST_SHARD_INDEX=${{ matrix.shard }}
 
   unit-multiview:
     needs: prepare-x64
