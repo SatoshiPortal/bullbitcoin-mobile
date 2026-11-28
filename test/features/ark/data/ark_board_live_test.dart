@@ -29,15 +29,14 @@ import 'dart:io';
 
 import 'package:preferences/preferences.dart';
 import 'package:legacy_storage/app_database.dart' show SqliteDatabase;
-import 'package:bb_mobile/features/wallet/data/wallet_repository.dart';
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart';
 import 'package:fees/fees.dart';
-import 'package:sync/sync.dart' show WalletCatalogPort, SyncReason;
+import 'package:sync/sync.dart'
+    show Balances, SyncReason, WalletCatalogPort, WalletKey;
 import 'package:sync/write.dart'
     show ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:secrets/storage.dart' show SecretsInventory, SessionAuthority;
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/wallet_inventory_setup.dart';
 import 'package:bull_recoverbull/migration.dart';
 import 'package:legacy_storage/coordination.dart';
@@ -173,6 +172,17 @@ T _ok<T>(Result<T, Failure> result, String step) => switch (result) {
 void _report(String line) {
   // ignore: avoid_print
   print('ark-board-live: $line');
+}
+
+Future<Balances> _sourceBalances(String walletId) async {
+  final wallet = _ok(
+    await locator<WalletNativeRuntime>().wallet(
+      WalletKey(id: walletId, network: BitcoinNetwork.regtest),
+    ),
+    'open source wallet',
+  );
+  _ok(await wallet.load(), 'load source balances');
+  return _ok(wallet.balances.now.latest, 'read source balances');
 }
 
 void main() {
@@ -317,9 +327,12 @@ void main() {
       _ok(await settings.setEnvironment(Environment.regtest), 'environment');
       final runtimeSecrets = locator<Secrets>();
 
-      final wallets = await locator<WalletRegistrations>().fetchAll();
+      final wallets = _ok(
+        await locator<SecretsInventory>().listWallets(),
+        'list wallets',
+      );
       final bitcoin = wallets.where(
-        (w) => w.networkCode == 'bitcoinRegtest' && w.isDefault,
+        (w) => w.network == 'bitcoinRegtest' && w.isDefault,
       );
 
       if (phase == 'setup') {
@@ -349,10 +362,10 @@ void main() {
           ),
           'create wallets',
         );
-        final source = (await locator<WalletRegistrations>().fetchAll())
-            .singleWhere(
-              (w) => w.networkCode == 'bitcoinRegtest' && w.isDefault,
-            );
+        final source = _ok(
+          await locator<SecretsInventory>().listWallets(),
+          'list provisioned wallets',
+        ).singleWhere((w) => w.network == 'bitcoinRegtest' && w.isDefault);
         final result = await locator<AddressView>().receiveAddress(
           walletId: source.id,
           advance: true,
@@ -365,7 +378,7 @@ void main() {
         };
         _report(
           'source wallet=${source.id} fingerprint=${source.masterFingerprint} '
-          'network=${source.networkCode} address=${address.address}',
+          'network=${source.network} address=${address.address}',
         );
         await locator.reset();
         return;
@@ -453,9 +466,7 @@ void main() {
           'expiry=${prepared.expiryHeight}',
         );
         // Source BTC left after this Board, apart from Bark's own reserve.
-        final before = await locator<WalletRepository>().getWalletBalances(
-          walletId: source.id,
-        );
+        final before = await _sourceBalances(source.id);
         final sourceAfter = before.confirmedSat - prepared.sourceDebit.value;
         _report(
           'source confirmed=${before.confirmedSat} '
@@ -494,9 +505,7 @@ void main() {
           'feeRate=${prepared.feeRate} txid=${prepared.unsignedTxid} '
           'expiry=${prepared.expiryHeight}',
         );
-        final before = await locator<WalletRepository>().getWalletBalances(
-          walletId: source.id,
-        );
+        final before = await _sourceBalances(source.id);
         final sourceAfter = before.confirmedSat - prepared.sourceDebit.value;
         _report(
           'source confirmed=${before.confirmedSat} '
@@ -522,9 +531,7 @@ void main() {
       }
 
       final snapshot = _ok(await facade.read(account), 'read');
-      final balances = await locator<WalletRepository>().getWalletBalances(
-        walletId: source.id,
-      );
+      final balances = await _sourceBalances(source.id);
       _report(
         'source BTC wallet (last sync) confirmed=${balances.confirmedSat} '
         'pending=${balances.trustedPendingSat + balances.untrustedPendingSat}',
