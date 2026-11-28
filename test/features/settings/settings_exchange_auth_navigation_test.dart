@@ -3,7 +3,7 @@ import 'package:preferences/preferences.dart';
 import 'package:bull_exchange/testing.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:overview/routes.dart';
 import 'package:bull_ui/bull_ui.dart' show BullSwitch;
 import 'package:primitives/primitives.dart' show BitcoinUnit, Ok;
 import 'package:transactions/routes.dart' show TransactionsRoute;

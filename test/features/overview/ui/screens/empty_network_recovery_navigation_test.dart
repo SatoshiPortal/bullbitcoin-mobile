@@ -7,6 +7,7 @@ import 'package:bitcoin_price/testing.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_quick_actions/setup.dart';
 import 'package:bull_ui/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -130,11 +131,15 @@ void main() {
           providers: [
             RepositoryProvider<Consolidation>.value(value: _Consolidation()),
             BitcoinPriceFixture.prices(loadingPrice: true),
+            BitcoinPriceFixture.chart(),
           ],
           child: MaterialApp.router(
             theme: AppTheme.themeData(AppThemeType.light),
             locale: const Locale('en'),
-            localizationsDelegates: appLocalizationsDelegates,
+            localizationsDelegates: [
+              ...appLocalizationsDelegates,
+              bullUiLocalizationsDelegate,
+            ],
             supportedLocales: AppLocalizations.supportedLocales,
             routerConfig: router,
           ),

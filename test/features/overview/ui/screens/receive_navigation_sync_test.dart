@@ -5,6 +5,7 @@ import 'package:bitcoin_price/testing.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_quick_actions/setup.dart';
 import 'package:bull_ui/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show bullUiLocalizationsDelegate;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -84,7 +85,8 @@ void main() {
           routes: [
             GoRoute(
               path: '/receive/bitcoin',
-              builder: (_, _) => const Text('Receive'),
+              builder: (_, _) =>
+                  const Text('Receive', key: Key('receive-navigation-target')),
             ),
           ],
         ),
@@ -101,20 +103,28 @@ void main() {
           routerConfig: router,
           theme: AppTheme.themeData(AppThemeType.light),
           locale: const Locale('en'),
-          localizationsDelegates: appLocalizationsDelegates,
+          localizationsDelegates: [
+            ...appLocalizationsDelegates,
+            bullUiLocalizationsDelegate,
+            QuickActionsLocalizations.delegate,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    // The deliberately loading price keeps an animation alive; pump route
+    // transitions explicitly instead of treating that spinner as a failure.
+    await tester.pump(const Duration(milliseconds: 400));
     expect(home.sync.triggers, [SyncTrigger.automatic]);
     home.sync.triggers.clear();
     router.push<void>('/receive/bitcoin');
-    await tester.pumpAndSettle();
-    expect(find.text('Receive'), findsOneWidget);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byKey(const Key('receive-navigation-target')), findsOneWidget);
     expect(home.sync.triggers, isEmpty);
     router.pop();
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
     expect(home.sync.triggers, [SyncTrigger.automatic]);
     await tester.pumpWidget(const SizedBox.shrink());
     router.dispose();

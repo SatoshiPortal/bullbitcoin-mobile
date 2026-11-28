@@ -1,10 +1,15 @@
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/screens/wallet_home_screen.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/overview_router.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:overview/overview.dart';
+import 'package:overview/routes.dart';
+import 'package:send/send.dart' show Consolidation;
+import 'package:mocktail/mocktail.dart';
+
+import '../overview/support/overview_home_harness.dart';
+
 import 'package:bb_mobile/localizations.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitcoin_price/testing.dart';
-import 'package:bloc_test/bloc_test.dart';
 import 'package:bull_exchange/bull_exchange.dart';
 import 'package:bull_quick_actions/bull_quick_actions.dart';
 import 'package:bull_quick_actions/setup.dart';
@@ -41,8 +46,7 @@ final class _Storage implements QuickActionsStorage {
   Future<void> remove(String key) async {}
 }
 
-class _WalletBloc extends MockBloc<WalletEvent, WalletState>
-    implements WalletBloc {}
+class _Consolidation extends Mock implements Consolidation {}
 
 void main() {
   for (final optional in [false, true]) {
@@ -178,17 +182,22 @@ void main() {
       initialLocation: '/',
       routes: [
         GoRoute(path: '/', builder: (_, _) => const SizedBox()),
-        WalletRouter.walletHomeRoute(
-          arkHost: null,
-          quickActions: () => owner.quickActions,
-          exchangePrompt: () => owner.exchangePrompt,
-          onQuickAction: (_, _) {},
-          onCustomizeQuickActions: AppRouter.customizeQuickActions,
-          onActivateExchange: (_) {},
-          watchUnreadSupportMessages: (_) => 0,
-          announcements: () => const SizedBox.shrink(),
-          networkWalletProvisioning: () =>
-              throw StateError('Wallet setup not expected'),
+        ShellRoute(
+          builder: (_, _, child) => Scaffold(body: child),
+          routes: [
+            OverviewRouter.walletHomeRoute(
+              arkHost: null,
+              quickActions: () => owner.quickActions,
+              exchangePrompt: () => owner.exchangePrompt,
+              onQuickAction: (_, _) {},
+              onCustomizeQuickActions: AppRouter.customizeQuickActions,
+              onActivateExchange: (_) {},
+              watchUnreadSupportMessages: (_) => 0,
+              announcements: () => const SizedBox.shrink(),
+              networkWalletProvisioning: () =>
+                  throw StateError('Wallet setup not expected'),
+            ),
+          ],
         ),
         GoRoute(
           path: '/settings',
@@ -205,25 +214,32 @@ void main() {
     expect(actions.state.initialized, isTrue);
     expect(promptFactories, 0);
     expect(storage.reads, ['quick_actions']);
-    final wallets = _WalletBloc();
-    addTearDown(wallets.close);
+    final homeHarness = OverviewHomeHarness();
+    homeHarness.source.publish(
+      snapshot(OverviewCatalogueStatus.ready, [
+        homeWallet('settings-wallet', isDefault: true, balanceSat: 1234),
+      ]),
+    );
+    homeHarness.amountPreferences.publish((
+      bitcoinUnit: BitcoinUnit.sats,
+      currencyCode: 'CAD',
+      hideAmounts: false,
+    ));
+    locator.pushNewScope();
+    locator.registerSingleton<OverviewHomeController>(homeHarness.controller);
+    addTearDown(() async {
+      await locator.popScope();
+      await homeHarness.close();
+    });
     const display = (
       bitcoinUnit: BitcoinUnit.sats,
       currencyCode: 'CAD',
       hideAmounts: false,
     );
-    whenListen(
-      wallets,
-      const Stream<WalletState>.empty(),
-      initialState: const WalletState(
-        status: WalletStatus.success,
-        amountDisplay: display,
-      ),
-    );
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
-          BlocProvider<WalletBloc>.value(value: wallets),
+          RepositoryProvider<Consolidation>.value(value: _Consolidation()),
           BitcoinPriceFixture.prices(
             amountDisplay: display,
             currency: 'CAD',
@@ -249,7 +265,9 @@ void main() {
     expect(promptFactories, 0);
     router.goNamed(WalletRoute.walletHome.name);
     await tester.pumpAndSettle();
-    final home = tester.widget<WalletHomeScreen>(find.byType(WalletHomeScreen));
+    final home = tester.widget<WalletQuickActions>(
+      find.byType(WalletQuickActions),
+    );
     expect(home.quickActions, same(actions));
     expect(home.exchangePrompt, same(owner.exchangePrompt));
     expect(promptFactories, 1);
