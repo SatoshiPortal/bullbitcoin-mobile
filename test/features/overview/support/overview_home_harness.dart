@@ -154,7 +154,10 @@ final class FakeOngoingSwaps implements OngoingSwaps {
   }
 
   void complete(Result<List<Swap>, OngoingSwapsFailure> value) =>
-      _pending.removeAt(0).complete(value);
+      completeAt(0, value);
+
+  void completeAt(int index, Result<List<Swap>, OngoingSwapsFailure> value) =>
+      _pending.removeAt(index).complete(value);
 }
 
 final class FakeSwapServerCheck implements SwapHomeServerCheck {
