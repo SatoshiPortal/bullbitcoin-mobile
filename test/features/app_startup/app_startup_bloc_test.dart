@@ -343,6 +343,48 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets(
+    'the gate swaps the splash for real content without a crossfade',
+    (tester) async {
+      when(() => checkDefaultWallets.execute())
+          .thenAnswer((_) async => const Ok(true));
+      final bloc = buildBloc();
+      addTearDown(bloc.close);
+
+      await tester.pumpWidget(
+        BlocProvider.value(
+          value: bloc,
+          child: MaterialApp(
+            theme: AppTheme.themeData(AppThemeType.light),
+            localizationsDelegates: const [
+              StartupLocalizations.delegate,
+              ...appLocalizationsDelegates,
+              bullUiLocalizationsDelegate,
+            ],
+            builder: (_, _) => AppStartupWidget(
+              app: const Text('REAL_HOME'),
+              splash: const Text('BULL_SPLASH'),
+              openOnboarding: () {},
+              logs: () => throw StateError('The pending gate shares no logs'),
+              onUnlocked: () async {},
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.text('BULL_SPLASH'), findsOneWidget);
+      expect(find.text('REAL_HOME'), findsNothing);
+
+      bloc.add(const AppStartupStarted());
+      await tester.pumpAndSettle();
+
+      expect(find.text('BULL_SPLASH'), findsNothing);
+      expect(find.text('REAL_HOME'), findsOneWidget);
+      expect(find.byType(AnimatedSwitcher), findsNothing);
+      expect(tester.hasRunningAnimations, isFalse);
+    },
+  );
+
   test('starts a fresh install', () async {
     when(() => checkDefaultWallets.execute())
         .thenAnswer((_) async => const Ok(false));
