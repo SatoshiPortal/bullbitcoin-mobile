@@ -53,7 +53,10 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
   @override
   void initState() {
     super.initState();
-    widget.onShown();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      widget.onShown();
+    });
   }
 
   @override
