@@ -461,7 +461,7 @@ rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins
 
 unit-test-shard-test:
-	@python3 -m unittest tools.testing.test_unit_test_shard tools.testing.test_impacted_unit_tests tools.testing.test_unit_test_makefile
+	@python3 -m unittest tools.testing.test_unit_test_shard tools.testing.test_impacted_unit_tests tools.testing.test_unit_test_makefile tools.testing.test_unit_test_matrix
 
 unit-test-matrix-test:
 	@python3 -m unittest tools.testing.test_unit_test_matrix

@@ -9,7 +9,7 @@ REPOSITORY = Path(__file__).resolve().parents[2]
 
 
 class UnitTestMakefileTest(unittest.TestCase):
-    def run_make(self, *, packages=None, total=3, index=0):
+    def run_make(self, *, packages=None, total=3, index=0, multi_view="1"):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fvm = root / "fvm"
@@ -17,6 +17,7 @@ class UnitTestMakefileTest(unittest.TestCase):
             fvm.chmod(0o755)
             env = dict(os.environ, PATH=f"{root}:{os.environ['PATH']}")
             env.pop("TEST_PACKAGES", None)
+            env["TEST_RUN_MULTIVIEW"] = multi_view
             if packages is not None:
                 env["TEST_PACKAGES"] = packages
             result = subprocess.run(
@@ -58,6 +59,13 @@ class UnitTestMakefileTest(unittest.TestCase):
         self.assertEqual(zero.count("--dart-define=BULL_MULTI_VIEW=true"), 2)
         self.assertEqual(one.count("--dart-define=BULL_MULTI_VIEW=true"), 0)
         self.assertIn("Skipping multiple-view tests: they run only in shard 0.", one)
+
+    def test_per_member_jobs_leave_multiple_view_to_the_dedicated_job(self):
+        lines = self.run_make(packages="secrets", multi_view="0")
+        self.assertEqual(lines.count("--dart-define=BULL_MULTI_VIEW=true"), 0)
+        self.assertIn(
+            "Skipping multiple-view tests: disabled for this per-member job.", lines
+        )
 
 
 if __name__ == "__main__":
