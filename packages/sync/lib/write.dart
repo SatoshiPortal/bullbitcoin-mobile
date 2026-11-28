@@ -17,6 +17,8 @@ export 'src/data/runtime/wallet_native_runtime.dart'
         RetainedBalanceDemand,
         WalletNativeRuntime,
         WalletNativeLifecycle;
+export 'src/data/runtime/authorized_wallet_access.dart'
+    show AuthorizedWalletAccess;
 export 'src/data/runtime/broadcast_observation_follow_up.dart'
     show BroadcastObservationFollowUp, BroadcastSpend;
 

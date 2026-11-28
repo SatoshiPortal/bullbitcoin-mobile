@@ -1,7 +1,8 @@
 import 'package:labels/labels.dart';
 import 'package:sync/sync.dart'
     show FrozenOutpoint, SyncFailure, Wallet, WalletConnectionPort;
-import 'package:sync/write.dart' show WalletNativeRuntime;
+import 'package:sync/write.dart'
+    show AuthorizedWalletAccess, WalletNativeRuntime;
 import 'package:electrum/electrum.dart';
 import 'package:electrum/setup.dart';
 import 'package:bull_exchange/setup.dart';
@@ -10,6 +11,7 @@ import 'package:exchange/setup.dart' show ExchangeCredentialStorage;
 import 'package:preferences/preferences.dart' as settings;
 import 'package:settings/setup.dart';
 import 'package:primitives/primitives.dart';
+import 'package:secrets/secrets.dart' show WalletInventory;
 import 'package:bull_logger/bull_logger.dart';
 import 'package:bb_mobile/features/wallet/wallet_core_locator.dart';
 import 'package:bull_tor/tor_adapter.dart' as bull_tor;
@@ -68,7 +70,10 @@ class CoreLocator {
     final labels = await openLabels(
       () => locator<WalletNativeRuntime>().listAttributedFreezes(),
       (rows) => locator<WalletNativeRuntime>().freezeAttributedOutpoints(rows),
-      WalletLocator.walletAccess(locator),
+      AuthorizedWalletAccess(
+        inventory: locator<WalletInventory>(),
+        runtime: locator.call<WalletNativeRuntime>,
+      ).open,
     );
     if (labels case Err(:final failure)) return Err(failure);
     setupLabels(locator, (labels as Ok<Labels, LabelFailure>).value);
