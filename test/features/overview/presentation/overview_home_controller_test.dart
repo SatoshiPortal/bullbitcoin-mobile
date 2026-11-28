@@ -673,7 +673,7 @@ void main() {
     },
   );
 
-  test('a wallet never read yet still gets the warning', () async {
+  test('an unknown balance never raises the warning, only the card', () async {
     await h.mount();
     h.backupAnswer = true;
     h.source.publish(
@@ -683,7 +683,8 @@ void main() {
     );
     await flushEvents();
     expect(h.controller.current.totalSat, isNull);
-    expect(h.controller.current.backupWarning, isTrue);
+    expect(h.controller.current.backupWarning, isFalse);
+    expect(h.controller.current.backupCard, isTrue);
   });
 
   test(
