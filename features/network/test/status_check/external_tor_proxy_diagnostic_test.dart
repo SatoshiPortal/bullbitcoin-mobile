@@ -111,4 +111,27 @@ void main() {
     );
     expect(port.verificationCount, 0);
   });
+
+  group('settings attention', () {
+    // The user-visible route off a home warning: only a proxy that should work
+    // and does not route the user to the proxy settings; a proxy that answers,
+    // or one the user left off, keeps the Electrum settings as the fix.
+    const attention = {
+      ExternalTorProxyStatus.unavailable: true,
+      ExternalTorProxyStatus.unreadable: true,
+      ExternalTorProxyStatus.available: false,
+      ExternalTorProxyStatus.disabled: false,
+    };
+
+    test('maps every proxy status, so a new status is covered', () {
+      expect(attention.keys.toSet(), ExternalTorProxyStatus.values.toSet());
+    });
+
+    for (final MapEntry(key: status, value: needsAttention)
+        in attention.entries) {
+      test('${status.name} needs settings attention: $needsAttention', () {
+        expect(status.needsSettingsAttention, needsAttention);
+      });
+    }
+  });
 }

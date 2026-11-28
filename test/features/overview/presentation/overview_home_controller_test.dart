@@ -742,6 +742,10 @@ void main() {
       await flushEvents();
       final warning = h.controller.current.networkWarnings.single;
       expect(warning.reason, ElectrumServerDown.liquid);
+      expect(warning.action, WalletWarningAction.electrumSettings);
+      // Bitcoin still answers and the proxy is healthy: a Liquid-only failure
+      // adds no diagnostic read and keeps the Electrum settings as the fix.
+      expect(h.proxyReads, hasLength(1));
     },
   );
 
@@ -919,6 +923,7 @@ void main() {
       await h.controller.refresh();
       await flushEvents();
       expect(h.controller.current.loadFailure, isNull);
+      expect(h.controller.current.isRefreshing, isFalse);
 
       h.sync.outcome = HomeSyncOutcome.failed;
       await h.controller.refresh();
