@@ -115,6 +115,85 @@ void main() {
   final imported = _row('another-import', LiquidNetwork.regtest);
   final rows = [remote, unavailable, liquid, watch, imported, bitcoin];
 
+  testWidgets('picker preserves exact Bitcoin and Liquid payin identities', (
+    tester,
+  ) async {
+    final btc = _row(
+      'bitcoin',
+      BitcoinNetwork.regtest,
+      isDefault: true,
+      isSyncing: true,
+    );
+    final savings = _row(
+      'liquid',
+      LiquidNetwork.regtest,
+      label: 'Savings',
+      balanceSat: null,
+    );
+    final selections = <OverviewWalletSelection>[];
+    final payins = <PayinSource>[];
+    var silentOpens = 0;
+    await _pump(
+      tester,
+      (context) => PayinSourcePage(
+        title: 'Pay or Sell source',
+        ui: (
+          walletCards: (context, onSelected) => WalletPicker.localSigners(
+            rows: [remote, btc, watch, savings],
+            copy: _copy(context),
+            silent: (
+              balanceSat: 0,
+              isSyncing: false,
+              onOpen: () => silentOpens++,
+            ),
+            onSelected: (selection) {
+              selections.add(selection);
+              onSelected?.call(selection);
+            },
+          ),
+          openWalletHome: (_) {},
+          brandAsset: '',
+          successAsset: '',
+        ),
+        onPicked: payins.add,
+        onBack: () {},
+      ),
+    );
+    final l10n = AppLocalizations.of(tester.element(find.byType(WalletPicker)));
+    final bitcoinTitle = find.text(l10n.globalDefaultBitcoinWalletLabel);
+    final liquidTitle = find.text('Savings');
+    expect(find.text('remote'), findsNothing);
+    expect(find.text('watch'), findsNothing);
+    expect(find.text(l10n.walletLoadFailed), findsOneWidget);
+    expect(
+      tester.getTopLeft(bitcoinTitle).dy,
+      lessThan(tester.getTopLeft(liquidTitle).dy),
+    );
+    expect(
+      tester.widgetList<WalletCard>(find.byType(WalletCard)).first.isSyncing,
+      isTrue,
+    );
+    await tester.tap(bitcoinTitle);
+    await tester.tap(liquidTitle);
+    expect(selections, [btc.selection, savings.selection]);
+    expect(payins, [
+      const PayinFromAppWallet(
+        'bitcoin:regtest',
+        BtcNetwork.bitcoin,
+        isDefault: true,
+      ),
+      const PayinFromAppWallet(
+        'liquid:regtest',
+        BtcNetwork.liquid,
+        label: 'Savings',
+      ),
+    ]);
+    await tester.tap(find.text(l10n.walletSpTitle));
+    expect(silentOpens, 1);
+    expect(selections, hasLength(2));
+    expect(payins, hasLength(2));
+  });
+
   testWidgets('Home orders defaults first and keeps imports in input order', (
     tester,
   ) async {

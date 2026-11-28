@@ -76,6 +76,27 @@ Future<void> _pump(
 }
 
 void main() {
+  testWidgets('Tor action overrides a Bitcoin Electrum failure copy', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      network: [
+        const WalletWarning(
+          reason: ElectrumServerDown.bitcoin,
+          action: WalletWarningAction.torSettings,
+          type: WarningType.error,
+        ),
+      ],
+    );
+    final l10n = AppLocalizations.of(tester.element(find.byType(BullCarousel)));
+    expect(find.text(l10n.torSettingsExternalProxyUnavailable), findsOneWidget);
+    expect(
+      find.text(l10n.torSettingsExternalProxyUnavailableDescription),
+      findsOneWidget,
+    );
+    expect(find.text('Bitcoin electrum server failure'), findsNothing);
+  });
   testWidgets('network and backup combinations stay independent', (
     tester,
   ) async {
