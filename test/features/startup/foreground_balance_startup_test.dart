@@ -449,8 +449,12 @@ void main() {
     ];
     final theme = AppTheme.themeData(AppThemeType.light);
     Future<void> until(bool Function() ready) async {
-      // Pump both the widget's fake clock and the real owner IO.
-      for (var attempt = 0; attempt < 200 && !ready(); attempt++) {
+      // Pump both the widget's fake clock and the real owner IO. The PIN gate
+      // derives Argon2id in an isolate, so the wait is bounded by real elapsed
+      // time: a fixed pump count expires on a loaded runner while a
+      // verification is still running and then fails on a healthy unlock.
+      final elapsed = Stopwatch()..start();
+      while (!ready() && elapsed.elapsed < const Duration(seconds: 30)) {
         await tester.pump();
         await tester.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 5)),
