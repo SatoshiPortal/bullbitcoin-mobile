@@ -83,7 +83,29 @@ void main() {
       expect(value.key, WalletKey(id: id, network: network));
       expect(value.origin, origin);
       expect(value.scriptType, ScriptType.bip84);
-      expect(id.endsWith(':regtest'), network.env == NetworkEnv.regtest);
+    }
+    // The catalog couples the ':regtest' id suffix to the network code in both
+    // directions; a row that disagrees is refused rather than projected.
+    for (final (code, id, network) in [
+      (
+        'bitcoinTestnet',
+        'wpkh([aabbccdd/84h/1h/0h]):regtest',
+        BitcoinNetwork.testnet,
+      ),
+      ('bitcoinRegtest', 'wpkh([aabbccdd/84h/1h/0h])', BitcoinNetwork.regtest),
+    ]) {
+      final mismatched = catalogForTesting(
+        () async => Ok([descriptor(code, id, network)]),
+      );
+      expect(
+        await mismatched.find(WalletKey(id: id, network: network)),
+        isA<Err<PublicWalletDescriptor, SyncFailure>>().having(
+          (e) => e.failure,
+          'failure',
+          isA<SyncInvalidCatalogFailure>(),
+        ),
+        reason: '$code $id',
+      );
     }
     for (final rejected in [
       'unresolved',

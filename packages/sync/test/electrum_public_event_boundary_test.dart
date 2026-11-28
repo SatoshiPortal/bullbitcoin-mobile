@@ -71,12 +71,25 @@ void main() {
         starts.map((event) => event.runId),
       );
       expect(starts[1].runId, greaterThan(starts[0].runId));
-      final failures = finishes.map((event) => (event.result as Err).failure);
+      final failures = finishes.map(
+        (event) => (event.result as Err<SyncCompletion, SyncFailure>).failure,
+      );
       expect(failures.first, isA<SyncStorageFailure>());
       expect(failures.last, isA<SyncConnectionFailure>());
+      // logMessage is the only field that could carry what the connection
+      // threw; assert on it rather than on Failure.toString(), which returns
+      // the type name alone and can never leak.
       for (final failure in failures) {
-        expect(failure.toString(), isNot(contains('electrum.example.com')));
-        expect(failure.toString(), isNot(contains('private certificate')));
+        expect(
+          failure.logMessage,
+          isNot(contains('electrum.example.com')),
+          reason: failure.logCode,
+        );
+        expect(
+          failure.logMessage,
+          isNot(contains('private certificate')),
+          reason: failure.logCode,
+        );
       }
     },
   );

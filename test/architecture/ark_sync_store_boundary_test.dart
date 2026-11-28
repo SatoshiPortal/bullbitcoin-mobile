@@ -34,6 +34,9 @@ void main() {
       ...Directory('features/coins/lib').listSync(recursive: true),
       ...Directory('packages/labels/lib').listSync(recursive: true),
       File('lib/core_locator.dart'),
+      // Present until the historical wallet owner is deleted; kept in the scan
+      // so it cannot quietly become a second composition root.
+      File('lib/features/wallet/wallet_core_locator.dart'),
       File('lib/locator.dart'),
       File('lib/init.dart'),
       File('test/recoverbull_composition_test.dart'),

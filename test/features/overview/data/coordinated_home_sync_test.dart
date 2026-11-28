@@ -43,7 +43,7 @@ void main() {
     verify(() => coordinator.sync(trigger: SyncTrigger.user)).called(1);
   });
 
-  test('exception detail cannot escape in the public outcome', () async {
+  test('coordinator exceptions map to the failed outcome', () async {
     for (final error in [
       Exception('electrum.blockstream.info:50002 handshake failed: cert'),
       SyncCoordinatorException({
@@ -52,11 +52,11 @@ void main() {
     ]) {
       when(() => coordinator.sync(trigger: any(named: 'trigger')))
           .thenThrow(error);
-      final outcome = await home.sync(trigger: SyncTrigger.automatic);
-      expect(outcome, HomeSyncOutcome.failed);
-      expect(outcome.toString(), isNot(contains('electrum.blockstream.info')));
-      expect(outcome.toString(), isNot(contains('handshake failed')));
-      expect(outcome.toString(), isNot(contains('InvalidKey')));
+      expect(
+        await home.sync(trigger: SyncTrigger.automatic),
+        HomeSyncOutcome.failed,
+        reason: error.runtimeType.toString(),
+      );
     }
   });
 }

@@ -12,7 +12,7 @@ void main() {
 
   for (final reopen in [false, true]) {
     test(
-      'revoked joined balance is not published while writes drain (reopen: $reopen)',
+      'a revoked joined read is refused while writes drain (reopen: $reopen)',
       () async {
         final directory = await Directory.systemTemp.createTemp('wallet-join-');
         final fixture = await openFreshInventory(directory);

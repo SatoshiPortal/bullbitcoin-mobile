@@ -112,7 +112,7 @@ void main() {
     },
   );
 
-  test('invalid descriptor is refused before issuing a native key', () async {
+  test('the catalog refuses an invalid descriptor', () async {
     const origin = 'wpkh([aabbccdd/84h/0h/0h])';
     final catalog = _Catalog()..rows = [_descriptorRow(origin, external: '')];
     final result = await catalogForTesting(catalog.read)
@@ -151,7 +151,7 @@ void main() {
       WalletKey(id: bitcoin, network: BitcoinNetwork.mainnet),
     ) as Err<PublicWalletDescriptor, SyncFailure>;
     expect(result.failure, isA<SyncStorageFailure>());
-    expect(result.failure.toString(), isNot(contains('private diagnostic')));
+    expect(result.failure.logMessage, isNull);
     catalog.fail = false;
     catalog.throwState = true;
     await expectLater(port.list(), throwsStateError);
