@@ -11,7 +11,7 @@ void main() {
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    root = await Directory('/tmp/opencode').createTemp('wizard-eligibility-');
+    root = await Directory.systemTemp.createTemp('wizard-eligibility-');
     documents = await Directory('${root.path}/documents').create();
     support = await Directory('${root.path}/support').create();
   });
