@@ -76,6 +76,7 @@ final class OverviewHomeController
   int _physicalBackupVersion = 0;
   Set<WalletKey> _defaultKeys = {};
   var _backupDismissed = false;
+  ({Set<WalletKey> wallets, int total})? _lastKnownTotal;
   var _silentVisible = false;
   var _silentConfigured = false;
   var _silentBalanceSat = 0;
@@ -268,6 +269,7 @@ final class OverviewHomeController
       _physicalBackupVersion++;
       _physicalBackupNeeded = null;
       _backupNeeded = null;
+      _lastKnownTotal = null;
       _defaultKeys = {};
       _isRefreshing = false;
       _syncFailure = null;
@@ -467,10 +469,14 @@ final class OverviewHomeController
 
   void _publish() {
     if (_closed) return;
+    final total = _total();
+    if (total != null) {
+      _lastKnownTotal = (wallets: _walletSet(), total: total);
+    }
     _state.value = OverviewHomeState(
       status: _status,
       rows: _rows(),
-      totalSat: _total(),
+      totalSat: total,
       arkScope: _arkScope(),
       isRefreshing: _isRefreshing,
       isSyncPassActive: _isSyncPassActive,
@@ -540,11 +546,29 @@ final class OverviewHomeController
     _ => _syncFailure,
   };
 
+  /// A balance reads as unknown for a moment while a sync pass hands over to
+  /// the new one; the last known total of the same wallets covers that gap so
+  /// an empty wallet does not flash the warning. A list that cannot be read,
+  /// or a wallet never read yet, has no such total.
   bool _showBackupWarning() =>
       (_backupNeeded ?? _physicalBackupNeeded) == true &&
       !_backupDismissed &&
-      switch (_total()) {
-        null => true,
-        final total => total > 0,
+      switch (_status) {
+        OverviewCatalogueStatus.partial ||
+        OverviewCatalogueStatus.unreadable => true,
+        _ => switch (_total() ?? _lastKnownTotalOfTheseWallets()) {
+          null => true,
+          final total => total > 0,
+        },
       };
+
+  int? _lastKnownTotalOfTheseWallets() => switch (_lastKnownTotal) {
+    (:final wallets, :final total) when setEquals(wallets, _walletSet()) =>
+      total,
+    _ => null,
+  };
+
+  Set<WalletKey> _walletSet() => {
+    for (final wallet in _wallets) wallet.entry.key,
+  };
 }
