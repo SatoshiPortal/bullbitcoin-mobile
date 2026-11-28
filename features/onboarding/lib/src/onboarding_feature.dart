@@ -21,6 +21,7 @@ import 'ui/screens/advanced_options.dart';
 import 'ui/screens/onboarding_physical_recovery.dart';
 import 'ui/screens/onboarding_splash.dart';
 import 'ui/screens/recover_options.dart';
+import 'ui/widgets/splash_mark.dart';
 
 final class OnboardingFeature {
   final ShellRoute route;
@@ -31,6 +32,11 @@ final class OnboardingFeature {
   /// Mounts the routes without running wallet operations. A bloc is created
   /// for each visit to the onboarding shell. [records] selects the backup
   /// facts of a restored wallet's network.
+  ///
+  /// [logo] is shown on the create/recover screen and [loadingLogo] while a
+  /// wallet is being created or restored. Both come from the host, so it can
+  /// wrap them in the same affordance (the tap-to-unlock superuser gesture).
+  /// [loadingLogo] defaults to the V3 [SplashMark] when omitted.
   static OnboardingFeature mount({
     required DefaultWalletProvisioning defaultWallets,
     required RecoverBullWalletBackups Function(Network) records,
@@ -39,6 +45,7 @@ final class OnboardingFeature {
     required Language Function(BuildContext) languageOf,
     required void Function(BuildContext, Language) changeLanguage,
     required Widget logo,
+    Widget? loadingLogo,
     required ImageProvider background,
     required ImageProvider encryptedBackupIcon,
     required ImageProvider physicalBackupIcon,
@@ -55,6 +62,7 @@ final class OnboardingFeature {
     languageOf: languageOf,
     changeLanguage: changeLanguage,
     logo: logo,
+    loadingLogo: loadingLogo,
     background: background,
     encryptedBackupIcon: encryptedBackupIcon,
     physicalBackupIcon: physicalBackupIcon,
@@ -75,6 +83,7 @@ OnboardingFeature mountOnboardingRoutes({
   required Language Function(BuildContext) languageOf,
   required void Function(BuildContext, Language) changeLanguage,
   required Widget logo,
+  Widget? loadingLogo,
   required ImageProvider background,
   required ImageProvider encryptedBackupIcon,
   required ImageProvider physicalBackupIcon,
@@ -82,7 +91,7 @@ OnboardingFeature mountOnboardingRoutes({
   final shellNavigatorKey = GlobalKey<NavigatorState>();
   Widget splash(bool loading) => OnboardingSplash(
     loading: loading,
-    logo: logo,
+    logo: loading ? (loadingLogo ?? const SplashMark()) : logo,
     background: background,
     advancedOptions: (_) =>
         AdvancedOptions(languageOf: languageOf, changeLanguage: changeLanguage),

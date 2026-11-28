@@ -1,3 +1,4 @@
+import 'package:bull_logger/startup_bench.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:onboarding/src/onboarding_l10n.dart';
 import 'package:onboarding/src/presentation/bloc/onboarding_bloc.dart';
@@ -29,12 +30,22 @@ class OnboardingSplash extends StatelessWidget {
   final WidgetBuilder advancedOptions;
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      StartupBench.markOnce(
+        loading ? 'onboarding_loading_frame' : 'onboarding_ready_frame',
+      );
+    });
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         body: Stack(
           children: [
-            _BG(background),
+            // Only the backdrop differs between the two states: the loading
+            // page carries the full-page black camo treatment, the
+            // create/recover page keeps the injected branded background and
+            // grid. The logo stays injected either way, so the host keeps its
+            // tap-to-unlock wrapper on both screens.
+            if (loading) const _CamoBackground() else _BG(background),
             Center(
               child: Column(
                 mainAxisAlignment: .spaceEvenly,
@@ -58,7 +69,11 @@ class OnboardingSplash extends StatelessWidget {
                       fontFamily: BullTypography.brandFamily,
                       fontSize: 40, // Brand wordmark: a layout size, not a role (bull-ui-check allowlist).
                       fontWeight: .w500,
-                      color: context.appColors.secondaryFixed,
+                      // The camo backdrop is brand graphite in both themes, so
+                      // the tagline cannot use secondaryFixed here.
+                      color: loading
+                          ? context.appColors.onPrimaryFixed
+                          : context.appColors.secondaryFixed,
                       height: 1,
                     ),
                   ),
@@ -142,6 +157,36 @@ class _Actions extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Full-page black camo backdrop of the loading splash.
+///
+/// The texture is the app icon's graphite camo with its static red bull
+/// removed; see `README.md` in this package for its provenance. It is 512 px
+/// square and only has to cover, so it is not stretched.
+class _CamoBackground extends StatelessWidget {
+  const _CamoBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          color: context.appColors.graphiteFixed,
+          height: double.infinity,
+          width: double.infinity,
+        ),
+        Image.asset(
+          'assets/splash/splash_camo.png',
+          package: 'onboarding',
+          fit: .cover,
+          height: double.infinity,
+          width: double.infinity,
+          excludeFromSemantics: true,
+        ),
+      ],
     );
   }
 }

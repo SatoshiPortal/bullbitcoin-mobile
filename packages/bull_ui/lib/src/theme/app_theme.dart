@@ -52,6 +52,8 @@ BullTheme _bullThemeFrom(AppColors colors) {
     transparent: colors.transparent,
     surfaceFixed: colors.surfaceFixed,
     onSurfaceFixed: colors.onSurfaceFixed,
+    graphiteFixed: colors.graphiteFixed,
+    markFixed: colors.markFixed,
     shimmerBase: colors.shimmerBase,
     shimmerHighlight: colors.shimmerHighlight,
   );

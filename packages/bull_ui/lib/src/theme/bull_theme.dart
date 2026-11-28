@@ -54,6 +54,8 @@ class BullTheme extends ThemeExtension<BullTheme> {
     required this.transparent,
     required this.surfaceFixed,
     required this.onSurfaceFixed,
+    required this.graphiteFixed,
+    required this.markFixed,
     required this.shimmerBase,
     required this.shimmerHighlight,
   });
@@ -118,6 +120,14 @@ class BullTheme extends ThemeExtension<BullTheme> {
   final Color surfaceFixed;
   final Color onSurfaceFixed;
 
+  /// Brand graphite (`#15171C`), the startup loading splash backdrop.
+  final Color graphiteFixed;
+
+  /// Brand mark red (`#B7000B`), the startup loading splash mark. Distinct from
+  /// [primaryFixed]: the whole-page camo splash paints the mark over graphite,
+  /// not over the red splash base.
+  final Color markFixed;
+
   // Shimmer / loading colours.
   final Color shimmerBase;
   final Color shimmerHighlight;
@@ -163,6 +173,8 @@ class BullTheme extends ThemeExtension<BullTheme> {
     Color? transparent,
     Color? surfaceFixed,
     Color? onSurfaceFixed,
+    Color? graphiteFixed,
+    Color? markFixed,
     Color? shimmerBase,
     Color? shimmerHighlight,
   }) {
@@ -207,6 +219,8 @@ class BullTheme extends ThemeExtension<BullTheme> {
       transparent: transparent ?? this.transparent,
       surfaceFixed: surfaceFixed ?? this.surfaceFixed,
       onSurfaceFixed: onSurfaceFixed ?? this.onSurfaceFixed,
+      graphiteFixed: graphiteFixed ?? this.graphiteFixed,
+      markFixed: markFixed ?? this.markFixed,
       shimmerBase: shimmerBase ?? this.shimmerBase,
       shimmerHighlight: shimmerHighlight ?? this.shimmerHighlight,
     );
@@ -283,6 +297,8 @@ class BullTheme extends ThemeExtension<BullTheme> {
       transparent: Color.lerp(transparent, other.transparent, t)!,
       surfaceFixed: Color.lerp(surfaceFixed, other.surfaceFixed, t)!,
       onSurfaceFixed: Color.lerp(onSurfaceFixed, other.onSurfaceFixed, t)!,
+      graphiteFixed: _lerpFixedColor(graphiteFixed, other.graphiteFixed, t),
+      markFixed: _lerpFixedColor(markFixed, other.markFixed, t),
       shimmerBase: Color.lerp(shimmerBase, other.shimmerBase, t)!,
       shimmerHighlight: Color.lerp(
         shimmerHighlight,
@@ -291,6 +307,20 @@ class BullTheme extends ThemeExtension<BullTheme> {
       )!,
     );
   }
+}
+
+/// [Color.lerp] over two non-null colours.
+///
+/// It only returns null when both inputs are null, which cannot happen for
+/// [BullTheme.graphiteFixed] and [BullTheme.markFixed] because they are
+/// non-nullable. This helper keeps the null-safety rule (no postfix `!`) and
+/// still fails loudly rather than inventing a colour if the invariant breaks.
+Color _lerpFixedColor(Color from, Color to, double t) {
+  final Color? lerped = Color.lerp(from, to, t);
+  if (lerped == null) {
+    throw StateError('Color.lerp returned null for two non-null colors');
+  }
+  return lerped;
 }
 
 /// Accessor for the injected [BullTheme] off any [BuildContext].

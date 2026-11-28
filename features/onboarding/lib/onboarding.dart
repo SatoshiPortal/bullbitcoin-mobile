@@ -4,3 +4,4 @@ export 'generated/novlang/novlang_onboarding_localizations.dart'
     show NovlangOnboardingLocalizationsDelegate;
 export 'src/domain/onboarding_failure.dart';
 export 'src/onboarding_navigation.dart' show OnboardingNavigation;
+export 'src/ui/widgets/splash_mark.dart' show SplashMark;

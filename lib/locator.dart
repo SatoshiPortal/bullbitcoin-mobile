@@ -84,6 +84,7 @@ import 'package:scanning/scanning.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:coins/coins.dart';
 import 'package:coins/setup.dart';
+import 'package:onboarding/onboarding.dart' show SplashMark;
 import 'package:onboarding/setup.dart';
 import 'package:receive/receive.dart' show Receive;
 import 'package:receive/setup.dart' show ReceiveFeature;
@@ -445,6 +446,9 @@ class AppLocator {
         logo: SuperuserTapUnlocker(
           child: Image.asset(Assets.logos.bbLogoWhite.path, height: 127),
         ),
+        // The loading splash is the V3 camo page with the animated mark, and it
+        // keeps the same tap-to-unlock affordance as the create/recover logo.
+        loadingLogo: const SuperuserTapUnlocker(child: SplashMark()),
         background: AssetImage(Assets.backgrounds.bgLong.path),
         encryptedBackupIcon: AssetImage(Assets.misc.encryptedVault.path),
         physicalBackupIcon: AssetImage(Assets.misc.physicalBackup.path),

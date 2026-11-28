@@ -44,6 +44,8 @@ const testBullTheme = BullTheme(
   transparent: Color(0x00000000),
   surfaceFixed: Color(0xFFF5F5F5),
   onSurfaceFixed: Color(0xFF000000),
+  graphiteFixed: Color(0xFF15171C),
+  markFixed: Color(0xFFB7000B),
   shimmerBase: Color(0xFFE0E0E0),
   shimmerHighlight: Color(0xFFF5F5F5),
 );

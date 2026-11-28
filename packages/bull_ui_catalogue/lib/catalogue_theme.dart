@@ -48,6 +48,8 @@ class CatalogueColors {
     transparent: Color(0x00000000),
     surfaceFixed: Color(0xFFFFFFFF),
     onSurfaceFixed: Color(0xFF15171C),
+    graphiteFixed: Color(0xFF15171C),
+    markFixed: Color(0xFFB7000B),
     shimmerBase: Color(0xFFE0E0E0),
     shimmerHighlight: Color(0xFFF5F5F5),
   );
@@ -92,6 +94,8 @@ class CatalogueColors {
     transparent: Color(0x00000000),
     surfaceFixed: Color(0xFFFFFFFF),
     onSurfaceFixed: Color(0xFF15171C),
+    graphiteFixed: Color(0xFF15171C),
+    markFixed: Color(0xFFB7000B),
     shimmerBase: Color(0xFF3C3C3E),
     shimmerHighlight: Color(0xFF48484A),
   );

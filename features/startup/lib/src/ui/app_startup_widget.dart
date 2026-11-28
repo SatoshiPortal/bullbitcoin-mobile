@@ -1,3 +1,4 @@
+import 'package:bull_logger/startup_bench.dart';
 import 'package:startup/src/ui/screens/restore_default_secret_screen.dart';
 import 'package:bull_ui/app_theme.dart';
 import 'package:startup/src/l10n.dart';
@@ -36,43 +37,48 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
   Widget build(BuildContext context) {
     return AppStartupListener(
       openOnboarding: widget.openOnboarding,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: BlocBuilder<AppStartupBloc, AppStartupState>(
-          builder: (context, state) {
-            if (state is AppStartupInitial) {
-              return widget.splash;
-            } else if (state is AppStartupLoadingInProgress) {
-              return widget.splash;
-              // show status of migration
-            } else if (state is AppStartupSuccess) {
-              if (state.isPinCodeSet) {
-                // The PIN may already be required when this widget mounts.
-                return Overlay.wrap(
-                  child: const Access().buildReauthenticationGate(
-                    onSuccess: (_) async {
-                      await widget.onUnlocked();
-                      if (!context.mounted) return;
-                      context.read<AppStartupBloc>().add(
-                        const AppStartupUnlocked(),
-                      );
-                    },
-                  ),
-                );
-              }
-              return widget.app;
-            } else if (state is AppStartupFailureState) {
-              return AppStartupFailureScreen(
-                failure: state.failure,
-                logs: widget.logs,
+      // No cross-fade between the loading splash and the real content: the two
+      // screen identities do not blend, and a 300 ms fade leaves the splash's
+      // animated mark running over the first app frame. The substitution is
+      // immediate; the splash keeps the native launch screen visible until
+      // Flutter's first frame instead.
+      child: BlocBuilder<AppStartupBloc, AppStartupState>(
+        builder: (context, state) {
+          if (state is AppStartupInitial) {
+            return widget.splash;
+          } else if (state is AppStartupLoadingInProgress) {
+            return widget.splash;
+            // show status of migration
+          } else if (state is AppStartupSuccess) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              StartupBench.markOnce('startup_gate_success_frame');
+            });
+            if (state.isPinCodeSet) {
+              // The PIN may already be required when this widget mounts.
+              return Overlay.wrap(
+                child: const Access().buildReauthenticationGate(
+                  onSuccess: (_) async {
+                    await widget.onUnlocked();
+                    if (!context.mounted) return;
+                    context.read<AppStartupBloc>().add(
+                      const AppStartupUnlocked(),
+                    );
+                  },
+                ),
               );
             }
+            return widget.app;
+          } else if (state is AppStartupFailureState) {
+            return AppStartupFailureScreen(
+              failure: state.failure,
+              logs: widget.logs,
+            );
+          }
 
-            // TODO: remove this when all states are handled and return the
-            //  appropriate widget
-            return const SizedBox.shrink();
-          },
-        ),
+          // TODO: remove this when all states are handled and return the
+          //  appropriate widget
+          return const SizedBox.shrink();
+        },
       ),
     );
   }

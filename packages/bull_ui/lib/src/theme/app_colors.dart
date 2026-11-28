@@ -75,6 +75,12 @@ class AppColors {
   final Color surfaceFixed;
   final Color onSurfaceFixed;
 
+  // Fixed brand colors (same in both themes). The startup loading splash paints
+  // its mark and its camo backdrop with these, so the loading screen keeps its
+  // identity whatever the app brightness is.
+  final Color graphiteFixed;
+  final Color markFixed;
+
   // Shimmer/loading colors
   final Color shimmerBase;
   final Color shimmerHighlight;
@@ -126,6 +132,8 @@ class AppColors {
     required this.transparent,
     required this.surfaceFixed,
     required this.onSurfaceFixed,
+    required this.graphiteFixed,
+    required this.markFixed,
     required this.shimmerBase,
     required this.shimmerHighlight,
   });
@@ -177,6 +185,8 @@ class AppColors {
     transparent: Color(0x00000000),
     surfaceFixed: Color(0xFFF5F5F5),
     onSurfaceFixed: Color(0xFF000000),
+    graphiteFixed: Color(0xFF15171C),
+    markFixed: Color(0xFFB7000B),
     shimmerBase: Color(0xFFE0E0E0),
     shimmerHighlight: Color(0xFFF5F5F5),
   );
@@ -228,6 +238,8 @@ class AppColors {
     transparent: Color(0x00000000),
     surfaceFixed: Color(0xFFFFFFFF),
     onSurfaceFixed: Color(0xFF15171C),
+    graphiteFixed: Color(0xFF15171C),
+    markFixed: Color(0xFFB7000B),
     shimmerBase: Color(0xFF3C3C3E),
     shimmerHighlight: Color(0xFF48484A),
   );
