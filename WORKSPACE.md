@@ -52,6 +52,7 @@ flowchart TD
   pkg_backups --> pkg_bull_recoverbull
   pkg_backups --> pkg_label_editor
   pkg_backups --> pkg_physical_backup_verification
+  pkg_bull_ark --> pkg_address_view
   pkg_bull_ark --> pkg_scanning
   pkg_bull_exchange --> pkg_address_view
   pkg_bull_exchange --> pkg_bitcoin_price
@@ -286,7 +287,7 @@ flowchart TD
 | [`bip85`](features/bip85/pubspec.yaml) | `bull_ui`, `preferences`, `primitives`, `screen_privacy`, `secrets` | — |
 | [`bitcoin_price`](features/bitcoin_price/pubspec.yaml) | `bull_logger`, `bull_pricer`, `bull_ui`, `preferences`, `primitives` | — |
 | [`btc_map`](features/btc_map/pubspec.yaml) | `bull_logger`, `bull_ui`, `primitives` | — |
-| [`bull_ark`](features/ark/pubspec.yaml) | `ark`, `background_tasks`, `bull_logger`, `bull_pricer`, `bull_ui`, `fees`, `legacy_storage`, `notifications`, `preferences`, `primitives`, `secrets`, `sync` | — |
+| [`bull_ark`](features/ark/pubspec.yaml) | `ark`, `background_tasks`, `bull_logger`, `bull_pricer`, `bull_ui`, `fees`, `legacy_storage`, `notifications`, `preferences`, `primitives`, `secrets`, `spend`, `sync` | — |
 | [`bull_exchange`](features/bull_exchange/pubspec.yaml) | `bull_logger`, `bull_payjoin`, `bull_pricer`, `bull_ui`, `exchange`, `fees`, `file_system`, `labels`, `preferences`, `primitives`, `satoshifier`, `secrets`, `spend`, `sync` | `bbx_api` |
 | [`bull_logs`](features/logs/pubspec.yaml) | `bull_logger`, `bull_ui`, `primitives` | — |
 | [`bull_quick_actions`](features/quick_actions/pubspec.yaml) | `bull_ui`, `primitives` | — |
