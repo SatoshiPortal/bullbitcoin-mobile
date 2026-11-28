@@ -19,3 +19,8 @@ abstract interface class OverviewHomeSource {
 
   OverviewHomeSnapshot get snapshot;
 }
+
+/// A Home source that can explicitly retry an incomplete membership read.
+abstract interface class OverviewHomeMembershipRetry {
+  void retryMembership();
+}

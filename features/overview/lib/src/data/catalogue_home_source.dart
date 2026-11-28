@@ -5,14 +5,18 @@ import '../domain/overview_home_source.dart';
 ///
 /// The catalogue stays the owner of membership and receipts: this adapter only
 /// copies the snapshot Home would have read anyway, and every later catalogue
-/// event brings a fresh copy. It never requests work.
-final class CatalogueHomeSource implements OverviewHomeSource {
+/// event brings a fresh copy. Home can explicitly retry incomplete membership.
+final class CatalogueHomeSource
+    implements OverviewHomeSource, OverviewHomeMembershipRetry {
   final OverviewCatalogue _catalogue;
 
   const CatalogueHomeSource(this._catalogue);
 
   @override
   Stream<void> get changes => _catalogue.changes;
+
+  @override
+  void retryMembership() => _catalogue.retryMembership();
 
   @override
   OverviewHomeSnapshot get snapshot {

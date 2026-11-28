@@ -89,6 +89,7 @@ final class OverviewCatalogue {
   Future<void>? _loading;
   Future<void>? _closing;
   var _closed = false;
+  var _retryRequested = false;
   var _status = OverviewCatalogueStatus.revoked;
   var _entries = <WalletKey, OverviewCatalogueEntry>{};
 
@@ -157,6 +158,7 @@ final class OverviewCatalogue {
     if (_closed) return;
     final current = _balances.current;
     if (!identical(_context, current)) {
+      _retryRequested = false;
       _context = current;
       _entries = {};
       _status = current == null
@@ -167,15 +169,33 @@ final class OverviewCatalogue {
     _schedule();
   }
 
+  /// Retry once on an explicit request, without retrying indefinitely on error.
+  void retryMembership() {
+    if (_closed ||
+        (_status != OverviewCatalogueStatus.partial &&
+            _status != OverviewCatalogueStatus.unreadable)) {
+      return;
+    }
+    _retryRequested = true;
+    _schedule();
+  }
+
   void _schedule() {
     final context = _context;
     if (_closed ||
         context == null ||
         !_balances.isCurrent(context) ||
-        _loading != null ||
-        _status != OverviewCatalogueStatus.replacing) {
+        _loading != null) {
       return;
     }
+    if (_status != OverviewCatalogueStatus.replacing &&
+        (!_retryRequested ||
+            (_status != OverviewCatalogueStatus.partial &&
+                _status != OverviewCatalogueStatus.unreadable))) {
+      _retryRequested = false;
+      return;
+    }
+    _retryRequested = false;
     _loading = Future<void>.microtask(() async {
       try {
         await _load(context);
@@ -247,16 +267,18 @@ final class OverviewCatalogue {
       return left.length - right.length;
     });
     final duplicates = <WalletKey>{};
+    final nextEntries = <WalletKey, OverviewCatalogueEntry>{};
     for (final entry in entries) {
       if (duplicates.contains(entry.key)) continue;
-      if (_entries.containsKey(entry.key)) {
-        _entries.remove(entry.key);
+      if (nextEntries.containsKey(entry.key)) {
+        nextEntries.remove(entry.key);
         duplicates.add(entry.key);
         complete = false;
       } else {
-        _entries[entry.key] = entry;
+        nextEntries[entry.key] = entry;
       }
     }
+    _entries = nextEntries;
     _status = readable == 0
         ? OverviewCatalogueStatus.unreadable
         : !complete

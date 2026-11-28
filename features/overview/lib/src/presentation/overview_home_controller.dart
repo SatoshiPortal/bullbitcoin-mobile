@@ -169,6 +169,10 @@ final class OverviewHomeController
   /// spinner stops after bitcoin and liquid both ran.
   Future<void> refresh() async {
     if (_closed) return;
+    final catalogue = _catalogue;
+    if (catalogue is OverviewHomeMembershipRetry) {
+      (catalogue as OverviewHomeMembershipRetry).retryMembership();
+    }
     await _beginRefresh(trigger: SyncTrigger.user, retrySwaps: true);
   }
 
@@ -510,6 +514,10 @@ final class OverviewHomeController
       : key.id;
 
   int? _total() {
+    if (_status == OverviewCatalogueStatus.partial ||
+        _status == OverviewCatalogueStatus.unreadable) {
+      return null;
+    }
     var total = (_silentVisible && _silentConfigured) ? _silentBalanceSat : 0;
     for (final wallet in _wallets) {
       final balance = wallet.balanceSat;
