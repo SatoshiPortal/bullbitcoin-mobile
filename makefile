@@ -461,7 +461,7 @@ rustc-pins-test:
 	@python3 -m unittest tools.testing.test_verify_rustc_pins
 
 unit-test-shard-test:
-	@python3 -m unittest tools.testing.test_unit_test_shard
+	@python3 -m unittest tools.testing.test_unit_test_shard tools.testing.test_impacted_unit_tests tools.testing.test_unit_test_makefile
 
 # Read-only reachability check of every hosted regtest endpoint the app uses.
 regtest-hosted-check:
