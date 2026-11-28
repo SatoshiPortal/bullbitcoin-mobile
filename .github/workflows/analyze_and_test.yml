@@ -9,9 +9,13 @@ on:
       # develop, and the filter is evaluated against the PR's base branch.
       - feat/sp-9-26
     types: [opened, synchronize, reopened, ready_for_review, edited, labeled, unlabeled]
-  # The funded Payjoin fixture spends from shared testnet wallets. It does not
-  # run for the concurrent develop stack; workflow_dispatch lets a reviewer run
-  # it for an arbitrary branch.
+  # Develop always runs the full suite; pull requests select impacted unit-test
+  # members and workflow_dispatch provides a full run for an arbitrary branch.
+  push:
+    branches:
+      - develop
+  # The funded Payjoin fixture spends from shared testnet wallets. It runs only
+  # for main PRs and manual runs, never for the concurrent develop stack.
   workflow_dispatch:
 
 # Checkout + tests only; no writes to the repo via the token.
@@ -33,7 +37,7 @@ jobs:
   classification:
     name: Detect docs-only PR
     runs-on: ubuntu-24.04
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     outputs:
       run_app_checks: ${{ steps.classify.outputs.run_app_checks }}
     steps:
@@ -47,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+          if [[ "$EVENT_NAME" != "pull_request" ]]; then
             echo "run_app_checks=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -104,7 +108,7 @@ jobs:
   action-pins:
     name: Check action pins
     runs-on: ubuntu-24.04
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     steps:
       # Bootstrap from the immutable commit that introduced the checker. This
       # lets the introducing PR verify itself before the file exists on the
@@ -127,11 +131,11 @@ jobs:
   readiness:
     name: PR readiness
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     steps:
-      - name: Skip PR readiness for manual runs
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: echo "PR readiness is not applicable to a manual workflow run."
+      - name: Skip PR readiness outside pull requests
+        if: ${{ github.event_name != 'pull_request' }}
+        run: echo "PR readiness is not applicable to push or manual runs."
       # Bootstrap from the immutable commit that introduced the policy. This
       # lets the introducing PR verify itself before the file exists on the
       # base branch; policy upgrades require an explicit SHA bump here.
@@ -169,12 +173,30 @@ jobs:
     timeout-minutes: 60
     outputs:
       artifact: ${{ steps.upload.outputs.artifact-id }}
+      unit-test-mode: ${{ steps.unit-tests.outputs.mode }}
+      unit-test-packages: ${{ steps.unit-tests.outputs.packages }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The impacted-test selector compares the PR base and head commits.
+          fetch-depth: 0
 
       - name: Flutter setup
         uses: ./.github/actions/flutter-setup
+
+      - name: Select impacted unit test packages
+        id: unit-tests
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          args=(--event-name "$EVENT_NAME" --output "$GITHUB_OUTPUT" --summary "$GITHUB_STEP_SUMMARY")
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            args+=(--base "$PR_BASE_SHA" --head "$PR_HEAD_SHA")
+          fi
+          python3 tools/impacted_unit_tests.py "${args[@]}"
 
       # Diagnostic, compared with the same step in unit shard 1: hooks_runner reruns a hook when one of these variables changes, so print a short hash of each value, never the value.
       - name: Fingerprint the Native Assets hook environment
@@ -302,6 +324,8 @@ jobs:
       # skip the tests — the PR needs another push anyway.
       # This job runs shard 0 of the unit tests; unit-shards runs the others in parallel.
       - name: Unit tests must pass (shard 0 of 3)
+        env:
+          TEST_PACKAGES: ${{ needs.prepare-x64.outputs.unit-test-packages }}
         run: make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=0
 
   # Each shard gets a disjoint third of every member's test files and uses
@@ -332,6 +356,7 @@ jobs:
         env:
           TRACE_ACCESS_SHARD: ${{ matrix.shard == 1 && '1' || '0' }}
           TRACE_ACCESS_HOOKS: '1'
+          TEST_PACKAGES: ${{ needs.prepare-x64.outputs.unit-test-packages }}
         # FVM adds its SDK directory to PATH for each nested invocation.
         # Keep Access aligned with the single FVM invocation in prepare-x64.
         run: ACCESS_UNIT_TEST_PATH="$PATH" make unit-test TEST_TOTAL_SHARDS=3 TEST_SHARD_INDEX=${{ matrix.shard }}
@@ -418,7 +443,7 @@ jobs:
 
   ci:
     name: CI
-    if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false) }}
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
     needs: [classification, action-pins, readiness, checks, unit-shards, integration]
     runs-on: ubuntu-24.04
     steps:

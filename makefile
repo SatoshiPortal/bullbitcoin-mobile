@@ -512,13 +512,22 @@ test: unit-test integration-test
 # Optionally bound test processes inside each package on shared machines.
 TEST_CONCURRENCY ?=
 # TEST_TOTAL_SHARDS=N TEST_SHARD_INDEX=i runs one of N disjoint shards of every member's test files (tools/unit_test_shard.sh); CI runs the shards in parallel.
+# TEST_PACKAGES=a,b limits a PR run to the live impacted selection. Empty keeps the full suite; the comma-separated value is one Melos scope glob.
 TEST_TOTAL_SHARDS ?= 1
 TEST_SHARD_INDEX ?= 0
+TEST_PACKAGES ?=
+MELOS_UNIT_TEST_SCOPE = $(if $(TEST_PACKAGES),--scope='$(TEST_PACKAGES)')
 unit-test:
-	@echo "🏃‍ running unit tests of every workspace member"
-	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh flutter --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
-	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --no-flutter --dir-exists=test --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh dart --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
-	@$(MAKE) secrets-multiview-test
+	@echo "🏃‍ running unit tests of $(if $(TEST_PACKAGES),impacted workspace members: $(TEST_PACKAGES),every workspace member)"
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --flutter --dir-exists=test $(MELOS_UNIT_TEST_SCOPE) --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh flutter --enable-vmservice --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@TEST_TOTAL_SHARDS=$(TEST_TOTAL_SHARDS) TEST_SHARD_INDEX=$(TEST_SHARD_INDEX) fvm dart run melos exec --no-flutter --dir-exists=test $(MELOS_UNIT_TEST_SCOPE) --concurrency 1 --fail-fast -- bash $(CURDIR)/tools/unit_test_shard.sh dart --reporter=compact $(if $(TEST_CONCURRENCY),--concurrency $(TEST_CONCURRENCY))
+	@if [ "$(TEST_SHARD_INDEX)" != 0 ]; then \
+		echo "Skipping multiple-view tests: they run only in shard 0."; \
+	elif [ -n "$(TEST_PACKAGES)" ] && ! printf ',%s,' "$(TEST_PACKAGES)" | grep -Eq ',(secrets|sync),'; then \
+		echo "Skipping multiple-view tests: neither secrets nor sync is impacted."; \
+	else \
+		$(MAKE) secrets-multiview-test; \
+	fi
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the
