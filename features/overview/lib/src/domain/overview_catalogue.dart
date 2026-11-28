@@ -170,9 +170,11 @@ final class OverviewCatalogue {
   }
 
   /// Retry once on an explicit request, without retrying indefinitely on error.
+  /// During a load, retry only if its result is incomplete.
   void retryMembership() {
     if (_closed ||
-        (_status != OverviewCatalogueStatus.partial &&
+        (_loading == null &&
+            _status != OverviewCatalogueStatus.partial &&
             _status != OverviewCatalogueStatus.unreadable)) {
       return;
     }
@@ -188,10 +190,11 @@ final class OverviewCatalogue {
         _loading != null) {
       return;
     }
-    if (_status != OverviewCatalogueStatus.replacing &&
-        (!_retryRequested ||
-            (_status != OverviewCatalogueStatus.partial &&
-                _status != OverviewCatalogueStatus.unreadable))) {
+    final replacing = _status == OverviewCatalogueStatus.replacing;
+    final incomplete =
+        _status == OverviewCatalogueStatus.partial ||
+        _status == OverviewCatalogueStatus.unreadable;
+    if (!replacing && !(_retryRequested && incomplete)) {
       _retryRequested = false;
       return;
     }

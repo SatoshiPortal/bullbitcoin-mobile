@@ -169,9 +169,8 @@ final class OverviewHomeController
   /// spinner stops after bitcoin and liquid both ran.
   Future<void> refresh() async {
     if (_closed) return;
-    final catalogue = _catalogue;
-    if (catalogue is OverviewHomeMembershipRetry) {
-      (catalogue as OverviewHomeMembershipRetry).retryMembership();
+    if (_catalogue case final OverviewHomeMembershipRetry retry) {
+      retry.retryMembership();
     }
     await _beginRefresh(trigger: SyncTrigger.user, retrySwaps: true);
   }
