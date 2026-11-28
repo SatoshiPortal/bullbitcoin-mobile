@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/storage.dart' show SyncWalletValuesDatasource;
 import 'package:sync/testing.dart';
 import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 

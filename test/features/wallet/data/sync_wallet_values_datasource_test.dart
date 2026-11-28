@@ -2,7 +2,7 @@ import 'package:transactions/testing.dart';
 
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/storage.dart' show SyncWalletValuesDatasource;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart' show BitcoinNetwork, Ok;
 import 'package:sync/sync.dart' show WalletSnapshotException;

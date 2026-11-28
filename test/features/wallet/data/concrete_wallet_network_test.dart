@@ -2,7 +2,7 @@ import 'package:primitives/primitives.dart' show UnsupportedNetworkException;
 import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:sync/write.dart'
     show ElectrumSync, ForegroundWalletSynchronization, nativeWalletStoragePath;
-import 'package:bb_mobile/features/wallet/data/sync_wallet_values_datasource.dart';
+import 'package:sync/storage.dart' show SyncWalletValuesDatasource;
 import 'package:sync/sync.dart'
     show
         SyncFailure,
