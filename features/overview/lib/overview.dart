@@ -32,3 +32,4 @@ export 'src/domain/sync_trigger.dart';
 export 'src/domain/wallet_discovery_failure.dart';
 export 'src/ui/screens/overview_home.dart';
 export 'src/ui/screens/overview_detail.dart';
+export 'src/ui/screens/overview_wallet_detail.dart';

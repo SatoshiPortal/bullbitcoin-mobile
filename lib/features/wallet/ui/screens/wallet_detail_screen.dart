@@ -1,7 +1,5 @@
 import 'package:transactions/transactions.dart';
 
-import 'dart:async';
-
 import 'package:coins/coins.dart';
 import 'package:primitives/primitives.dart';
 
@@ -16,13 +14,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart'
 import 'package:overview/overview.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bull_ui/bull_ui.dart'
-    show
-        BullDisclosureLink,
-        BullPullableBody,
-        BullShapesX,
-        BullText,
-        Gap,
-        BullTypographyX;
+    show BullDisclosureLink, BullShapesX, BullText, Gap, BullTypographyX;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -53,7 +45,8 @@ class WalletDetailScreen extends StatelessWidget {
     final walletName = wallet != null ? wallet.displayLabel(context) : '';
 
     final balanceSat = wallet?.balanceSat;
-    return OverviewDetail(
+    return OverviewWalletDetail(
+      walletId: walletId,
       walletName: walletName,
       settings: IconButton(
         tooltip: context.loc.settingsWalletSettingsTitle,
@@ -68,83 +61,69 @@ class WalletDetailScreen extends StatelessWidget {
       ),
       isLoading: wallet == null,
       unavailableMessage: context.loc.walletLoadFailed,
-      body: wallet == null || balanceSat == null
-          ? null
-          : scopeWalletHistory(
-              walletId,
-              Builder(
-                builder: (context) => BullPullableBody(
-                  onRefresh: () async {
-                    unawaited(BitcoinPriceFeature.refresh(context));
-                    await WalletHistoryScope.refresh(
-                      context,
-                      context.read<WalletBloc>().refresh,
-                    );
-                  },
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: WalletDetailBalanceCard(
-                        background: AssetImage(
-                          wallet.isLiquid
-                              ? Assets.backgrounds.bgInstantWallet.path
-                              : Assets.backgrounds.bgSecureWallet.path,
-                        ),
-                        isLiquid: wallet.isLiquid,
-                        signer: wallet.signer,
-                        balanceText: WalletDetailBalanceAmount(
-                          balanceSat: balanceSat.toInt(),
-                        ),
-                        eyeToggle: Builder(
-                          builder: (context) => EyeToggle(
-                            hideAmounts: context.select(
-                              (WalletBloc bloc) =>
-                                  bloc.state.amountDisplay?.hideAmounts,
-                            ),
-                            showLabel: context.loc.walletShowAmountsTooltip,
-                            hideLabel: context.loc.walletHideAmountsTooltip,
-                            onChanged: (hide) =>
-                                Settings.setAmountsHidden(context, hide),
-                          ),
-                        ),
-                        fiatBalance: HomeFiatBalance(
-                          onCurrencyChanged: Settings.changeDisplayCurrency,
-                          balanceSat: balanceSat.toInt(),
-                        ),
-                        syncingIndicator: const TxsSyncingIndicator(),
-                      ),
-                    ),
-                    if (wallet.isLiquid)
-                      SliverToBoxAdapter(
-                        child: WalletConsolidation.banner(context, wallet),
-                      ),
-                    const SliverToBoxAdapter(child: Gap(8)),
-                    SliverToBoxAdapter(
-                      child: _CoinsEntryTile(
-                        wallet: wallet,
-                        onOpenCoins: onOpenCoins,
-                        loadCoinSummary: loadCoinSummary,
-                      ),
-                    ),
-                    if (wallet.isLiquid)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                          child: BullDisclosureLink(
-                            label: context.loc.walletLiquidRiskDisclosureLabel,
-                            semanticLabel:
-                                context.loc.liquidRiskDisclosureSemanticLabel,
-                            title: context.loc.liquidRiskDisclosureTitle,
-                            body: context.loc.liquidRiskDisclosureBody,
-                            closeLabel: context.loc.closeDialogButton,
-                          ),
-                        ),
-                      ),
-                    const SliverToBoxAdapter(child: Gap(16)),
-                    const WalletDetailTxsList(sliver: true),
-                  ],
-                ),
+      hasBalance: wallet != null && balanceSat != null,
+      isLiquid: wallet?.isLiquid ?? false,
+      scopeWalletHistory: scopeWalletHistory,
+      refreshPrice: (context) async {
+        await BitcoinPriceFeature.refresh(context);
+      },
+      refreshWalletHistory: (context) => WalletHistoryScope.refresh(
+        context,
+        context.read<WalletBloc>().refresh,
+      ),
+      balanceCard: (context) {
+        if (wallet == null || balanceSat == null) {
+          return const SizedBox.shrink();
+        }
+        return WalletDetailBalanceCard(
+          background: AssetImage(
+            wallet.isLiquid
+                ? Assets.backgrounds.bgInstantWallet.path
+                : Assets.backgrounds.bgSecureWallet.path,
+          ),
+          isLiquid: wallet.isLiquid,
+          signer: wallet.signer,
+          balanceText: WalletDetailBalanceAmount(
+            balanceSat: balanceSat.toInt(),
+          ),
+          eyeToggle: Builder(
+            builder: (context) => EyeToggle(
+              hideAmounts: context.select(
+                (WalletBloc bloc) => bloc.state.amountDisplay?.hideAmounts,
               ),
+              showLabel: context.loc.walletShowAmountsTooltip,
+              hideLabel: context.loc.walletHideAmountsTooltip,
+              onChanged: (hide) => Settings.setAmountsHidden(context, hide),
             ),
+          ),
+          fiatBalance: HomeFiatBalance(
+            onCurrencyChanged: Settings.changeDisplayCurrency,
+            balanceSat: balanceSat.toInt(),
+          ),
+          syncingIndicator: const TxsSyncingIndicator(),
+        );
+      },
+      consolidation: (context) => wallet == null
+          ? const SizedBox.shrink()
+          : WalletConsolidation.banner(context, wallet),
+      coinsEntry: (context) => wallet == null
+          ? const SizedBox.shrink()
+          : _CoinsEntryTile(
+              wallet: wallet,
+              onOpenCoins: onOpenCoins,
+              loadCoinSummary: loadCoinSummary,
+            ),
+      liquidDisclosure: (context) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+        child: BullDisclosureLink(
+          label: context.loc.walletLiquidRiskDisclosureLabel,
+          semanticLabel: context.loc.liquidRiskDisclosureSemanticLabel,
+          title: context.loc.liquidRiskDisclosureTitle,
+          body: context.loc.liquidRiskDisclosureBody,
+          closeLabel: context.loc.closeDialogButton,
+        ),
+      ),
+      history: (context) => const WalletDetailTxsList(sliver: true),
       bottomActions: WalletBottomButtons.detail(wallet: wallet),
     );
   }
