@@ -258,6 +258,7 @@ class BullButton extends StatelessWidget {
           ? ClipRRect(
               borderRadius: radius,
               child: Stack(
+                fit: StackFit.passthrough,
                 children: [
                   button,
                   Positioned(
