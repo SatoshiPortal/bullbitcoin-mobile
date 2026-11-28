@@ -23,8 +23,6 @@ const _knownExceptions = <String, Set<String>>{
   // ExternalTorPort is not exported by bull_tor's public libraries.
   'test/core_test/recoverbull/ensure_recoverbull_tor_session_usecase_test.dart':
       {'package:bull_tor/src/domain/ports/external_tor_port.dart'},
-  'test/features/wallet/domain/get_external_tor_proxy_status_usecase_test.dart':
-      {'package:bull_tor/src/domain/ports/external_tor_port.dart'},
   // The default-passphrase device test assembles the RecoverBull vault flow from its internals.
   'integration_test/device/default_passphrase_device_test.dart': {
     'package:bull_recoverbull/generated/l10n/recoverbull_localizations.dart',
