@@ -9,7 +9,8 @@ import 'dart:io';
 
 import '../../../../support/inventory_fixture.dart';
 
-import 'package:bull_ui/bull_ui.dart' show BullButton, BullPinPad;
+import 'package:bull_ui/bull_ui.dart'
+    show BullButton, BullFadingLinearProgress, BullPinPad;
 
 import 'package:access/access.dart';
 import 'package:access/setup.dart';
@@ -240,13 +241,15 @@ void main() {
         ),
       );
 
+  final spinner = find.byWidgetPredicate(
+    (widget) => widget is BullFadingLinearProgress && widget.trigger,
+  );
+
   // Secret operations complete off-isolate, so pump frames while letting the
-  // real clock run. The challenge has a spinner. Passphrase verification
+  // real clock run. The challenge has a loading line. Passphrase verification
   // keeps the form visible, so its callers wait for the result in the UI.
   Future<void> flush(WidgetTester tester, {bool Function()? until}) async {
-    final isReady =
-        until ??
-        () => find.byType(CircularProgressIndicator).evaluate().isEmpty;
+    final isReady = until ?? () => spinner.evaluate().isEmpty;
     final attempts = until == null ? 25 : 100;
     for (var i = 0; i < attempts; i++) {
       await tester.runAsync(
@@ -273,8 +276,6 @@ void main() {
     await tester.pump(const Duration(seconds: 4));
     await tester.pump(const Duration(milliseconds: 500));
   }
-
-  final spinner = find.byType(CircularProgressIndicator);
 
   testWidgets('uses the default wallet name in both mnemonic titles', (
     tester,
