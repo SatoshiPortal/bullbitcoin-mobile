@@ -13,16 +13,26 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
   final SecretsInventory? _inventory;
   final SessionToken? _token;
   final BackgroundWalletDescriptors? _background;
+  final Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>>
+  Function()?
+  _testRead;
   int _invalidCount = 0;
 
   SecretsWalletCatalog._foreground(SecretsInventory inventory, [this._token])
     : _inventory = inventory,
-      _background = null;
+      _background = null,
+      _testRead = null;
 
   SecretsWalletCatalog._background(BackgroundWalletDescriptors background)
     : _inventory = null,
       _token = null,
-      _background = background;
+      _background = background,
+      _testRead = null;
+
+  SecretsWalletCatalog._testing(this._testRead)
+    : _inventory = null,
+      _token = null,
+      _background = null;
 
   factory SecretsWalletCatalog.foreground(SecretsInventory inventory) =>
       SecretsWalletCatalog._foreground(inventory);
@@ -78,6 +88,8 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
       if (!session.isCurrent(token)) return const Err(SyncClosedFailure());
     } else if (_background case final background?) {
       rows = await background.list();
+    } else if (_testRead case final read?) {
+      rows = await read();
     } else {
       return const Err(SyncClosedFailure());
     }
@@ -178,3 +190,9 @@ final class SecretsWalletCatalog implements WalletCatalogPort {
     };
   }
 }
+
+/// Test-only entry point; not exported by the runtime libraries.
+WalletCatalogPort catalogForTesting(
+  Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>> Function()
+  read,
+) => SecretsWalletCatalog._testing(read);

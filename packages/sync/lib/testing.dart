@@ -11,3 +11,5 @@ export 'src/testing/test_wallets.dart'
 export 'src/testing/freezes_only_sync.dart';
 
 export 'src/data/write/spend/spend_writer.dart' show WalletSpender;
+
+export 'src/data/secrets_wallet_catalog.dart' show catalogForTesting;

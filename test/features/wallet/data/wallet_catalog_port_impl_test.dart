@@ -1,6 +1,7 @@
-import '../../../support/wallet_registrations.dart';
+import 'package:secrets/secrets.dart' show SecretFailure, StoreSecretFailure;
+import 'package:secrets/storage.dart' show RegisteredWalletDescriptor;
+import 'package:sync/testing.dart' show catalogForTesting;
 
-import 'package:bb_mobile/features/wallet/data/wallet_registrations.dart';
 import 'package:bb_mobile/features/wallet/data/models/wallet_metadata_model.dart';
 import 'package:legacy_storage/app_database.dart' show Signer;
 import 'package:bb_mobile/features/wallet/data/wallet_sync_binding.dart';
@@ -8,24 +9,29 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart';
 
-final class _Catalog implements WalletRegistrations {
-  List<WalletMetadataModel> rows = [];
-  Object? failure;
+final class _Catalog {
+  List<RegisteredWalletDescriptor> rows = [];
+  bool fail = false;
+  bool throwState = false;
 
-  @override
-  Future<List<WalletMetadataModel>> fetchAll() async {
-    final error = failure;
-    if (error != null) throw error;
-    return rows;
+  Future<Result<List<RegisteredWalletDescriptor>, SecretFailure>> read() async {
+    if (throwState) throw StateError('programmer failure');
+    if (fail) return const Err(StoreSecretFailure('private diagnostic'));
+    return Ok(rows);
   }
-
-  @override
-  Future<WalletMetadataModel?> fetch(String walletId) async =>
-      (await fetchAll()).where((row) => row.id == walletId).firstOrNull;
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
+
+RegisteredWalletDescriptor _descriptorRow(
+  String origin, {
+  String networkCode = 'bitcoinMainnet',
+  String external = 'wpkh(public)',
+  String internal = 'wpkh(change)',
+}) => RegisteredWalletDescriptor(
+  id: origin,
+  network: networkCode,
+  externalDescriptor: external,
+  internalDescriptor: internal,
+);
 
 WalletMetadataModel _row(
   String origin, {
@@ -51,43 +57,49 @@ void main() {
     'catalog preserves identity, descriptor strings and all legacy networks',
     () async {
       final catalog = _Catalog();
-      final port = TestWalletCatalog(catalog);
+      final port = catalogForTesting(catalog.read);
       const networks = <String, Network>{
         'wpkh([aabbccdd/84h/0h/0h])': BitcoinNetwork.mainnet,
         'sh(wpkh([aabbccdd/49h/1h/0h]))': BitcoinNetwork.testnet,
         'elwpkh([aabbccdd/84h/1776h/0h])': LiquidNetwork.mainnet,
         'elpkh([aabbccdd/44h/1h/0h])': LiquidNetwork.testnet,
+        'wpkh([aabbccdd/84h/1h/0h]):regtest': BitcoinNetwork.regtest,
+        'elwpkh([aabbccdd/84h/1h/0h]):regtest': LiquidNetwork.regtest,
       };
       const confidential = 'ct(slip77(PRIVACY_PLACEHOLDER),elwpkh(public))';
       catalog.rows = networks.entries
           .map(
             (entry) => entry.value is LiquidNetwork
-                ? _row(
+                ? _descriptorRow(
                     entry.key,
-                    networkCode: entry.value == LiquidNetwork.mainnet
-                        ? 'liquidMainnet'
-                        : 'liquidTestnet',
+                    networkCode: switch (entry.value) {
+                      LiquidNetwork.mainnet => 'liquidMainnet',
+                      LiquidNetwork.regtest => 'liquidRegtest',
+                      _ => 'liquidTestnet',
+                    },
                     external: confidential,
                     internal: 'unused Liquid internal descriptor',
                   )
-                : _row(
+                : _descriptorRow(
                     entry.key,
-                    networkCode: entry.value == BitcoinNetwork.mainnet
-                        ? 'bitcoinMainnet'
-                        : 'bitcoinTestnet',
+                    networkCode: switch (entry.value) {
+                      BitcoinNetwork.mainnet => 'bitcoinMainnet',
+                      BitcoinNetwork.regtest => 'bitcoinRegtest',
+                      _ => 'bitcoinTestnet',
+                    },
                   ),
           )
           .toList();
       final result =
           await port.list() as Ok<List<PublicWalletDescriptor>, SyncFailure>;
-      expect(result.value, hasLength(4));
+      expect(result.value, hasLength(6));
       expect(() => result.value.clear(), throwsUnsupportedError);
       for (final entry in networks.entries) {
         final key = WalletKey(id: entry.key, network: entry.value);
         final found =
             await port.find(key) as Ok<PublicWalletDescriptor, SyncFailure>;
         expect(found.value.key, key);
-        expect(found.value.origin, entry.key);
+        expect(found.value.origin, entry.key.replaceAll(':regtest', ''));
         switch (found.value) {
           case BitcoinWalletDescriptor(
             :final externalDescriptor,
@@ -108,6 +120,8 @@ void main() {
         ScriptType.bip49,
         ScriptType.bip84,
         ScriptType.bip44,
+        ScriptType.bip84,
+        ScriptType.bip84,
       ]);
       for (final key in [
         WalletKey(id: 'missing', network: BitcoinNetwork.mainnet),
@@ -136,26 +150,31 @@ void main() {
 
   test('invalid rows do not hide valid catalog entries', () async {
     final catalog = _Catalog();
-    final port = TestWalletCatalog(catalog);
+    final port = catalogForTesting(catalog.read);
     const bitcoin = 'wpkh([aabbccdd/84h/0h/0h])';
     const liquid = 'elwpkh([aabbccdd/84h/1776h/0h])';
     for (final invalid in [
-      _row('invalid'),
-      _row(bitcoin, external: 'wpkh(xprvINVALID)'),
-      _row(liquid, external: 'elwpkh(public)'),
+      _descriptorRow('invalid'),
+      _descriptorRow(bitcoin, external: 'wpkh(xprvINVALID)'),
+      _descriptorRow(
+        liquid,
+        networkCode: 'liquidMainnet',
+        external: 'elwpkh(public)',
+      ),
     ]) {
-      catalog.rows = [_row(bitcoin), invalid];
+      catalog.rows = [_descriptorRow(bitcoin), invalid];
       final result =
           await port.list() as Ok<List<PublicWalletDescriptor>, SyncFailure>;
       expect(result.value, hasLength(1));
     }
-    catalog.failure = Exception('private diagnostic');
+    catalog.fail = true;
     final result = await port.find(
       WalletKey(id: bitcoin, network: BitcoinNetwork.mainnet),
     ) as Err<PublicWalletDescriptor, SyncFailure>;
     expect(result.failure, isA<SyncStorageFailure>());
     expect(result.failure.toString(), isNot(contains('private diagnostic')));
-    catalog.failure = StateError('programmer failure');
+    catalog.fail = false;
+    catalog.throwState = true;
     await expectLater(port.list(), throwsStateError);
   });
 }

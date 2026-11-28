@@ -19,6 +19,8 @@ import 'package:swaps/order_swaps.dart' show OrderSwaps;
 import 'package:swaps/swaps.dart' show SwapStore;
 import 'package:sync/sync.dart'
     show
+        PublicWalletDescriptor,
+        WalletCatalogPort,
         InputReservation,
         InputReservationPort,
         ReservedAddressPort,
@@ -90,7 +92,6 @@ import 'package:spend/spend.dart' show Spend;
 import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
-import '../../support/wallet_registrations.dart';
 
 import 'package:silent/setup.dart';
 import 'package:silent/silent.dart' show Silent;
@@ -240,6 +241,17 @@ class _UnusedAccounts implements WalletProvisioning {
 }
 
 class _UnusedProvisioning extends Mock implements DefaultWalletProvisioning {}
+
+final class _EmptyWalletCatalog implements WalletCatalogPort {
+  @override
+  Future<Result<List<PublicWalletDescriptor>, SyncFailure>> list() async =>
+      const Ok([]);
+
+  @override
+  Future<Result<PublicWalletDescriptor, SyncFailure>> find(
+    WalletKey key,
+  ) async => const Err(SyncNotFoundFailure());
+}
 
 void main() {
   testWidgets(
@@ -402,7 +414,7 @@ void main() {
       );
       locator.registerSingleton<ElectrumSync>(electrumSync);
       final nativeRuntime = WalletNativeRuntime.open(
-        catalog: TestWalletCatalog(MemoryWalletRegistrations()),
+        catalog: _EmptyWalletCatalog(),
         reserved: _UnusedReserved(),
         inputReservations: _UnusedInputReservations(),
         deleteCatalogEntry: (_) async => const Ok(null),

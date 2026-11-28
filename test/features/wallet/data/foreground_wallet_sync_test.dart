@@ -26,8 +26,6 @@ import 'package:primitives/primitives.dart';
 import 'package:sync/sync.dart' hide Wallet;
 import 'package:sync/write.dart';
 
-import '../../../support/wallet_registrations.dart' show passthroughSessionJoin;
-
 class _Labels extends Mock implements Labels {}
 
 class _Catalog extends Mock implements WalletCatalogPort {}
@@ -60,6 +58,8 @@ final class _Policy implements WalletConnectionPort {
     );
   }
 }
+
+Future<T> passthroughSessionJoin<T>(Future<T> Function() read) => read();
 
 void main() {
   const id = 'wpkh([aabbccdd/84h/1h/0h])';
