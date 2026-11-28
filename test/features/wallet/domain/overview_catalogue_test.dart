@@ -3,14 +3,19 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bull_ui/app_theme.dart';
+import 'package:bull_ui/bull_ui.dart' show BullReceiveSendButtons;
+import 'package:material_ui/material_ui.dart';
 import 'package:overview/catalogue.dart';
+import 'package:overview/detail.dart';
+import 'package:overview/overview.dart' show OverviewReceiveTarget;
 import 'package:preferences/preferences.dart';
 import 'package:preferences/testing.dart';
 import 'package:primitives/primitives.dart';
 import 'package:rust_bindings/rust_bindings.dart' show BullSdk;
 import 'package:secrets/storage.dart';
 import 'package:secrets/secrets.dart'
-    show SecretFailure, WalletInventory, WalletSelection;
+    show SecretFailure, WalletInventory, WalletSelection, WalletSigner;
 import 'package:sqlite3/sqlite3.dart';
 import 'package:startup/startup.dart';
 import 'package:sync/inventory.dart';
@@ -198,6 +203,443 @@ void main() {
     store.finish(liquid);
   }
 
+  test(
+    'detail selection follows membership before and after receipts',
+    () async {
+      await registerBoth();
+      final entered = Completer<void>();
+      final release = Completer<void>();
+      beforeHydration = () async {
+        if (!entered.isCompleted) entered.complete();
+        await release.future;
+      };
+      final btc = OverviewDetailController(
+        catalogue: overview,
+        key: bitcoin.key,
+      );
+      final lbtc = OverviewDetailController(catalogue: overview, key: liquid);
+      addTearDown(btc.dispose);
+      addTearDown(lbtc.dispose);
+      try {
+        await startup.start();
+        await entered.future.timeout(const Duration(seconds: 5));
+        await until(() => btc.value != null && lbtc.value != null);
+        final selected = btc.value;
+        expect(selected?.key, bitcoin.key);
+        expect(selected?.scriptType, bitcoin.scriptType);
+        expect(selected?.signer, WalletSigner.local);
+        expect(selected?.isDefault, isTrue);
+        expect(selected?.origin, bitcoin.origin);
+        expect(selected?.balanceSat, isNull);
+        expect(lbtc.value?.signer, WalletSigner.remote);
+        expect(lbtc.value?.label, '  raw liquid  ');
+        expect(lbtc.value?.origin, liquid.id.replaceFirst(':regtest', ''));
+      } finally {
+        release.complete();
+      }
+      await until(() => btc.value?.revision != null);
+      expect(btc.value?.key, bitcoin.key);
+      expect(btc.value?.balanceSat, BigInt.zero);
+    },
+  );
+
+  test(
+    'detail readmits fresh selection after lock while retiring old selection',
+    () async {
+      await registerBoth();
+      await startup.start();
+      await until(
+        () =>
+            overview.snapshot.rows.isNotEmpty &&
+            row(bitcoin.key).revision != null,
+      );
+      final controller = OverviewDetailController(
+        catalogue: overview,
+        key: bitcoin.key,
+      );
+      addTearDown(controller.dispose);
+      final captured = controller.value;
+      expect(captured?.isCurrent, isTrue);
+      final locking = inventory.lock();
+      expect(captured?.isCurrent, isFalse);
+      expect(controller.value, isNull);
+      expect(await locking, isTrue);
+      valueOf(await inventory.resumeUnprotected());
+      startup.confirmUnlock();
+      await until(
+        () =>
+            overview.snapshot.rows.isNotEmpty &&
+            row(bitcoin.key).revision != null,
+      );
+      await until(() => controller.value != null);
+      expect(controller.value?.key, bitcoin.key);
+      expect(captured?.isCurrent, isFalse);
+    },
+  );
+
+  test(
+    'detail follows a catalogue label replacement with a fresh selection',
+    () async {
+      await registerBoth();
+      await startup.start();
+      await until(() => overview.snapshot.rows.length == 2);
+      final controller = OverviewDetailController(
+        catalogue: overview,
+        key: bitcoin.key,
+      );
+      addTearDown(controller.dispose);
+      final old = controller.value;
+      expect(old?.isCurrent, isTrue);
+      valueOf(
+        await inventory.setWalletProperties(
+          id: bitcoin.key.id,
+          label: 'updated',
+          birthday: null,
+          isDefault: true,
+        ),
+      );
+      expect(old?.isCurrent, isFalse);
+      await until(() => controller.value?.label == 'updated');
+      expect(controller.value?.key, bitcoin.key);
+      expect(old?.isCurrent, isFalse);
+    },
+  );
+
+  test(
+    'detail follows membership changes and never revives old selections',
+    () async {
+      await registerBoth();
+      await startup.start();
+      await until(() => overview.snapshot.rows.length == 2);
+      final controller = OverviewDetailController(
+        catalogue: overview,
+        key: bitcoin.key,
+      );
+      addTearDown(controller.dispose);
+      final first = controller.value;
+      valueOf(await inventory.removeWallet(liquid.id));
+      expect(first?.isCurrent, isFalse);
+      await until(
+        () => overview.snapshot.rows.length == 1 && controller.value != null,
+      );
+      final second = controller.value;
+      expect(second?.key, bitcoin.key);
+      expect(first?.isCurrent, isFalse);
+      valueOf(
+        await inventory.registerWallet(
+          watchOnlyWallet(
+            liquid.id,
+            network: 'liquidRegtest',
+            external: fixture['descriptor'] as String,
+            label: '  raw liquid  ',
+            isDefault: true,
+          ),
+        ),
+      );
+      await until(
+        () => overview.snapshot.rows.length == 2 && controller.value != null,
+      );
+      expect(second?.isCurrent, isFalse);
+      final third = controller.value;
+      valueOf(await inventory.removeWallet(bitcoin.key.id));
+      await until(
+        () => overview.snapshot.rows.length == 1 && controller.value == null,
+      );
+      expect(third?.isCurrent, isFalse);
+      valueOf(
+        await inventory.registerWallet(
+          RegisteredWallet(
+            id: bitcoin.key.id,
+            secretFingerprint: '73c5da0a',
+            masterFingerprint: '73c5da0a',
+            signer: 'local',
+            network: 'bitcoinRegtest',
+            xpub: 'fixture',
+            externalDescriptor: bitcoin.externalDescriptor,
+            internalDescriptor: bitcoin.internalDescriptor,
+            label: 'reimported',
+            birthday: null,
+            isDefault: true,
+          ),
+        ),
+      );
+      await until(() => controller.value?.label == 'reimported');
+      expect(controller.value?.key, bitcoin.key);
+      expect(third?.isCurrent, isFalse);
+    },
+  );
+
+  testWidgets('disposed controller invalidates captured mounted callbacks', (
+    tester,
+  ) async {
+    await tester.runAsync(() async {
+      await registerBoth();
+      await startup.start();
+      await until(() => overview.snapshot.rows.length == 2);
+    });
+    final controller = OverviewDetailController(
+      catalogue: overview,
+      key: bitcoin.key,
+    );
+    var receives = 0;
+    var sends = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.values.first),
+        home: OverviewSelectedWalletDetail(
+          controller: controller,
+          defaultBitcoinLabel: 'Default Bitcoin',
+          defaultLiquidLabel: 'Default Liquid',
+          unavailableMessage: 'Unavailable',
+          settings: const SizedBox(),
+          scopeWalletHistory: (_, child) => child,
+          refreshPrice: (_) async {},
+          refreshWalletHistory: (_) async {},
+          balanceCard: (_, _) => const SizedBox(),
+          consolidation: (_, _) => const SizedBox(),
+          coinsEntry: (_, _) => const SizedBox(),
+          liquidDisclosure: (_, _) => const SizedBox(),
+          history: (_, _) => const SliverToBoxAdapter(),
+          receiveLabel: 'Receive',
+          sendLabel: 'Send',
+          onReceive: (_) => receives++,
+          onSend: (_) => sends++,
+        ),
+      ),
+    );
+    final selected = controller.value;
+    final buttons = tester.widget<BullReceiveSendButtons>(
+      find.byType(BullReceiveSendButtons),
+    );
+    buttons.onReceive();
+    buttons.onSend?.call();
+    expect(receives, 1);
+    expect(sends, 1);
+    controller.dispose();
+    expect(selected?.isCurrent, isFalse);
+    buttons.onReceive();
+    buttons.onSend?.call();
+    expect(receives, 1);
+    expect(sends, 1);
+    final replacement = OverviewDetailController(
+      catalogue: overview,
+      key: bitcoin.key,
+    );
+    addTearDown(replacement.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.themeData(AppThemeType.values.first),
+        home: OverviewSelectedWalletDetail(
+          controller: replacement,
+          defaultBitcoinLabel: 'Default Bitcoin',
+          defaultLiquidLabel: 'Default Liquid',
+          unavailableMessage: 'Unavailable',
+          settings: const SizedBox(),
+          scopeWalletHistory: (_, child) => child,
+          refreshPrice: (_) async {},
+          refreshWalletHistory: (_) async {},
+          balanceCard: (_, _) => const SizedBox(),
+          consolidation: (_, _) => const SizedBox(),
+          coinsEntry: (_, _) => const SizedBox(),
+          liquidDisclosure: (_, _) => const SizedBox(),
+          history: (_, _) => const SliverToBoxAdapter(),
+          receiveLabel: 'Receive',
+          sendLabel: 'Send',
+          onReceive: (_) => receives++,
+          onSend: (_) => sends++,
+        ),
+      ),
+    );
+    buttons.onReceive();
+    buttons.onSend?.call();
+    expect(receives, 1);
+    expect(sends, 1);
+    final fresh = tester.widget<BullReceiveSendButtons>(
+      find.byType(BullReceiveSendButtons),
+    );
+    fresh.onReceive();
+    fresh.onSend?.call();
+    expect(receives, 2);
+    expect(sends, 2);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  test(
+    'imported watch-only detail uses its registration without a receipt',
+    () async {
+      final key = WalletKey(
+        id: 'imported([01234567/84h/1h/0h]):regtest',
+        network: BitcoinNetwork.regtest,
+      );
+      valueOf(
+        await inventory.registerWallet(
+          watchOnlyWallet(
+            key.id,
+            network: 'bitcoinRegtest',
+            signer: 'none',
+            external: bitcoin.externalDescriptor,
+            internal: bitcoin.internalDescriptor,
+          ),
+        ),
+      );
+      await startup.start();
+      await until(
+        () => overview.snapshot.rows.any((row) => row.entry.key == key),
+      );
+      final controller = OverviewDetailController(
+        catalogue: overview,
+        key: key,
+      );
+      addTearDown(controller.dispose);
+      expect(controller.value?.key, key);
+      expect(controller.value?.signer, WalletSigner.none);
+      expect(controller.value?.isDefault, isFalse);
+      expect(controller.value?.origin, 'imported([01234567/84h/1h/0h])');
+    },
+  );
+
+  testWidgets(
+    'selected detail actions use the admitted target and expire on lock',
+    (tester) async {
+      await tester.runAsync(() async {
+        await registerBoth();
+        await startup.start();
+        await until(
+          () =>
+              overview.snapshot.rows.isNotEmpty &&
+              row(bitcoin.key).revision != null,
+        );
+      });
+      final controller = OverviewDetailController(
+        catalogue: overview,
+        key: bitcoin.key,
+      );
+      addTearDown(controller.dispose);
+      OverviewReceiveTarget? received;
+      WalletKey? sent;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.values.first),
+          home: OverviewSelectedWalletDetail(
+            controller: controller,
+            defaultBitcoinLabel: 'Default Bitcoin',
+            defaultLiquidLabel: 'Default Liquid',
+            unavailableMessage: 'Unavailable',
+            settings: const SizedBox(),
+            scopeWalletHistory: (_, child) => child,
+            refreshPrice: (_) async {},
+            refreshWalletHistory: (_) async {},
+            balanceCard: (_, wallet) => Text('balance ${wallet.balanceSat}'),
+            consolidation: (_, _) => const SizedBox(),
+            coinsEntry: (_, _) => const SizedBox(),
+            liquidDisclosure: (_, _) => const SizedBox(),
+            history: (_, _) => const SliverToBoxAdapter(),
+            receiveLabel: 'Receive',
+            sendLabel: 'Send',
+            onReceive: (target) => received = target,
+            onSend: (key) => sent = key,
+          ),
+        ),
+      );
+      expect(find.text('Default Bitcoin'), findsOneWidget);
+      final buttons = tester.widget<BullReceiveSendButtons>(
+        find.byType(BullReceiveSendButtons),
+      );
+      buttons.onReceive();
+      buttons.onSend?.call();
+      expect(received, (
+        key: bitcoin.key,
+        scriptType: bitcoin.scriptType,
+        signsLocally: true,
+      ));
+      expect(sent, bitcoin.key);
+      received = null;
+      sent = null;
+      await tester.runAsync(() async => inventory.lock());
+      buttons.onReceive();
+      buttons.onSend?.call();
+      expect(received, isNull);
+      expect(sent, isNull);
+      await tester.pump();
+      expect(find.byType(BullReceiveSendButtons), findsNothing);
+    },
+  );
+
+  for (final signer in ['remote', 'none']) {
+    testWidgets('imported $signer detail exposes the original receive target', (
+      tester,
+    ) async {
+      final key = WalletKey(
+        id: 'imported([01234567/84h/1h/0h]):regtest',
+        network: BitcoinNetwork.regtest,
+      );
+      await tester.runAsync(() async {
+        valueOf(
+          await inventory.registerWallet(
+            watchOnlyWallet(
+              key.id,
+              network: 'bitcoinRegtest',
+              signer: signer,
+              external: bitcoin.externalDescriptor,
+              internal: bitcoin.internalDescriptor,
+            ),
+          ),
+        );
+        await startup.start();
+        await until(
+          () => overview.snapshot.rows.any((row) => row.entry.key == key),
+        );
+      });
+      final controller = OverviewDetailController(
+        catalogue: overview,
+        key: key,
+      );
+      addTearDown(controller.dispose);
+      OverviewReceiveTarget? received;
+      WalletKey? sent;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.themeData(AppThemeType.values.first),
+          home: OverviewSelectedWalletDetail(
+            controller: controller,
+            defaultBitcoinLabel: 'Default Bitcoin',
+            defaultLiquidLabel: 'Default Liquid',
+            unavailableMessage: 'Unavailable',
+            settings: const SizedBox(),
+            scopeWalletHistory: (_, child) => child,
+            refreshPrice: (_) async {},
+            refreshWalletHistory: (_) async {},
+            balanceCard: (_, _) => const SizedBox(),
+            consolidation: (_, _) => const SizedBox(),
+            coinsEntry: (_, _) => const SizedBox(),
+            liquidDisclosure: (_, _) => const SizedBox(),
+            history: (_, _) => const SliverToBoxAdapter(),
+            receiveLabel: 'Receive',
+            sendLabel: 'Send',
+            onReceive: (target) => received = target,
+            onSend: (key) => sent = key,
+          ),
+        ),
+      );
+      expect(find.text('imported([01234567/84h/1h/0h])'), findsOneWidget);
+      final buttons = tester.widget<BullReceiveSendButtons>(
+        find.byType(BullReceiveSendButtons),
+      );
+      buttons.onReceive();
+      expect(received, (
+        key: key,
+        scriptType: ScriptType.bip84,
+        signsLocally: false,
+      ));
+      if (signer == 'none') {
+        expect(buttons.onSend, isNull);
+      } else {
+        buttons.onSend?.call();
+        expect(sent, key);
+      }
+    });
+  }
+
   for (final preload in [false, true]) {
     test(
       'membership precedes first ${preload ? 'funded' : 'zero'} receipts on both chains',
@@ -264,6 +706,12 @@ void main() {
     );
     final old = row(bitcoin.key);
     final witness = old.revision;
+    final detail = OverviewDetailController(
+      catalogue: overview,
+      key: bitcoin.key,
+    );
+    addTearDown(detail.dispose);
+    final membership = detail.value;
     final path = revisionStorePath(directory);
     final second = SecondRevisionConnection(path);
     addTearDown(second.close);
@@ -297,6 +745,9 @@ void main() {
     expect(recreated.generation, isNot(witness?.generation));
     valueOf(await native.refresh(bitcoin.key));
     await until(() => row(bitcoin.key).revision == recreated);
+    await until(() => detail.value?.revision == recreated);
+    expect(membership?.isCurrent, isTrue);
+    expect(detail.value?.key, bitcoin.key);
     expect(overview.selectLocal(beforeDelete), isNull);
     expect(overview.snapshot.rows, hasLength(2));
 
