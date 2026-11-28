@@ -80,6 +80,7 @@ final class OverviewHomeController
   var _silentConfigured = false;
   var _silentBalanceSat = 0;
   var _silentLoading = false;
+  var _backupChecksStarted = false;
 
   Future<void> _electrumUpdates = Future.value();
   Future<void>? _refresh;
@@ -124,7 +125,14 @@ final class OverviewHomeController
     _isSyncPassActive = _sync.isSyncPassActive;
     _onCatalogueChanged();
     unawaited(_readSwaps());
-    unawaited(_checkSwapServer());
+  }
+
+  /// Starts backup reads only after their owners and wallet admission exist.
+  /// Early catalogue or sync events need no queue: activation reads the
+  /// current defaults. Repeated calls, including after close, are inert.
+  void startBackupChecks() {
+    if (_closed || _backupChecksStarted) return;
+    _backupChecksStarted = true;
     unawaited(_verifyBackup());
   }
 
@@ -309,6 +317,7 @@ final class OverviewHomeController
   /// Retires the previous answer immediately, like the legacy Home did: a
   /// pending read must not leave a stale warning on screen.
   Future<void> _verifyBackup() async {
+    if (_closed || !_backupChecksStarted) return;
     final version = ++_backupReadVersion;
     _backupNeeded = null;
     _publish();

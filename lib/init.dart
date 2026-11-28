@@ -34,6 +34,7 @@ import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bull_ark/ark_wallet_setup.dart'
     show arkBoardFundingBinding, SqliteArkFundingReservations;
 import 'package:sync/sync.dart' show SyncReason, WalletCatalogPort;
+import 'package:overview/overview.dart' show OverviewHomeController;
 import 'package:overview/routes.dart' show WalletRoute;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
 import 'package:go_router/go_router.dart' show GoRouterHelper;
@@ -433,6 +434,7 @@ class Bull {
         ),
       );
       if (!pinProtected) {
+        locator<OverviewHomeController>().startBackupChecks();
         unawaited(locator<RecoverBullFacade>().checkAtColdStart());
       }
       final settings = locator<Preferences>();

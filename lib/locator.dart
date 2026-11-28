@@ -132,6 +132,7 @@ class AppLocator {
     final startup = locator<ForegroundWalletStartup>();
     startup.confirmUnlock();
     await startup.start();
+    locator<OverviewHomeController>().startBackupChecks();
     unawaited(locator<RecoverBullFacade>().checkAtColdStart());
   }
 
