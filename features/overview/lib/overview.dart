@@ -33,3 +33,12 @@ export 'src/domain/wallet_discovery_failure.dart';
 export 'src/ui/screens/overview_home.dart';
 export 'src/ui/screens/overview_detail.dart';
 export 'src/ui/screens/overview_wallet_detail.dart';
+export 'src/domain/overview_load_failure.dart' show OverviewLoadFailure;
+export 'src/ui/widgets/home_warnings.dart'
+    show HomeWarningsCopy, OverviewHomeWarnings;
+export 'src/ui/widgets/wallet_picker.dart'
+    show
+        WalletPicker,
+        WalletPickerCopy,
+        WalletPickerRow,
+        WalletPickerSilentCard;
