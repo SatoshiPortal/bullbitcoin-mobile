@@ -47,6 +47,21 @@ final class OverviewCatalogueRow {
   BigInt? get balanceSat => _owner._read(this);
   WalletRevision? get revision =>
       balanceSat == null ? null : _receipt?.revision;
+
+  /// Membership is independent of whether a financial receipt is available.
+  bool get isCurrent =>
+      !_owner._closed &&
+      identical(_owner._context, _context) &&
+      _owner._balances.isCurrent(_context) &&
+      _owner._entries[entry.key] == entry;
+
+  /// Rows from different grants or catalogue revisions are not interchangeable.
+  bool sameMembership(OverviewCatalogueRow other) =>
+      identical(_owner, other._owner) &&
+      identical(_context, other._context) &&
+      entry == other.entry &&
+      isCurrent &&
+      other.isCurrent;
 }
 
 typedef OverviewCatalogueSnapshot = ({
