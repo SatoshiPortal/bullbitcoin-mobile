@@ -1,12 +1,12 @@
 import 'package:address_view/routes.dart' show AddressViewFeature;
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bitcoin_price/testing.dart';
 import 'package:settings/testing.dart';
-import 'package:overview/overview.dart' show WalletHomeAppBar;
+import 'package:overview/overview.dart'
+    show OverviewHomeController, WalletHomeAppBar;
+import 'package:overview/routes.dart' show WalletRoute;
 import 'package:announcements/setup.dart' show AnnouncementDismissals;
 import 'package:labels/labels.dart' show Labels;
 import 'package:access/access.dart' show Access;
@@ -88,10 +88,12 @@ import 'package:swap_feature/swap_feature.dart' show SwapFeature;
 import 'package:swap_feature/testing.dart' show swapSettingsRoute;
 import 'package:swaps/swaps.dart' show SwapRouting, SwapServerSettings;
 import 'package:secrets/testing.dart';
+import 'package:send/send.dart' show Consolidation;
 import 'package:spend/spend.dart' show Spend;
 import 'package:spend/testing.dart' show FakeSpend;
 
 import '../../support/inventory_fixture.dart';
+import '../overview/support/overview_home_harness.dart';
 
 import 'package:silent/setup.dart';
 import 'package:silent/silent.dart' show Silent;
@@ -111,8 +113,9 @@ class ElectrumServers extends Mock implements ElectrumServersPort {}
 
 class _ExchangeAccess extends Mock implements ExchangeAccessLifecycle {}
 
-class _WalletHomeBloc extends MockBloc<WalletEvent, WalletState>
-    implements WalletBloc {}
+class _Consolidation extends Mock implements Consolidation {}
+
+// Home is mounted through its current Overview controller below.
 
 class _WalletSettingsCubit extends MockCubit<SettingsState>
     implements SettingsCubit {}
@@ -712,23 +715,20 @@ void main() {
       when(() => locator<OrderSwaps>().isAppUpdateRequired).thenReturn(false);
       when(locator<AnnouncementDismissals>().read)
           .thenAnswer((_) async => const Ok([]));
-      final wallet = _WalletHomeBloc();
+      final home = OverviewHomeHarness();
+      locator.registerSingleton<OverviewHomeController>(home.controller);
+      addTearDown(() async {
+        await locator.unregister<OverviewHomeController>();
+        await home.close();
+      });
       final settings = _WalletSettingsCubit();
-      addTearDown(wallet.close);
       addTearDown(settings.close);
       const display = (
         bitcoinUnit: BitcoinUnit.sats,
         currencyCode: 'CAD',
         hideAmounts: false,
       );
-      whenListen(
-        wallet,
-        const Stream<WalletState>.empty(),
-        initialState: const WalletState(
-          amountDisplay: display,
-          status: WalletStatus.success,
-        ),
-      );
+      home.amountPreferences.publish(display);
       whenListen(
         settings,
         const Stream<SettingsState>.empty(),
@@ -738,13 +738,14 @@ void main() {
       await tester.pumpWidget(
         MultiBlocProvider(
           providers: [
-            BlocProvider<WalletBloc>.value(value: wallet),
             BlocProvider<SettingsCubit>.value(value: settings),
+            RepositoryProvider<Consolidation>.value(value: _Consolidation()),
             BitcoinPriceFixture.prices(
               amountDisplay: display,
               currency: 'CAD',
               bitcoinPrice: 100000,
             ),
+            BitcoinPriceFixture.chart(),
           ],
           child: ExchangeSessionScope(
             exchange: locator.call<Exchange>,
@@ -762,7 +763,8 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       final appBar = find.byType(WalletHomeAppBar);
       expect(
         router.routeInformationProvider.value.uri.path,
