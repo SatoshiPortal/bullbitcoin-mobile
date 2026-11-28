@@ -157,6 +157,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("strategy:\n      fail-fast: false", WORKFLOW)
         self.assertIn("TEST_RUN_MULTIVIEW=0", WORKFLOW)
         self.assertIn("TEST_TOTAL_SHARDS=${{ matrix.job.shards }}", WORKFLOW)
+        self.assertIn("TRACE_ACCESS_SHARD: ${{ matrix.job.package == 'access' && '1' || '0' }}", WORKFLOW)
 
     def test_static_checks_no_longer_run_an_aggregate_unit_shard(self):
         checks = WORKFLOW.split("  checks:\n", 1)[1].split("  # Each selected", 1)[0]
