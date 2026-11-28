@@ -5,6 +5,14 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
+/// A workspace member's production library. The shell's own files directly
+/// under `lib/` compose members and may import the shell, so they are not
+/// subjects here; the legacy `lib/features` member home still is, whenever it
+/// exists.
+bool _isMemberLibrary(String path) =>
+    path.startsWith('lib/features/') ||
+    RegExp(r'^(features|packages)/[^/]+/lib/').hasMatch(path);
+
 void main() {
   test('the Send workspace member does not import the app shell', () {
     final sources = Directory('features/send/lib')
@@ -45,7 +53,11 @@ void main() {
   test('features and packages depend on owners, never on the shell', () {
     final root = Directory.current.path;
     final violations = <String>[];
-    for (final directory in ['lib/features', 'features', 'packages']) {
+    // Member sources live in `features/<member>/lib` and
+    // `packages/<member>/lib`, plus the legacy `lib/features` home while it
+    // exists. The migration ends with `lib/` holding the shell only, so never
+    // require a retired directory to exist: scan the roots that do.
+    for (final directory in ['lib', 'features', 'packages']) {
       for (final file in Directory(
         directory,
       ).listSync(recursive: true).whereType<File>()) {
@@ -55,8 +67,7 @@ void main() {
           continue;
         }
         // Only production libraries; test/tool imports have separate contracts.
-        if (!path.startsWith('lib/features/') &&
-            !RegExp(r'^(features|packages)/[^/]+/lib/').hasMatch(path)) {
+        if (!_isMemberLibrary(path)) {
           continue;
         }
         final unit = parseString(content: file.readAsStringSync()).unit;
