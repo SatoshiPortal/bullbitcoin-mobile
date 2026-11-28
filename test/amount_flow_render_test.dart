@@ -1,14 +1,10 @@
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
-
 import 'dart:async';
 
-import 'package:primitives/primitives.dart' show SignerEntity;
 import 'package:bull_ui/app_theme.dart';
 import 'package:receive/receive.dart';
 import 'package:receive/testing.dart';
 import 'package:preferences/preferences.dart';
 import 'package:settings/testing.dart';
-import 'package:bb_mobile/features/wallet/domain/wallet.dart';
 import 'package:bb_mobile/localizations.dart';
 import 'package:bull_pricer/bull_pricer.dart';
 import 'package:bull_ui/bull_ui.dart';
@@ -17,22 +13,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' show BitcoinUnit, Sats, ScriptType;
+import 'package:primitives/primitives.dart'
+    show BitcoinNetwork, BitcoinUnit, Sats, ScriptType;
 
 class _Receive extends Mock implements ReceiveBloc {}
 
 class _Settings extends Mock implements SettingsCubit {}
 
-Wallet _wallet(bool liquid) => Wallet(
-  origin: liquid ? 'liquid' : 'bitcoin',
-  network: liquid ? Network.liquidMainnet : Network.bitcoinMainnet,
-  xpubFingerprint: liquid ? '11111111' : '00000000',
+final _receiveWallet = ReceiveWallet(
+  id: 'bitcoin',
+  network: BitcoinNetwork.mainnet,
+  signsLocally: true,
   scriptType: ScriptType.bip84,
-  xpub: '',
-  externalPublicDescriptor: '',
-  internalPublicDescriptor: '',
-  signer: SignerEntity.local,
-  signerDevice: null,
   balanceSat: BigInt.from(1250000),
 );
 
@@ -61,18 +53,10 @@ void main() {
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
         Device.screen = const Size(390, 844);
-        final wallet = _wallet(false);
         final receive = _Receive();
         final settings = _Settings();
         final fiat = name == 'receive-fiat';
-        final receiveWallet = ReceiveWallet(
-          id: wallet.id,
-          network: wallet.network.shared,
-          signsLocally: wallet.signsLocally,
-          scriptType: wallet.scriptType,
-          balanceSat: wallet.balanceSat,
-          label: wallet.label,
-        );
+        final receiveWallet = _receiveWallet;
         when(() => receive.state).thenReturn(
           ReceiveState(
             wallet: receiveWallet,

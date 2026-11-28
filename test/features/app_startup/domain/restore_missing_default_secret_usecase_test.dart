@@ -1,19 +1,16 @@
 import 'package:primitives/primitives.dart' show ScriptType;
-import 'package:bb_mobile/features/wallet/domain/wallet.dart'
-    show Wallet, Network;
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:startup/testing.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:primitives/primitives.dart' hide Network, ScriptType;
+import 'package:primitives/primitives.dart' hide ScriptType;
 import 'package:primitives/primitives.dart' as primitives;
 import 'package:secrets/secrets.dart';
 import 'package:secrets/storage.dart' show BitcoinRecoveryWallet;
 import 'package:secrets/testing.dart';
 
 abstract interface class _RecoveryCatalog {
-  Future<Result<List<Wallet>, SecretFailure>> getWallets();
+  Future<Result<List<BitcoinRecoveryWallet>, SecretFailure>> getWallets();
 }
 
 class _MockWalletRepository extends Mock implements _RecoveryCatalog {}
@@ -62,28 +59,21 @@ void main() {
   late _MockWalletRepository wallets;
   late RestoreMissingDefaultSecretUsecase usecase;
 
-  Wallet localWallet(
+  BitcoinRecoveryWallet localWallet(
     String fingerprint, {
     String external = 'desc',
     String internal = 'desc',
     bool isDefault = false,
-  }) => Wallet(
-    origin: 'origin-$fingerprint',
-    label: 'Test',
-    network: Network.bitcoinMainnet,
-    isDefault: isDefault,
-    masterFingerprint: fingerprint,
-    xpubFingerprint: fingerprint,
+  }) => BitcoinRecoveryWallet(
+    id: 'origin-$fingerprint',
+    network: BitcoinNetwork.mainnet,
+    fingerprint: Fingerprint(fingerprint),
     scriptType: ScriptType.bip84,
-    xpub: 'xpub',
-    externalPublicDescriptor: external,
-    internalPublicDescriptor: internal,
-    signer: SignerEntity.local,
-    signerDevice: null,
-    balanceSat: BigInt.zero,
+    isDefault: isDefault,
+    descriptors: (external: external, internal: internal),
   );
 
-  Future<Wallet> realWallet(
+  Future<BitcoinRecoveryWallet> realWallet(
     String fingerprint,
     List<String> words, [
     String passphrase = '',
@@ -116,49 +106,30 @@ void main() {
     );
     wallets = _MockWalletRepository();
     final wallet = await realWallet(_missingFingerprint, _missing);
-    when(() => wallets.getWallets())
-        .thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([wallet]));
+    when(() => wallets.getWallets()).thenAnswer(
+      (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([wallet]),
+    );
     usecase = RestoreMissingDefaultSecretUsecase(
       secrets: secrets,
-      recoveryWallets: () async => (await wallets.getWallets()).map(
-        (entries) => entries
-            .map(
-              (entry) => BitcoinRecoveryWallet(
-                id: entry.id,
-                network: entry.network.bitcoin,
-                fingerprint: Fingerprint(entry.masterFingerprint),
-                scriptType: entry.scriptType,
-                isDefault: entry.isDefault,
-                descriptors: (
-                  external: entry.externalPublicDescriptor,
-                  internal: entry.internalPublicDescriptor,
-                ),
-              ),
-            )
-            .toList(),
-      ),
+      recoveryWallets: wallets.getWallets,
     );
   });
 
-  Wallet zooDefault({bool hardenedWithH = false}) {
+  BitcoinRecoveryWallet zooDefault({bool hardenedWithH = false}) {
     // Published zoo vector, independently pinned in native integration tests;
     // no call to the preview under test constructs this oracle.
     final xpub = primitives.XpubType.xpub.reencode(_zooZpub);
     final path = hardenedWithH ? '84h/0h/0h' : "84'/0'/0'";
-    return Wallet(
-      origin: 'default-zoo',
-      label: 'Default',
-      network: Network.bitcoinMainnet,
-      isDefault: true,
-      masterFingerprint: _zooFingerprint,
-      xpubFingerprint: _zooFingerprint,
+    return BitcoinRecoveryWallet(
+      id: 'default-zoo',
+      network: BitcoinNetwork.mainnet,
+      fingerprint: Fingerprint(_zooFingerprint),
       scriptType: ScriptType.bip84,
-      xpub: xpub,
-      externalPublicDescriptor: 'wpkh([$_zooFingerprint/$path]$xpub/0/*)',
-      internalPublicDescriptor: 'wpkh([$_zooFingerprint/$path]$xpub/1/*)',
-      signer: SignerEntity.local,
-      signerDevice: null,
-      balanceSat: BigInt.zero,
+      isDefault: true,
+      descriptors: (
+        external: 'wpkh([$_zooFingerprint/$path]$xpub/0/*)',
+        internal: 'wpkh([$_zooFingerprint/$path]$xpub/1/*)',
+      ),
     );
   }
 
@@ -166,8 +137,9 @@ void main() {
     'accepts equivalent hardened-path notation on the default wallet',
     () async {
       when(() => wallets.getWallets()).thenAnswer(
-        (_) async =>
-            Ok<List<Wallet>, SecretFailure>([zooDefault(hardenedWithH: true)]),
+        (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([
+          zooDefault(hardenedWithH: true),
+        ]),
       );
       expect(
         await usecase.execute(
@@ -185,7 +157,7 @@ void main() {
     'a secondary wallet with the same fingerprint cannot veto its default',
     () async {
       when(() => wallets.getWallets()).thenAnswer(
-        (_) async => Ok<List<Wallet>, SecretFailure>([
+        (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([
           zooDefault(),
           localWallet(_zooFingerprint),
         ]),
@@ -206,15 +178,20 @@ void main() {
     const tpub =
         'tpubDCgYNDYFCZpc5H8LExm81BQd8YcpJndx14YXjFV5XZrFxexwZKMVAycjDvmdLJELb6NgeVAM4UyGbqVqqdATXQh5FnYkS4C9DkzmFc9A86Z';
     final mainnet = zooDefault();
-    final testnet = mainnet.copyWith(
-      origin: 'default-testnet',
-      network: Network.bitcoinTestnet,
-      xpub: tpub,
-      externalPublicDescriptor: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/0/*)",
-      internalPublicDescriptor: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/1/*)",
+    final testnet = BitcoinRecoveryWallet(
+      id: 'default-testnet',
+      network: BitcoinNetwork.testnet,
+      fingerprint: mainnet.fingerprint,
+      scriptType: mainnet.scriptType,
+      isDefault: mainnet.isDefault,
+      descriptors: (
+        external: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/0/*)",
+        internal: "wpkh([$_zooFingerprint/84'/1'/0']$tpub/1/*)",
+      ),
     );
     when(() => wallets.getWallets()).thenAnswer(
-      (_) async => Ok<List<Wallet>, SecretFailure>([mainnet, testnet]),
+      (_) async =>
+          Ok<List<BitcoinRecoveryWallet>, SecretFailure>([mainnet, testnet]),
     );
     expect(
       await usecase.execute(
@@ -240,12 +217,16 @@ void main() {
   test(
     'a selected secondary wallet cannot authorize the missing default',
     () async {
-      final secondary = zooDefault().copyWith(
+      final secondary = _copyRecovery(
+        zooDefault(),
+        id: 'secondary',
         isDefault: false,
-        origin: 'secondary',
       );
       when(() => wallets.getWallets()).thenAnswer(
-        (_) async => Ok<List<Wallet>, SecretFailure>([zooDefault(), secondary]),
+        (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([
+          zooDefault(),
+          secondary,
+        ]),
       );
       expect(
         await usecase.execute(
@@ -265,20 +246,20 @@ void main() {
     () async {
       final base = zooDefault();
       for (final invalid in [
-        base.copyWith(
-          externalPublicDescriptor: base.externalPublicDescriptor.replaceFirst(
+        _copyRecovery(
+          base,
+          external: base.descriptors.external.replaceFirst(
             _zooFingerprint,
             'ffffffff',
           ),
         ),
-        base.copyWith(internalPublicDescriptor: base.externalPublicDescriptor),
-        base.copyWith(
-          externalPublicDescriptor: '${base.externalPublicDescriptor}#aaaaaaaa',
-        ),
+        _copyRecovery(base, internal: base.descriptors.external),
+        _copyRecovery(base, external: '${base.descriptors.external}#aaaaaaaa'),
       ]) {
-        when(
-          () => wallets.getWallets(),
-        ).thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([invalid]));
+        when(() => wallets.getWallets()).thenAnswer(
+          (_) async =>
+              Ok<List<BitcoinRecoveryWallet>, SecretFailure>([invalid]),
+        );
         expect(
           await usecase.execute(
             language: Language.english,
@@ -302,8 +283,9 @@ void main() {
     );
     final fingerprint = (created as Ok<Secret, SecretFailure>).value.id.hex;
     final wallet = await realWallet(fingerprint, _missing, passphrase);
-    when(() => wallets.getWallets())
-        .thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([wallet]));
+    when(() => wallets.getWallets()).thenAnswer(
+      (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([wallet]),
+    );
     expect(
       await secrets.trash(Fingerprint(fingerprint)),
       isA<Ok<void, SecretFailure>>(),
@@ -332,8 +314,9 @@ void main() {
     'refuses matching fingerprint when public descriptors disagree',
     () async {
       when(() => wallets.getWallets()).thenAnswer(
-        (_) async =>
-            Ok<List<Wallet>, SecretFailure>([localWallet(_missingFingerprint)]),
+        (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([
+          localWallet(_missingFingerprint),
+        ]),
       );
       final result = await usecase.execute(
         language: Language.english,
@@ -348,7 +331,7 @@ void main() {
   test('a second wallet with the same fingerprint cannot mask a descriptor mismatch', () async {
     final matching = await realWallet(_missingFingerprint, _missing, '', false);
     when(() => wallets.getWallets()).thenAnswer(
-      (_) async => Ok<List<Wallet>, SecretFailure>([
+      (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([
         matching,
         localWallet(_missingFingerprint, isDefault: true),
       ]),
@@ -363,8 +346,9 @@ void main() {
   });
 
   test('refuses to write when no Bitcoin descriptor is available', () async {
-    when(() => wallets.getWallets())
-        .thenAnswer((_) async => const Ok<List<Wallet>, SecretFailure>([]));
+    when(() => wallets.getWallets()).thenAnswer(
+      (_) async => const Ok<List<BitcoinRecoveryWallet>, SecretFailure>([]),
+    );
     final result = await usecase.execute(
       language: Language.english,
       expectedFingerprint: _missingFingerprint,
@@ -433,7 +417,10 @@ void main() {
     final wallet = await realWallet(otherFingerprint, _other, '', false);
     final expectedWallet = await realWallet(_missingFingerprint, _missing);
     when(() => wallets.getWallets()).thenAnswer(
-      (_) async => Ok<List<Wallet>, SecretFailure>([expectedWallet, wallet]),
+      (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([
+        expectedWallet,
+        wallet,
+      ]),
     );
 
     final result = await usecase.execute(
@@ -490,8 +477,9 @@ void main() {
         internal: descriptors.internal,
         isDefault: true,
       );
-      when(() => wallets.getWallets())
-          .thenAnswer((_) async => Ok<List<Wallet>, SecretFailure>([wallet]));
+      when(() => wallets.getWallets()).thenAnswer(
+        (_) async => Ok<List<BitcoinRecoveryWallet>, SecretFailure>([wallet]),
+      );
     });
 
     test('is stored back in French', () async {
@@ -539,3 +527,21 @@ void main() {
     });
   });
 }
+
+BitcoinRecoveryWallet _copyRecovery(
+  BitcoinRecoveryWallet wallet, {
+  String? id,
+  bool? isDefault,
+  String? external,
+  String? internal,
+}) => BitcoinRecoveryWallet(
+  id: id ?? wallet.id,
+  network: wallet.network,
+  fingerprint: wallet.fingerprint,
+  scriptType: wallet.scriptType,
+  isDefault: isDefault ?? wallet.isDefault,
+  descriptors: (
+    external: external ?? wallet.descriptors.external,
+    internal: internal ?? wallet.descriptors.internal,
+  ),
+);
