@@ -32,7 +32,6 @@ import 'package:exchange/exchange.dart' show Exchange;
 import 'package:bull_ui/app_theme.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:settings/settings.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/novlang/novlang_app_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_announcements_localizations.dart';
 import 'package:bb_mobile/generated/novlang/novlang_quick_actions_localizations.dart';
@@ -182,176 +181,149 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     Device.init(context);
 
     final app = locator<Settings>().provide(
-      child: MultiBlocProvider(
-        providers: [
-          // Make the wallet bloc available to the whole app so environment changes
-          // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
-          BlocProvider(create: (_) => locator<WalletBloc>()),
-        ],
-        child: locator<StartupFeature>().scope(
-          onWalletsReady: (context) async {
-            context.read<WalletBloc>().add(const WalletStarted());
-            final _ = await locator<Exchange>().resolveAccess();
-          },
-          child: ExchangeSessionScope(
-            exchange: () => locator<Exchange>(),
-            preferences: () => locator<Preferences>(),
-            child: MultiBlocListener(
-              listeners: [
-                Settings.failureListener(
-                  resolveOverlay: () =>
-                      AppRouter.rootNavigatorKey.currentState?.overlay,
-                ),
-                Settings.onEnvironmentChanged(
-                  onChanged: (context) async {
-                    // Ark pages must not act for the previous network's wallet.
-                    if (locator.isRegistered<ArkForegroundHost>()) {
-                      locator<ArkForegroundHost>().invalidate();
-                    }
-                    context.read<WalletBloc>().add(const WalletStarted());
-                    final _ = await locator<Exchange>().resolveAccess();
-                  },
-                ),
-              ],
-              child: Settings.appearance(
-                builder: (context, data) {
-                  final (language, themeMode, isSuperuser) = data;
-                  final novlangPolicy = resolveNovlangPolicy(
-                    defaultTargetPlatform,
-                    isSuperuser,
-                  );
-                  final systemBrightness = MediaQuery.platformBrightnessOf(
-                    context,
-                  );
-                  final effectiveThemeMode = themeMode ?? AppThemeMode.system;
-
-                  late final AppThemeType appThemeType;
-                  switch (effectiveThemeMode) {
-                    case AppThemeMode.light:
-                      appThemeType = AppThemeType.light;
-                    case AppThemeMode.dark:
-                      appThemeType = AppThemeType.dark;
-                    case AppThemeMode.system:
-                      appThemeType = systemBrightness == .dark
-                          ? AppThemeType.dark
-                          : AppThemeType.light;
+      child: locator<StartupFeature>().scope(
+        onWalletsReady: (context) async {
+          await refreshMountedWallets();
+          final _ = await locator<Exchange>().resolveAccess();
+        },
+        child: ExchangeSessionScope(
+          exchange: () => locator<Exchange>(),
+          preferences: () => locator<Preferences>(),
+          child: MultiBlocListener(
+            listeners: [
+              Settings.failureListener(
+                resolveOverlay: () =>
+                    AppRouter.rootNavigatorKey.currentState?.overlay,
+              ),
+              Settings.onEnvironmentChanged(
+                onChanged: (context) async {
+                  // Ark pages must not act for the previous network's wallet.
+                  if (locator.isRegistered<ArkForegroundHost>()) {
+                    locator<ArkForegroundHost>().invalidate();
                   }
+                  await refreshMountedWallets();
+                  final _ = await locator<Exchange>().resolveAccess();
+                },
+              ),
+            ],
+            child: Settings.appearance(
+              builder: (context, data) {
+                final (language, themeMode, isSuperuser) = data;
+                final novlangPolicy = resolveNovlangPolicy(
+                  defaultTargetPlatform,
+                  isSuperuser,
+                );
+                final systemBrightness = MediaQuery.platformBrightnessOf(
+                  context,
+                );
+                final effectiveThemeMode = themeMode ?? AppThemeMode.system;
 
-                  return AppliedNetworkBuilder(
-                    selected: Settings.networkOf(context),
-                    builder: (context, appliedNetwork) =>
-                        MultiRepositoryProvider(
-                          providers: [
-                            RepositoryProvider<MempoolLinks>.value(
-                              value: locator<Mempool>().links,
-                            ),
-                            RepositoryProvider<Consolidation>(
-                              create: (_) =>
-                                  Consolidation.open(locator<Spend>()),
-                            ),
-                          ],
-                          child: MaterialApp.router(
-                            title: 'BullBitcoin Wallet',
-                            debugShowCheckedModeBanner:
-                                kDebugMode &&
-                                appliedNetwork != NetworkEnv.testnet &&
-                                appliedNetwork != NetworkEnv.regtest,
-                            routerConfig: AppRouter.router,
-                            theme: AppTheme.themeData(appThemeType),
-                            locale: language?.locale,
-                            localizationsDelegates: [
-                              StartupLocalizations.delegate,
-                              SendLocalizations.delegate,
-                              CoinsLocalizations.delegate,
-                              NovlangReceiveLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              AddressViewLocalizations.delegate,
-                              NovlangLabelEditorLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              NovlangAnnouncementsLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              NovlangBitcoinPriceLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              NovlangSettingsLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              NovlangSwapLocalizationsDelegate(novlangPolicy),
-                              NovlangExchangeLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              NovlangOnboardingLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              ...novlangLocalizationsDelegates(novlangPolicy),
-                              LogsLocalizations.delegate,
-                              NetworkLocalizations.delegate,
-                              BtcMapFeature.localizationsDelegate,
-                              BackupsFeature.localizationsDelegate,
-                              NovlangQuickActionsLocalizationsDelegate(
-                                novlangPolicy,
-                                const QuickActionsFallbackDelegate(),
-                              ),
-                              Bip85Localizations.delegate,
-                              NovlangAllSeedViewLocalizationsDelegate(
-                                novlangPolicy,
-                              ),
-                              bullUiLocalizationsDelegate,
-                              backupMetadataLocalizationsDelegate,
-                              ...RecoverBullFeature.localizationsDelegates,
-                            ],
-                            supportedLocales: AppLocalizations.supportedLocales,
-                            builder: (context, child) {
-                              if (child == null) return const SizedBox.shrink();
-                              // keyboard_actions still uses SDK Material widgets;
-                              // the official bridge supports this transition.
-                              final app = AccessPrivacyVeil(
-                                // ignore: deprecated_member_use
-                                child: MaterialUiCompatibilityBridge(
-                                  child: Settings.amountScope(
-                                    navigatorKey: AppRouter.rootNavigatorKey,
-                                    child: BullSupportScope(
-                                      onContactSupport: Support.contactSupport,
-                                      child: locator<StartupFeature>().gate(
-                                        logs: () => locator<LogsFacade>(),
-                                        splash: locator<OnboardingFeature>()
-                                            .buildLoadingSplash(context),
-                                        openOnboarding: () =>
-                                            OnboardingNavigation.go(
-                                              AppRouter.router,
-                                            ),
-                                        onUnlocked: () =>
-                                            AppLocator.startWalletsAfterUnlock(
-                                              locator,
-                                            ),
-                                        app: locator<RecoverBullFeature>()
-                                            .withAlerts(
-                                              child,
-                                              onOpen: () =>
-                                                  AppRouter.router.pushNamed(
-                                                    'recoverbullFlows',
-                                                  ),
-                                            ),
+                late final AppThemeType appThemeType;
+                switch (effectiveThemeMode) {
+                  case AppThemeMode.light:
+                    appThemeType = AppThemeType.light;
+                  case AppThemeMode.dark:
+                    appThemeType = AppThemeType.dark;
+                  case AppThemeMode.system:
+                    appThemeType = systemBrightness == .dark
+                        ? AppThemeType.dark
+                        : AppThemeType.light;
+                }
+
+                return AppliedNetworkBuilder(
+                  selected: Settings.networkOf(context),
+                  builder: (context, appliedNetwork) => MultiRepositoryProvider(
+                    providers: [
+                      RepositoryProvider<MempoolLinks>.value(
+                        value: locator<Mempool>().links,
+                      ),
+                      RepositoryProvider<Consolidation>(
+                        create: (_) => Consolidation.open(locator<Spend>()),
+                      ),
+                    ],
+                    child: MaterialApp.router(
+                      title: 'BullBitcoin Wallet',
+                      debugShowCheckedModeBanner:
+                          kDebugMode &&
+                          appliedNetwork != NetworkEnv.testnet &&
+                          appliedNetwork != NetworkEnv.regtest,
+                      routerConfig: AppRouter.router,
+                      theme: AppTheme.themeData(appThemeType),
+                      locale: language?.locale,
+                      localizationsDelegates: [
+                        StartupLocalizations.delegate,
+                        SendLocalizations.delegate,
+                        CoinsLocalizations.delegate,
+                        NovlangReceiveLocalizationsDelegate(novlangPolicy),
+                        AddressViewLocalizations.delegate,
+                        NovlangLabelEditorLocalizationsDelegate(novlangPolicy),
+                        NovlangAnnouncementsLocalizationsDelegate(
+                          novlangPolicy,
+                        ),
+                        NovlangBitcoinPriceLocalizationsDelegate(novlangPolicy),
+                        NovlangSettingsLocalizationsDelegate(novlangPolicy),
+                        NovlangSwapLocalizationsDelegate(novlangPolicy),
+                        NovlangExchangeLocalizationsDelegate(novlangPolicy),
+                        NovlangOnboardingLocalizationsDelegate(novlangPolicy),
+                        ...novlangLocalizationsDelegates(novlangPolicy),
+                        LogsLocalizations.delegate,
+                        NetworkLocalizations.delegate,
+                        BtcMapFeature.localizationsDelegate,
+                        BackupsFeature.localizationsDelegate,
+                        NovlangQuickActionsLocalizationsDelegate(
+                          novlangPolicy,
+                          const QuickActionsFallbackDelegate(),
+                        ),
+                        Bip85Localizations.delegate,
+                        NovlangAllSeedViewLocalizationsDelegate(novlangPolicy),
+                        bullUiLocalizationsDelegate,
+                        backupMetadataLocalizationsDelegate,
+                        ...RecoverBullFeature.localizationsDelegates,
+                      ],
+                      supportedLocales: AppLocalizations.supportedLocales,
+                      builder: (context, child) {
+                        if (child == null) return const SizedBox.shrink();
+                        // keyboard_actions still uses SDK Material widgets;
+                        // the official bridge supports this transition.
+                        final app = AccessPrivacyVeil(
+                          // ignore: deprecated_member_use
+                          child: MaterialUiCompatibilityBridge(
+                            child: Settings.amountScope(
+                              navigatorKey: AppRouter.rootNavigatorKey,
+                              child: BullSupportScope(
+                                onContactSupport: Support.contactSupport,
+                                child: locator<StartupFeature>().gate(
+                                  logs: () => locator<LogsFacade>(),
+                                  splash: locator<OnboardingFeature>()
+                                      .buildLoadingSplash(context),
+                                  openOnboarding: () =>
+                                      OnboardingNavigation.go(AppRouter.router),
+                                  onUnlocked: () =>
+                                      AppLocator.startWalletsAfterUnlock(
+                                        locator,
                                       ),
+                                  app: locator<RecoverBullFeature>().withAlerts(
+                                    child,
+                                    onOpen: () => AppRouter.router.pushNamed(
+                                      'recoverbullFlows',
                                     ),
                                   ),
                                 ),
-                              );
-                              return networkBanner(
-                                context: context,
-                                network: appliedNetwork,
-                                beta: appFlavor == 'beta',
-                                child: app,
-                              );
-                            },
+                              ),
+                            ),
                           ),
-                        ),
-                  );
-                },
-              ),
+                        );
+                        return networkBanner(
+                          context: context,
+                          network: appliedNetwork,
+                          beta: appFlavor == 'beta',
+                          child: app,
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),

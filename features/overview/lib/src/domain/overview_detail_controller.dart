@@ -37,13 +37,38 @@ final class OverviewDetailWallet {
 /// Observes a key across catalogue epochs; financial receipts never add it.
 final class OverviewDetailController extends ChangeNotifier
     implements ValueListenable<OverviewDetailWallet?> {
-  OverviewDetailController({required this.catalogue, required this.key}) {
+  OverviewDetailController({
+    required OverviewCatalogue catalogue,
+    required WalletKey key,
+  }) : this._(
+         catalogue: catalogue,
+         walletId: key.id,
+         select: (row) => row.entry.key == key,
+       );
+
+  /// Resolves the route identity only once its unique catalogue row exists.
+  /// It never guesses a network while the initial inventory read is pending.
+  OverviewDetailController.byId({
+    required OverviewCatalogue catalogue,
+    required String walletId,
+  }) : this._(
+         catalogue: catalogue,
+         walletId: walletId,
+         select: (row) => row.entry.key.id == walletId,
+       );
+
+  OverviewDetailController._({
+    required this.catalogue,
+    required this.walletId,
+    required this._select,
+  }) {
     _subscription = catalogue.changes.listen((_) => _update());
     _update();
   }
 
   final OverviewCatalogue catalogue;
-  final WalletKey key;
+  final String walletId;
+  final bool Function(OverviewCatalogueRow) _select;
   late final StreamSubscription<void> _subscription;
   OverviewCatalogueRow? _admission;
   OverviewDetailWallet? _wallet;
@@ -59,7 +84,7 @@ final class OverviewDetailController extends ChangeNotifier
   void _update() {
     if (_disposed) return;
     final admission = _admission;
-    final rows = catalogue.snapshot.rows.where((row) => row.entry.key == key);
+    final rows = catalogue.snapshot.rows.where(_select);
     final selected = rows.length == 1 ? rows.single : null;
     if (admission == null
         ? selected != null

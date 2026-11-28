@@ -65,7 +65,7 @@ class OverviewSelectedWalletDetail extends StatelessWidget {
               ? (liquid ? defaultLiquidLabel : defaultBitcoinLabel)
               : wallet.label ?? wallet.origin;
           return OverviewWalletDetail(
-            walletId: controller.key.id,
+            walletId: controller.walletId,
             walletName: name,
             settings: settings,
             isLoading: wallet == null,

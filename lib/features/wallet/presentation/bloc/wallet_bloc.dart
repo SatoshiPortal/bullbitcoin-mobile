@@ -495,6 +495,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     final warnings = await _homeNetworkWarnings.update(
       isLiquid: result.isLiquid,
       success: result.success,
+      isCurrent: () => !emit.isDone,
     );
     if (warnings != null && !emit.isDone) {
       emit(state.copyWith(warnings: warnings));

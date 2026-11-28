@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:primitives/primitives.dart';
 import 'package:secrets/secrets.dart'
@@ -22,8 +23,15 @@ typedef OverviewCatalogueEntry = ({
   WalletSigner signer,
   String? label,
   bool isDefault,
+
+  /// Published public root fingerprint, when the signer has one. It scopes
+  /// features that group wallets by seed; it is not key material and it does
+  /// not authorize spending.
+  Fingerprint? masterFingerprint,
 });
 
+/// Wallet identity and display metadata returned by ordinary pickers.
+/// Payment code must validate spending separately.
 typedef OverviewWalletSelection = ({
   WalletKey key,
   String? label,
@@ -213,24 +221,30 @@ final class OverviewCatalogue {
               signer: wallet.signer,
               label: wallet.label,
               isDefault: wallet.isDefault,
+              masterFingerprint: wallet.masterFingerprint,
             ));
           }
       }
     }
     if (!current()) return;
-    int rank(OverviewCatalogueEntry entry) => !entry.isDefault
-        ? 2
-        : entry.key.network is BitcoinNetwork
-        ? 0
-        : 1;
+    // Secrets' combined inventory uses SQLite's default BINARY collation.
+    // Compare UTF-8 bytes, not Dart's UTF-16 string ordering.
     entries.sort((a, b) {
-      final byRank = rank(a).compareTo(rank(b));
-      if (byRank != 0) return byRank;
-      final byId = a.key.id.compareTo(b.key.id);
-      if (byId != 0) return byId;
-      return (a.key.network is BitcoinNetwork ? 0 : 1).compareTo(
-        b.key.network is BitcoinNetwork ? 0 : 1,
-      );
+      int rank(OverviewCatalogueEntry entry) => !entry.isDefault
+          ? 2
+          : entry.key.network is BitcoinNetwork
+          ? 0
+          : 1;
+      final rankOrder = rank(a).compareTo(rank(b));
+      if (rankOrder != 0) return rankOrder;
+      final left = utf8.encode(a.key.id);
+      final right = utf8.encode(b.key.id);
+      final length = left.length < right.length ? left.length : right.length;
+      for (var i = 0; i < length; i++) {
+        final difference = left[i] - right[i];
+        if (difference != 0) return difference;
+      }
+      return left.length - right.length;
     });
     final duplicates = <WalletKey>{};
     for (final entry in entries) {

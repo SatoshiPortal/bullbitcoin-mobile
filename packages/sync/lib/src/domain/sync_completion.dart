@@ -43,9 +43,17 @@ final class SyncCompletion {
   );
 }
 
+final class SyncStarted {
+  final WalletKey key;
+  final int runId;
+
+  const SyncStarted(this.key, this.runId);
+}
+
 final class SyncFinished {
   final WalletKey key;
   final Result<SyncCompletion, SyncFailure> result;
+  final int runId;
 
-  const SyncFinished(this.key, this.result);
+  const SyncFinished(this.key, this.result, {required this.runId});
 }

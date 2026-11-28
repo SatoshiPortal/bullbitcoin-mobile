@@ -3,9 +3,9 @@ import 'dart:io' show File;
 import 'package:background_tasks/background_tasks.dart';
 import 'package:transactions/transactions.dart' show Transactions;
 import 'package:bull_ark/bull_ark.dart' show ArkTransferFacade;
+import 'package:sync/storage.dart' show SyncFreshness;
 import 'package:sync/write.dart'
     show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
-import 'package:sync/storage.dart' show SyncFreshness;
 
 import 'dart:async';
 
@@ -23,10 +23,13 @@ import 'package:bull_recoverbull/storage.dart';
 import 'package:bull_recoverbull/setup.dart';
 import 'package:overview/setup.dart';
 import 'package:overview/catalogue.dart';
+import 'package:overview/overview.dart'
+    show OngoingSwaps, OverviewAmountDisplay, OverviewHomeController;
 import 'package:startup/setup.dart';
 import 'package:startup/startup.dart';
 import 'package:provisioning/provisioning.dart';
-import 'package:swaps/swaps.dart' show BoltzSwaps, SwapStartup, Swaps;
+import 'package:swaps/swaps.dart'
+    show BoltzSwaps, SwapStartup, Swaps, SwapStore;
 import 'package:secrets/storage.dart';
 import 'package:material_ui/material_ui.dart' show AssetImage, Image;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -49,7 +52,8 @@ import 'package:mempool/mempool.dart';
 import 'package:fees/fees.dart';
 import 'package:exchange/exchange.dart' show Exchange, ExchangePlatform;
 import 'package:preferences/preferences.dart';
-import 'package:network/network.dart' show NetworkFeature;
+import 'package:network/network.dart'
+    show ExternalTorProxyDiagnostic, ExternalTorProxyStatus, NetworkFeature;
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:primitives/primitives.dart'
     show BitcoinNetwork, Err, Failure, NetworkEnv, Ok;
@@ -70,40 +74,6 @@ import 'package:bull_tor/tor.dart';
 import 'package:settings/settings.dart';
 import 'package:transactions/routes.dart';
 import 'package:transactions/setup.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:swap_feature/swap_feature.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:address_view/address_view.dart';
-import 'package:bb_mobile/address_view_setup.dart';
-import 'package:access/setup.dart' show AccessFeature;
-import 'package:views/setup.dart' show ViewsFeature;
-import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:signers/routes.dart';
-import 'package:scanning/scanning.dart';
-import 'package:bitcoin_price/bitcoin_price.dart';
-import 'package:coins/coins.dart';
-import 'package:coins/setup.dart';
-import 'package:onboarding/setup.dart';
-import 'package:receive/receive.dart' show Receive;
-import 'package:receive/setup.dart' show ReceiveFeature;
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:send/send.dart' show ReplaceByFee, SendNavigation;
-import 'package:bull_quick_actions/setup.dart';
-import 'package:silent/silent.dart';
-import 'package:silent/setup.dart';
-import 'package:bb_mobile/router.dart';
-import 'package:swap_feature/setup.dart';
-import 'package:bb_mobile/features/wallet/wallet_locator.dart';
-import 'package:get_it/get_it.dart';
-import 'package:bull_logs/bull_logs.dart';
-import 'package:bull_logger/bull_logger.dart';
-import 'package:btc_map/btc_map.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:backup_metadata/setup.dart' show BackupMetadataFeature;
-import 'package:secrets/secrets.dart' hide Language;
-import 'package:spend/setup.dart' show SpendCatalog;
-import 'package:spend/spend.dart' show Spend;
 import 'package:sync/sync.dart'
     show
         FrozenOutpoint,
@@ -113,8 +83,49 @@ import 'package:sync/sync.dart'
         WalletConnectionPort,
         WalletKey,
         WalletCatalogPort;
+import 'package:swap_feature/swap_feature.dart';
+import 'package:address_view/address_view.dart';
+import 'package:bb_mobile/address_view_setup.dart';
+import 'package:access/setup.dart' show AccessFeature;
+import 'package:views/setup.dart' show ViewsFeature;
+import 'package:go_router/go_router.dart';
+import 'package:overview/routes.dart';
+import 'package:signers/routes.dart';
+import 'package:scanning/scanning.dart';
+import 'package:bitcoin_price/bitcoin_price.dart';
+import 'package:coins/coins.dart';
+import 'package:coins/setup.dart';
+import 'package:onboarding/setup.dart';
+import 'package:receive/receive.dart' show Receive;
+import 'package:receive/setup.dart' show ReceiveFeature;
+import 'package:send/send.dart' show ReplaceByFee, SendNavigation;
+import 'package:bull_quick_actions/setup.dart';
+import 'package:silent/silent.dart';
+import 'package:silent/setup.dart';
+import 'package:bb_mobile/router.dart';
+import 'package:swap_feature/setup.dart';
+import 'package:get_it/get_it.dart';
+import 'package:bull_logs/bull_logs.dart';
+import 'package:bull_logger/bull_logger.dart';
+import 'package:btc_map/btc_map.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:backup_metadata/setup.dart' show BackupMetadataFeature;
+import 'package:secrets/secrets.dart' hide Language;
+import 'package:spend/setup.dart' show SpendCatalog;
+import 'package:spend/spend.dart' show Spend;
 
 final GetIt locator = GetIt.instance;
+
+/// Requests a mounted wallet refresh without recreating a catalog aggregate.
+Future<void> refreshMountedWallets({bool user = false}) async {
+  final home = locator<OverviewHomeController>();
+  if (user) {
+    await home.refresh();
+    return;
+  }
+  home.refreshVisible();
+  await home.waitForRefresh();
+}
 
 class AppLocator {
   static Future<void> startWalletsAfterUnlock(GetIt locator) async {
@@ -438,7 +449,7 @@ class AppLocator {
         ),
         walletImport: locator<ImportFeature>(),
         onWalletReady: (context) {
-          context.read<WalletBloc>().add(const WalletStarted());
+          unawaited(refreshMountedWallets());
           context.goNamed(WalletRoute.walletHome.name);
         },
         languageOf: (context) =>
@@ -466,8 +477,14 @@ class AppLocator {
       locator,
       overview: () => locator<OverviewSynchronization>(),
     );
-    // Wallet's SP use cases resolve the facade lazily, after registration.
-    WalletLocator.setup(locator);
+    locator.registerFactory<NetworkWalletProvisioning>(
+      () => NetworkWalletProvisioning(
+        settings: locator<DeveloperEnvironmentReader>(),
+        inventory: locator<SecretsInventory>(),
+        defaults: locator<DefaultWalletProvisioning>(),
+        secrets: locator<Secrets>(),
+      ),
+    );
     mountAddressView(locator);
     // Inventory survives disabled routing and missing endpoint build defines.
     final _ = await prepareArkCustodyReferences(
@@ -568,7 +585,8 @@ class AppLocator {
               context.goNamed(BullExchangeNavigation.dashboardName),
           openWalletHome: (context) =>
               context.goNamed(WalletRoute.walletHome.name),
-          refreshWallets: (context) => context.read<WalletBloc>().refresh(),
+          refreshWallets: (context) =>
+              locator<OverviewHomeController>().refresh(),
           accelerateOrder: (context, orderId) => AccelerateTransactionListTile(
             orderId: orderId,
             onTap: () => context.pushNamed(
@@ -603,9 +621,8 @@ class AppLocator {
         readSigner: locator<SignerDevices>().read,
         poll: (id, {required isActive}) =>
             overviewSync().coordinator.pollWallet(id, isActive: isActive),
-        refreshAfterLightningPayment: () async {
-          final _ = await locator<GetWalletsUsecase>().execute(sync: true);
-        },
+        refreshAfterLightningPayment: () =>
+            locator<OverviewHomeController>().refresh(),
         orderSwaps: () => locator<OrderSwaps>(),
         createOrder: ({required wallet, required amountSat, note}) =>
             locator<SwapFeature>().createReceiveOrder(
@@ -712,7 +729,7 @@ class AppLocator {
         accounts: locator<WalletProvisioning>(),
         networkOf: Settings.networkOf,
         onImported: (context) {
-          context.read<WalletBloc>().add(const WalletStarted());
+          unawaited(refreshMountedWallets());
           context.goNamed(WalletRoute.walletHome.name);
         },
         onExit: (context) => context.goNamed(WalletRoute.walletHome.name),
@@ -781,12 +798,59 @@ class AppLocator {
       ),
       dispose: (startup) => startup.dispose(),
     );
-    locator.registerSingleton(
-      OverviewCatalogue.mount(
-        balances: balances.observation,
-        inventory: inventory,
+    final catalogue = OverviewCatalogue.mount(
+      balances: balances.observation,
+      inventory: inventory,
+    );
+    locator.registerSingleton(catalogue, dispose: (value) => value.close());
+    final torProxy = ExternalTorProxyDiagnostic(
+      locator<TorProxyPreferencesReader>(),
+      locator<Tor>(),
+    );
+    locator.registerSingleton<OverviewHomeController>(
+      OverviewHomeController(
+        catalogue: CatalogueHomeSource(catalogue),
+        sync: CoordinatedHomeSync(overviewSync().coordinator),
+        amountDisplay: OverviewAmountDisplay(
+          locator<AmountDisplayPreferencesReader>(),
+        ),
+        ongoingSwaps: OngoingSwaps(locator<SwapStore>()),
+        swapActivity: locator<SwapActivity>(),
+        swapServerCheck: SwapHomeServerCheck(locator<BoltzSwaps>()),
+        readBackupWarning: () => BackupsFeature.readWarningNeeded(
+          locator<RecoverBullFacade>().backupWarningNeeded,
+        ),
+        readPhysicalBackup: (key) async {
+          final store = locator<RecoverBullWalletBackups>(
+            instanceName: key.network.env == NetworkEnv.regtest
+                ? 'regtest'
+                : null,
+          );
+          return switch (await store.read(key.id)) {
+            Ok(:final value) => value?.physicalBackupTested ?? false,
+            Err() => null,
+          };
+        },
+        proxyNeedsAttention: () async {
+          final status = await torProxy.check();
+          return status == ExternalTorProxyStatus.unavailable ||
+              status == ExternalTorProxyStatus.unreadable;
+        },
+        silentHome: SilentHomeObservation(locator<Silent>()),
+        syncStarted: electrumSync.runsStarted.map(
+          (event) => (key: event.key, runId: event.runId),
+        ),
+        syncFinished: electrumSync.finished.map((event) => event.key),
+        electrumResults: ElectrumSyncResult.watch(electrumSync.finished).map(
+          (result) => (
+            key: result.key,
+            runId: result.runId,
+            isLiquid: result.isLiquid,
+            success: result.success,
+          ),
+        ),
       ),
-      dispose: (catalogue) => catalogue.close(),
+      dispose: (controller) => controller.close(),
     );
     return const Ok(null);
   }

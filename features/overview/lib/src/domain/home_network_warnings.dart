@@ -37,23 +37,24 @@ final class HomeNetworkWarnings {
   Future<List<WalletWarning>?> update({
     required bool isLiquid,
     required bool success,
+    required bool Function() isCurrent,
   }) async {
     if (_closed) return null;
     final version = ++_version;
-    if (isLiquid) {
-      _liquidDown = !success;
-    } else {
-      _bitcoinDown = !success;
-    }
-    final reason = switch ((_bitcoinDown, _liquidDown)) {
+    final bitcoinDown = isLiquid ? _bitcoinDown : !success;
+    final liquidDown = isLiquid ? !success : _liquidDown;
+    final reason = switch ((bitcoinDown, liquidDown)) {
       (true, true) => ElectrumServerDown.both,
       (true, false) => ElectrumServerDown.bitcoin,
       (false, true) => ElectrumServerDown.liquid,
       (false, false) => null,
     };
+    final proxyNeedsAttention =
+        reason != null && bitcoinDown && await _proxyNeedsAttention();
+    if (_closed || version != _version || !isCurrent()) return null;
+    _bitcoinDown = bitcoinDown;
+    _liquidDown = liquidDown;
     if (reason == null) return const [];
-    final proxyNeedsAttention = _bitcoinDown && await _proxyNeedsAttention();
-    if (_closed || version != _version) return null;
     return [
       WalletWarning(
         reason: reason,
@@ -63,6 +64,14 @@ final class HomeNetworkWarnings {
         type: WarningType.error,
       ),
     ];
+  }
+
+  /// Starts a new catalogue epoch: both the published facts and any pending
+  /// proxy diagnostic belong to the retired inventory.
+  void reset() {
+    _version++;
+    _bitcoinDown = false;
+    _liquidDown = false;
   }
 
   void close() => _closed = true;

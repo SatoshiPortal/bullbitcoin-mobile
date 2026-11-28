@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:address_view/address_view.dart' show AddressView;
 import 'package:address_view/routes.dart';
 import 'package:all_seed_view/setup.dart' show AllSeedViewFeature;
-import 'package:bb_mobile/features/wallet/domain/network_x.dart';
 import 'package:bull_ark/bull_ark.dart' show ArkAccountsFacade;
 import 'package:receive/receive.dart' show Receive;
 import 'package:secrets/custody.dart' show SeedReferences;
 import 'package:signers/storage.dart' show SignerDevices;
 import 'package:silent/silent.dart' show Silent;
 import 'package:swaps/swaps.dart' show SwapStore, Swaps;
-import 'package:sync/sync.dart' show WalletKey, WalletCatalogPort;
+import 'package:sync/sync.dart' show WalletCatalogPort, WalletKey;
 import 'package:sync/write.dart'
     show ElectrumSync, ForegroundWalletSynchronization, WalletNativeRuntime;
 import 'package:transactions/transactions.dart' show Transactions;
@@ -36,7 +35,6 @@ import 'package:bull_exchange/bull_exchange.dart'
         ExchangeRouteGuard,
         PayRoute,
         SellRoute;
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
 import 'package:bitcoin_price/bitcoin_price.dart';
 import 'package:bull_ui/bull_ui.dart'
     show BullSnackBar, BullSpacing, BullThemeX;
@@ -72,8 +70,15 @@ import 'package:wallet_import/setup.dart';
 import 'package:onboarding/setup.dart';
 import 'package:receive/setup.dart' show ReceiveFeature;
 import 'package:bull_recoverbull/bull_recoverbull.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:overview/overview.dart'
+    show
+        EyeToggle,
+        OverviewHomeController,
+        OverviewHomeState,
+        SilentWalletBalance,
+        WalletHomeAppBar,
+        WalletPicker,
+        WalletPickerCopy;
 import 'package:silent/setup.dart';
 import 'package:transactions/routes.dart';
 import 'package:overview/setup.dart' show OverviewSynchronization;
@@ -84,10 +89,9 @@ import 'package:bull_payjoin/bull_payjoin.dart'
         PayjoinReceiver,
         PayjoinSender,
         PayjoinSessions;
-import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_consolidation.dart';
-import 'package:overview/overview.dart'
-    show EyeToggle, SilentWalletBalance, WalletHomeAppBar;
+import 'package:bb_mobile/overview_router.dart';
+import 'package:overview/routes.dart';
+import 'package:overview/catalogue.dart' show OverviewCatalogue;
 import 'package:bull_ark/ark_foreground_setup.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:material_ui/material_ui.dart';
@@ -111,17 +115,47 @@ class AppRouter {
   );
 
   static Widget withBackupWarning(Widget child) =>
-      BlocSelector<WalletBloc, WalletState, bool>(
-        selector: (state) => state.showBackupWarning(),
-        builder: (context, showWarning) => BackupWarningOverlay(
-          showWarning: showWarning,
+      ValueListenableBuilder<OverviewHomeState>(
+        valueListenable: locator<OverviewHomeController>(),
+        builder: (context, state, _) => BackupWarningOverlay(
+          showWarning: state.backupWarning,
           onWarningShown: () =>
-              context.read<WalletBloc>().add(const VerifyBackupStatus()),
-          onDismiss: () =>
-              context.read<WalletBloc>().add(const DismissBackupWarning()),
+              unawaited(locator<OverviewHomeController>().verifyBackup()),
+          onDismiss: locator<OverviewHomeController>().dismissBackupWarning,
           child: child,
         ),
       );
+
+  static WalletPickerCopy _walletPickerCopy(BuildContext context) => (
+    defaultBitcoinTitle: context.loc.globalDefaultBitcoinWalletLabel,
+    defaultLiquidTitle: context.loc.globalDefaultLiquidWalletLabel,
+    bitcoinDescription: context.loc.walletTypeBitcoinNetwork,
+    liquidDescription: context.loc.walletTypeLiquidAndLightning,
+    remoteDescription: context.loc.walletTypeWatchSigner,
+    watchOnlyDescription: context.loc.walletTypeWatchOnly,
+    unavailableLabel: context.loc.walletLoadFailed,
+    silentTitle: context.loc.walletSpTitle,
+    silentDescription: context.loc.walletSpExperimental,
+  );
+
+  static Widget _payWalletCards(
+    BuildContext context,
+    ValueChanged<({WalletKey key, String? label, bool isDefault})>? onSelected,
+  ) => ValueListenableBuilder<OverviewHomeState>(
+    valueListenable: locator<OverviewHomeController>(),
+    builder: (context, state, _) => WalletPicker.localSigners(
+      rows: state.rows,
+      copy: _walletPickerCopy(context),
+      onSelected: onSelected,
+    ),
+  );
+
+  static int? _selectBalanceSat(BuildContext context, String walletId) {
+    for (final row in locator<OverviewCatalogue>().snapshot.rows) {
+      if (row.entry.key.id == walletId) return row.balanceSat?.toInt();
+    }
+    return null;
+  }
 
   static SilentFeature mountSilent({
     required GetIt locator,
@@ -143,11 +177,10 @@ class AppRouter {
     balanceBuilder: (context, balanceSat) => SilentWalletBalance(
       background: AssetImage(Assets.backgrounds.bgSecureWallet.path),
       balanceSat: balanceSat,
-      eyeToggle: Builder(
-        builder: (context) => EyeToggle(
-          hideAmounts: context.select(
-            (WalletBloc bloc) => bloc.state.amountDisplay?.hideAmounts,
-          ),
+      eyeToggle: ValueListenableBuilder<OverviewHomeState>(
+        valueListenable: locator<OverviewHomeController>(),
+        builder: (context, state, _) => EyeToggle(
+          hideAmounts: state.hideAmounts,
           showLabel: context.loc.walletShowAmountsTooltip,
           hideLabel: context.loc.walletHideAmountsTooltip,
           onChanged: (hide) => Settings.setAmountsHidden(context, hide),
@@ -311,7 +344,7 @@ class AppRouter {
       payjoinSessions: () => locator<PayjoinSessions>(),
       labels: () => locator<Labels>(),
       ui: (
-        walletCards: WalletCards.pickLocalSigner,
+        walletCards: _payWalletCards,
         openWalletHome: exitExchange,
         brandAsset: Assets.logos.bbLogoSmall.path,
         successAsset: Assets.animations.successTick.path,
@@ -320,7 +353,7 @@ class AppRouter {
   );
 
   static void _onBackupTestSucceeded(BuildContext context) {
-    context.read<WalletBloc>().add(const VerifyBackupStatus());
+    unawaited(locator<OverviewHomeController>().verifyBackup());
     router.goNamed(WalletRoute.walletHome.name);
   }
 
@@ -341,7 +374,7 @@ class AppRouter {
     goToWalletHome: (context) => context.goNamed(WalletRoute.walletHome.name),
     broadcastSuccessImage: AssetImage(Assets.animations.successTick.path),
     missingWalletRedirect: WalletRoute.walletHome.path,
-    selectBalanceSat: WalletConsolidation.selectBalanceSat,
+    selectBalanceSat: _selectBalanceSat,
     payment: () => (
       inventory: locator<SecretsInventory>(),
       native: locator<WalletNativeRuntime>(),
@@ -422,7 +455,7 @@ class AppRouter {
           );
         },
         routes: [
-          WalletRouter.walletHomeRoute(
+          OverviewRouter.walletHomeRoute(
             arkHost: locator.isRegistered<ArkForegroundHost>()
                 ? locator<ArkForegroundHost>()
                 : null,
@@ -445,13 +478,10 @@ class AppRouter {
       locator<OnboardingFeature>().route,
       ...locator<AccessFeature>().routes.root,
       ...locator<ViewsFeature>().routes,
-      WalletRouter.walletDetailRoute(
+      OverviewRouter.walletDetailRoute(
         scopeWalletHistory: locator<TransactionsFeature>().scopeWalletHistory,
         loadCoinSummary: (id) => locator<Coins>().summary(id),
-        onOpenCoins: (context, wallet) => CoinsNavigation.open(
-          context,
-          WalletKey(id: wallet.id, network: wallet.network.shared),
-        ),
+        onOpenCoins: (context, key) => CoinsNavigation.open(context, key),
       ),
       _sendRoutes.consolidation,
       SettingsFeature.mount(
@@ -517,7 +547,7 @@ class AppRouter {
                   .coordinator
                   .discoverWallet(walletId),
               onDeleted: (context) {
-                context.read<WalletBloc>().add(const WalletStarted());
+                unawaited(refreshMountedWallets());
                 context.goNamed(WalletRoute.walletHome.name);
               },
             ),
@@ -549,7 +579,7 @@ class AppRouter {
       locator<RecoverBullFeature>().route(
         copiedMessage: (context) => context.loc.copiedToClipboard,
         onRecovered: (context) {
-          context.read<WalletBloc>().add(const WalletStarted());
+          unawaited(refreshMountedWallets());
           router.goNamed(WalletRoute.walletHome.name);
         },
         onTested: _onBackupTestSucceeded,

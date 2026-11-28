@@ -47,3 +47,13 @@ export 'src/ui/widgets/wallet_picker.dart'
         WalletPickerCopy,
         WalletPickerRow,
         WalletPickerSilentCard;
+export 'src/domain/home_sync_pass.dart'
+    show HomeElectrumOutcome, HomeSyncOutcome, HomeSyncPass, HomeSyncStart;
+export 'src/domain/overview_home_source.dart'
+    show OverviewHomeSnapshot, OverviewHomeSource, OverviewHomeWallet;
+export 'src/presentation/overview_home_controller.dart'
+    show OverviewHomeController;
+export 'src/presentation/overview_home_state.dart'
+    show OverviewHomeRow, OverviewHomeSilent, OverviewHomeState;
+export 'src/ui/screens/overview_home_screen.dart'
+    show OverviewHomeHeaderBuilder, OverviewHomeScreen;
