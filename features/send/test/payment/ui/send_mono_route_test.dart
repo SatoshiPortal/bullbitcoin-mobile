@@ -1658,7 +1658,8 @@ void main() {
           enteredText: '31.25',
           currencyCode: 'CAD',
           rate: 125000,
-          quotedAt: DateTime.utc(2026, 11, 19, 14, 32),
+          // Price timestamps are local instants; the review shows them as-is.
+          quotedAt: DateTime(2026, 11, 19, 14, 32),
           sats: Sats.fromInt(25000),
         ),
       ),
